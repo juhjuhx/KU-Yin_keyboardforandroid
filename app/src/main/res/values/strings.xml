@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Android Keyboard</string>
+    <string name="ime_name">KU-Yin (Chewing)</string>
+    <string name="ime_description">Bopomofo input method with DaChen layout</string>
+    <string name="pref_key_layout">layout</string>
+    <string name="pref_key_theme">theme</string>
+    <string name="pref_key_vibration">vibration</string>
+    <string name="pref_key_opencc">opencc</string>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="keyboard_bg_light">#FFFFFF</color>
+    <color name="keyboard_bg_dark">#1A1A1A</color>
+    <color name="key_bg_light">#F5F5F5</color>
+    <color name="key_bg_dark">#2D2D2D</color>
+    <color name="key_text_light">#212121</color>
+    <color name="key_text_dark">#E0E0E0</color>
+    <color name="candidate_bg_light">#FFFFFF</color>
+    <color name="candidate_bg_dark">#2D2D2D</color>
+    <color name="oled_black">#000000</color>
+    <dimen name="key_height_portrait">60dp</dimen>
+    <dimen name="key_height_landscape">48dp</dimen>
+    <dimen name="candidate_bar_height">44dp</dimen>
+    <dimen name="key_h_gap">3dp</dimen>
+    <dimen name="key_v_gap">6dp</dimen>
+    <integer name="long_press_delay_ms">350</integer>
+</resources>

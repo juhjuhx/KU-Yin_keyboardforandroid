@@ -1,31 +1,47 @@
-# Built artifacts
+# Android and Gradle
 build/
 app/build/
 plugin/*/build/
-
-# Gradle
 .gradle/
-
-# Android artifacts
+captures/
+.externalNativeBuild/
+.cxx/
+*.ap_
 *.apk
 *.aab
+*.dex
+*.class
+
+# Local Configuration and Secrets
+local.properties
+*.keystore
+keystore.properties
+!local.properties.template
 
 # IDE
 .idea/
 *.iml
+*.iws
+*.ipr
+.android/
+.vscode/
+*.swp
+*~
 
-# NDK
-.cxx/
-
-# Local config (may contain secrets)
-local.properties
-
-# Signing
-*.keystore
-keystore.properties
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
 
 # OS
 .DS_Store
-
-# Logs
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.BIN/
 *.log
+*.tmp

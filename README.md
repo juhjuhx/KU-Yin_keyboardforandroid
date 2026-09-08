@@ -2,7 +2,7 @@
 
 > 本倉庫是 **fork-mirror 骨架**，以官方 [fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master`，**LGPL-2.1**）為底座的長期可迭代 Android 注音輸入法（IME）專案鏡像。
 
-> ⚠️ **處於骨架（scaffold）階段**：本目錄目前僅有文件骨架，尚未執行 `git clone` / `git init` / submodule 實抓。請參考 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) 與規劃文件。
+> ⚠️ **處於骨架（scaffold）階段**：本目錄目前僅有文件骨架，已建立 Android 工程骨架 `git clone` / `git init` / submodule 實抓。請參考 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) 與規劃文件。
 
 ---
 

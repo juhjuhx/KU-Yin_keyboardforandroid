@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.AndroidKeyboard" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">?attr/colorSurface</item>
+        <item name="android:colorPrimary">#6750A4</item>
+        <item name="android:colorOnPrimary">#FFFFFF</item>
+        <item name="android:colorSurface">#FDF8FF</item>
+        <item name="android:colorOnSurface">#1D1B20</item>
+    </style>
+    <style name="Theme.AndroidKeyboard.OLED" parent="Theme.AndroidKeyboard">
+        <item name="android:colorSurface">#000000</item>
+        <item name="android:colorOnSurface">#E6E1E5</item>
+    </style>
+</resources>

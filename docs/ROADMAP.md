@@ -1,6 +1,6 @@
 # Roadmap（設計方向與路線圖）
 
-> 狀態：規劃 + Wave 0 執行中（T1 done，T2 running，T3 queued）。本檔是 handoff 入口：新會話先讀本檔 + `ARCHITECTURE.md` + plan，即可接手。
+> 狀態：Wave 2 骨架完成（T1 done，T2 running，T3 queued）。本檔是 handoff 入口：新會話先讀本檔 + `ARCHITECTURE.md` + plan，即可接手。
 
 ## 1. 整體設計方向（一句話）
 
@@ -54,9 +54,9 @@ Fork 官方 `fcitx5-android`（LGPL-2.1），解碼沿用 Linux 同款 `libchewi
 ## 4. Wave 路線圖（時間軸）
 
 ```
-Wave0 骨架 ████░░░░░░ T1[✓] T2[~] T3[ ] T4[ ]
-Wave1 解碼 ░░░░░░░░░░ T5-T9（版本釘選/三佈局/OpenCC/詞庫/AAR備援/自檢）
-Wave2 前端 ░░░░░░░░░░ T10-T15（Service/View/候選/Emoji/主題/自檢）
+##########█ T1[✓] T2[✓] T3[✓] T4[✓] ████░░░░░░ T1[✓] T2[~] T3[ ] T4[ ]
+Wave1 解碼 ██████████ T5[✓] T6[✓] T7[✓] T8[✓] T9[✓] T5-T9（版本釘選/三佈局/OpenCC/詞庫/AAR備援/自檢）
+Wave2 前端 ██████░░░░ T10[✓] T11[✓] T12-T15[ ] T10-T15（Service/View/候選/Emoji/主題/自檢）
 Wave3 人體工學 ░░░░░░ T16-T20（KEYMAP 凍結/工具列/無衝突/Gboard對比/自檢）
 Wave4 切分發版 ░░░░░░ T21-T24（core/UI/iOS筆記/矩陣建置/封版）
 終驗 ░░░░░░░░░░ F1-F4（合規/品質/矩陣/保真，全 APPROVE 才算完）
