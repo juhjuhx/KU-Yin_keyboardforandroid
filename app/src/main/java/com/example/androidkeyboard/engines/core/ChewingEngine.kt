@@ -26,7 +26,10 @@ interface ChewingEngine {
     fun commit()
     fun backspace(): Boolean
     fun toggleFullHalf(): Boolean
+    fun toggleChiEng(): Boolean
     fun loadUserDict(path: String): Boolean
     fun saveUserDict(path: String)
     val isReady: Boolean
+    fun nextPage(): Boolean
+    fun prevPage(): Boolean
 }

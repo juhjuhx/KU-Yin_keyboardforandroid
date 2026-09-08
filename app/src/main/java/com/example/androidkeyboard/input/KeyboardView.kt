@@ -109,6 +109,22 @@ class KeyboardView @JvmOverloads constructor(
             canvas.drawText(key.label, rect.centerX(), rect.centerY() + keyPaint.textSize / 3f, keyPaint)
         }
     }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        when (event.actionMasked) {
+            MotionEvent.ACTION_DOWN -> {
+                pressedKeyIndex = getKeyPressedIndex(event.x, event.y)
+                invalidate()
+                if (pressedKeyIndex >= 0) {
+                    vibrate()
+                    onKeyPress?.invoke(getKeysAt(pressedKeyIndex))
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                pressedKeyIndex = -1
+                invalidate()
+            }
+        }
         return true
     }
 

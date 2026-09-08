@@ -20,6 +20,8 @@ class CandidateView @JvmOverloads constructor(
     private var currentPage = 0
     private val pageSize: Int get() = 5
     var onItemClick: ((String) -> Unit)? = null
+    var onPrevPage: (() -> Unit)? = null
+    var onNextPage: (() -> Unit)? = null
 
     /** T17: 左右滑動切換候選頁 */
     private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
@@ -27,13 +29,11 @@ class CandidateView @JvmOverloads constructor(
             if (e1 == null) return false
             val dx = e2.x - e1.x
             if (kotlin.math.abs(dx) > height && kotlin.math.abs(dx) > kotlin.math.abs(e2.y - e1.y)) {
-                if (dx > 0 && currentPage > 0) {
-                    currentPage--
-                    invalidate()
+                if (dx > 0) {
+                    onPrevPage?.invoke()
                     return true
-                } else if (dx < 0 && (currentPage + 1) * pageSize < candidates.size) {
-                    currentPage++
-                    invalidate()
+                } else if (dx < 0) {
+                    onNextPage?.invoke()
                     return true
                 }
             }
@@ -61,11 +61,10 @@ class CandidateView @JvmOverloads constructor(
             textPaint.color = 0xFF212121.toInt()
             canvas.drawText(page[i], slotW * (i + 0.5f), height / 2f + textPaint.textSize / 3f, textPaint)
         }
-        /** T17: 多頁時顯示頁碼指示器 */
         if (getPageCount() > 1) {
             textPaint.color = 0xFF9E9E9E.toInt()
             textPaint.textSize = 12f
-            val indicator = (currentPage + 1).toString() + \"/\" + getPageCount().toString()
+            val indicator = "${currentPage + 1}/${getPageCount()}"
             canvas.drawText(indicator, width - 30f, height / 2f + textPaint.textSize / 3f, textPaint)
         }
     }

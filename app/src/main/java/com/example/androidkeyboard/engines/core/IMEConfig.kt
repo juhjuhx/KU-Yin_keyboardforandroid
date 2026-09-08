@@ -48,7 +48,7 @@ class IMEConfig(private val context: Context) {
         set(value) = prefs.edit().putFloat(KEY_PROXIMITY, value).apply()
 
     var userDictPath: String
-        get() = prefs.getString(KEY_USER_DICT_PATH, \"\") ?: \"\"
+        get() = prefs.getString(KEY_USER_DICT_PATH, "") ?: ""
         set(value) = prefs.edit().putString(KEY_USER_DICT_PATH, value).apply()
 
     fun applyTo(engine: ChewingEngine) {
@@ -56,13 +56,13 @@ class IMEConfig(private val context: Context) {
     }
 
     companion object {
-        private const val KEY_LAYOUT = \"layout\"
-        private const val KEY_FULL_HALF = \"full_half\"
-        private const val KEY_S2T = \"s2t_profile\"
-        private const val KEY_T2S = \"t2s_profile\"
-        private const val KEY_CONVERSION = \"conversion_enabled\"
-        private const val KEY_HAPTIC = \"haptic_enabled\"
-        private const val KEY_PROXIMITY = \"proximity_tolerance\"
-        private const val KEY_USER_DICT_PATH = \"user_dict_path\"
+        private const val KEY_LAYOUT = "layout"
+        private const val KEY_FULL_HALF = "full_half"
+        private const val KEY_S2T = "s2t_profile"
+        private const val KEY_T2S = "t2s_profile"
+        private const val KEY_CONVERSION = "conversion_enabled"
+        private const val KEY_HAPTIC = "haptic_enabled"
+        private const val KEY_PROXIMITY = "proximity_tolerance"
+        private const val KEY_USER_DICT_PATH = "user_dict_path"
     }
 }

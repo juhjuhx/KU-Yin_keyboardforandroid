@@ -6,24 +6,15 @@ import android.inputmethodservice.InputMethodService
 import android.view.LayoutInflater
 import android.view.KeyEvent
 import android.view.View
-import android.view.inputmethod.InputConnection
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import android.widget.LinearLayout
-import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
+import com.example.androidkeyboard.engines.core.ChewingEngine
+import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
-import com.example.androidkeyboard.input.KeyMapping
 import com.example.androidkeyboard.ui.CandidateView
 
-/**
- * Wave 4 T21: InputMethodService wired to engines/core abstraction layer.
- *
- * Changes from Wave 3:
- *  - IMEConfig replaces raw SharedPreferences access
- *  - AndroidChewingEngine (stub) replaces TODO libchewing init
- *  - OpenCCConverter (stub) ready for s2tw/tw2s toggle
- *  - handleKey() routes through chewing engine; special keys bypass
- */
 class ChewingInputMethodService : InputMethodService() {
 
     private lateinit var keyboardView: KeyboardView
@@ -55,6 +46,12 @@ class ChewingInputMethodService : InputMethodService() {
         candidateView = CandidateView(this@ChewingInputMethodService).apply {
             setCandidates(emptyList())
             onItemClick = ::commitCandidate
+            onPrevPage = {
+                if (chewing.prevPage()) updateCandidates()
+            }
+            onNextPage = {
+                if (chewing.nextPage()) updateCandidates()
+            }
         }
         symbolPicker = SymbolPicker(this@ChewingInputMethodService).apply {
             visibility = View.GONE
@@ -79,7 +76,6 @@ class ChewingInputMethodService : InputMethodService() {
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
         keyboardView.refreshLayout()
-        // Re-apply config from SharedPreferences (in case user changed settings mid-session)
         config.applyTo(chewing)
     }
 
@@ -89,9 +85,6 @@ class ChewingInputMethodService : InputMethodService() {
         chewing.reset()
     }
 
-    /**
-     * T18+T21: Route key through ChewingEngine; special keys bypass decoder.
-     */
     private fun handleKey(key: String) {
         val ic = currentInputConnection ?: return
         when (key) {
@@ -104,10 +97,18 @@ class ChewingInputMethodService : InputMethodService() {
             }
             " " -> {
                 if (chewing.getPreedit().isNotEmpty()) {
-                    // Space commits current preedit through converter
                     val committed = converter.simplifyToTraditional(chewing.getPreedit())
                     ic.commitText(committed, 1)
                     chewing.commit()
+                } else {
+                    ic.commitText(" ", 1)
+                }
+                updateCandidates()
+            }
+            "cand" -> {
+                // Show candidates if there are any
+                if (chewing.getCandidates().isNotEmpty()) {
+                    updateCandidates()
                 } else {
                     ic.commitText(" ", 1)
                 }
@@ -116,15 +117,11 @@ class ChewingInputMethodService : InputMethodService() {
                 val keyCode = KeyMapping.getKeyEventForChar(key)
                 if (keyCode >= 0) {
                     val consumed = chewing.handleKeyEvent(keyCode)
-                    if (consumed) {
-                        updateCandidates()
-                    } else {
-                        // Fallback: send key directly (for keys not in mapping)
+                    if (!consumed) {
                         ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
                         ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
                     }
                 } else {
-                    // Symbol/key not in mapping — commit directly
                     ic.commitText(key, 1)
                 }
             }
@@ -132,10 +129,8 @@ class ChewingInputMethodService : InputMethodService() {
     }
 
     private fun updateCandidates() {
-        val preedit = chewing.getPreedit()
         val candidates = chewing.getCandidates()
         candidateView.setCandidates(candidates)
-        // TODO: show preedit above keyboard (status bar or inline)
     }
 
     private fun commitSymbol(sym: String) {

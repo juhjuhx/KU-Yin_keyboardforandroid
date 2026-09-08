@@ -1,14 +1,15 @@
-﻿// Wave 4 T21b: JNI bridge for libchewing C API (0.13.x)
+﻿// Wave 4 T21b: JNI bridge for libchewing C API (0.12.x - Rust reimplementation)
 // Build: ./gradlew :app:externalNativeBuildDebug
-// Requires: Android NDK r25+, libchewing source in libchewing-src/
+// Requires: Android NDK r25+, libchewing CAPI header in include/chewing/
 //
-// libchewing source: https://codeberg.org/chenyf/libchewing
+// libchewing source: https://github.com/chewing/libchewing (Rust rewrite)
+// CAPI: capi/include/chewing.h
 
 #include <jni.h>
 #include <string>
-#include <chewing.h>
+#include <chewing/chewing.h>
 
-extern  C {
+extern "C" {
 
 /* ── Context lifecycle ───────────────────────────────────────────── */
 
@@ -16,19 +17,22 @@ JNIEXPORT jlong JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1new
   (JNIEnv *env, jobject thiz) {
     ChewingContext *ctx = chewing_new();
-    return (jlong) ctx;
+    return (jlong) (intptr_t) ctx;
 }
 
 JNIEXPORT void JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1delete
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (ctx) chewing_delete((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (c) chewing_delete(c);
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1reset
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (ctx) chewing_Reset((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_Reset(c);
 }
 
 /* ── Key event ───────────────────────────────────────────────────── */
@@ -36,118 +40,208 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1r
 JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1handle_1default
   (JNIEnv *env, jobject thiz, jlong ctx, jint key) {
-    if (!ctx) return 0;
-    return (jint) chewing_handle_Default((ChewingContext *) ctx, (gint) key);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_handle_Default(c, key);
 }
 
 /* ── Preedit ─────────────────────────────────────────────────────── */
 
 JNIEXPORT jstring JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1composing_1str
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1buffer_1string_1static
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return env->NewStringUTF("");
-    const gchar *s = chewing_get_composing_str_ptr((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return env->NewStringUTF("");
+    const char *s = chewing_buffer_String_static(c);
     return s ? env->NewStringUTF(s) : env->NewStringUTF("");
 }
 
 JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1cursor_1rest_1pos
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1buffer_1check
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return 0;
-    return (jint) chewing_get_cursor_rest_pos((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_buffer_Check(c);
 }
 
 /* ── Candidates ──────────────────────────────────────────────────── */
 
 JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1choice_1count
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1total_1choice
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return 0;
-    return (jint) chewing_cand_ChoiceCount((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_cand_TotalChoice(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1total_1page
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_cand_TotalPage(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1choice_1per_1page
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_cand_ChoicePerPage(c);
 }
 
 JNIEXPORT jstring JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1choice_1string
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1string_1by_1index_1static
   (JNIEnv *env, jobject thiz, jlong ctx, jint index) {
-    if (!ctx) return nullptr;
-    gchar **arr = chewing_cand_choiceString((ChewingContext *) ctx);
-    if (!arr || index < 0) return nullptr;
-    gchar *s = arr[index];
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return nullptr;
+    const char *s = chewing_cand_string_by_index_static(c, index);
     return s ? env->NewStringUTF(s) : nullptr;
 }
 
-JNIEXPORT void JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1choice_1by_1index
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1choose_1by_1index
   (JNIEnv *env, jobject thiz, jlong ctx, jint index) {
-    if (!ctx) return;
-    chewing_cand_ChoiceByIndex((ChewingContext *) ctx, (gint) index);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_cand_choose_by_index(c, index);
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1open
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_cand_open(c);
+}
+
+JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1close
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return;
-    chewing_cand_close((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_cand_close(c);
 }
 
 /* ── Commit ──────────────────────────────────────────────────────── */
 
-JNIEXPORT jstring JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1commit_1str
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1commit_1preedit_1buf
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return env->NewStringUTF("");
-    const gchar *s = chewing_commit_str_ptr((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_commit_preedit_buf(c);
+}
+
+JNIEXPORT jstring JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1commit_1string_1static
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return env->NewStringUTF("");
+    const char *s = chewing_commit_String_static(c);
     return s ? env->NewStringUTF(s) : env->NewStringUTF("");
 }
 
 /* ── Backspace ───────────────────────────────────────────────────── */
 
-JNIEXPORT void JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1handle_1backspace
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1backspace
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return;
-    chewing_handle_Backspace((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_handle_Backspace(c);
 }
 
 /* ── Full/Half ───────────────────────────────────────────────────── */
 
 JNIEXPORT void JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1handle_1full_1half
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1shape_1mode
+  (JNIEnv *env, jobject thiz, jlong ctx, jint mode) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return;
+    chewing_set_ShapeMode(c, mode);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1shape_1mode
   (JNIEnv *env, jobject thiz, jlong ctx) {
-    if (!ctx) return;
-    chewing_handle_FullHalf((ChewingContext *) ctx);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return HALFSHAPE_MODE;
+    return (jint) chewing_get_ShapeMode(c);
 }
 
 /* ── Layout ──────────────────────────────────────────────────────── */
 
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1kb_1type
   (JNIEnv *env, jobject thiz, jlong ctx, jint kbtype) {
-    if (!ctx) return;
-    chewing_set_KBType((ChewingContext *) ctx, (gint) kbtype);
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_set_KBType(c, kbtype);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1kb_1type
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return KB_DEFAULT;
+    return (jint) chewing_get_KBType(c);
+}
+
+/* ── Chinese/English mode ────────────────────────────────────────── */
+
+JNIEXPORT void JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1chi_1eng_1mode
+  (JNIEnv *env, jobject thiz, jlong ctx, jint mode) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return;
+    chewing_set_ChiEngMode(c, mode);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1chi_1eng_1mode
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return CHINESE_MODE;
+    return (jint) chewing_get_ChiEngMode(c);
 }
 
 /* ── User dictionary ─────────────────────────────────────────────── */
 
 JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1load_1userphrase
-  (JNIEnv *env, jobject thiz, jlong ctx, jstring pathJ) {
-    if (!ctx) return -1;
-    const char *path = env->GetStringUTFChars(pathJ, nullptr);
-    if (!path) return -1;
-    gint result = chewing_load_userphrase((ChewingContext *) ctx, path);
-    env->ReleaseStringUTFChars(pathJ, path);
-    return (jint) result;
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1userphrase_1add
+  (JNIEnv *env, jobject thiz, jlong ctx, jstring phrase, jstring bopomofo) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    const char *p = env->GetStringUTFChars(phrase, nullptr);
+    const char *b = env->GetStringUTFChars(bopomofo, nullptr);
+    if (!p || !b) {
+      if (p) env->ReleaseStringUTFChars(phrase, p);
+      if (b) env->ReleaseStringUTFChars(bopomofo, b);
+      return -1;
+    }
+    jint result = chewing_userphrase_add(c, p, b);
+    env->ReleaseStringUTFChars(phrase, p);
+    env->ReleaseStringUTFChars(bopomofo, b);
+    return result;
 }
 
-JNIEXPORT void JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1store_1userphrase
-  (JNIEnv *env, jobject thiz, jlong ctx, jstring pathJ) {
-    if (!ctx) return;
-    const char *path = env->GetStringUTFChars(pathJ, nullptr);
-    if (!path) return;
-    chewing_store_userphrase((ChewingContext *) ctx, path);
-    env->ReleaseStringUTFChars(pathJ, path);
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1userphrase_1lookup
+  (JNIEnv *env, jobject thiz, jlong ctx, jstring phrase, jstring bopomofo) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    const char *p = env->GetStringUTFChars(phrase, nullptr);
+    const char *b = env->GetStringUTFChars(bopomofo, nullptr);
+    if (!p || !b) {
+      if (p) env->ReleaseStringUTFChars(phrase, p);
+      if (b) env->ReleaseStringUTFChars(bopomofo, b);
+      return 0;
+    }
+    jint result = chewing_userphrase_lookup(c, p, b);
+    env->ReleaseStringUTFChars(phrase, p);
+    env->ReleaseStringUTFChars(bopomofo, b);
+    return result;
 }
 
 } /* extern C */
