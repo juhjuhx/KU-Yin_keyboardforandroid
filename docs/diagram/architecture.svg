@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 585">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap');
+text { font-family: 'JetBrains Mono', 'Noto Sans SC', 'PingFang SC', sans-serif; }
+</style>
+<defs>
+<pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+<path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1e293b" stroke-width="0.5"/>
+</pattern>
+<marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+<polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+</marker>
+</defs>
+<rect width="100%" height="100%" fill="#0f172a"/>
+<rect width="100%" height="100%" fill="url(#grid)"/>
+<text x="20" y="30" fill="white" font-size="16" font-weight="700">android-keyboard 架構圖</text>
+<text x="20" y="46" fill="#94a3b8" font-size="9">fork fcitx5-android ｜ chewing + OpenCC ｜ View/Canvas ｜ 大千 4x10</text>
+<rect x="40" y="60" width="680" height="170" rx="12" fill="none" stroke="#22d3ee" stroke-width="1" stroke-dasharray="8,4"/>
+<text x="52" y="78" fill="#22d3ee" font-size="9" font-weight="600">APP 層 · Android UI</text>
+<rect x="70" y="95" width="140" height="60" rx="6" fill="#0f172a"/>
+<rect x="70" y="95" width="140" height="60" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="140" y="119" fill="white" font-size="11" font-weight="600" text-anchor="middle">KeyboardView</text>
+<text x="140" y="135" fill="#94a3b8" font-size="9" text-anchor="middle">自繪 onDraw 全鍵 loop</text>
+<rect x="230" y="95" width="140" height="60" rx="6" fill="#0f172a"/>
+<rect x="230" y="95" width="140" height="60" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="300" y="119" fill="white" font-size="11" font-weight="600" text-anchor="middle">CandidateView</text>
+<text x="300" y="135" fill="#94a3b8" font-size="9" text-anchor="middle">分頁 44dp / 浮窗</text>
+<rect x="390" y="95" width="140" height="60" rx="6" fill="#0f172a"/>
+<rect x="390" y="95" width="140" height="60" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="460" y="119" fill="white" font-size="11" font-weight="600" text-anchor="middle">Toolbar</text>
+<text x="460" y="135" fill="#94a3b8" font-size="9" text-anchor="middle">簡繁一鍵 s2tw/tw2s</text>
+<rect x="550" y="95" width="140" height="60" rx="6" fill="#0f172a"/>
+<rect x="550" y="95" width="140" height="60" rx="6" fill="rgba(8,51,68,0.4)" stroke="#22d3ee" stroke-width="1.5"/>
+<text x="620" y="119" fill="white" font-size="11" font-weight="600" text-anchor="middle">Theme</text>
+<text x="620" y="135" fill="#94a3b8" font-size="9" text-anchor="middle">M3 / OLED / 背景</text>
+<text x="380" y="185" fill="#94a3b8" font-size="9" text-anchor="middle">InputMethodService · batch edit · 密碼框禁記憶</text>
+<text x="380" y="202" fill="#94a3b8" font-size="9" text-anchor="middle">唯一介面 engines/core API（UI 零直調 JNI）</text>
+<line x1="380" y1="208" x2="380" y2="228" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="40" y="232" width="680" height="170" rx="12" fill="none" stroke="#34d399" stroke-width="1" stroke-dasharray="8,4"/>
+<text x="52" y="250" fill="#34d399" font-size="9" font-weight="600">CORE 層 · engines/core（Android / iOS 共用）</text>
+<rect x="100" y="267" width="200" height="60" rx="6" fill="#0f172a"/>
+<rect x="100" y="267" width="200" height="60" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+<text x="200" y="291" fill="white" font-size="11" font-weight="600" text-anchor="middle">libchewing 0.13.x</text>
+<text x="200" y="307" fill="#94a3b8" font-size="9" text-anchor="middle">大千/Hsu/Eten26 · 頻率排序</text>
+<rect x="320" y="267" width="150" height="60" rx="6" fill="#0f172a"/>
+<rect x="320" y="267" width="150" height="60" rx="6" fill="rgba(6,78,59,0.4)" stroke="#34d399" stroke-width="1.5"/>
+<text x="395" y="291" fill="white" font-size="11" font-weight="600" text-anchor="middle">OpenCC</text>
+<text x="395" y="307" fill="#94a3b8" font-size="9" text-anchor="middle">s2tw/tw2s 預設</text>
+<rect x="490" y="267" width="170" height="60" rx="6" fill="#0f172a"/>
+<rect x="490" y="267" width="170" height="60" rx="6" fill="rgba(76,29,149,0.4)" stroke="#a78bfa" stroke-width="1.5"/>
+<text x="575" y="291" fill="white" font-size="11" font-weight="600" text-anchor="middle">UserDict + 配置</text>
+<text x="575" y="307" fill="#94a3b8" font-size="9" text-anchor="middle">學習/排除/.zip 匯出</text>
+<text x="380" y="360" fill="#94a3b8" font-size="9" text-anchor="middle">commitText ← 候選 ← Editor ← hitTest ← 觸控</text>
+<line x1="380" y1="372" x2="380" y2="392" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrow)"/>
+<rect x="40" y="396" width="680" height="150" rx="12" fill="none" stroke="#94a3b8" stroke-width="1" stroke-dasharray="8,4"/>
+<text x="52" y="414" fill="#94a3b8" font-size="9" font-weight="600">上游與參照</text>
+<rect x="85" y="427" width="200" height="50" rx="6" fill="#0f172a"/>
+<rect x="85" y="427" width="200" height="50" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="185" y="449" fill="white" font-size="11" font-weight="600" text-anchor="middle">fcitx5-android</text>
+<text x="185" y="464" fill="#94a3b8" font-size="9" text-anchor="middle">fork 底座 LGPL-2.1</text>
+<rect x="305" y="427" width="200" height="50" rx="6" fill="#0f172a"/>
+<rect x="305" y="427" width="200" height="50" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="405" y="449" fill="white" font-size="11" font-weight="600" text-anchor="middle">Futo / HeliBoard</text>
+<text x="405" y="464" fill="#94a3b8" font-size="9" text-anchor="middle">渲染/佈局參照</text>
+<rect x="525" y="427" width="150" height="50" rx="6" fill="#0f172a"/>
+<rect x="525" y="427" width="150" height="50" rx="6" fill="rgba(30,41,59,0.5)" stroke="#94a3b8" stroke-width="1.5"/>
+<text x="600" y="449" fill="white" font-size="11" font-weight="600" text-anchor="middle">fcitx5-ios</text>
+<text x="600" y="464" fill="#94a3b8" font-size="9" text-anchor="middle">僅筆記不實作</text>
+<text x="40" y="566" fill="#fb7185" font-size="8">禁：逐鍵 View · Compose 主渲染 · INTERNET · 九宮格本期</text>
+</svg>
