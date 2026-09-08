@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 
 class CandidateView @JvmOverloads constructor(
@@ -38,9 +40,9 @@ class CandidateView @JvmOverloads constructor(
         }
     }
 
-    override fun onTouchEvent(event: android.view.MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
-            android.view.MotionEvent.ACTION_DOWN -> {
+            MotionEvent.ACTION_DOWN -> {
                 val slotWidth = width.toFloat() / pageSize
                 val clicked = (event.x / slotWidth).toInt().coerceIn(0, pageSize - 1)
                 val pageStart = currentPage * pageSize
@@ -52,4 +54,3 @@ class CandidateView @JvmOverloads constructor(
         return true
     }
 }
-
