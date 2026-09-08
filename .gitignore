@@ -1,0 +1,31 @@
+# Built artifacts
+build/
+app/build/
+plugin/*/build/
+
+# Gradle
+.gradle/
+
+# Android artifacts
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+
+# NDK
+.cxx/
+
+# Local config (may contain secrets)
+local.properties
+
+# Signing
+*.keystore
+keystore.properties
+
+# OS
+.DS_Store
+
+# Logs
+*.log
