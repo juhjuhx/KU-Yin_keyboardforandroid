@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android">
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="?attr/colorSurface">
-
     <com.example.androidkeyboard.input.KeyboardView
         android:id="@+id/keyboard_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom" />
-
     <com.example.androidkeyboard.ui.CandidateView
         android:id="@+id/candidate_view"
         android:layout_width="match_parent"
         android:layout_height="@dimen/candidate_bar_height"
         android:layout_gravity="bottom" />
-
+    <com.example.androidkeyboard.input.SymbolPicker
+        android:id="@+id/symbol_picker"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:layout_gravity="bottom" />
 </LinearLayout>

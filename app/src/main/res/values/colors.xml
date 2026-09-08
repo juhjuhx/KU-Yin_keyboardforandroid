@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="keyboard_bg_light">#FFFFFF</color>
-    <color name="keyboard_bg_dark">#1A1A1A</color>
-    <color name="key_bg_light">#F5F5F5</color>
-    <color name="key_bg_dark">#2D2D2D</color>
-    <color name="key_text_light">#212121</color>
-    <color name="key_text_dark">#E0E0E0</color>
-    <color name="candidate_bg_light">#FFFFFF</color>
-    <color name="candidate_bg_dark">#2D2D2D</color>
-    <color name="oled_black">#000000</color>
-    <dimen name="key_height_portrait">60dp</dimen>
-    <dimen name="key_height_landscape">48dp</dimen>
-    <dimen name="candidate_bar_height">44dp</dimen>
-    <dimen name="key_h_gap">3dp</dimen>
-    <dimen name="key_v_gap">6dp</dimen>
-    <integer name="long_press_delay_ms">350</integer>
+    <!-- Light Theme (M3 Dynamic) -->
+    <color name="keyboard_bg_light">"#FFFFFF"</color>
+    <color name="key_bg_light">"#F5F5F5"</color>
+    <color name="key_text_light">"#212121"</color>
+    <color name="candidate_bg_light">"#FFFFFF"</color>
+    <color name="pressed_key_light">"#E0E0E0"</color>
+
+    <!-- Dark Theme (M3) -->
+    <color name="keyboard_bg_dark">"#1A1A1A"</color>
+    <color name="key_bg_dark">"#2D2D2D"</color>
+    <color name="key_text_dark">"#E0E0E0"</color>
+    <color name="candidate_bg_dark">"#2D2D2D"</color>
+    <color name="pressed_key_dark">"#3D3D3D"</color>
+
+    <!-- OLED Theme (pure black for AMOLED) -->
+    <color name="oled_black">"#000000"</color>
+    <color name="oled_key">"#1C1C1C"</color>
+    <color name="oled_key_text">"#B0B0B0"</color>
+
+    <!-- M3 Primary Colors (for dynamic color) -->
+    <color name="md_primary">"#6750A4"</color>
+    <color name="md_on_primary">"#FFFFFF"</color>
+    <color name="md_primary_container">"#EADDFF"</color>
+    <color name="md_on_primary_container">"#21005D"</color>
+
+    <!-- Key dimensions -->
+    <dimen name="key_height_portrait">"60dp"</dimen>
+    <dimen name="key_height_landscape">"48dp"</dimen>
+    <dimen name="candidate_bar_height">"44dp"</dimen>
+    <dimen name="key_h_gap">"3dp"</dimen>
+    <dimen name="key_v_gap">"6dp"</dimen>
+    <integer name="long_press_delay_ms">"350"</integer>
 </resources>

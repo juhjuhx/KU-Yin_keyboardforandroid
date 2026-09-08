@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Android Keyboard</string>
-    <string name="ime_name">KU-Yin (Chewing)</string>
-    <string name="ime_description">Bopomofo input method with DaChen layout</string>
-    <string name="pref_key_layout">layout</string>
-    <string name="pref_key_theme">theme</string>
-    <string name="pref_key_vibration">vibration</string>
-    <string name="pref_key_opencc">opencc</string>
+    <string name="app_name">"Android Keyboard"</string>
+    <string name="ime_name">"KU-Yin (Chewing)"</string>
+    <string name="ime_description">"Bopomofo input method with DaChen layout"</string>
+    <string name="pref_key_layout">"layout"</string>
+    <string name="pref_key_theme">"theme"</string>
+    <string name="pref_key_vibration">"vibration"</string>
+    <string name="pref_key_opencc">"opencc"</string>
+    <!-- Theme options -->
+    <string name="pref_theme_light">"Light"</string>
+    <string name="pref_theme_dark">"Dark"</string>
+    <string name="pref_theme_oled">"OLED Black"</string>
+    <!-- Layout options -->
+    <string name="pref_layout_dachen">"DaChen (大千)"</string>
+    <string name="pref_layout_hsu">"Hsu (標準)"</string>
+    <string name="pref_layout_eten">"Eten26"</string>
 </resources>
