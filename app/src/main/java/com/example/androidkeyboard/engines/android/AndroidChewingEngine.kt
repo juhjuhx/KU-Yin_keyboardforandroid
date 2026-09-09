@@ -2,12 +2,13 @@
 
 import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
+import android.util.Log
 
 /**
  * Wave 4 T21: Android ChewingEngine implementation with libchewing JNI bindings.
  *
  * Uses libchewing 0.12.x (Rust reimplementation) via CAPI.
- * JNI functions are named to match the libchewing C API.
+ * JNI functions match the libchewing C API naming.
  */
 class AndroidChewingEngine : ChewingEngine {
 
@@ -21,15 +22,16 @@ class AndroidChewingEngine : ChewingEngine {
     private var _fullHalfMode = HALFSHAPE_MODE
 
     override val isReady: Boolean get() = _ready
+    private val TAG = "AndroidChewingEngine"
 
     init { loadNativeLibrary() }
 
     private fun loadNativeLibrary() {
         try {
             System.loadLibrary("chewing-jni")
+            Log.d(TAG, "libchewing-jni loaded successfully")
         } catch (e: UnsatisfiedLinkError) {
-            // Stub mode: log warning but continue
-            android.util.Log.w(TAG, "libchewing-jni not loaded: ${e.message}")
+            Log.w(TAG, "libchewing-jni not loaded: ${e.message}. Running in stub mode.")
         }
     }
 
@@ -40,14 +42,16 @@ class AndroidChewingEngine : ChewingEngine {
         } else {
             chewing_reset(nativeCtx)
         }
-        val kbType = when (layout) {
-            Layout.DACHEN -> KB_DEFAULT
-            Layout.HSU -> KB_HSU
-            Layout.Eten26 -> KB_ET26
-            else -> KB_DEFAULT
+        if (nativeCtx != 0L) {
+            val kbType = when (layout) {
+                Layout.DACHEN -> KB_DEFAULT
+                Layout.HSU -> KB_HSU
+                Layout.Eten26 -> KB_ET26
+                else -> KB_DEFAULT
+            }
+            chewing_set_kb_type(nativeCtx, kbType)
+            _ready = true
         }
-        chewing_set_kb_type(nativeCtx, kbType)
-        _ready = true
         _preedit = ""
         _candidates = emptyList()
         _candPage = 0
@@ -71,7 +75,6 @@ class AndroidChewingEngine : ChewingEngine {
         _preedit = getPreedit()
         _candidates = buildCandidates()
         _candPage = 0
-        // Return true if key was consumed by chewing
         return result != KEYSTROKE_IGNORE
     }
 
@@ -108,7 +111,7 @@ class AndroidChewingEngine : ChewingEngine {
         chewing_handle_backspace(nativeCtx)
         _preedit = getPreedit()
         _candidates = buildCandidates()
-        return _preedit.isNotEmpty() || chewing_buffer_check(nativeCtx)
+        return _preedit.isNotEmpty() || chewing_buffer_check(nativeCtx) != 0
     }
 
     override fun toggleFullHalf(): Boolean {
@@ -127,8 +130,8 @@ class AndroidChewingEngine : ChewingEngine {
 
     override fun loadUserDict(path: String): Boolean {
         if (nativeCtx == 0L) return false
-        // Note: libchewing 0.12.x uses userphrase_add, not load_userphrase
-        return true // TODO: implement proper loading from file
+        // TODO: implement proper loading from file
+        return true
     }
 
     override fun saveUserDict(path: String) {
@@ -175,8 +178,6 @@ class AndroidChewingEngine : ChewingEngine {
     }
 
     companion object {
-        private const val TAG = "AndroidChewingEngine"
-        
         // libchewing constants
         const val KB_DEFAULT = 0
         const val KB_HSU = 1
@@ -194,25 +195,33 @@ class AndroidChewingEngine : ChewingEngine {
     private external fun chewing_new(): Long
     private external fun chewing_delete(ctx: Long)
     private external fun chewing_reset(ctx: Long): Int
+    private external fun chewing_init(ctx: Long, dataPath: String, hashPath: String): Int
+    private external fun chewing_terminate()
     private external fun chewing_handle_default(ctx: Long, key: Int): Int
+    private external fun chewing_handle_backspace(ctx: Long): Int
+    private external fun chewing_handle_space(ctx: Long): Int
     private external fun chewing_buffer_string_static(ctx: Long): String
     private external fun chewing_buffer_check(ctx: Long): Int
+    private external fun chewing_buffer_len(ctx: Long): Int
+    private external fun chewing_cursor_current(ctx: Long): Int
+    private external fun chewing_cand_open(ctx: Long): Int
+    private external fun chewing_cand_close(ctx: Long): Int
     private external fun chewing_cand_total_choice(ctx: Long): Int
     private external fun chewing_cand_total_page(ctx: Long): Int
+    private external fun chewing_cand_current_page(ctx: Long): Int
     private external fun chewing_cand_choice_per_page(ctx: Long): Int
     private external fun chewing_cand_string_by_index_static(ctx: Long, index: Int): String?
     private external fun chewing_cand_choose_by_index(ctx: Long, index: Int): Int
-    private external fun chewing_cand_open(ctx: Long): Int
-    private external fun chewing_cand_close(ctx: Long)
     private external fun chewing_commit_preedit_buf(ctx: Long): Int
     private external fun chewing_commit_string_static(ctx: Long): String
-    private external fun chewing_handle_backspace(ctx: Long): Int
-    private external fun chewing_set_kb_type(ctx: Long, kbtype: Int): Int
-    private external fun chewing_get_kb_type(ctx: Long): Int
-    private external fun chewing_set_shape_mode(ctx: Long, mode: Int)
-    private external fun chewing_get_shape_mode(ctx: Long): Int
+    private external fun chewing_commit_check(ctx: Long): Int
     private external fun chewing_set_chi_eng_mode(ctx: Long, mode: Int)
     private external fun chewing_get_chi_eng_mode(ctx: Long): Int
+    private external fun chewing_set_shape_mode(ctx: Long, mode: Int)
+    private external fun chewing_get_shape_mode(ctx: Long): Int
+    private external fun chewing_set_kb_type(ctx: Long, kbtype: Int): Int
+    private external fun chewing_get_kb_type(ctx: Long): Int
+    private external fun chewing_kb_str2num(kbStr: String): Int
     private external fun chewing_userphrase_add(ctx: Long, phrase: String, bopomofo: String): Int
     private external fun chewing_userphrase_lookup(ctx: Long, phrase: String, bopomofo: String): Int
 }

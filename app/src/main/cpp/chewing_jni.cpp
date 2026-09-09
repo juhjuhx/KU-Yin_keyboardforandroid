@@ -1,6 +1,6 @@
 ﻿// Wave 4 T21b: JNI bridge for libchewing C API (0.12.x - Rust reimplementation)
 // Build: ./gradlew :app:externalNativeBuildDebug
-// Requires: Android NDK r25+, libchewing CAPI header in include/chewing/
+// Requires: Android NDK r27d, libchewing CAPI in include/chewing/
 //
 // libchewing source: https://github.com/chewing/libchewing (Rust rewrite)
 // CAPI: capi/include/chewing.h
@@ -35,6 +35,32 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1r
     return (jint) chewing_Reset(c);
 }
 
+/* ── Initialization ──────────────────────────────────────────────── */
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1init
+  (JNIEnv *env, jobject thiz, jlong ctx, jstring data_path, jstring hash_path) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    const char *dp = env->GetStringUTFChars(data_path, nullptr);
+    const char *hp = env->GetStringUTFChars(hash_path, nullptr);
+    if (!dp || !hp) {
+      if (dp) env->ReleaseStringUTFChars(data_path, dp);
+      if (hp) env->ReleaseStringUTFChars(hash_path, hp);
+      return -1;
+    }
+    jint result = chewing_Init(dp, hp);
+    env->ReleaseStringUTFChars(data_path, dp);
+    env->ReleaseStringUTFChars(hash_path, hp);
+    return result;
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1terminate
+  (JNIEnv *env, jobject thiz) {
+    chewing_Terminate();
+}
+
 /* ── Key event ───────────────────────────────────────────────────── */
 
 JNIEXPORT jint JNICALL
@@ -43,6 +69,22 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1h
     auto *c = reinterpret_cast<ChewingContext *>(ctx);
     if (!c) return 0;
     return (jint) chewing_handle_Default(c, key);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1handle_1backspace
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_handle_Backspace(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1handle_1space
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_handle_Space(c);
 }
 
 /* ── Preedit ─────────────────────────────────────────────────────── */
@@ -64,7 +106,39 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1b
     return (jint) chewing_buffer_Check(c);
 }
 
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1buffer_1len
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_buffer_Len(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cursor_1current
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_cursor_Current(c);
+}
+
 /* ── Candidates ──────────────────────────────────────────────────── */
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1open
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_cand_open(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1close
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return -1;
+    return (jint) chewing_cand_close(c);
+}
 
 JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1total_1choice
@@ -80,6 +154,14 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1c
     auto *c = reinterpret_cast<ChewingContext *>(ctx);
     if (!c) return 0;
     return (jint) chewing_cand_TotalPage(c);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1current_1page
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return 0;
+    return (jint) chewing_cand_CurrentPage(c);
 }
 
 JNIEXPORT jint JNICALL
@@ -107,22 +189,6 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1c
     return (jint) chewing_cand_choose_by_index(c, index);
 }
 
-JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1open
-  (JNIEnv *env, jobject thiz, jlong ctx) {
-    auto *c = reinterpret_cast<ChewingContext *>(ctx);
-    if (!c) return -1;
-    return (jint) chewing_cand_open(c);
-}
-
-JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1close
-  (JNIEnv *env, jobject thiz, jlong ctx) {
-    auto *c = reinterpret_cast<ChewingContext *>(ctx);
-    if (!c) return -1;
-    return (jint) chewing_cand_close(c);
-}
-
 /* ── Commit ──────────────────────────────────────────────────────── */
 
 JNIEXPORT jint JNICALL
@@ -142,17 +208,31 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1c
     return s ? env->NewStringUTF(s) : env->NewStringUTF("");
 }
 
-/* ── Backspace ───────────────────────────────────────────────────── */
-
 JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1backspace
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1commit_1check
   (JNIEnv *env, jobject thiz, jlong ctx) {
     auto *c = reinterpret_cast<ChewingContext *>(ctx);
-    if (!c) return -1;
-    return (jint) chewing_handle_Backspace(c);
+    if (!c) return 0;
+    return (jint) chewing_commit_Check(c);
 }
 
-/* ── Full/Half ───────────────────────────────────────────────────── */
+/* ── Mode ────────────────────────────────────────────────────────── */
+
+JNIEXPORT void JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1chi_1eng_1mode
+  (JNIEnv *env, jobject thiz, jlong ctx, jint mode) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return;
+    chewing_set_ChiEngMode(c, mode);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1chi_1eng_1mode
+  (JNIEnv *env, jobject thiz, jlong ctx) {
+    auto *c = reinterpret_cast<ChewingContext *>(ctx);
+    if (!c) return CHINESE_MODE;
+    return (jint) chewing_get_ChiEngMode(c);
+}
 
 JNIEXPORT void JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1shape_1mode
@@ -188,22 +268,14 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1g
     return (jint) chewing_get_KBType(c);
 }
 
-/* ── Chinese/English mode ────────────────────────────────────────── */
-
-JNIEXPORT void JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1chi_1eng_1mode
-  (JNIEnv *env, jobject thiz, jlong ctx, jint mode) {
-    auto *c = reinterpret_cast<ChewingContext *>(ctx);
-    if (!c) return;
-    chewing_set_ChiEngMode(c, mode);
-}
-
 JNIEXPORT jint JNICALL
-Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1chi_1eng_1mode
-  (JNIEnv *env, jobject thiz, jlong ctx) {
-    auto *c = reinterpret_cast<ChewingContext *>(ctx);
-    if (!c) return CHINESE_MODE;
-    return (jint) chewing_get_ChiEngMode(c);
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1kb_1str2num
+  (JNIEnv *env, jobject thiz, jstring kb_str) {
+    const char *s = env->GetStringUTFChars(kb_str, nullptr);
+    if (!s) return -1;
+    jint result = chewing_KBStr2Num(s);
+    env->ReleaseStringUTFChars(kb_str, s);
+    return result;
 }
 
 /* ── User dictionary ─────────────────────────────────────────────── */
