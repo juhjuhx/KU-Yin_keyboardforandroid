@@ -8,7 +8,6 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
-import com.example.androidkeyboard.engines.core.ChineseConverter.Profile
 import com.example.androidkeyboard.engines.core.IMEConfig
 
 /** Settings surface for features that are implemented in the current IME build. */
@@ -29,31 +28,10 @@ class SettingsActivity : AppCompatActivity() {
             val cfg = IMEConfig(ctx)
             val screen = preferenceManager.createPreferenceScreen(ctx)
 
-            screen.addPreference(SwitchPreferenceCompat(ctx).apply {
-                key = IMEConfig.KEY_CONVERSION_ENABLED
+            screen.addPreference(Preference(ctx).apply {
                 title = "簡繁轉換"
-                summary = "候選字上屏時自動轉換"
-                setDefaultValue(true)
-            })
-
-            screen.addPreference(ListPreference(ctx).apply {
-                key = IMEConfig.KEY_S2T_PROFILE
-                title = "簡轉繁配置"
-                entries = arrayOf("台灣正體 s2tw（預設）", "通用繁體 s2t")
-                entryValues = arrayOf(Profile.S2TW.name, Profile.S2T.name)
-                setDefaultValue(Profile.S2TW.name)
-                summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
-                dependency = IMEConfig.KEY_CONVERSION_ENABLED
-            })
-
-            screen.addPreference(ListPreference(ctx).apply {
-                key = IMEConfig.KEY_T2S_PROFILE
-                title = "繁轉簡配置"
-                entries = arrayOf("簡體 tw2s（預設）", "通用簡體 t2s")
-                entryValues = arrayOf(Profile.TW2S.name, Profile.T2S.name)
-                setDefaultValue(Profile.TW2S.name)
-                summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
-                dependency = IMEConfig.KEY_CONVERSION_ENABLED
+                summary = "尚未提供：目前版本未包含 OpenCC 後端，文字會原樣輸出"
+                isSelectable = false
             })
 
             screen.addPreference(SwitchPreferenceCompat(ctx).apply {
