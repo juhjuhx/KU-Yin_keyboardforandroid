@@ -27,4 +27,15 @@ class KeyboardModeContractTest {
         val q = KeyboardLayout.Ascii.allKeys.first { it.label == "q" }
         assertEquals('q'.code, q.code)
     }
+
+    @Test
+    fun asciiPasswordSurfaceIncludesDigitsAndShift() {
+        val inputLabels = KeyboardLayout.Ascii.allKeys
+            .filter { it.action == KeyAction.INPUT }
+            .map { it.label }
+            .toSet()
+
+        assertTrue(('0'..'9').all { it.toString() in inputLabels })
+        assertTrue(KeyboardLayout.Ascii.allKeys.any { it.action == KeyAction.SHIFT })
+    }
 }
