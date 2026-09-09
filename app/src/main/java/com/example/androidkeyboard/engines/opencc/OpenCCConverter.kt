@@ -24,20 +24,24 @@ class OpenCCConverter : ChineseConverter {
         _s2tProfile = s2tProfile
         _t2sProfile = t2sProfile
         _ready = true
-        // TODO: opencc_init(s2tProfile.name, t2sProfile.name)
-        // Default: s2tw/tw2s per OPENCC-WIRING.md §1.3
+        // OpenCC native library not yet available; stub returns pass-through.
+        // When native lib is ready, call opencc_init(s2tProfile.name, t2sProfile.name)
+        // and wire simplifyToTraditional/traditionalToSimplify accordingly.
+        // See docs/OPENCC-WIRING.md for profile details.
     }
 
     override fun simplifyToTraditional(text: String): String {
         if (!_ready || !_enabled) return text
+        // OpenCC native binding not yet linked; pass-through until available.
         // TODO: opencc_simple_to_traditional(text, _s2tProfile.name)
-        return text // stub: pass-through
+        return text
     }
 
     override fun traditionalToSimplify(text: String): String {
         if (!_ready || !_enabled) return text
+        // OpenCC native binding not yet linked; pass-through until available.
         // TODO: opencc_traditional_to_simplified(text, _t2sProfile.name)
-        return text // stub: pass-through
+        return text
     }
 
     override fun toggleDirection(): Pair<Profile, Profile> {
