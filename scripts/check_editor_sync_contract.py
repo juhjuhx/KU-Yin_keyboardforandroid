@@ -9,12 +9,17 @@ engine = Path("app/src/main/java/com/example/androidkeyboard/engines/android/And
 candidate = Path("app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt").read_text(encoding="utf-8")
 
 checks = {
-    "engine exposes immutable update state": "data class EngineUpdate" in engine or "EngineUpdate(" in engine,
+    "engine exposes immutable update state": "data class EngineUpdate" in engine,
     "service sets composing text": "setComposingText" in service,
     "service finishes composing text": "finishComposingText" in service,
     "service applies committed native text": "committedText" in service and "commitText" in service,
     "candidate callback carries index": "((Int, String) -> Unit)?" in candidate,
-    "service selects native candidate": "selectCandidate(index" in service,
+    "service selects native candidate before editor update": (
+        "selectCandidateUpdate(index)" in service and "applyEngineUpdate" in service
+    ),
+    "engine maps page-local candidate index": (
+        "globalIndex" in engine and "chewing_cand_choose_by_index(nativeCtx, globalIndex)" in engine
+    ),
     "service does not commit rendered candidate directly": "commitCandidate(candidate: String)" not in service,
 }
 
