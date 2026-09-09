@@ -8,9 +8,9 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
+import android.view.Surface
 import android.view.View
 import android.view.WindowManager
-import android.view.Surface
 
 class KeyboardView @JvmOverloads constructor(
     context: Context,
@@ -38,44 +38,66 @@ class KeyboardView @JvmOverloads constructor(
     var onKeyPress: ((KeyDef) -> Unit)? = null
 
     init {
-        val density = context.resources.displayMetrics.density
-        keyPaint.textSize = 28f * density
+        keyPaint.textSize = 28f * context.resources.displayMetrics.density
     }
 
-    /** T16: 依螢幕旋轉自動調整鍵高，並重建 KeySlot 緩存 */
     fun refreshLayout() {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
         val rotation = wm?.defaultDisplay?.rotation ?: 0
-        keyHeightDp = if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) 48f else 60f
+        keyHeightDp = if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
+            48f
+        } else {
+            60f
+        }
+        requestLayout()
         rebuildKeySlots()
     }
 
     fun setLayout(rows: List<KeyboardRow>) {
         this.rows = rows
+        requestLayout()
         rebuildKeySlots()
     }
 
-    fun setHaptic(enabled: Boolean) { hapticEnabled = enabled }
-    fun setProximityTolerance(pct: Float) { proximityTolerance = pct.coerceIn(0f, 0.5f) }
+    fun setHaptic(enabled: Boolean) {
+        hapticEnabled = enabled
+    }
+
+    fun setProximityTolerance(pct: Float) {
+        proximityTolerance = pct.coerceIn(0f, 0.5f)
+    }
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (w != oldw || h != oldh) rebuildKeySlots()
+    }
 
     private fun rebuildKeySlots() {
         keySlots.clear()
-        if (rows.isEmpty()) { invalidate(); return }
+        if (rows.isEmpty() || width <= 0) {
+            invalidate()
+            return
+        }
+
         val w = width.toFloat()
         val density = resources.displayMetrics.density
         val keyH = keyHeightDp * density
         val hGap = hGapDp * density
         val vGap = vGapDp * density
         var y = 0f
+
         for (row in rows) {
-            var x = 0f
             val rowTotalPct = row.keys.sumOf { it.widthPct.toDouble() }.toFloat()
+            if (rowTotalPct <= 0f) continue
+
+            var x = 0f
             val pctToPx = w / rowTotalPct
             for (key in row.keys) {
-                val kW = key.widthPct * pctToPx - hGap
-                val rect = RectF(x, y, x + kW, y + keyH - vGap)
-                keySlots.add(KeySlot(key, rect))
-                x += key.widthPct * pctToPx
+                val cellWidth = key.widthPct * pctToPx
+                val keyWidth = (cellWidth - hGap).coerceAtLeast(1f)
+                val keyHeight = (keyH - vGap).coerceAtLeast(1f)
+                keySlots.add(KeySlot(key, RectF(x, y, x + keyWidth, y + keyHeight)))
+                x += cellWidth
             }
             y += keyH
         }
@@ -85,28 +107,36 @@ class KeyboardView @JvmOverloads constructor(
     private fun vibrate() {
         if (!hapticEnabled) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP, HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING)
+            performHapticFeedback(
+                HapticFeedbackConstants.KEYBOARD_TAP,
+                HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING,
+            )
         } else {
+            @Suppress("DEPRECATION")
             (context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator)?.vibrate(10)
         }
     }
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
-        val width = MeasureSpec.getSize(widthSpec)
+        val measuredWidth = MeasureSpec.getSize(widthSpec)
         val keyHeight = keyHeightDp * resources.displayMetrics.density
-        val totalHeight = rows.sumOf { _ -> keyHeight.toInt() } + (rows.size * vGapDp * resources.displayMetrics.density).toInt()
-        setMeasuredDimension(width, maxOf(totalHeight, keyHeight.toInt()))
+        val totalHeight = rows.size * keyHeight.toInt()
+        setMeasuredDimension(measuredWidth, maxOf(totalHeight, keyHeight.toInt()))
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (keySlots.isEmpty()) return
-        for ((key, rect) in keySlots) {
-            val isPressed = keySlots.indexOfLast { it.rect == rect } == pressedKeyIndex
+        for ((index, slot) in keySlots.withIndex()) {
+            val isPressed = index == pressedKeyIndex
             keyBgPaint.color = if (isPressed) 0xFFBDBDBD.toInt() else 0xFFEEEEEE.toInt()
-            canvas.drawRect(rect, keyBgPaint)
+            canvas.drawRect(slot.rect, keyBgPaint)
             keyPaint.color = if (isPressed) 0xFF424242.toInt() else 0xFF212121.toInt()
-            canvas.drawText(key.label, rect.centerX(), rect.centerY() + keyPaint.textSize / 3f, keyPaint)
+            canvas.drawText(
+                slot.key.label,
+                slot.rect.centerX(),
+                slot.rect.centerY() + keyPaint.textSize / 3f,
+                keyPaint,
+            )
         }
     }
 
@@ -128,24 +158,27 @@ class KeyboardView @JvmOverloads constructor(
         return true
     }
 
-    /** T16: 先精確命中，未命中則探 proximityTolerance 範圍內最近鍵 */
     private fun getKeyPressedIndex(x: Float, y: Float): Int {
         for (i in keySlots.indices) {
             if (keySlots[i].rect.contains(x, y)) return i
         }
+
         val tol = proximityTolerance * keyHeightDp * resources.displayMetrics.density
         var nearestIdx = -1
         var nearestDist = Float.MAX_VALUE
         for (i in keySlots.indices) {
-            val d = pointToRectDist(x, y, keySlots[i].rect)
-            if (d < nearestDist && d <= tol) { nearestDist = d; nearestIdx = i }
+            val distance = pointToRectDist(x, y, keySlots[i].rect)
+            if (distance < nearestDist && distance <= tol) {
+                nearestDist = distance
+                nearestIdx = i
+            }
         }
         return nearestIdx
     }
 
-    private fun pointToRectDist(px: Float, py: Float, r: RectF): Float {
-        val dx = maxOf(0f, r.left - px, px - r.right)
-        val dy = maxOf(0f, r.top - py, py - r.bottom)
+    private fun pointToRectDist(px: Float, py: Float, rect: RectF): Float {
+        val dx = maxOf(0f, rect.left - px, px - rect.right)
+        val dy = maxOf(0f, rect.top - py, py - rect.bottom)
         return kotlin.math.sqrt(dx * dx + dy * dy)
     }
 }
