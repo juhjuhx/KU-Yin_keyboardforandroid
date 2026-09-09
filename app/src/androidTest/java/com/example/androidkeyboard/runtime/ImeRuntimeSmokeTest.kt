@@ -47,24 +47,22 @@ class ImeRuntimeSmokeTest {
     }
 
     @Test
-    fun imeRegistersEnablesBindsAndSurvivesEditorRecreate() {
+    fun imeBindsAndSurvivesEditorRecreate() {
         val listed = waitForRegisteredIme()
         assertTrue(
             "KU-Yin must be installed as an IME. Installed IMEs:\n$listed",
             listed.contains(APP_PACKAGE),
         )
 
-        val enableOutput = shell("ime enable $IME_COMPONENT")
         val enabled = waitForEnabledIme()
         assertTrue(
-            "KU-Yin must become enabled. ime enable output: '$enableOutput'. Enabled IMEs:\n$enabled",
+            "runtime fixture must pre-enable KU-Yin. Enabled IMEs:\n$enabled",
             enabled.contains(APP_PACKAGE),
         )
 
-        val setOutput = shell("ime set $IME_COMPONENT")
         val selected = waitForSelectedIme()
         assertTrue(
-            "KU-Yin must become the selected IME. ime set output: '$setOutput'. default_input_method: '$selected'",
+            "runtime fixture must pre-select KU-Yin. default_input_method: '$selected'",
             selected.contains(APP_PACKAGE) && selected.contains("ChewingInputMethodService"),
         )
 
@@ -87,8 +85,6 @@ class ImeRuntimeSmokeTest {
     private fun waitForRegisteredIme(): String {
         var lastOutput = ""
         repeat(POLL_ATTEMPTS) {
-            // `ime list` lists enabled IMEs by default. `-a` is required here because
-            // this check intentionally happens before the new IME is enabled.
             lastOutput = shell("ime list -s -a")
             if (lastOutput.contains(APP_PACKAGE)) return lastOutput
             SystemClock.sleep(POLL_INTERVAL_MS)
@@ -145,8 +141,6 @@ class ImeRuntimeSmokeTest {
 
     private companion object {
         const val APP_PACKAGE = "com.example.androidkeyboard"
-        const val IME_COMPONENT =
-            "com.example.androidkeyboard/com.example.androidkeyboard.input.ChewingInputMethodService"
         const val POLL_ATTEMPTS = 40
         const val POLL_INTERVAL_MS = 250L
     }
