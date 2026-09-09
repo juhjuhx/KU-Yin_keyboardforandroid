@@ -151,17 +151,19 @@ class ChewingInputMethodService : InputMethodService() {
 
     private fun applyEngineUpdate(
         update: EngineUpdate,
-        inputConnection: InputConnection = currentInputConnection ?: return,
+        inputConnection: InputConnection? = currentInputConnection,
     ) {
+        val editor = inputConnection ?: return
+
         if (update.committedText.isNotEmpty()) {
             val committed = convertForOutput(update.committedText)
-            inputConnection.commitText(committed, 1)
+            editor.commitText(committed, 1)
         }
 
         if (update.preedit.isNotEmpty()) {
-            inputConnection.setComposingText(update.preedit, 1)
+            editor.setComposingText(update.preedit, 1)
         } else {
-            inputConnection.finishComposingText()
+            editor.finishComposingText()
         }
 
         candidateView.setCandidates(update.candidates)
