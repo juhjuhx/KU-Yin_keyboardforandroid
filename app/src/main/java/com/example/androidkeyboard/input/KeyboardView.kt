@@ -35,7 +35,7 @@ class KeyboardView @JvmOverloads constructor(
     private var pressedKeyIndex = -1
     private var hapticEnabled = true
     private var proximityTolerance = 0.15f
-    var onKeyPress: ((String) -> Unit)? = null
+    var onKeyPress: ((KeyDef) -> Unit)? = null
 
     init {
         val density = context.resources.displayMetrics.density
@@ -117,7 +117,7 @@ class KeyboardView @JvmOverloads constructor(
                 invalidate()
                 if (pressedKeyIndex >= 0) {
                     vibrate()
-                    onKeyPress?.invoke(getKeysAt(pressedKeyIndex))
+                    onKeyPress?.invoke(keySlots[pressedKeyIndex].key)
                 }
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
@@ -147,9 +147,5 @@ class KeyboardView @JvmOverloads constructor(
         val dx = maxOf(0f, r.left - px, px - r.right)
         val dy = maxOf(0f, r.top - py, py - r.bottom)
         return kotlin.math.sqrt(dx * dx + dy * dy)
-    }
-
-    private fun getKeysAt(index: Int): String {
-        return if (index in keySlots.indices) keySlots[index].key.label else ""
     }
 }

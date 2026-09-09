@@ -1,25 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Base M3 Light Theme -->
-    <style name="Theme.AndroidKeyboard" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">"?attr/colorSurface"</item>
-        <item name="android:colorPrimary">"#6750A4"</item>
-        <item name="android:colorOnPrimary">"#FFFFFF"</item>
-        <item name="android:colorSurface">"#FDF8FF"</item>
-        <item name="android:colorOnSurface">"#1D1B20"</item>
+    <style name="Theme.AndroidKeyboard" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#6750A4</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSurface">#FDF8FF</item>
+        <item name="colorOnSurface">#1D1B20</item>
+        <item name="android:windowBackground">@color/keyboard_bg_light</item>
     </style>
 
     <!-- OLED Pure Black Theme (for AMOLED screens) -->
     <style name="Theme.AndroidKeyboard.OLED" parent="Theme.AndroidKeyboard">
-        <item name="android:colorSurface">"#000000"</item>
-        <item name="android:colorOnSurface">"#E6E1E5"</item>
+        <item name="colorSurface">#000000</item>
+        <item name="colorOnSurface">#E6E1E5</item>
+        <item name="android:windowBackground">@color/oled_black</item>
     </style>
 
     <!-- Dark M3 Theme -->
-    <style name="Theme.AndroidKeyboard.Dark" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">"#1A1A1A"</item>
-        <item name="android:colorPrimary">"#D0BCFF"</item>
-        <item name="android:colorSurface">"#1A1A1A"</item>
-        <item name="android:colorOnSurface">"#E6E1E5"</item>
+    <style name="Theme.AndroidKeyboard.Dark" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <item name="colorPrimary">#D0BCFF</item>
+        <item name="colorSurface">#1A1A1A</item>
+        <item name="colorOnSurface">#E6E1E5</item>
+        <item name="android:windowBackground">#1A1A1A</item>
     </style>
 </resources>

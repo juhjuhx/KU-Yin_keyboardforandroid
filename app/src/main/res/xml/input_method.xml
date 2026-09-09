@@ -3,6 +3,5 @@
     android:settingsActivity="com.example.androidkeyboard.SettingsActivity"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/ime_name">
-    <subtype android:emoji="false" android:implicitSubtype="true" android:label="@string/ime_name" android:locale="zh_TW" />
-    <subtype android:emoji="true" android:implicitSubtype="false" android:label="@string/ime_name" android:locale="zh_TW" />
+    <subtype android:label="@string/ime_name" android:imeSubtypeLocale="zh_TW" android:imeSubtypeMode="keyboard" />
 </input-method>

@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.engines.core
+package com.example.androidkeyboard.engines.core
 
 import com.example.androidkeyboard.input.KeyboardLayout
 

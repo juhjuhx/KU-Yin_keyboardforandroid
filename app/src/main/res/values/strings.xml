@@ -13,6 +13,6 @@
     <string name="pref_theme_oled">"OLED Black"</string>
     <!-- Layout options -->
     <string name="pref_layout_dachen">"DaChen (大千)"</string>
-    <string name="pref_layout_hsu">"Hsu (標準)"</string>
+    <string name="pref_layout_hsu">"Hsu (許氏)"</string>
     <string name="pref_layout_eten">"Eten26"</string>
 </resources>

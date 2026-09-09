@@ -1,19 +1,18 @@
-﻿package com.example.androidkeyboard.input
+package com.example.androidkeyboard.input
 
 import android.content.ClipboardManager
 import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.view.LayoutInflater
-import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
-import android.widget.LinearLayout
+import android.widget.FrameLayout
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
-import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateView
+import android.util.Log
 
 class ChewingInputMethodService : InputMethodService() {
 
@@ -27,6 +26,7 @@ class ChewingInputMethodService : InputMethodService() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.d(TAG, "onCreate: initializing")
         config = IMEConfig(this)
         chewing = AndroidChewingEngine().apply { init(config.layout) }
         converter = OpenCCConverter().apply {
@@ -35,94 +35,140 @@ class ChewingInputMethodService : InputMethodService() {
         }
     }
 
-    override fun onCreateInputView(): View = with(LayoutInflater.from(this)) {
-        keyboardView = KeyboardView(this@ChewingInputMethodService).apply {
+    override fun onCreateInputView(): View {
+        Log.d(TAG, "onCreateInputView: creating view")
+        
+        keyboardView = KeyboardView(this).apply {
             setLayout(KeyboardLayout.Dachen.rows)
-            setKeyHeight(60f)
             setHaptic(config.hapticEnabled)
             setProximityTolerance(config.proximityTolerance)
             onKeyPress = ::handleKey
         }
-        candidateView = CandidateView(this@ChewingInputMethodService).apply {
+        
+        candidateView = CandidateView(this).apply {
             setCandidates(emptyList())
             onItemClick = ::commitCandidate
-            onPrevPage = {
-                if (chewing.prevPage()) updateCandidates()
-            }
-            onNextPage = {
-                if (chewing.nextPage()) updateCandidates()
-            }
+            onPrevPage = { if (chewing.prevPage()) updateCandidates() }
+            onNextPage = { if (chewing.nextPage()) updateCandidates() }
         }
-        symbolPicker = SymbolPicker(this@ChewingInputMethodService).apply {
+        
+        symbolPicker = SymbolPicker(this).apply {
             visibility = View.GONE
             onSymbolSelect = ::commitSymbol
             onClose = { symbolPicker.visibility = View.GONE }
         }
+        
         clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-        val container = LinearLayout(this@ChewingInputMethodService).apply {
-            orientation = LinearLayout.VERTICAL
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+        // Candidate bar (44dp, TOP) + keyboard below it: explicit bounds so the
+        // candidate view can never overlay the keyboard and swallow touches.
+        val candH = (44f * resources.displayMetrics.density).toInt()
+        val container = FrameLayout(this).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
             )
-            addView(keyboardView)
-            addView(candidateView)
+            val candLp = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, candH
+            )
+            candLp.gravity = android.view.Gravity.TOP
+            addView(candidateView, candLp)
+            val kbLp = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+            )
+            kbLp.topMargin = candH
+            kbLp.gravity = android.view.Gravity.TOP
+            addView(keyboardView, kbLp)
             addView(symbolPicker)
         }
-        container
+        
+        Log.d(TAG, "onCreateInputView: returned view with keyboard=${keyboardView.height}dp")
+        return container
     }
 
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
-        keyboardView.refreshLayout()
+        Log.d(TAG, "onStartInput: attribute=$attribute, restarting=$restarting")
+        
         config.applyTo(chewing)
+
+        // Re-sync converter state so toggle/profile changes in Settings
+        // take effect without requiring a process kill.
+        converter.enabled = config.conversionEnabled
+        converter.init(config.s2tProfile, config.t2sProfile)
+        
+        // Refresh layout after view is created
+        if (::keyboardView.isInitialized) {
+            keyboardView.refreshLayout()
+        }
+    }
+
+    override fun onStartInputView(attribute: EditorInfo, restarting: Boolean) {
+        super.onStartInputView(attribute, restarting)
+        Log.d(TAG, "onStartInputView: keyboard view starting, restarting=$restarting")
     }
 
     override fun onFinishInput() {
         super.onFinishInput()
-        clearComposingText()
+        Log.d(TAG, "onFinishInput")
+        currentInputConnection?.commitText("", 0)
         chewing.reset()
     }
 
-    private fun handleKey(key: String) {
-        val ic = currentInputConnection ?: return
-        when (key) {
-            "back" -> {
+    override fun onFinishInputView(finishedTyping: Boolean) {
+        super.onFinishInputView(finishedTyping)
+        Log.d(TAG, "onFinishInputView: finishedTyping=$finishedTyping")
+    }
+
+    private fun handleKey(key: KeyDef) {
+        val ic = currentInputConnection ?: run {
+            Log.e(TAG, "handleKey: no input connection!")
+            return
+        }
+        Log.d(TAG, "handleKey: '${key.label}' code=${key.code}")
+        
+        when {
+            key.label == "back" -> {
                 if (chewing.backspace()) {
                     updateCandidates()
                 } else {
                     ic.deleteSurroundingText(1, 0)
                 }
             }
-            " " -> {
-                if (chewing.getPreedit().isNotEmpty()) {
-                    val committed = converter.simplifyToTraditional(chewing.getPreedit())
-                    ic.commitText(committed, 1)
-                    chewing.commit()
-                } else {
+            key.label == " " -> {
+                // Space sends libchewing keycode 65 (KEY_SPACE)
+                val consumed = chewing.handleKeyEvent(65)
+                if (!consumed) {
                     ic.commitText(" ", 1)
                 }
                 updateCandidates()
             }
-            "cand" -> {
-                // Show candidates if there are any
-                if (chewing.getCandidates().isNotEmpty()) {
-                    updateCandidates()
-                } else {
-                    ic.commitText(" ", 1)
-                }
+            key.label == "▼" -> requestHideSelf(0)
+            key.isSpecial -> {
+                // Special keys without a bopomofo code are handled above; fall through
+                ic.commitText(key.label, 1)
             }
             else -> {
-                val keyCode = KeyMapping.getKeyEventForChar(key)
-                if (keyCode >= 0) {
-                    val consumed = chewing.handleKeyEvent(keyCode)
-                    if (!consumed) {
-                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-                        ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
-                    }
+                // Use the physical key's ASCII code directly (authoritative).
+                // KeyDef.code is set for every bopomofo/tone key in KeyboardLayout.
+                val libchewingKey = key.code
+                Log.d(TAG, "key '${key.label}' -> libchewing keycode $libchewingKey")
+                
+                if (libchewingKey > 0) {
+                    val consumed = chewing.handleKeyEvent(libchewingKey)
+                    Log.d(TAG, "handleKeyEvent($libchewingKey) returned: $consumed")
+                    // Refresh candidate view after each typed key so candidates stay current.
+                    updateCandidates()
                 } else {
-                    ic.commitText(key, 1)
+                    // Fallback for label-only paths: resolve via hint map
+                    val hinted = KeyMapping.getLibchewingKeyCode(key.label)
+                    if (hinted > 0) {
+                        chewing.handleKeyEvent(hinted)
+                        updateCandidates()
+                    } else {
+                        ic.commitText(key.label, 1)
+                    }
                 }
             }
         }
@@ -130,6 +176,7 @@ class ChewingInputMethodService : InputMethodService() {
 
     private fun updateCandidates() {
         val candidates = chewing.getCandidates()
+        Log.d(TAG, "updateCandidates: ${candidates.size} candidates")
         candidateView.setCandidates(candidates)
     }
 
@@ -146,5 +193,9 @@ class ChewingInputMethodService : InputMethodService() {
         currentInputConnection?.commitText(converted, 1)
         chewing.commit()
         updateCandidates()
+    }
+
+    companion object {
+        private const val TAG = "ChewingIMEService"
     }
 }

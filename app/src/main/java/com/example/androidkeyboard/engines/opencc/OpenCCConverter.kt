@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.engines.opencc
+package com.example.androidkeyboard.engines.opencc
 
 import com.example.androidkeyboard.engines.core.ChineseConverter
 import com.example.androidkeyboard.engines.core.ChineseConverter.Profile

@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.engines.core
+package com.example.androidkeyboard.engines.core
 
 import android.content.Context
 import androidx.preference.PreferenceManager

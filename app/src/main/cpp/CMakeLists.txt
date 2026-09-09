@@ -54,7 +54,7 @@ if(LIBCHEWING_FOUND)
         message(WARNING "To build: cd ${LIBCHEWING_SRC_DIR}/capi && cargo build --release --target-dir ../../../build/cargo")
     endif()
     
-    target_compile_options(chewing-jni PRIVATE -Wall -Wextra -fPIC -std=c99)
+    target_compile_options(chewing-jni PRIVATE -Wall -Wextra -fPIC -std=c++11)
 else()
     message(WARNING "libchewing not found!")
 endif()

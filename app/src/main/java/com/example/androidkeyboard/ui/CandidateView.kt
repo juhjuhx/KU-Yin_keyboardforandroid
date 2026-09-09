@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.ui
+package com.example.androidkeyboard.ui
 
 import android.content.Context
 import android.graphics.Canvas
@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import kotlin.math.abs
 
 class CandidateView @JvmOverloads constructor(
     context: Context,
@@ -23,23 +24,8 @@ class CandidateView @JvmOverloads constructor(
     var onPrevPage: (() -> Unit)? = null
     var onNextPage: (() -> Unit)? = null
 
-    /** T17: 左右滑動切換候選頁 */
-    private val gestureDetector = GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent, vx: Float, vy: Float): Boolean {
-            if (e1 == null) return false
-            val dx = e2.x - e1.x
-            if (kotlin.math.abs(dx) > height && kotlin.math.abs(dx) > kotlin.math.abs(e2.y - e1.y)) {
-                if (dx > 0) {
-                    onPrevPage?.invoke()
-                    return true
-                } else if (dx < 0) {
-                    onNextPage?.invoke()
-                    return true
-                }
-            }
-            return false
-        }
-    })
+    private var touchDownX = 0f
+    private var touchDownY = 0f
 
     fun setCandidates(items: List<String>) {
         this.candidates = items
@@ -72,6 +58,8 @@ class CandidateView @JvmOverloads constructor(
     override fun onTouchEvent(event: MotionEvent): Boolean {
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                touchDownX = event.x
+                touchDownY = event.y
                 val slotW = width.toFloat() / pageSize
                 val clicked = (event.x / slotW).toInt().coerceIn(0, pageSize - 1)
                 val pageStart = currentPage * pageSize
@@ -79,8 +67,18 @@ class CandidateView @JvmOverloads constructor(
                     onItemClick?.invoke(candidates[pageStart + clicked])
                 }
             }
+            MotionEvent.ACTION_UP -> {
+                val dx = event.x - touchDownX
+                val dy = abs(event.y - touchDownY)
+                if (abs(dx) > height && abs(dx) > dy) {
+                    if (dx > 0) {
+                        onPrevPage?.invoke()
+                    } else {
+                        onNextPage?.invoke()
+                    }
+                }
+            }
         }
-        gestureDetector.onTouchEvent(event)
         return true
     }
 }

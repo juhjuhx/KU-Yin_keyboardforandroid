@@ -7,7 +7,7 @@
 
 #include <jni.h>
 #include <string>
-#include <chewing/chewing.h>
+#include <chewing.h>
 
 extern "C" {
 

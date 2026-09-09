@@ -52,8 +52,19 @@ $abis = @(
 
 foreach ($abi in $abis) {
     Write-Host "  构建 ${abi.name}..." -NoNewline
-    $env:CARGO_TARGET_${abi.target.Replace('-', '_').ToUpper()}_LINKER = "$NDK_DIR\toolchains\llvm\prebuilt\windows-x86_64\bin\$(if ($abi.name -eq 'arm64-v8a') {'aarch64-linux-android31-clang'} elseif ($abi.name -eq 'armeabi-v7a') {'armv7a-linux-androideabi31-clang'} elseif ($abi.name -eq 'x86_64') {'x86_64-linux-android31-clang'} else {'i686-linux-android31-clang'})"
-    
+    $envVarName = "CARGO_TARGET_" + $abi.target.Replace('-', '_').ToUpper() + "_LINKER"
+    $linker = "$NDK_DIR\toolchains\llvm\prebuilt\windows-x86_64\bin\"
+    if ($abi.name -eq 'arm64-v8a') {
+        $linker += "aarch64-linux-android31-clang"
+    } elseif ($abi.name -eq 'armeabi-v7a') {
+        $linker += "armv7a-linux-androideabi31-clang"
+    } elseif ($abi.name -eq 'x86_64') {
+        $linker += "x86_64-linux-android31-clang"
+    } else {
+        $linker += "i686-linux-android31-clang"
+    }
+    Set-Item -Path "Env:$envVarName" -Value $linker
+
     cargo build --release --target $abi.target --target-dir "$PROJECT_DIR\build\cargo" 2>&1 | Out-Null
     
     $libPath = "$PROJECT_DIR\build\cargo\$($abi.target)\release\libchewing_capi.a"

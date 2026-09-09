@@ -6,6 +6,7 @@ plugins {
 android {
     namespace = "com.example.androidkeyboard"
     compileSdk = 33
+    ndkVersion = "27.3.13750724"
 
     defaultConfig {
         applicationId = "com.example.androidkeyboard"

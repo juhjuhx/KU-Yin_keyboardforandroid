@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.engines.core
+package com.example.androidkeyboard.engines.core
 
 /**
  * Wave 4 T21: Chinese conversion interface.

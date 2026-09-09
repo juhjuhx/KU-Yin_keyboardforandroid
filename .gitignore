@@ -1,47 +1,55 @@
-# Android and Gradle
+# Build outputs
 build/
 app/build/
-plugin/*/build/
-.gradle/
-captures/
-.externalNativeBuild/
-.cxx/
-*.ap_
+app/.cxx/
 *.apk
-*.aab
-*.dex
-*.class
+*.apkm
+*.aar
 
-# Local Configuration and Secrets
-local.properties
-*.keystore
-keystore.properties
-!local.properties.template
+# Gradle
+.gradle/
+gradle/wrapper/gradle-wrapper.jar
 
-# IDE
+# Android Studio
 .idea/
 *.iml
 *.iws
 *.ipr
-.android/
-.vscode/
-*.swp
-*~
+.androidstudio/
 
-# Rust
-target/
-**/*.rs.bk
-Cargo.lock
+# Native libraries (pre-built binaries)
+app/src/main/jniLibs/
+!app/src/main/jniLibs/.gitkeep
 
-# OS
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-.BIN/
-*.log
+# Local config (contains SDK paths)
+local.properties
+!local.properties.example
+
+# JDK / NDK downloads
+jdk-*/
+android-ndk-*/
+android-licenses/
+
+# Python scripts
+__pycache__/
+*.pyc
+*.pyo
+manual_install_sdk.py
+
+# Installation scripts (Windows batch files for SDK setup)
+install-sdk*.bat
+install-sdk*.ps1
+setup-sdk*.bat
+setup-sdk*.ps1
+final-install-sdk.bat
+run-sdk-setup.bat
+build-libchewing-build-apk.ps1
+
+# libchewing source (884MB, too large for git)
+app/src/main/cpp/libchewing-src/
+!app/src/main/cpp/libchewing-src/.gitkeep
+
+# Temporary
 *.tmp
+*.temp
+*.log

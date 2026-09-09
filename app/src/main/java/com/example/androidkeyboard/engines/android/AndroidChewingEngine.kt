@@ -1,4 +1,4 @@
-﻿package com.example.androidkeyboard.engines.android
+package com.example.androidkeyboard.engines.android
 
 import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
@@ -75,7 +75,7 @@ class AndroidChewingEngine : ChewingEngine {
         _preedit = getPreedit()
         _candidates = buildCandidates()
         _candPage = 0
-        return result != KEYSTROKE_IGNORE
+        return !isIgnored(result)
     }
 
     override fun getPreedit(): String {
@@ -140,6 +140,8 @@ class AndroidChewingEngine : ChewingEngine {
 
     private fun buildCandidates(): List<String> {
         if (nativeCtx == 0L) return emptyList()
+        // Ensure the candidate path is open before reading choices.
+        chewing_cand_open(nativeCtx)
         val total = chewing_cand_total_choice(nativeCtx)
         if (total <= 0) return emptyList()
         val pageSize = chewing_cand_choice_per_page(nativeCtx)
@@ -170,7 +172,7 @@ class AndroidChewingEngine : ChewingEngine {
         return false
     }
 
-    override fun finalize() {
+    private fun releaseNative() {
         if (nativeCtx != 0L) {
             chewing_delete(nativeCtx)
             nativeCtx = 0L
@@ -189,6 +191,11 @@ class AndroidChewingEngine : ChewingEngine {
         const val KEYSTROKE_IGNORE = 1
         const val KEYSTROKE_COMMIT = 2
         const val KEYSTROKE_BELL = 4
+
+        // Bitmask predicates mirroring native chewing_keystroke_CheckIgnore /
+        // chewing_commit_Check. ignore iff (rtn & 1) != 0; committed iff (rtn & 2) != 0.
+        fun isIgnored(rtn: Int): Boolean = (rtn and KEYSTROKE_IGNORE) != 0
+        fun isCommitted(rtn: Int): Boolean = (rtn and KEYSTROKE_COMMIT) != 0
     }
 
     // JNI native declarations - matching chewing_jni.cpp
