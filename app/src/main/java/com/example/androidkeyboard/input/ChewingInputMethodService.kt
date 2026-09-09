@@ -5,12 +5,14 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
 import com.example.androidkeyboard.engines.android.EngineUpdate
 import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateView
+import com.example.androidkeyboard.ui.ImePalette
 
 class ChewingInputMethodService : InputMethodService() {
 
@@ -68,23 +70,46 @@ class ChewingInputMethodService : InputMethodService() {
         }
 
         val candidateHeight = (44f * resources.displayMetrics.density).toInt()
+        val palette = ImePalette.from(this)
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.surface)
+            addView(
+                candidateView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    candidateHeight,
+                ),
+            )
+            addView(
+                keyboardView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+        }
+
         return FrameLayout(this).apply {
+            setBackgroundColor(palette.surface)
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
                 FrameLayout.LayoutParams.WRAP_CONTENT,
             )
-            addView(candidateView, FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                candidateHeight,
-            ).apply { gravity = android.view.Gravity.TOP })
-            addView(keyboardView, FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT,
-            ).apply {
-                topMargin = candidateHeight
-                gravity = android.view.Gravity.TOP
-            })
-            addView(symbolPicker)
+            addView(
+                content,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+            addView(
+                symbolPicker,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    candidateHeight,
+                ),
+            )
         }
     }
 
@@ -94,7 +119,29 @@ class ChewingInputMethodService : InputMethodService() {
         converter.enabled = config.conversionEnabled
         converter.init(config.s2tProfile, config.t2sProfile)
         if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
-        if (::keyboardView.isInitialized) keyboardView.refreshLayout()
+    }
+
+    override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
+        if (::keyboardView.isInitialized) {
+            keyboardView.setHaptic(config.hapticEnabled)
+            keyboardView.setProximityTolerance(config.proximityTolerance)
+            keyboardView.refreshLayout()
+        }
+        if (::candidateView.isInitialized) {
+            candidateView.refreshAppearance()
+            candidateView.setCandidates(emptyList())
+        }
+        if (::symbolPicker.isInitialized) {
+            symbolPicker.refreshAppearance()
+            symbolPicker.visibility = View.GONE
+        }
+    }
+
+    override fun onFinishInputView(finishingInput: Boolean) {
+        if (::symbolPicker.isInitialized) symbolPicker.visibility = View.GONE
+        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+        super.onFinishInputView(finishingInput)
     }
 
     override fun onFinishInput() {
@@ -166,13 +213,10 @@ class ChewingInputMethodService : InputMethodService() {
             editor.finishComposingText()
         }
 
-        candidateView.setCandidates(update.candidates)
+        if (::candidateView.isInitialized) candidateView.setCandidates(update.candidates)
     }
 
     private fun commitCandidate(index: Int, candidate: String) {
-        // The rendered text is intentionally not committed directly. The native
-        // decoder must receive the selected index so its composition state stays
-        // authoritative. `candidate` remains useful for accessibility/debug UI.
         @Suppress("UNUSED_VARIABLE")
         val renderedCandidate = candidate
         applyEngineUpdate(chewing.selectCandidateUpdate(index))
