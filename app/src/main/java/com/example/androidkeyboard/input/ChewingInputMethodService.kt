@@ -38,7 +38,7 @@ class ChewingInputMethodService : InputMethodService() {
 
         converter = OpenCCConverter().apply {
             init(config.s2tProfile, config.t2sProfile)
-            enabled = config.conversionEnabled
+            enabled = isReady && config.conversionEnabled
         }
     }
 
@@ -119,8 +119,8 @@ class ChewingInputMethodService : InputMethodService() {
             chewing.init(desiredLayout)
             activeLayout = desiredLayout
         }
-        converter.enabled = config.conversionEnabled
         converter.init(config.s2tProfile, config.t2sProfile)
+        converter.enabled = converter.isReady && config.conversionEnabled
         if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
     }
 
@@ -231,7 +231,7 @@ class ChewingInputMethodService : InputMethodService() {
         }
     }
 
-    private fun convertForOutput(text: String): String = if (converter.enabled) {
+    private fun convertForOutput(text: String): String = if (converter.isReady && converter.enabled) {
         converter.simplifyToTraditional(text)
     } else {
         text
