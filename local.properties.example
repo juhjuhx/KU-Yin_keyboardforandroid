@@ -1,0 +1,8 @@
+# Android SDK path
+sdk.dir=/path/to/Android/Sdk
+
+# Android NDK path (optional - can use ndkVersion in build.gradle instead)
+# ndk.dir=/path/to/android-ndk-r27d
+
+# CMake path (optional - can use sdkmanager cmake instead)
+# cmake.dir=/path/to/cmake/3.22.1/bin

@@ -33,14 +33,14 @@ class OpenCCConverter : ChineseConverter {
     override fun simplifyToTraditional(text: String): String {
         if (!_ready || !_enabled) return text
         // OpenCC native binding not yet linked; pass-through until available.
-        // TODO: opencc_simple_to_traditional(text, _s2tProfile.name)
+        // When native library is ready, implement: opencc_simple_to_traditional(text, _s2tProfile.name)
         return text
     }
 
     override fun traditionalToSimplify(text: String): String {
         if (!_ready || !_enabled) return text
         // OpenCC native binding not yet linked; pass-through until available.
-        // TODO: opencc_traditional_to_simplified(text, _t2sProfile.name)
+        // When native library is ready, implement: opencc_traditional_to_simplified(text, _t2sProfile.name)
         return text
     }
 
