@@ -20,6 +20,9 @@ jobs:
       - name: Validate P0 keyboard action contract
         run: python3 scripts/check_p0_keyboard_contract.py
 
+      - name: Validate editor synchronization contract
+        run: python3 scripts/check_editor_sync_contract.py
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
