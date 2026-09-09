@@ -110,7 +110,7 @@ jobs:
           disable-animations: true
           disable-spellchecker: true
           script: |
-            set -euo pipefail
+            set -eu
             IME_COMPONENT="com.example.androidkeyboard/com.example.androidkeyboard.input.ChewingInputMethodService"
             APP_PACKAGE="com.example.androidkeyboard"
 
