@@ -54,12 +54,17 @@ class ImeRuntimeSmokeTest {
             listed.contains(APP_PACKAGE),
         )
 
-        shell("ime enable $IME_COMPONENT")
-        shell("ime set $IME_COMPONENT")
-
-        val selected = shell("settings get secure default_input_method").trim()
+        val enableOutput = shell("ime enable $IME_COMPONENT")
+        val enabled = waitForEnabledIme()
         assertTrue(
-            "KU-Yin must become the selected IME, got: $selected",
+            "KU-Yin must become enabled. ime enable output: '$enableOutput'. Enabled IMEs:\n$enabled",
+            enabled.contains(APP_PACKAGE),
+        )
+
+        val setOutput = shell("ime set $IME_COMPONENT")
+        val selected = waitForSelectedIme()
+        assertTrue(
+            "KU-Yin must become the selected IME. ime set output: '$setOutput'. default_input_method: '$selected'",
             selected.contains(APP_PACKAGE) && selected.contains("ChewingInputMethodService"),
         )
 
@@ -81,18 +86,40 @@ class ImeRuntimeSmokeTest {
 
     private fun waitForRegisteredIme(): String {
         var lastOutput = ""
-        repeat(40) {
+        repeat(POLL_ATTEMPTS) {
             // `ime list` lists enabled IMEs by default. `-a` is required here because
             // this check intentionally happens before the new IME is enabled.
             lastOutput = shell("ime list -s -a")
             if (lastOutput.contains(APP_PACKAGE)) return lastOutput
-            SystemClock.sleep(250)
+            SystemClock.sleep(POLL_INTERVAL_MS)
+        }
+        return lastOutput
+    }
+
+    private fun waitForEnabledIme(): String {
+        var lastOutput = ""
+        repeat(POLL_ATTEMPTS) {
+            lastOutput = shell("ime list -s")
+            if (lastOutput.contains(APP_PACKAGE)) return lastOutput
+            SystemClock.sleep(POLL_INTERVAL_MS)
+        }
+        return lastOutput
+    }
+
+    private fun waitForSelectedIme(): String {
+        var lastOutput = ""
+        repeat(POLL_ATTEMPTS) {
+            lastOutput = shell("settings get secure default_input_method").trim()
+            if (lastOutput.contains(APP_PACKAGE) && lastOutput.contains("ChewingInputMethodService")) {
+                return lastOutput
+            }
+            SystemClock.sleep(POLL_INTERVAL_MS)
         }
         return lastOutput
     }
 
     private fun waitForImeVisible(scenario: ActivityScenario<ImeHostActivity>): Boolean {
-        repeat(40) {
+        repeat(POLL_ATTEMPTS) {
             var visible = false
             scenario.onActivity { activity ->
                 if (android.os.Build.VERSION.SDK_INT >= 30) {
@@ -104,7 +131,7 @@ class ImeRuntimeSmokeTest {
                 }
             }
             if (visible) return true
-            SystemClock.sleep(250)
+            SystemClock.sleep(POLL_INTERVAL_MS)
         }
         return false
     }
@@ -120,5 +147,7 @@ class ImeRuntimeSmokeTest {
         const val APP_PACKAGE = "com.example.androidkeyboard"
         const val IME_COMPONENT =
             "com.example.androidkeyboard/com.example.androidkeyboard.input.ChewingInputMethodService"
+        const val POLL_ATTEMPTS = 40
+        const val POLL_INTERVAL_MS = 250L
     }
 }
