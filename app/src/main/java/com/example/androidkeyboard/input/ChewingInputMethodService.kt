@@ -7,6 +7,7 @@ import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
 import com.example.androidkeyboard.engines.android.EngineUpdate
+import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateView
@@ -23,7 +24,13 @@ class ChewingInputMethodService : InputMethodService() {
     override fun onCreate() {
         super.onCreate()
         config = IMEConfig(this)
-        chewing = AndroidChewingEngine().apply { init(config.layout) }
+
+        val nativePaths = LibChewingDataInstaller.ensureInstalled(this)
+        chewing = AndroidChewingEngine(
+            systemDataPath = nativePaths.systemDir.absolutePath,
+            userDataPath = nativePaths.userFile.absolutePath,
+        ).apply { init(config.layout) }
+
         converter = OpenCCConverter().apply {
             init(config.s2tProfile, config.t2sProfile)
             enabled = config.conversionEnabled
