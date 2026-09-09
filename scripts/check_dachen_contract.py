@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Fast source-level contract for the Standard/Dachen key table.
 
-This intentionally runs before Android/Gradle setup in CI so a broken physical
-key map fails in seconds. JVM tests remain the second, semantic layer.
+This runs before Android/Gradle setup so physical-key regressions fail in
+seconds. It intentionally accepts both numeric ASCII literals and Kotlin
+character expressions such as `'x'.code`.
 """
 
 from pathlib import Path
@@ -12,11 +13,15 @@ import sys
 SOURCE = Path("app/src/main/java/com/example/androidkeyboard/input/KeyboardLayout.kt")
 text = SOURCE.read_text(encoding="utf-8")
 
-# Parse KeyDef("label", ... code = N) declarations without depending on Kotlin tooling.
 entries: dict[int, str] = {}
-for match in re.finditer(r'KeyDef\("([^"]*)"[^\n]*?code\s*=\s*(\d+)', text):
+pattern = re.compile(
+    r'KeyDef\("([^"]*)"[^\n]*?code\s*=\s*(?:(\d+)|\'(.?)\'\.code)'
+)
+for match in pattern.finditer(text):
     label = match.group(1)
-    code = int(match.group(2))
+    numeric = match.group(2)
+    character = match.group(3)
+    code = int(numeric) if numeric is not None else ord(character)
     entries[code] = label
 
 expected = {
