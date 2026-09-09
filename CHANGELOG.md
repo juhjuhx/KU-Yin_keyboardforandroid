@@ -1,36 +1,49 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+All notable project changes should be recorded here. This file describes implemented repository behavior only; planned features belong in `docs/NEXT_STEPS.md` or roadmap/design documents.
 
 ## [Unreleased]
 
 ### Added
-- Default DaChen (大千) 4x10 bopomofo layout support.
-- Hsu (Xushi) and Eten26 layout options.
-- OpenCC one-tap simplified-traditional conversion (default s2tw / tw2s, fallback s2t / t2s).
-- User dictionary memory with import/export (.zip format, compatible with Linux).
-- Frontend uses Kotlin View/Canvas single-container self-drawing, achieving <8ms onDraw performance budget.
+
+- Dachen (大千) Bopomofo keyboard surface aligned with the pinned libchewing standard layout.
+- ASCII fallback keyboard surface with digits, Shift, Space, Backspace and Enter.
+- `EditorPolicy` for input-type / IME-option decisions.
+- `ImeSessionController` for keyboard/session policy.
+- editor-action handling and selection reconciliation.
+- app-private libchewing dictionary installation.
+- deterministic GitHub Actions build with Debug and Release APK artifacts.
+- regression tests for Dachen mapping, keyboard mode, OpenCC capability truthfulness, editor policy and session behavior.
 
 ### Changed
-- Upgraded decoding engine to libchewing 0.13.x (Rust refactored version).
-- Core architecture refactored to three-layer design (APP / CORE / Upstream), achieving complete Core/UI decoupling.
+
+- native dependency handling now uses pinned upstream artifacts and fails the build when required ABI inputs are missing.
+- composition/preedit and committed text are synchronized through `InputConnection`.
+- candidate selection is routed through the native candidate index.
+- OpenCC pass-through code no longer presents simplified/traditional conversion as an available production capability.
+- Android backup is disabled in the recovery branch.
+- README/build/security documentation now distinguishes static build success from Android runtime readiness.
 
 ### Fixed
-- Mitigated libchewing #836 chewing_Reset semantic change state reset issue.
-- Fixed candidate characters leaking to screen in password fields (R005).
-- Fixed crash risk caused by OTP multi-field keyboard rebuild (R004).
 
-### Security
-- Adhered to zero INTERNET permission design, ensuring dictionary and input behavior never leave the process.
-- Used submodule SHA pinning to prevent supply-chain attacks.
+- corrected incorrect Dachen key mappings and missing punctuation key mapping.
+- corrected Space key ASCII handling.
+- corrected Backspace/special-key dispatch semantics.
+- rebuilt key hitboxes after view-size changes.
+- removed a dangling `roundIcon` manifest resource that broke AAPT2 processing.
+- prevented native-load failure from being described as a working fallback state.
+- fixed an ASCII-layout enum initialization issue exposed by JVM compilation.
 
-## [0.1.0] -- 2026-09-08 (Wave 0 Scaffold)
+### Security / Privacy
 
-### Added
-- Initial fork-mirror scaffold (based on fcitx5-android).
-- Complete project documentation system (README, ARCHITECTURE, AUDIT, ROADMAP, 14 core documents).
-- Established LGPL-2.1 license and complete NOTICE per-item attribution.
-- Completed Wave 0 architecture self-check and DECODER-PIN.md spec freeze.
+- no Android `INTERNET` permission is requested.
+- sensitive/no-learning editor policy can disable libchewing personalized learning.
+- libchewing user data remains in app-private storage.
+
+### Verification
+
+The current recovery branch has passed repository-side contracts, JVM tests, native bootstrap, `assembleDebug`, `assembleRelease`, and artifact upload. Android runtime/device verification is still pending and is **not** claimed as completed here.
+
+## [0.1.0] - 2026-09-08
+
+Initial experimental/scaffold work. Historical documentation from this period may describe architecture or features that were later replaced during the recovery work.
