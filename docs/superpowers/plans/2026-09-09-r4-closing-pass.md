@@ -3,14 +3,14 @@
 > Branch: `fix/p0-p4-ime-recovery`
 > Approved scope: 2026-09-09
 > Baseline head before this pass: `fc26378d074bb9ffe04e0c77d95b9a12109e8516`
-> Static-verification head: `daab482d686a2051f070c676b2b88ff66c479a54`
-> Green CI evidence: Build run #62 (`34356281564`)
+> Latest implementation/static-verification head before the documentation-only cleanup: `7fab4442ba3f544acd12e8c12be6a033249af552`
+> Green CI evidence: Build run #63 (`34359833239`)
 
 ## Purpose
 
 Close the remaining R4 usability gap without expanding into the later accessibility, toolchain-migration, emoji, clipboard, gesture-typing, or theme-engine tracks.
 
-This document is the authoritative implementation checklist for the R4 closing pass. Earlier P0-P4 and Recovery v2 plans remain useful history, but where their R4 status or sequencing conflicts with this file, this file wins.
+This document is the authoritative R4 closeout checklist. Current factual status is summarized in `docs/PROJECT_STATUS.md`; immediate follow-up work is in `docs/NEXT_STEPS.md`. Earlier P0-P4 and Recovery v2 plans remain useful history, but where their status or sequencing conflicts with these files, the newer files win.
 
 ## Fresh-review findings
 
@@ -19,7 +19,7 @@ This document is the authoritative implementation checklist for the R4 closing p
 3. The password-surface contract required digits and `KeyAction.SHIFT`; the ASCII surface now contains both and supports shifted uppercase projection.
 4. `EditorPolicy` and `ImeSessionController` were previously tested but not connected to `ChewingInputMethodService`; session policy is now wired into runtime code.
 5. `onUpdateSelection()` was previously missing; editor/native composition reconciliation is now wired.
-6. PR #1 remains draft. Repository-side static verification is green, while device/runtime readiness is still unverified.
+6. Repository-side static verification is green. Android runtime/device readiness is still unverified.
 
 ## R4 scope
 
@@ -27,7 +27,10 @@ This document is the authoritative implementation checklist for the R4 closing p
 
 - [x] Re-audit current branch head and latest CI instead of trusting prior status.
 - [x] Record current root causes in this authoritative closeout file.
-- [ ] Reconcile PR body and recovery docs after static/dynamic verification.
+- [x] Reconcile repository documentation and PR status with the static-GREEN state.
+- [ ] Perform final documentation/PR reconciliation after dynamic Android verification.
+
+R4-A is therefore **complete for static recovery and intentionally remains open for final runtime closeout**.
 
 ### R4-B — Repair the test harness
 
@@ -54,7 +57,7 @@ This document is the authoritative implementation checklist for the R4 closing p
 
 ### R4-E — Static verification
 
-Required evidence from the PR head:
+Verified on Build run #63 at `7fab4442ba3f544acd12e8c12be6a033249af552`:
 
 - [x] all fast contracts
 - [x] JVM unit tests
@@ -63,10 +66,12 @@ Required evidence from the PR head:
 - [x] Release APK
 - [x] artifact upload
 
-Evidence from Build run #62 at `daab482d686a2051f070c676b2b88ff66c479a54`:
+Artifacts from run #63:
 
-- `debug-apk` artifact uploaded successfully; artifact digest `sha256:871a3ed22eceefb22515e8086995d14aa527f999876fa35c2bc1361a145d08e6`
-- `release-apk` artifact uploaded successfully; artifact digest `sha256:81c6b0731ff5faa70aee6eb726b167f362beb2f00f30b19ed7af74ad8049285f`
+- `debug-apk`: 9,809,947 bytes, artifact digest `sha256:5f96003360b62fc318fb2c2a3166908a88ec3da68f6aae51e9cdcea8f0ed068d`
+- `release-apk`: 8,632,454 bytes, artifact digest `sha256:7db202a94f17012b2934ed069ea9475dc4bf4e3e16a41c4caef8edfa3699afda`
+
+These are GitHub Actions artifact digests, not a signed-release APK checksum manifest.
 
 ### R4-F — Dynamic Android verification
 
@@ -86,11 +91,11 @@ Required before runtime-ready claims:
 ### R4-G — Second review and closing
 
 - [ ] Addy-style five-axis review: correctness, simplicity, architecture, security, performance.
-- [ ] PR-review-toolkit / receiving-code-review pass.
+- [ ] PR-review-toolkit / receiving-code-review pass where tooling is available.
 - [ ] Alibaba OpenCodeReview pass when an OCR-capable execution environment is available.
 - [ ] Record review findings in PR/repository.
-- [ ] Re-run full verification after fixes.
-- [ ] Keep PR draft until all repository-side gates are green and runtime evidence exists.
+- [ ] Re-run full static verification after runtime-derived fixes, if any.
+- [ ] Keep PR draft until runtime evidence exists and final closeout is reconciled.
 
 ## Deferred beyond R4
 
