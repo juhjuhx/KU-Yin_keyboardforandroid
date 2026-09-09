@@ -13,16 +13,23 @@ class IMEConfig(context: Context) {
     val layout: Layout
         get() = Layout.DACHEN
 
+    /** Reserved for the future OpenCC backend; not exposed while conversion is unavailable. */
     var s2tProfile: Profile
         get() = enumValue(KEY_S2T_PROFILE, Profile.S2TW)
         set(value) = prefs.edit().putString(KEY_S2T_PROFILE, value.name).apply()
 
+    /** Reserved for the future OpenCC backend; not exposed while conversion is unavailable. */
     var t2sProfile: Profile
         get() = enumValue(KEY_T2S_PROFILE, Profile.TW2S)
         set(value) = prefs.edit().putString(KEY_T2S_PROFILE, value.name).apply()
 
+    /**
+     * Legacy preference retained for forward compatibility. The current build has no
+     * OpenCC backend, so the default is deliberately disabled and the converter still
+     * enforces its own availability check.
+     */
     var conversionEnabled: Boolean
-        get() = prefs.getBoolean(KEY_CONVERSION_ENABLED, true)
+        get() = prefs.getBoolean(KEY_CONVERSION_ENABLED, false)
         set(value) = prefs.edit().putBoolean(KEY_CONVERSION_ENABLED, value).apply()
 
     var hapticEnabled: Boolean
