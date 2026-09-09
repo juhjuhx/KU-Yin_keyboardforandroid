@@ -6,10 +6,11 @@ import sys
 
 service = Path("app/src/main/java/com/example/androidkeyboard/input/ChewingInputMethodService.kt").read_text(encoding="utf-8")
 engine = Path("app/src/main/java/com/example/androidkeyboard/engines/android/AndroidChewingEngine.kt").read_text(encoding="utf-8")
+core_engine = Path("app/src/main/java/com/example/androidkeyboard/engines/core/ChewingEngine.kt").read_text(encoding="utf-8")
 candidate = Path("app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt").read_text(encoding="utf-8")
 
 checks = {
-    "engine exposes immutable update state": "data class EngineUpdate" in engine,
+    "engine exposes immutable update state": "data class EngineUpdate" in core_engine,
     "service sets composing text": "setComposingText" in service,
     "service finishes composing text": "finishComposingText" in service,
     "service applies committed native text": "committedText" in service and "commitText" in service,
