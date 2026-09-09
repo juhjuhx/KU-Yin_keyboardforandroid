@@ -169,4 +169,17 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1s
     return ctx ? static_cast<jint>(chewing_set_KBType(ctx, kb_type)) : -1;
 }
 
+JNIEXPORT void JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1set_1auto_1learn(
+    JNIEnv *, jobject, jlong handle, jint mode) {
+    if (auto *ctx = contextFrom(handle)) chewing_set_autoLearn(ctx, mode);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1auto_1learn(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_get_autoLearn(ctx)) : -1;
+}
+
 }  // extern "C"
