@@ -12,8 +12,17 @@ data class EngineUpdate(
     val committedText: String,
 )
 
-/** Android libchewing adapter. JNI calls stay behind this boundary. */
-class AndroidChewingEngine : ChewingEngine {
+/**
+ * Android libchewing adapter. JNI calls stay behind this boundary.
+ *
+ * libchewing needs real filesystem paths for its immutable system dictionary
+ * and writable user dictionary. The service installs those files before this
+ * adapter is constructed.
+ */
+class AndroidChewingEngine(
+    private val systemDataPath: String,
+    private val userDataPath: String,
+) : ChewingEngine {
 
     private var nativeCtx: Long = 0L
     private var nativeLibraryLoaded = false
@@ -46,14 +55,16 @@ class AndroidChewingEngine : ChewingEngine {
             return
         }
 
+        closeNativeContext()
         nativeCtx = try {
-            if (nativeCtx == 0L) chewing_new() else nativeCtx.also { chewing_reset(it) }
+            chewing_new2(systemDataPath, userDataPath)
         } catch (error: UnsatisfiedLinkError) {
             Log.e(TAG, "libchewing JNI surface is incomplete", error)
             0L
         }
 
         if (nativeCtx == 0L) {
+            Log.e(TAG, "libchewing failed to initialize with app-private dictionary paths")
             clearCachedState()
             _ready = false
             return
@@ -100,7 +111,8 @@ class AndroidChewingEngine : ChewingEngine {
 
     fun selectCandidateUpdate(index: Int): EngineUpdate {
         if (!isReady || nativeCtx == 0L || index < 0) return emptyUpdate(false)
-        val pageSize = _candidatePageSize.takeIf { it > 0 } ?: chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
+        val pageSize = _candidatePageSize.takeIf { it > 0 }
+            ?: chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
         val globalIndex = (_candPage * pageSize) + index
         val result = chewing_cand_choose_by_index(nativeCtx, globalIndex)
         return snapshot(consumed = result == 0)
@@ -162,12 +174,16 @@ class AndroidChewingEngine : ChewingEngine {
     override fun saveUserDict(path: String) = Unit
 
     fun close() {
+        closeNativeContext()
+        _ready = false
+        clearCachedState()
+    }
+
+    private fun closeNativeContext() {
         if (nativeCtx != 0L) {
             chewing_delete(nativeCtx)
             nativeCtx = 0L
         }
-        _ready = false
-        clearCachedState()
     }
 
     private fun snapshot(consumed: Boolean): EngineUpdate {
@@ -204,7 +220,9 @@ class AndroidChewingEngine : ChewingEngine {
         if (start >= total) return emptyList()
         val end = minOf(start + _candidatePageSize, total)
         return (start until end)
-            .mapNotNull { index -> chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty) }
+            .mapNotNull { index ->
+                chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty)
+            }
     }
 
     private fun clearCachedState() {
@@ -239,7 +257,7 @@ class AndroidChewingEngine : ChewingEngine {
         fun isCommitted(rtn: Int): Boolean = (rtn and KEYSTROKE_COMMIT) != 0
     }
 
-    private external fun chewing_new(): Long
+    private external fun chewing_new2(systemDataPath: String, userDataPath: String): Long
     private external fun chewing_delete(ctx: Long)
     private external fun chewing_reset(ctx: Long): Int
     private external fun chewing_handle_default(ctx: Long, key: Int): Int
