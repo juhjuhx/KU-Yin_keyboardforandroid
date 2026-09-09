@@ -15,11 +15,11 @@ class CandidateView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        textSize = 20f * resources.displayMetrics.scaledDensity
         textAlign = Paint.Align.CENTER
     }
-
+    private var palette = ImePalette.from(context)
     private var candidates: List<String> = emptyList()
+
     var onItemClick: ((Int, String) -> Unit)? = null
     var onPrevPage: (() -> Unit)? = null
     var onNextPage: (() -> Unit)? = null
@@ -27,6 +27,17 @@ class CandidateView @JvmOverloads constructor(
     private var touchDownX = 0f
     private var touchDownY = 0f
     private var pressedIndex = -1
+
+    init {
+        isClickable = true
+        refreshAppearance()
+    }
+
+    fun refreshAppearance() {
+        palette = ImePalette.from(context)
+        textPaint.textSize = 20f * resources.displayMetrics.scaledDensity
+        invalidate()
+    }
 
     fun setCandidates(items: List<String>) {
         candidates = items.toList()
@@ -41,11 +52,12 @@ class CandidateView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        canvas.drawColor(palette.surface)
         if (candidates.isEmpty() || width <= 0) return
 
         val slotWidth = width.toFloat() / candidates.size
         candidates.forEachIndexed { index, candidate ->
-            textPaint.color = if (index == pressedIndex) 0xFF000000.toInt() else 0xFF212121.toInt()
+            textPaint.color = if (index == pressedIndex) palette.accent else palette.text
             canvas.drawText(
                 candidate,
                 slotWidth * (index + 0.5f),
@@ -56,7 +68,7 @@ class CandidateView @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (candidates.isEmpty() || width <= 0) return true
+        if (candidates.isEmpty() || width <= 0) return false
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
@@ -64,6 +76,14 @@ class CandidateView @JvmOverloads constructor(
                 touchDownY = event.y
                 pressedIndex = candidateIndexAt(event.x)
                 invalidate()
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val index = candidateIndexAt(event.x)
+                if (index != pressedIndex) {
+                    pressedIndex = index
+                    invalidate()
+                }
             }
 
             MotionEvent.ACTION_UP -> {
@@ -76,6 +96,7 @@ class CandidateView @JvmOverloads constructor(
                 } else {
                     val index = candidateIndexAt(event.x)
                     if (index >= 0 && index == pressedIndex) {
+                        performClick()
                         onItemClick?.invoke(index, candidates[index])
                     }
                 }
@@ -88,6 +109,11 @@ class CandidateView @JvmOverloads constructor(
                 invalidate()
             }
         }
+        return true
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
         return true
     }
 
