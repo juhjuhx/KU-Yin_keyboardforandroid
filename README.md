@@ -1,57 +1,110 @@
-# android-keyboard
+# KU-Yin Keyboard for Android
 
-> 本倉庫是 **fork-mirror 骨架**，以官方 [fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master`，**LGPL-2.1**）為底座的長期可迭代 Android 注音輸入法（IME）專案鏡像。
+KU-Yin is an open-source Android Bopomofo IME focused on a local-first, privacy-conscious input path. The current implementation uses Kotlin/View for the Android UI, JNI/C++ for the native bridge, and libchewing for Bopomofo decoding.
 
-> ⚠️ **處於骨架（scaffold）階段**：本目錄目前僅有文件骨架，已建立 Android 工程骨架 `git clone` / `git init` / submodule 實抓。請參考 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) 與規劃文件。
+> Current project state: **static build verified; Android runtime verification pending**.
 
----
+See [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) for the factual current state and [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md) for the immediate plan.
 
-## 專案定位
+## What currently exists
 
-- **上游來源**：[fcitx5-android/fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master` 分支，**LGPL-2.1** 授權）。本專案為其 fork-mirror，保留上游合規宣告與借用來源標註。
-- **解碼器**：`libchewing`，經 `fcitx5-chewing` 橋接（與 Linux 桌面端同款引擎）。
-- **簡繁轉換**：`OpenCC`（一鍵切換，預設台灣 `s2tw` / `tw2s`）。
-- **前端渲染**：Kotlin `View` / `Canvas` 自繪鍵盤（低延遲），**不**以 Compose 作為輸入視窗主渲染。
-- **預設注音佈局**：大千（DaChen）4x10；另備 Hsu、Eten26 選項。
+- Android `InputMethodService`
+- Dachen (大千) Bopomofo keyboard surface
+- ASCII fallback surface with digits, Shift, Space, Backspace and Enter
+- candidate UI and composition synchronization through `InputConnection`
+- `EditorPolicy` and `ImeSessionController` boundaries for editor/session behavior
+- JNI bridge to pinned libchewing native artifacts
+- app-private libchewing dictionary installation
+- Debug and Release APK builds in GitHub Actions
+- deterministic JVM tests and lightweight source/build contracts
 
-> 以 SwiftFloris 授權同理，所有借用代碼與品牌素材皆標註來源與授權，詳見 `NOTICE`（沿用計畫 Todo 3，尚未落地）。
+## Current verification status
 
----
+The latest verified recovery head is documented in `docs/PROJECT_STATUS.md`. The current CI path verifies:
 
-## 目錄結構（骨架）
-
+```text
+source/build contracts
+        ↓
+JDK 17 + Android SDK + Gradle 7.6.4
+        ↓
+pinned native dependency bootstrap
+        ↓
+JVM tests
+        ↓
+assembleDebug
+        ↓
+assembleRelease
+        ↓
+Debug / Release APK artifacts
 ```
-android-keyboard/
-├── README.md              # 本檔：fork 聲明 + 專案定位
-└── docs/
-    ├── ARCHITECTURE.md    # 架構說明（core / UI 切分、解碼、前端）
-    ├── KEYMAP.md          # 鍵盤佈局與尺寸規格表（人體工學，超 Gboard 目標）
-    └── IOS-NOTES.md       # iOS 複用筆記（僅筆記，不實作）
+
+This proves the repository builds cleanly in GitHub Actions. It does **not** yet prove that the IME is release-ready on a real Android runtime.
+
+## Architecture
+
+```text
+Android framework
+    │
+    ▼
+ChewingInputMethodService
+    │
+    ├── EditorPolicy
+    ├── ImeSessionController
+    ├── KeyboardView / CandidateView
+    └── ChewingEngine
+            │
+            ▼
+    AndroidChewingEngine
+            │
+            ▼
+       JNI / libchewing
 ```
 
----
+The Android service is intended to remain an adapter: editor/session decisions live in pure Kotlin policy/controller code, and native decoding stays behind the `ChewingEngine` boundary.
 
-## 授權與上游聲明（Todo 1 範圍）
+## Privacy / capability notes
 
-| 項目 | 值 |
-|------|----|
-| 上游 | https://github.com/fcitx5-android/fcitx5-android |
-| 上游分支 | `master` |
-| 上游授權 | LGPL-2.1 |
-| 本專案定位 | fork-mirror 骨架 |
+- The application does not request the Android `INTERNET` permission.
+- libchewing user data is stored under app-private storage.
+- personalized-learning policy can be disabled for sensitive/no-learning editor sessions.
+- Android backup is disabled in the current recovery branch.
+- OpenCC conversion is **not** currently a production feature; the pass-through stub no longer presents itself as a working backend.
 
-> `LICENSE` / `NOTICE` / `docs/RELEASE.md` / `docs/UPSTREAM.md` 屬計畫 Todo 3–4 範圍，尚未於本體落地（參見 Todo 1 Accept 範圍）。
+See [`SECURITY.md`](SECURITY.md) for the supported guarantees and known limitations.
 
----
+## Build
 
-## 規劃引用
+The authoritative build path is GitHub Actions. For local build notes and exact commands, see [`BUILD.md`](BUILD.md).
 
-- 完整工作計畫：`D:\666\opencode\.omo\plans\android-keyboard.md`
-- 草稿：`.omo/drafts/android-keyboard.md`
+## Current limitations
 
-## 後續文檔（Wave 0 研究產物）
+The following are intentionally outside the current static-recovery completion claim:
 
-- `docs/ROADMAP.md` — 設計方向、TUI 架構圖、路線圖、Addy 路由表、handoff 清單
-- `docs/AUDIT.md` — 七維審計（內容/資料/美觀/接口/架構/效能/安全）+ 效能開銷分析
-- `docs/OSS-NOTES.md` — 可借用開源清單（mzbgf/HeliBoard/Futo/WeType/0.13 新訊）
-- `docs/diagram/architecture.svg` — 架構圖（深色模板）
+- Android runtime / physical-device IME verification
+- API 36 toolchain migration
+- OpenCC production integration
+- Hsu / Eten26 completed visual keyboard layouts
+- per-key accessibility virtual nodes
+- full symbol/emoji system
+- clipboard, gesture typing and prediction features
+
+Google Play requires new apps and app updates to target Android 16 (API 36) starting 2026-08-31. The current project still uses API 33 and will migrate in a dedicated compatibility pass after runtime recovery is closed.
+
+## Development documents
+
+Current documents, in order of authority:
+
+1. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)
+2. [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md)
+3. [`docs/superpowers/plans/2026-09-09-r4-closing-pass.md`](docs/superpowers/plans/2026-09-09-r4-closing-pass.md)
+4. [`docs/superpowers/specs/2026-09-09-recovery-v2-stable-kernel-design.md`](docs/superpowers/specs/2026-09-09-recovery-v2-stable-kernel-design.md)
+
+Older P0-P4 recovery files are retained as historical implementation records.
+
+## Attribution
+
+Project and AI-assisted contribution history is recorded in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Upstream/reference projects and code must retain their original license/provenance requirements when reused.
+
+## License
+
+See [`LICENSE`](LICENSE) and repository notices for licensing details.
