@@ -48,8 +48,11 @@ class ImeRuntimeSmokeTest {
 
     @Test
     fun imeRegistersEnablesBindsAndSurvivesEditorRecreate() {
-        val listed = shell("ime list -s")
-        assertTrue("KU-Yin must be registered as an IME", listed.contains(APP_PACKAGE))
+        val listed = waitForRegisteredIme()
+        assertTrue(
+            "KU-Yin must be installed as an IME. Installed IMEs:\n$listed",
+            listed.contains(APP_PACKAGE),
+        )
 
         shell("ime enable $IME_COMPONENT")
         shell("ime set $IME_COMPONENT")
@@ -74,6 +77,18 @@ class ImeRuntimeSmokeTest {
             "InputMethodManager should still reference KU-Yin after the smoke flow",
             dump.contains(APP_PACKAGE) && dump.contains("ChewingInputMethodService"),
         )
+    }
+
+    private fun waitForRegisteredIme(): String {
+        var lastOutput = ""
+        repeat(40) {
+            // `ime list` lists enabled IMEs by default. `-a` is required here because
+            // this check intentionally happens before the new IME is enabled.
+            lastOutput = shell("ime list -s -a")
+            if (lastOutput.contains(APP_PACKAGE)) return lastOutput
+            SystemClock.sleep(250)
+        }
+        return lastOutput
     }
 
     private fun waitForImeVisible(scenario: ActivityScenario<ImeHostActivity>): Boolean {
