@@ -38,4 +38,15 @@ class KeyboardModeContractTest {
         assertTrue(('0'..'9').all { it.toString() in inputLabels })
         assertTrue(KeyboardLayout.Ascii.allKeys.any { it.action == KeyAction.SHIFT })
     }
+
+    @Test
+    fun shiftedAsciiRowsRenderUppercaseLettersWithoutChangingPhysicalCodes() {
+        val shiftedKeys = KeyboardLayout.asciiRows(shifted = true)
+            .flatMap { it.keys }
+        val q = shiftedKeys.first { it.label == "Q" }
+
+        assertEquals('q'.code, q.code)
+        assertTrue(shiftedKeys.any { it.label == "A" })
+        assertTrue(shiftedKeys.any { it.action == KeyAction.SHIFT })
+    }
 }

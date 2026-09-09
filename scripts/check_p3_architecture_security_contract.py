@@ -34,7 +34,14 @@ checks = [
     ("manifest has no Internet permission", "android.permission.INTERNET" not in manifest),
     ("View haptics need no VIBRATE permission", "android.permission.VIBRATE" not in manifest),
     ("symbol picker no longer carries unused anchor API", "anchorX" not in symbol_picker),
-    ("only implemented visual keyboard layout is public", "enum class KeyboardLayout" in layout and "Dachen(" in layout),
+    ("ASCII surface provides explicit shift action", "KeyAction.SHIFT" in layout and "asciiRows(shifted" in layout),
+    ("service creates editor policy", "EditorPolicy.from(attribute.inputType, attribute.imeOptions)" in service),
+    ("service owns session controller", "ImeSessionController()" in service and "sessionController.begin(" in service),
+    ("service applies personalized-learning policy", "setPersonalizedLearningEnabled(activeSession.personalizedLearningEnabled)" in service),
+    ("service switches keyboard surface by session", "rowsForActiveSession" in service and "SessionKeyboard.ASCII" in service),
+    ("service handles semantic enter", "KeyAction.ENTER" in service and "performEditorAction" in service),
+    ("service handles ASCII shift", "KeyAction.SHIFT" in service and "toggleAsciiShift" in service),
+    ("service reconciles editor selection", "override fun onUpdateSelection" in service and "shouldResetComposition" in service),
 ]
 
 failures = [name for name, ok in checks if not ok]

@@ -2,8 +2,9 @@
 """Fast source-level contract for the Standard/Dachen key table.
 
 This runs before Android/Gradle setup so physical-key regressions fail in
-seconds. It intentionally accepts both numeric ASCII literals and Kotlin
-character expressions such as `'x'.code`.
+seconds. It intentionally inspects only the Dachen enum entry; ASCII fallback
+keys may reuse the same character codes with different labels and must not
+pollute the Dachen mapping.
 """
 
 from pathlib import Path
@@ -13,11 +14,21 @@ import sys
 SOURCE = Path("app/src/main/java/com/example/androidkeyboard/input/KeyboardLayout.kt")
 text = SOURCE.read_text(encoding="utf-8")
 
+start_marker = "    Dachen("
+end_marker = "\n\n    Ascii("
+start = text.find(start_marker)
+end = text.find(end_marker, start + len(start_marker)) if start >= 0 else -1
+if start < 0 or end < 0:
+    print("Dachen contract FAILED:", file=sys.stderr)
+    print("  - unable to isolate KeyboardLayout.Dachen source block", file=sys.stderr)
+    sys.exit(1)
+
+dachen_source = text[start:end]
 entries: dict[int, str] = {}
 pattern = re.compile(
     r'KeyDef\("([^"]*)"[^\n]*?code\s*=\s*(?:(\d+)|\'(.?)\'\.code)'
 )
-for match in pattern.finditer(text):
+for match in pattern.finditer(dachen_source):
     label = match.group(1)
     numeric = match.group(2)
     character = match.group(3)

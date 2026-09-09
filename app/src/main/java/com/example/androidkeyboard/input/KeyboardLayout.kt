@@ -12,6 +12,7 @@ enum class KeyAction {
     SPACE,
     BACKSPACE,
     ENTER,
+    SHIFT,
     DISMISS,
 }
 
@@ -86,23 +87,7 @@ enum class KeyboardLayout(val rows: List<KeyboardRow>) {
         )
     ),
 
-    Ascii(
-        rows = listOf(
-            asciiRow("qwertyuiop"),
-            asciiRow("asdfghjkl"),
-            KeyboardRow(
-                asciiKeys("zxcvbnm") +
-                    KeyDef("⌫", widthPct = 18f, isSpecial = true, action = KeyAction.BACKSPACE)
-            ),
-            KeyboardRow(listOf(
-                KeyDef(".", widthPct = 12f, code = '.'.code),
-                KeyDef(",", widthPct = 12f, code = ','.code),
-                KeyDef(" ", widthPct = 44f, code = ' '.code, action = KeyAction.SPACE),
-                KeyDef("↵", widthPct = 20f, isSpecial = true, action = KeyAction.ENTER),
-                KeyDef("▼", widthPct = 12f, isSpecial = true, action = KeyAction.DISMISS),
-            )),
-        )
-    );
+    Ascii(rows = asciiRows(shifted = false));
 
     val allKeys: List<KeyDef>
         get() = rows.flatMap { row -> row.keys }
@@ -110,10 +95,29 @@ enum class KeyboardLayout(val rows: List<KeyboardRow>) {
     val rowCount: Int get() = rows.size
 
     companion object {
-        private fun asciiRow(labels: String): KeyboardRow = KeyboardRow(asciiKeys(labels))
+        fun asciiRows(shifted: Boolean): List<KeyboardRow> = listOf(
+            KeyboardRow(asciiKeys("1234567890", shifted = false)),
+            KeyboardRow(asciiKeys("qwertyuiop", shifted)),
+            KeyboardRow(asciiKeys("asdfghjkl", shifted)),
+            KeyboardRow(
+                listOf(
+                    KeyDef("⇧", widthPct = 15f, isSpecial = true, action = KeyAction.SHIFT),
+                ) +
+                    asciiKeys("zxcvbnm", shifted) +
+                    KeyDef("⌫", widthPct = 15f, isSpecial = true, action = KeyAction.BACKSPACE)
+            ),
+            KeyboardRow(listOf(
+                KeyDef(".", widthPct = 12f, code = '.'.code),
+                KeyDef(",", widthPct = 12f, code = ','.code),
+                KeyDef(" ", widthPct = 40f, code = ' '.code, action = KeyAction.SPACE),
+                KeyDef("↵", widthPct = 20f, isSpecial = true, action = KeyAction.ENTER),
+                KeyDef("▼", widthPct = 16f, isSpecial = true, action = KeyAction.DISMISS),
+            )),
+        )
 
-        private fun asciiKeys(labels: String): List<KeyDef> = labels.map { character ->
-            KeyDef(character.toString(), code = character.code)
+        private fun asciiKeys(labels: String, shifted: Boolean): List<KeyDef> = labels.map { character ->
+            val rendered = if (shifted && character.isLetter()) character.uppercaseChar() else character
+            KeyDef(rendered.toString(), code = character.code)
         }
     }
 }
