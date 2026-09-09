@@ -29,6 +29,9 @@ jobs:
       - name: Validate P2 UI contract
         run: python3 scripts/check_p2_ui_contract.py
 
+      - name: Validate P3 architecture/security contract
+        run: python3 scripts/check_p3_architecture_security_contract.py
+
       - name: Set up JDK 17
         uses: actions/setup-java@v5
         with:
