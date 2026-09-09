@@ -1,115 +1,104 @@
-# 构建指南
+# Build Guide
 
-## 环境配置状态
+KU-Yin currently uses a deterministic GitHub Actions build as the reference build path. Local builds should reproduce the same major steps rather than rely on machine-specific absolute paths.
 
-| 组件 | 状态 | 路径 |
-|------|------|------|
-| Java 17 | ✅ 已安装 | `C:\Program Files\Java\jdk-17.0.2` |
-| Gradle 8.5 | ✅ 自动下载 | 项目根目录 |
-| Android NDK r27d | ✅ 已提供 | `D:\666\android-ndk-r27d-windows` |
-| CMake 4.4.3 | ✅ 已安装 | `D:\666\CMake\bin` |
-| Rust 1.98.1 | ✅ 已安装 | `~/.cargo` |
-| Android SDK | ❌ 需安装 | `~\AppData\Local\Android\Sdk` |
-| libchewing | ⏳ 待构建 | `app/src/main/cpp/libchewing-src/` |
+## Verified CI toolchain
 
-## 一键构建
+The latest verified recovery head uses:
 
-### Windows PowerShell
-```powershell
-cd D:\666\opencode\android-keyboard
-.\build_all.ps1
+- JDK 17
+- Android SDK via `android-actions/setup-android@v3`
+- Gradle 7.6.4 via `gradle/actions/setup-gradle@v6`
+- NDK `27.3.13750724`
+- CMake 3.22.1 for the Android app native build
+- pinned libchewing/prebuilt inputs staged by `scripts/bootstrap_native_deps.sh`
+- Kotlin/Android application module under `app/`
+
+Current Android application settings:
+
+- `minSdk = 24`
+- `compileSdk = 33`
+- `targetSdk = 33`
+- four native ABIs: `armeabi-v7a`, `arm64-v8a`, `x86`, `x86_64`
+
+API 36 migration is intentionally deferred to a dedicated compatibility pass after runtime IME recovery.
+
+## GitHub Actions reference build
+
+The CI sequence is defined in `.github/workflows/build.yml`:
+
+```text
+contracts
+  ↓
+JDK 17
+  ↓
+Android SDK
+  ↓
+Gradle 7.6.4
+  ↓
+bootstrap pinned native dependencies
+  ↓
+testDebugUnitTest
+  ↓
+assembleDebug
+  ↓
+assembleRelease
+  ↓
+upload Debug / Release APK artifacts
 ```
 
-### Bash (Git Bash)
+The current recovery branch has passed this full sequence.
+
+## Local build
+
+Prerequisites:
+
+- JDK 17
+- Android SDK with the required platform/build tools
+- Android NDK `27.3.13750724`
+- CMake compatible with the project configuration
+- Bash, Python 3 and network access for the dependency bootstrap step
+
+From the repository root:
+
 ```bash
-cd /d/666/opencode/android-keyboard
-./build_all.sh
+bash scripts/bootstrap_native_deps.sh
+gradle testDebugUnitTest --stacktrace
+gradle assembleDebug --stacktrace
+gradle assembleRelease --stacktrace
 ```
 
-## 分步操作
+If a compatible Gradle wrapper is restored later, `./gradlew` may replace the system `gradle` command. The current CI intentionally pins Gradle 7.6.4 through the GitHub Action.
 
-### 1. 安装 Android SDK（如果尚未安装）
-```powershell
-.\install-android-sdk.ps1
+## Outputs
+
+```text
+app/build/outputs/apk/debug/
+app/build/outputs/apk/release/
 ```
 
-### 2. 构建 libchewing native 库
-```powershell
-cd app/src/main/cpp/libchewing-src/capi
-foreach ($abi in @('arm64-v8a', 'armeabi-v7a', 'x86', 'x86_64')) {
-    $env:CARGO_TARGET_aarch64_linux_android_LINKER = 'D:\666\android-ndk-r27d-windows\toolchains\llvm\prebuilt\windows-x86_64\bin\aarch64-linux-android31-clang'
-    cargo build --release --target aarch64-linux-android --target-dir ../../../build/cargo
-}
-```
+GitHub Actions also uploads artifacts named:
 
-### 3. 构建 APK
-```powershell
-cd ..\..\..\..\..
-./gradlew :app:assembleDebug
-```
+- `debug-apk`
+- `release-apk`
 
-## 输出位置
-- **APK**: `app/build/outputs/apk/debug/app-debug.apk`
-- **Native 库**: `app/src/main/jniLibs/<abi>/libchewing.a`
+## Native dependency model
 
-## 常见问题
+`scripts/bootstrap_native_deps.sh` stages pinned libchewing native archives, headers and dictionary data. CMake treats a missing ABI archive as a build failure rather than producing an APK that may fail at runtime.
 
-### Q: JAVA_HOME 设置错误
-```powershell
-$env:JAVA_HOME = "C:\Program Files\Java\jdk-17.0.2"
-```
+libchewing dictionary data is copied into app-private storage before engine initialization.
 
-### Q: NDK 路径错误
-```powershell
-$env:ANDROID_NDK_HOME = "D:\666\android-ndk-r27d-windows"
-```
+## What a successful build proves
 
-### Q: Rust 目标未安装
-```bash
-rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
-```
+A successful build proves that:
 
-### Q: Gradle 缓存问题
-```powershell
-Remove-Item -Recurse -Force .gradle
-Remove-Item -Recurse -Force app/.gradle
-./gradlew clean
-```
+- source/build contracts pass
+- JVM tests pass
+- native archives link for all configured ABIs
+- Debug and Release APKs are produced
 
-## 架构说明
+A successful build does **not** prove that Android can enable/switch/render/use the IME correctly. Runtime verification is tracked separately in `docs/NEXT_STEPS.md`.
 
-```
-┌─────────────────────────────────────────┐
-│         Android Application             │
-│  (ChewingInputMethodService)            │
-├─────────────────────────────────────────┤
-│         Kotlin Layer                    │
-│  (AndroidChewingEngine.kt)              │
-│  - JNI 绑定                            │
-│  - 状态管理                             │
-│  - 候选词处理                           │
-├─────────────────────────────────────────┤
-│         JNI Bridge                      │
-│  (chewing_jni.cpp)                      │
-│  - C API 到 JNI 转换                   │
-├─────────────────────────────────────────┤
-│         Native Layer                    │
-│  (libchewing_rust.a)                    │
-│  - Rust 实现的 libchewing 0.12.x        │
-│  - C API 兼容性层                       │
-└─────────────────────────────────────────┘
-```
+## Troubleshooting principle
 
-## 下一步工作
-
-1. ✅ 修复 AGP/Gradle 版本兼容性问题
-2. ✅ 重写 chewing_jni.cpp 对齐新 C API
-3. ✅ 更新 AndroidChewingEngine.kt JNI 声明
-4. ⏳ 构建 libchewing native 库
-5. ⏳ 安装 Android SDK
-6. ⏳ 编译 APK 并测试
-7. ⏳ 集成 OpenCC 简繁切换
-8. ⏳ 实现 UserDict 持久化
-
----
-最后更新：2026-09-09
+When CI fails, use the first failing step as the root-cause boundary. Avoid adding workaround patches before the current failure is reproduced and understood.
