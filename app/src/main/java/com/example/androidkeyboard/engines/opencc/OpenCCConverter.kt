@@ -4,45 +4,31 @@ import com.example.androidkeyboard.engines.core.ChineseConverter
 import com.example.androidkeyboard.engines.core.ChineseConverter.Profile
 
 /**
- * Wave 4 T21: OpenCC wrapper for Traditional/Simplified conversion.
+ * Placeholder boundary for a future OpenCC backend.
  *
- * STUB — actual OpenCC Java bindings will be wired when the prebuilt
- * OpenCC library is available (see OPENCC-WIRING.md for profile details).
- *
- * Fallback: returns text unchanged when no native library loaded.
+ * The current build does not ship OpenCC bindings. This adapter therefore
+ * reports itself unavailable and always returns text unchanged. Keeping the
+ * boundary explicit prevents Settings or the IME from advertising a feature
+ * that is not actually present while preserving a stable integration point.
  */
 class OpenCCConverter : ChineseConverter {
 
     private var _s2tProfile = Profile.S2TW
     private var _t2sProfile = Profile.TW2S
-    private var _enabled = true
-    private var _ready = false
+    private var _enabled = false
 
-    override val isReady: Boolean get() = _ready
+    /** No OpenCC backend is packaged in the current build. */
+    override val isReady: Boolean get() = false
 
     override fun init(s2tProfile: Profile, t2sProfile: Profile) {
         _s2tProfile = s2tProfile
         _t2sProfile = t2sProfile
-        _ready = true
-        // OpenCC native library not yet available; stub returns pass-through.
-        // When native lib is ready, call opencc_init(s2tProfile.name, t2sProfile.name)
-        // and wire simplifyToTraditional/traditionalToSimplify accordingly.
-        // See docs/OPENCC-WIRING.md for profile details.
+        _enabled = false
     }
 
-    override fun simplifyToTraditional(text: String): String {
-        if (!_ready || !_enabled) return text
-        // OpenCC native binding not yet linked; pass-through until available.
-        // When native library is ready, implement: opencc_simple_to_traditional(text, _s2tProfile.name)
-        return text
-    }
+    override fun simplifyToTraditional(text: String): String = text
 
-    override fun traditionalToSimplify(text: String): String {
-        if (!_ready || !_enabled) return text
-        // OpenCC native binding not yet linked; pass-through until available.
-        // When native library is ready, implement: opencc_traditional_to_simplified(text, _t2sProfile.name)
-        return text
-    }
+    override fun traditionalToSimplify(text: String): String = text
 
     override fun toggleDirection(): Pair<Profile, Profile> {
         val tmp = _s2tProfile
@@ -52,6 +38,8 @@ class OpenCCConverter : ChineseConverter {
     }
 
     override var enabled: Boolean
-        get() = _enabled
-        set(value) { _enabled = value }
+        get() = _enabled && isReady
+        set(value) {
+            _enabled = value && isReady
+        }
 }
