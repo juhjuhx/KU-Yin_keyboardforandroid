@@ -5,64 +5,55 @@ import androidx.preference.PreferenceManager
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
 import com.example.androidkeyboard.engines.core.ChineseConverter.Profile
 
-/**
- * Wave 4 T21: Centralized IME configuration persisted via SharedPreferences.
- * All UI settings flow through this class; no direct SP access in UI code.
- */
-class IMEConfig(private val context: Context) {
+/** Persistent user-facing IME preferences. Decoder lifecycle is owned by the service. */
+class IMEConfig(context: Context) {
+    private val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
 
-    private val prefs = PreferenceManager.getDefaultSharedPreferences(context)
-
-    var layout: Layout
-        get() = try {
-            Layout.valueOf(prefs.getString(KEY_LAYOUT, Layout.DACHEN.name) ?: Layout.DACHEN.name)
-        } catch (e: IllegalArgumentException) { Layout.DACHEN }
-        set(value) = prefs.edit().putString(KEY_LAYOUT, value.name).apply()
-
-    var fullHalf: Boolean
-        get() = prefs.getBoolean(KEY_FULL_HALF, false)
-        set(value) = prefs.edit().putBoolean(KEY_FULL_HALF, value).apply()
+    /** Only Dachen has a complete visual keyboard in the current release. */
+    val layout: Layout
+        get() = Layout.DACHEN
 
     var s2tProfile: Profile
-        get() = try {
-            Profile.valueOf(prefs.getString(KEY_S2T, Profile.S2TW.name) ?: Profile.S2TW.name)
-        } catch (e: IllegalArgumentException) { Profile.S2TW }
-        set(value) = prefs.edit().putString(KEY_S2T, value.name).apply()
+        get() = enumValue(KEY_S2T_PROFILE, Profile.S2TW)
+        set(value) = prefs.edit().putString(KEY_S2T_PROFILE, value.name).apply()
 
     var t2sProfile: Profile
-        get() = try {
-            Profile.valueOf(prefs.getString(KEY_T2S, Profile.TW2S.name) ?: Profile.TW2S.name)
-        } catch (e: IllegalArgumentException) { Profile.TW2S }
-        set(value) = prefs.edit().putString(KEY_T2S, value.name).apply()
+        get() = enumValue(KEY_T2S_PROFILE, Profile.TW2S)
+        set(value) = prefs.edit().putString(KEY_T2S_PROFILE, value.name).apply()
 
     var conversionEnabled: Boolean
-        get() = prefs.getBoolean(KEY_CONVERSION, true)
-        set(value) = prefs.edit().putBoolean(KEY_CONVERSION, value).apply()
+        get() = prefs.getBoolean(KEY_CONVERSION_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_CONVERSION_ENABLED, value).apply()
 
     var hapticEnabled: Boolean
-        get() = prefs.getBoolean(KEY_HAPTIC, true)
-        set(value) = prefs.edit().putBoolean(KEY_HAPTIC, value).apply()
+        get() = prefs.getBoolean(KEY_HAPTIC_ENABLED, true)
+        set(value) = prefs.edit().putBoolean(KEY_HAPTIC_ENABLED, value).apply()
 
+    /**
+     * ListPreference stores strings. Reading through prefs.all also migrates older
+     * builds that stored this value as a Float under the same key.
+     */
     var proximityTolerance: Float
-        get() = prefs.getFloat(KEY_PROXIMITY, 0.15f).coerceIn(0f, 0.5f)
-        set(value) = prefs.edit().putFloat(KEY_PROXIMITY, value).apply()
+        get() = when (val stored = prefs.all[KEY_PROXIMITY_TOLERANCE]) {
+            is Number -> stored.toFloat()
+            is String -> stored.toFloatOrNull() ?: DEFAULT_PROXIMITY_TOLERANCE
+            else -> DEFAULT_PROXIMITY_TOLERANCE
+        }.coerceIn(0f, 0.5f)
+        set(value) = prefs.edit()
+            .putString(KEY_PROXIMITY_TOLERANCE, value.coerceIn(0f, 0.5f).toString())
+            .apply()
 
-    var userDictPath: String
-        get() = prefs.getString(KEY_USER_DICT_PATH, "") ?: ""
-        set(value) = prefs.edit().putString(KEY_USER_DICT_PATH, value).apply()
-
-    fun applyTo(engine: ChewingEngine) {
-        engine.init(layout)
+    private inline fun <reified T : Enum<T>> enumValue(key: String, default: T): T {
+        val raw = prefs.getString(key, default.name) ?: default.name
+        return enumValues<T>().firstOrNull { it.name == raw } ?: default
     }
 
     companion object {
-        private const val KEY_LAYOUT = "layout"
-        private const val KEY_FULL_HALF = "full_half"
-        private const val KEY_S2T = "s2t_profile"
-        private const val KEY_T2S = "t2s_profile"
-        private const val KEY_CONVERSION = "conversion_enabled"
-        private const val KEY_HAPTIC = "haptic_enabled"
-        private const val KEY_PROXIMITY = "proximity_tolerance"
-        private const val KEY_USER_DICT_PATH = "user_dict_path"
+        const val KEY_S2T_PROFILE = "s2t_profile"
+        const val KEY_T2S_PROFILE = "t2s_profile"
+        const val KEY_CONVERSION_ENABLED = "conversion_enabled"
+        const val KEY_HAPTIC_ENABLED = "haptic_enabled"
+        const val KEY_PROXIMITY_TOLERANCE = "proximity_tolerance"
+        private const val DEFAULT_PROXIMITY_TOLERANCE = 0.15f
     }
 }

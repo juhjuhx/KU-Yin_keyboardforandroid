@@ -33,9 +33,7 @@ class SymbolPicker @JvmOverloads constructor(
         invalidate()
     }
 
-    fun setSymbols(items: List<String>, anchorX: Float) {
-        @Suppress("UNUSED_VARIABLE")
-        val anchor = anchorX
+    fun setSymbols(items: List<String>) {
         symbols = items.toList()
         selectedIndex = -1
         visibility = if (symbols.isEmpty()) GONE else VISIBLE

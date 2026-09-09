@@ -7,8 +7,9 @@ import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
-import com.example.androidkeyboard.engines.android.EngineUpdate
 import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
+import com.example.androidkeyboard.engines.core.ChewingEngine
+import com.example.androidkeyboard.engines.core.EngineUpdate
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateView
@@ -19,19 +20,21 @@ class ChewingInputMethodService : InputMethodService() {
     private lateinit var keyboardView: KeyboardView
     private lateinit var candidateView: CandidateView
     private lateinit var symbolPicker: SymbolPicker
-    private lateinit var chewing: AndroidChewingEngine
+    private lateinit var chewing: ChewingEngine
     private lateinit var converter: OpenCCConverter
     private lateinit var config: IMEConfig
+    private var activeLayout = ChewingEngine.Layout.DACHEN
 
     override fun onCreate() {
         super.onCreate()
         config = IMEConfig(this)
 
         val nativePaths = LibChewingDataInstaller.ensureInstalled(this)
+        activeLayout = config.layout
         chewing = AndroidChewingEngine(
             systemDataPath = nativePaths.systemDir.absolutePath,
             userDataPath = nativePaths.userFile.absolutePath,
-        ).apply { init(config.layout) }
+        ).apply { init(activeLayout) }
 
         converter = OpenCCConverter().apply {
             init(config.s2tProfile, config.t2sProfile)
@@ -55,12 +58,8 @@ class ChewingInputMethodService : InputMethodService() {
         candidateView = CandidateView(this).apply {
             setCandidates(emptyList())
             onItemClick = ::commitCandidate
-            onPrevPage = {
-                chewing.prevPageUpdate()?.let(::applyEngineUpdate)
-            }
-            onNextPage = {
-                chewing.nextPageUpdate()?.let(::applyEngineUpdate)
-            }
+            onPrevPage = { chewing.prevPageUpdate()?.let(::applyEngineUpdate) }
+            onNextPage = { chewing.nextPageUpdate()?.let(::applyEngineUpdate) }
         }
 
         symbolPicker = SymbolPicker(this).apply {
@@ -115,7 +114,11 @@ class ChewingInputMethodService : InputMethodService() {
 
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
-        config.applyTo(chewing)
+        val desiredLayout = config.layout
+        if (!chewing.isReady || desiredLayout != activeLayout) {
+            chewing.init(desiredLayout)
+            activeLayout = desiredLayout
+        }
         converter.enabled = config.conversionEnabled
         converter.init(config.s2tProfile, config.t2sProfile)
         if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
@@ -203,8 +206,7 @@ class ChewingInputMethodService : InputMethodService() {
         val editor = inputConnection ?: return
 
         if (update.committedText.isNotEmpty()) {
-            val committed = convertForOutput(update.committedText)
-            editor.commitText(committed, 1)
+            editor.commitText(convertForOutput(update.committedText), 1)
         }
 
         if (update.preedit.isNotEmpty()) {

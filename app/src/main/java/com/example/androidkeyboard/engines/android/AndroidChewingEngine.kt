@@ -3,22 +3,9 @@ package com.example.androidkeyboard.engines.android
 import android.util.Log
 import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
+import com.example.androidkeyboard.engines.core.EngineUpdate
 
-/** A single, immutable result of one decoder transition. */
-data class EngineUpdate(
-    val consumed: Boolean,
-    val preedit: String,
-    val candidates: List<String>,
-    val committedText: String,
-)
-
-/**
- * Android libchewing adapter. JNI calls stay behind this boundary.
- *
- * libchewing needs real filesystem paths for its immutable system dictionary
- * and writable user dictionary. The service installs those files before this
- * adapter is constructed.
- */
+/** Android libchewing adapter. JNI calls stay behind this boundary. */
 class AndroidChewingEngine(
     private val systemDataPath: String,
     private val userDataPath: String,
@@ -26,16 +13,13 @@ class AndroidChewingEngine(
 
     private var nativeCtx: Long = 0L
     private var nativeLibraryLoaded = false
-    private var _layout = Layout.DACHEN
-    private var _preedit = ""
-    private var _candidates = emptyList<String>()
-    private var _ready = false
-    private var _candPage = 0
-    private var _candidatePageSize = 0
-    private var _chiEngMode = CHINESE_MODE
-    private var _fullHalfMode = HALFSHAPE_MODE
+    private var preedit = ""
+    private var candidates = emptyList<String>()
+    private var ready = false
+    private var candidatePage = 0
+    private var candidatePageSize = 0
 
-    override val isReady: Boolean get() = _ready
+    override val isReady: Boolean get() = ready
 
     init {
         nativeLibraryLoaded = try {
@@ -48,10 +32,9 @@ class AndroidChewingEngine(
     }
 
     override fun init(layout: Layout) {
-        _layout = layout
         if (!nativeLibraryLoaded) {
             clearCachedState()
-            _ready = false
+            ready = false
             return
         }
 
@@ -66,22 +49,17 @@ class AndroidChewingEngine(
         if (nativeCtx == 0L) {
             Log.e(TAG, "libchewing failed to initialize with app-private dictionary paths")
             clearCachedState()
-            _ready = false
+            ready = false
             return
         }
 
-        val kbType = when (layout) {
-            Layout.DACHEN -> KB_DEFAULT
-            Layout.HSU -> KB_HSU
-            Layout.Eten26 -> KB_ET26
-        }
-        chewing_set_kb_type(nativeCtx, kbType)
-        _chiEngMode = CHINESE_MODE
-        _fullHalfMode = HALFSHAPE_MODE
-        chewing_set_chi_eng_mode(nativeCtx, _chiEngMode)
-        chewing_set_shape_mode(nativeCtx, _fullHalfMode)
+        // Dachen is the only visual layout currently shipped, so the native
+        // decoder and rendered keyboard cannot drift apart.
+        chewing_set_kb_type(nativeCtx, KB_DEFAULT)
+        chewing_set_chi_eng_mode(nativeCtx, CHINESE_MODE)
+        chewing_set_shape_mode(nativeCtx, HALFSHAPE_MODE)
         clearCachedState()
-        _ready = true
+        ready = true
     }
 
     override fun reset() {
@@ -89,93 +67,55 @@ class AndroidChewingEngine(
         clearCachedState()
     }
 
-    fun handleKeyUpdate(keyCode: Int): EngineUpdate {
+    override fun handleKeyUpdate(keyCode: Int): EngineUpdate {
         if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
         val result = chewing_handle_default(nativeCtx, keyCode)
-        _candPage = 0
+        candidatePage = 0
         return snapshot(consumed = !isIgnored(result))
     }
 
-    override fun handleKeyEvent(keyCode: Int): Boolean = handleKeyUpdate(keyCode).consumed
-
-    fun backspaceUpdate(): EngineUpdate {
+    override fun backspaceUpdate(): EngineUpdate {
         if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
-        val hadComposition = chewing_buffer_check(nativeCtx) != 0 || _preedit.isNotEmpty()
+        val hadComposition = chewing_buffer_check(nativeCtx) != 0 || preedit.isNotEmpty()
         if (!hadComposition) return snapshot(consumed = false)
         val result = chewing_handle_backspace(nativeCtx)
-        _candPage = 0
+        candidatePage = 0
         return snapshot(consumed = !isIgnored(result) || hadComposition)
     }
 
-    override fun backspace(): Boolean = backspaceUpdate().consumed
-
-    fun selectCandidateUpdate(index: Int): EngineUpdate {
+    override fun selectCandidateUpdate(index: Int): EngineUpdate {
         if (!isReady || nativeCtx == 0L || index < 0) return emptyUpdate(false)
-        val pageSize = _candidatePageSize.takeIf { it > 0 }
+        val pageSize = candidatePageSize.takeIf { it > 0 }
             ?: chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
-        val globalIndex = (_candPage * pageSize) + index
+        val globalIndex = (candidatePage * pageSize) + index
         val result = chewing_cand_choose_by_index(nativeCtx, globalIndex)
         return snapshot(consumed = result == 0)
     }
 
-    override fun selectCandidate(index: Int) {
-        selectCandidateUpdate(index)
-    }
-
-    fun nextPageUpdate(): EngineUpdate? {
+    override fun nextPageUpdate(): EngineUpdate? {
         if (!isReady || nativeCtx == 0L) return null
         val totalPages = chewing_cand_total_page(nativeCtx)
-        if (_candPage >= totalPages - 1) return null
-        _candPage++
+        if (candidatePage >= totalPages - 1) return null
+        candidatePage++
         return snapshot(consumed = true)
     }
 
-    override fun nextPage(): Boolean = nextPageUpdate() != null
-
-    fun prevPageUpdate(): EngineUpdate? {
-        if (!isReady || nativeCtx == 0L || _candPage <= 0) return null
-        _candPage--
+    override fun prevPageUpdate(): EngineUpdate? {
+        if (!isReady || nativeCtx == 0L || candidatePage <= 0) return null
+        candidatePage--
         return snapshot(consumed = true)
     }
 
-    override fun prevPage(): Boolean = prevPageUpdate() != null
-
-    fun commitUpdate(): EngineUpdate {
+    override fun commitUpdate(): EngineUpdate {
         if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
         val result = chewing_commit_preedit_buf(nativeCtx)
-        _candPage = 0
+        candidatePage = 0
         return snapshot(consumed = result == 0)
     }
 
-    override fun commit() {
-        commitUpdate()
-    }
-
-    override fun getPreedit(): String = _preedit
-
-    override fun getCandidates(): List<String> = _candidates
-
-    override fun toggleFullHalf(): Boolean {
-        if (!isReady || nativeCtx == 0L) return false
-        _fullHalfMode = if (_fullHalfMode == FULLSHAPE_MODE) HALFSHAPE_MODE else FULLSHAPE_MODE
-        chewing_set_shape_mode(nativeCtx, _fullHalfMode)
-        return true
-    }
-
-    override fun toggleChiEng(): Boolean {
-        if (!isReady || nativeCtx == 0L) return false
-        _chiEngMode = if (_chiEngMode == CHINESE_MODE) SYMBOL_MODE else CHINESE_MODE
-        chewing_set_chi_eng_mode(nativeCtx, _chiEngMode)
-        return true
-    }
-
-    override fun loadUserDict(path: String): Boolean = isReady && nativeCtx != 0L
-
-    override fun saveUserDict(path: String) = Unit
-
-    fun close() {
+    override fun close() {
         closeNativeContext()
-        _ready = false
+        ready = false
         clearCachedState()
     }
 
@@ -195,12 +135,12 @@ class AndroidChewingEngine(
             ""
         }
 
-        _preedit = chewing_buffer_string_static(nativeCtx).orEmpty()
-        _candidates = buildCandidates()
+        preedit = chewing_buffer_string_static(nativeCtx).orEmpty()
+        candidates = buildCandidates()
         return EngineUpdate(
             consumed = consumed,
-            preedit = _preedit,
-            candidates = _candidates,
+            preedit = preedit,
+            candidates = candidates,
             committedText = committed,
         )
     }
@@ -211,14 +151,14 @@ class AndroidChewingEngine(
 
         val total = chewing_cand_total_choice(nativeCtx)
         if (total <= 0) {
-            _candidatePageSize = 0
+            candidatePageSize = 0
             return emptyList()
         }
 
-        _candidatePageSize = chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
-        val start = _candPage * _candidatePageSize
+        candidatePageSize = chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
+        val start = candidatePage * candidatePageSize
         if (start >= total) return emptyList()
-        val end = minOf(start + _candidatePageSize, total)
+        val end = minOf(start + candidatePageSize, total)
         return (start until end)
             .mapNotNull { index ->
                 chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty)
@@ -226,10 +166,10 @@ class AndroidChewingEngine(
     }
 
     private fun clearCachedState() {
-        _preedit = ""
-        _candidates = emptyList()
-        _candPage = 0
-        _candidatePageSize = 0
+        preedit = ""
+        candidates = emptyList()
+        candidatePage = 0
+        candidatePageSize = 0
     }
 
     private fun emptyUpdate(consumed: Boolean) = EngineUpdate(
@@ -241,20 +181,12 @@ class AndroidChewingEngine(
 
     companion object {
         private const val TAG = "AndroidChewingEngine"
-
-        const val KB_DEFAULT = 0
-        const val KB_HSU = 1
-        const val KB_ET26 = 5
-        const val CHINESE_MODE = 1
-        const val SYMBOL_MODE = 0
-        const val FULLSHAPE_MODE = 1
-        const val HALFSHAPE_MODE = 0
-        const val KEYSTROKE_IGNORE = 1
-        const val KEYSTROKE_COMMIT = 2
-        const val KEYSTROKE_BELL = 4
+        private const val KB_DEFAULT = 0
+        private const val CHINESE_MODE = 1
+        private const val HALFSHAPE_MODE = 0
+        private const val KEYSTROKE_IGNORE = 1
 
         fun isIgnored(rtn: Int): Boolean = (rtn and KEYSTROKE_IGNORE) != 0
-        fun isCommitted(rtn: Int): Boolean = (rtn and KEYSTROKE_COMMIT) != 0
     }
 
     private external fun chewing_new2(systemDataPath: String, userDataPath: String): Long

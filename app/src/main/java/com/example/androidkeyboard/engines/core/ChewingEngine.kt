@@ -1,35 +1,32 @@
 package com.example.androidkeyboard.engines.core
 
-import com.example.androidkeyboard.input.KeyboardLayout
+/** Immutable result of one decoder transition. */
+data class EngineUpdate(
+    val consumed: Boolean,
+    val preedit: String,
+    val candidates: List<String>,
+    val committedText: String,
+)
 
 /**
- * Wave 4 T21: Platform-agnostic libchewing decoder interface.
- *
- * This interface is the boundary between UI and decoder layers.
- * UI code only talks to this interface; JNI calls are confined to
- * the Android implementation in engines.android.AndroidChewingEngine.
- *
- * iOS can provide its own implementation using the same interface.
+ * Platform boundary for the Chewing decoder session used by the IME service.
+ * JNI and filesystem details stay in the Android adapter.
  */
 interface ChewingEngine {
 
     enum class Layout {
-        DACHEN, HSU, Eten26
+        DACHEN,
     }
+
+    val isReady: Boolean
 
     fun init(layout: Layout = Layout.DACHEN)
     fun reset()
-    fun handleKeyEvent(keyCode: Int): Boolean
-    fun getPreedit(): String
-    fun getCandidates(): List<String>
-    fun selectCandidate(index: Int)
-    fun commit()
-    fun backspace(): Boolean
-    fun toggleFullHalf(): Boolean
-    fun toggleChiEng(): Boolean
-    fun loadUserDict(path: String): Boolean
-    fun saveUserDict(path: String)
-    val isReady: Boolean
-    fun nextPage(): Boolean
-    fun prevPage(): Boolean
+    fun handleKeyUpdate(keyCode: Int): EngineUpdate
+    fun backspaceUpdate(): EngineUpdate
+    fun selectCandidateUpdate(index: Int): EngineUpdate
+    fun commitUpdate(): EngineUpdate
+    fun nextPageUpdate(): EngineUpdate?
+    fun prevPageUpdate(): EngineUpdate?
+    fun close()
 }
