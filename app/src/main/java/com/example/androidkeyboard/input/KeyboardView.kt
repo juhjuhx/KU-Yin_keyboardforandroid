@@ -1,16 +1,15 @@
 package com.example.androidkeyboard.input
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
-import android.os.Build
 import android.util.AttributeSet
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
-import android.view.Surface
 import android.view.View
-import android.view.WindowManager
+import com.example.androidkeyboard.ui.ImePalette
 
 class KeyboardView @JvmOverloads constructor(
     context: Context,
@@ -21,7 +20,6 @@ class KeyboardView @JvmOverloads constructor(
 
     private val keyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL_AND_STROKE
-        textSize = 28f
         textAlign = Paint.Align.CENTER
     }
     private val keyBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
@@ -35,22 +33,30 @@ class KeyboardView @JvmOverloads constructor(
     private var pressedKeyIndex = -1
     private var hapticEnabled = true
     private var proximityTolerance = 0.15f
+    private var palette = ImePalette.from(context)
+
     var onKeyPress: ((KeyDef) -> Unit)? = null
 
     init {
-        keyPaint.textSize = 28f * context.resources.displayMetrics.density
+        isClickable = true
+        refreshAppearance()
     }
 
     fun refreshLayout() {
-        val wm = context.getSystemService(Context.WINDOW_SERVICE) as? WindowManager
-        val rotation = wm?.defaultDisplay?.rotation ?: 0
-        keyHeightDp = if (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) {
+        keyHeightDp = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             48f
         } else {
             60f
         }
+        refreshAppearance()
         requestLayout()
         rebuildKeySlots()
+    }
+
+    fun refreshAppearance() {
+        palette = ImePalette.from(context)
+        keyPaint.textSize = 28f * resources.displayMetrics.scaledDensity
+        invalidate()
     }
 
     fun setLayout(rows: List<KeyboardRow>) {
@@ -106,15 +112,7 @@ class KeyboardView @JvmOverloads constructor(
 
     private fun vibrate() {
         if (!hapticEnabled) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            performHapticFeedback(
-                HapticFeedbackConstants.KEYBOARD_TAP,
-                HapticFeedbackConstants.FLAG_IGNORE_GLOBAL_SETTING,
-            )
-        } else {
-            @Suppress("DEPRECATION")
-            (context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator)?.vibrate(10)
-        }
+        performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
     }
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
@@ -126,15 +124,16 @@ class KeyboardView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        canvas.drawColor(palette.surface)
         for ((index, slot) in keySlots.withIndex()) {
             val isPressed = index == pressedKeyIndex
-            keyBgPaint.color = if (isPressed) 0xFFBDBDBD.toInt() else 0xFFEEEEEE.toInt()
+            keyBgPaint.color = if (isPressed) palette.keyPressed else palette.key
             canvas.drawRect(slot.rect, keyBgPaint)
-            keyPaint.color = if (isPressed) 0xFF424242.toInt() else 0xFF212121.toInt()
+            keyPaint.color = if (isPressed) palette.textPressed else palette.text
             canvas.drawText(
                 slot.key.label,
                 slot.rect.centerX(),
-                slot.rect.centerY() + keyPaint.textSize / 3f,
+                slot.rect.centerY() - (keyPaint.ascent() + keyPaint.descent()) / 2f,
                 keyPaint,
             )
         }
@@ -145,16 +144,43 @@ class KeyboardView @JvmOverloads constructor(
             MotionEvent.ACTION_DOWN -> {
                 pressedKeyIndex = getKeyPressedIndex(event.x, event.y)
                 invalidate()
-                if (pressedKeyIndex >= 0) {
-                    vibrate()
-                    onKeyPress?.invoke(keySlots[pressedKeyIndex].key)
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val nextIndex = getKeyPressedIndex(event.x, event.y)
+                if (nextIndex != pressedKeyIndex) {
+                    pressedKeyIndex = nextIndex
+                    invalidate()
                 }
             }
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+
+            MotionEvent.ACTION_UP -> {
+                val releasedIndex = getKeyPressedIndex(event.x, event.y)
+                val commitIndex = if (releasedIndex >= 0 && releasedIndex == pressedKeyIndex) {
+                    releasedIndex
+                } else {
+                    -1
+                }
+                pressedKeyIndex = -1
+                invalidate()
+
+                if (commitIndex >= 0) {
+                    performClick()
+                    vibrate()
+                    onKeyPress?.invoke(keySlots[commitIndex].key)
+                }
+            }
+
+            MotionEvent.ACTION_CANCEL -> {
                 pressedKeyIndex = -1
                 invalidate()
             }
         }
+        return true
+    }
+
+    override fun performClick(): Boolean {
+        super.performClick()
         return true
     }
 
