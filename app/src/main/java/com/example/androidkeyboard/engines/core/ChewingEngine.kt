@@ -19,8 +19,10 @@ interface ChewingEngine {
     }
 
     val isReady: Boolean
+    val personalizedLearningEnabled: Boolean
 
     fun init(layout: Layout = Layout.DACHEN)
+    fun setPersonalizedLearningEnabled(enabled: Boolean)
     fun reset()
     fun handleKeyUpdate(keyCode: Int): EngineUpdate
     fun backspaceUpdate(): EngineUpdate
