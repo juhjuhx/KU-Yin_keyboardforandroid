@@ -21,6 +21,9 @@ class AndroidChewingEngine(
 
     override val isReady: Boolean get() = ready
 
+    override val personalizedLearningEnabled: Boolean
+        get() = nativeCtx != 0L && chewing_get_auto_learn(nativeCtx) == AUTOLEARN_ENABLED
+
     init {
         nativeLibraryLoaded = try {
             System.loadLibrary("chewing-jni")
@@ -53,13 +56,21 @@ class AndroidChewingEngine(
             return
         }
 
-        // Dachen is the only visual layout currently shipped, so the native
-        // decoder and rendered keyboard cannot drift apart.
+        // Dachen is the only decoder layout currently shipped, so the native
+        // decoder and rendered Chinese keyboard cannot drift apart.
         chewing_set_kb_type(nativeCtx, KB_DEFAULT)
         chewing_set_chi_eng_mode(nativeCtx, CHINESE_MODE)
         chewing_set_shape_mode(nativeCtx, HALFSHAPE_MODE)
         clearCachedState()
         ready = true
+    }
+
+    override fun setPersonalizedLearningEnabled(enabled: Boolean) {
+        if (nativeCtx == 0L) return
+        chewing_set_auto_learn(
+            nativeCtx,
+            if (enabled) AUTOLEARN_ENABLED else AUTOLEARN_DISABLED,
+        )
     }
 
     override fun reset() {
@@ -184,6 +195,9 @@ class AndroidChewingEngine(
         private const val KB_DEFAULT = 0
         private const val CHINESE_MODE = 1
         private const val HALFSHAPE_MODE = 0
+        // Pinned libchewing a6a8fa4: 0 = enabled, 1 = disabled.
+        private const val AUTOLEARN_ENABLED = 0
+        private const val AUTOLEARN_DISABLED = 1
         private const val KEYSTROKE_IGNORE = 1
 
         fun isIgnored(rtn: Int): Boolean = (rtn and KEYSTROKE_IGNORE) != 0
@@ -208,4 +222,6 @@ class AndroidChewingEngine(
     private external fun chewing_set_chi_eng_mode(ctx: Long, mode: Int)
     private external fun chewing_set_shape_mode(ctx: Long, mode: Int)
     private external fun chewing_set_kb_type(ctx: Long, kbtype: Int): Int
+    private external fun chewing_set_auto_learn(ctx: Long, mode: Int)
+    private external fun chewing_get_auto_learn(ctx: Long): Int
 }
