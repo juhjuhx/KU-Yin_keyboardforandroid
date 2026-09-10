@@ -4,7 +4,7 @@
 
 ## 0. Early scaffold
 
-项目最初由多套 AI coding workflow 协助建立 Android/JNI/文档骨架，包括 OpenCode + Mules Spark 1.3 与 Hermes + Agnes 2.0 Dash Flash。早期产物提供了方向、文件与部分代码，但当时生成的 APK 无法作为可用输入法完成验证，文档也混合了已实现、规划中与参考架构。
+项目最初由多套 AI coding workflow 协助建立 Android/JNI/文档骨架，包括 OpenCode / Muse Spark 与 Hermes / Agnes。早期产物提供了方向、文件与部分代码，但当时生成的 APK 无法作为可用输入法完成验证，文档也混合了已实现、规划中与参考架构。
 
 ## 1. Forensic reset
 
@@ -37,8 +37,8 @@ Recovery branch 最终以 squash merge 进入 `main`，建立 `v0.1.0-alpha` pre
 ## Attribution ledger
 
 - **juhjuhx**：项目 owner、产品方向、测试、repo/release 决策与最终验收。
-- **OpenCode / Mules Spark 1.3**：早期 scaffold、实现探索与文档。
-- **Hermes / Agnes 2.0 Dash Flash**：早期 Android/JNI、架构与状态文档。
+- **OpenCode / Muse Spark**：早期 scaffold、实现探索与文档。
+- **Hermes / Agnes**：早期 Android/JNI、架构与状态文档。
 - **ChatGPT / GPT-5.6 Sol**：forensic review、P0–R4 recovery、TDD contracts、CI/native/security/docs/release consolidation。
 
 AI 项目记录代表工具输出曾实质影响仓库，不把 AI 系统视作人类 GitHub identity、法律作者或版权主体。代码与 commit history 仍是最终事实来源。
