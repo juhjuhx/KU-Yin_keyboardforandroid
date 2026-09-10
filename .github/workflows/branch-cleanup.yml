@@ -1,0 +1,24 @@
+name: One-time Branch Cleanup
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    if: contains(github.event.head_commit.message, 'repository consolidation')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete superseded branches
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for branch in master fix/p0-p4-ime-recovery chore/repository-consolidation-v0.1.1; do
+            echo "Deleting $branch if present"
+            gh api -X DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/$branch" >/dev/null 2>&1 || true
+          done

@@ -9,81 +9,70 @@ permissions:
   contents: write
 
 jobs:
-  check-release:
+  release:
     runs-on: ubuntu-latest
-    outputs:
-      exists: ${{ steps.check.outputs.exists }}
     steps:
-      - id: check
-        name: Check existing prerelease
+      - uses: actions/checkout@v6
+      - name: Resolve source version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n1)"
+          test -n "$VERSION"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+      - name: Check existing prerelease
+        id: existing
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: v0.1.0-alpha
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
-
-  build-and-publish:
-    needs: check-release
-    if: needs.check-release.outputs.exists != 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then echo "exists=true" >> "$GITHUB_OUTPUT"; else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
       - name: Set up JDK 17
+        if: steps.existing.outputs.exists != 'true'
         uses: actions/setup-java@v5
-        with:
-          java-version: "17"
-          distribution: "temurin"
-
+        with: {java-version: "17", distribution: "temurin"}
       - name: Setup Android SDK
+        if: steps.existing.outputs.exists != 'true'
         uses: android-actions/setup-android@v3
-
       - name: Setup Gradle 7.6.4
+        if: steps.existing.outputs.exists != 'true'
         uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: "7.6.4"
-
+        with: {gradle-version: "7.6.4"}
       - name: Bootstrap pinned native dependencies
+        if: steps.existing.outputs.exists != 'true'
         run: bash scripts/bootstrap_native_deps.sh
-
-      - name: Build alpha APKs
-        run: gradle assembleDebug assembleRelease --stacktrace
-
+      - name: Test and build alpha APKs
+        if: steps.existing.outputs.exists != 'true'
+        run: gradle testDebugUnitTest assembleDebug assembleRelease --stacktrace
       - name: Prepare release assets
+        if: steps.existing.outputs.exists != 'true'
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
+          set -euo pipefail
           mkdir -p dist
-          cp app/build/outputs/apk/debug/app-debug.apk dist/KU-Yin-v0.1.0-alpha-debug.apk
-          cp app/build/outputs/apk/release/app-release-unsigned.apk dist/KU-Yin-v0.1.0-alpha-release-unsigned.apk
+          cp app/build/outputs/apk/debug/app-debug.apk "dist/KU-Yin-v${VERSION}-debug.apk"
+          cp app/build/outputs/apk/release/app-release-unsigned.apk "dist/KU-Yin-v${VERSION}-release-unsigned.apk"
           (cd dist && sha256sum *.apk > SHA256SUMS.txt)
-          cat > dist/RELEASE-NOTES.md <<'EOF'
-          # KU-Yin 0.1.0-alpha
+          cat > dist/RELEASE-NOTES.md <<EOF
+          # KU-Yin ${VERSION}
 
-          Early Android Zhuyin IME preview based on libchewing.
+          Android Zhuyin IME alpha powered by libchewing.
 
-          - `KU-Yin-v0.1.0-alpha-debug.apk` is debug-signed and intended for direct testing.
-          - `KU-Yin-v0.1.0-alpha-release-unsigned.apk` is an unsigned developer artifact used to verify the release build. It is not a production-signed APK.
-          - `SHA256SUMS.txt` contains checksums for the attached APKs.
+          - Debug APK is debug-signed and intended for direct testing.
+          - Release APK is unsigned and is a developer artifact, not a production-signed package.
+          - SHA256SUMS.txt contains checksums for this exact build.
+          - CI covers native bootstrap, JVM tests and both APK builds.
+          - Android emulator evidence covers install/register/enable/select; headless IME-window-visible remains an alpha limitation.
 
-          Verified before merge on Android 13 emulator: install, IME registration, enable, and select. The headless IME-window-visible runtime smoke assertion remains a known alpha limitation.
+          See README.md, docs/SECURITY_AUDIT.md and docs/HISTORY.md for scope and limitations.
           EOF
-
       - name: Publish prerelease
+        if: steps.existing.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: v0.1.0-alpha
+          TAG: ${{ steps.version.outputs.tag }}
         run: |
-          gh release create "$TAG" \
-            dist/KU-Yin-v0.1.0-alpha-debug.apk \
-            dist/KU-Yin-v0.1.0-alpha-release-unsigned.apk \
-            dist/SHA256SUMS.txt \
-            --repo "$GITHUB_REPOSITORY" \
-            --target "$GITHUB_SHA" \
-            --title "KU-Yin 0.1.0-alpha" \
-            --notes-file dist/RELEASE-NOTES.md \
-            --prerelease
+          gh release create "$TAG" dist/*.apk dist/SHA256SUMS.txt --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --title "KU-Yin ${{ steps.version.outputs.version }}" --notes-file dist/RELEASE-NOTES.md --prerelease

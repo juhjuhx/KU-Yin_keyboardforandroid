@@ -1,49 +1,36 @@
 # Changelog
 
-All notable project changes should be recorded here. This file describes implemented repository behavior only; planned features belong in `docs/NEXT_STEPS.md` or roadmap/design documents.
+## [0.1.1-alpha] - 2026-09-10
 
-## [Unreleased]
+### Repository / release
 
-### Added
+- Consolidated public documentation into a small authoritative docs tree.
+- Rewrote README around upstream provenance, usage, architecture, security, roadmap and acknowledgements.
+- Added a single iteration report covering the scaffold → P0–R4 recovery → mainline path.
+- Added security/privacy/performance/supply-chain audit documentation.
+- Added safe upstream monitoring for `fcitx5-android/prebuilt` and official Codeberg libchewing releases.
+- Bumped application version to `0.1.1-alpha` / versionCode 2.
+- Prerelease workflow now derives the GitHub tag and asset names from `versionName`.
 
-- Dachen (大千) Bopomofo keyboard surface aligned with the pinned libchewing standard layout.
-- ASCII fallback keyboard surface with digits, Shift, Space, Backspace and Enter.
-- `EditorPolicy` for input-type / IME-option decisions.
-- `ImeSessionController` for keyboard/session policy.
-- editor-action handling and selection reconciliation.
-- app-private libchewing dictionary installation.
-- deterministic GitHub Actions build with Debug and Release APK artifacts.
-- regression tests for Dachen mapping, keyboard mode, OpenCC capability truthfulness, editor policy and session behavior.
+### Existing recovered functionality carried forward
 
-### Changed
+- Dachen Zhuyin + libchewing decoding.
+- composition/candidate synchronization via `InputConnection`.
+- ASCII/password sessions, Shift/digits/Space/Backspace/Enter/editor actions.
+- selection reconciliation and no-personalized-learning policy.
+- deterministic four-ABI native bootstrap and Debug/unsigned Release builds.
 
-- native dependency handling now uses pinned upstream artifacts and fails the build when required ABI inputs are missing.
-- composition/preedit and committed text are synchronized through `InputConnection`.
-- candidate selection is routed through the native candidate index.
-- OpenCC pass-through code no longer presents simplified/traditional conversion as an available production capability.
-- Android backup is disabled in the recovery branch.
-- README/build/security documentation now distinguishes static build success from Android runtime readiness.
+### Known alpha limitations
 
-### Fixed
+- production release signing not configured.
+- headless IME-window-visible smoke remains experimental/non-blocking.
+- target/compile SDK remain API 33 pending a separate modernization pass.
+- OpenCC, Hsu/Eten26, full accessibility, symbols/Emoji, clipboard, gesture typing and prediction are not complete production features.
 
-- corrected incorrect Dachen key mappings and missing punctuation key mapping.
-- corrected Space key ASCII handling.
-- corrected Backspace/special-key dispatch semantics.
-- rebuilt key hitboxes after view-size changes.
-- removed a dangling `roundIcon` manifest resource that broke AAPT2 processing.
-- prevented native-load failure from being described as a working fallback state.
-- fixed an ASCII-layout enum initialization issue exposed by JVM compilation.
+## [0.1.0-alpha] - 2026-09-10
 
-### Security / Privacy
+First recoverable alpha after the P0–R4 repair pass. Build/install/IME register/enable/select flow was established and published with Debug and unsigned Release APK artifacts.
 
-- no Android `INTERNET` permission is requested.
-- sensitive/no-learning editor policy can disable libchewing personalized learning.
-- libchewing user data remains in app-private storage.
+## Historical scaffold
 
-### Verification
-
-The current recovery branch has passed repository-side contracts, JVM tests, native bootstrap, `assembleDebug`, `assembleRelease`, and artifact upload. Android runtime/device verification is still pending and is **not** claimed as completed here.
-
-## [0.1.0] - 2026-09-08
-
-Initial experimental/scaffold work. Historical documentation from this period may describe architecture or features that were later replaced during the recovery work.
+Earlier experimental work prior to the recovery is preserved in Git history. Some historical documents described planned features that were never shipped; current README/docs are authoritative.

@@ -1,0 +1,48 @@
+name: Upstream Watch
+
+on:
+  schedule:
+    - cron: "17 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check upstream revisions
+        id: upstream
+        run: bash scripts/check_upstream.sh
+      - name: Create or refresh update issue
+        if: steps.upstream.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PINNED_PREBUILT: ${{ steps.upstream.outputs.pinned_prebuilt }}
+          LATEST_PREBUILT: ${{ steps.upstream.outputs.latest_prebuilt }}
+          PINNED_LIBCHEWING: ${{ steps.upstream.outputs.pinned_libchewing }}
+          TRACKED_LIBCHEWING_RELEASE: ${{ steps.upstream.outputs.tracked_libchewing_release }}
+          LATEST_LIBCHEWING_RELEASE: ${{ steps.upstream.outputs.latest_libchewing_release }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          title="[upstream] dependency update available"
+          body="$(cat <<EOF
+          ## KU-Yin upstream watcher
+
+          An upstream change was detected. This issue is informational and must **not** be auto-merged into main.
+
+          | Source | Current | Upstream |
+          |---|---|---|
+          | fcitx5-android/prebuilt | \`$PINNED_PREBUILT\` | \`$LATEST_PREBUILT\` |
+          | libchewing source pin | \`$PINNED_LIBCHEWING\` | tied to selected prebuilt |
+          | libchewing release visibility | \`$TRACKED_LIBCHEWING_RELEASE\` | \`$LATEST_LIBCHEWING_RELEASE\` |
+
+          Validation required: inspect changelog/ABI/dictionary changes, deliberately update provenance, run native bootstrap + JVM tests + Debug/Release builds, and review privacy/learning/candidate behavior before merge.
+          EOF
+          )"
+          number="$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search '"[upstream] dependency update available" in:title' --json number --jq '.[0].number // empty')"
+          if [[ -n "$number" ]]; then gh issue edit "$number" --repo "$GITHUB_REPOSITORY" --body "$body"; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body "$body"; fi

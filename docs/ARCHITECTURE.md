@@ -1,43 +1,55 @@
-# 架構說明（ARCHITECTURE）
+# Architecture
 
-> 狀態：**骨架（skeleton）** — 本檔描述 `android-keyboard` fork-mirror 的目標架構與切分原則；實碼與依賴圖於後續 waves（Todo 10 之後）落地。
+KU-Yin 当前是一套原生 Android IME。项目自有代码以 Kotlin/View 和 C++ JNI 为主，中文解码委托给 libchewing C API。
 
----
+```text
+Android Framework
+EditorInfo / InputConnection / InputMethodService lifecycle
+                    │
+                    ▼
+        ChewingInputMethodService
+                    │
+        ┌───────────┼───────────────┐
+        ▼           ▼               ▼
+  EditorPolicy  ImeSession      KeyboardView /
+                 Controller      CandidateView
+        │           │               │
+        └───────────┴───────┬───────┘
+                            ▼
+                    ChewingEngine contract
+                            │
+                            ▼
+                  AndroidChewingEngine
+                            │
+                            ▼
+                       JNI / C++
+                            │
+                            ▼
+                    libchewing C API
+```
 
-## 1. 定位與上游
+## Boundaries
 
-- 底座：[fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master`，LGPL-2.1）。
-- 本專案為 fork-mirror，目標是「可長期迭代、可直接推送 GitHub、含上游宣告與授權合規」。
+`ChewingInputMethodService` 是 Android adapter，负责 framework lifecycle、`InputConnection` 与 UI orchestration。`EditorPolicy` 将 `EditorInfo` 的 password、force-ASCII、no-personalized-learning 和 editor action 统一规范化。`ImeSessionController` 决定当前使用 Dachen 还是 ASCII surface，以及候选/composition/learning policy。
 
-## 2. 三大支柱（解碼 / 簡繁 / 前端）
+`ChewingEngine` 是 Kotlin 侧的 decoder contract；`AndroidChewingEngine` 是唯一应直接调用 JNI 的 Android adapter。UI 不应直接依赖 native symbols。
 
-| 支柱 | 技術 | 說明 |
-|------|------|------|
-| 解碼 | `libchewing` 經 `fcitx5-chewing` | 預設大千（DaChen）4x10，附 Hsu、Eten26 選項 |
-| 簡繁 | `OpenCC` | 一鍵切換；預設台灣 `s2tw` / `tw2s`，fallback `s2t` / `t2s` |
-| 前端 | Kotlin `View` / `Canvas` 自繪 | AOSP LatinIME 思路；**非 Compose 主渲染** |
+## Native boundary
 
-## 3. core / UI 切分（iOS 預留）
+JNI 层只做类型/生命周期转换与 libchewing C API forwarding。system dictionary 与 user dictionary 路径由 Kotlin 层准备后传入。native context 在重新初始化与关闭时显式 delete；JNI strings 在调用后释放。
 
-- `engines/core`：chewing / OpenCC / 配置 schema（與平台無關，iOS 可複用）。
-- `app/`（Android UI）：`InputMethodService` + 自繪 Keyboard `View`/`Canvas` + 候選欄 + 主題。
-- 原則：UI 層**不直接呼叫 JNI 解碼**，一律經 `core` 介面（依賴走查於 Todo 21 驗證）。
+## Storage
 
-## 4. 前端渲染策略（低延遲）
+系统词典从 APK assets 安装到 `noBackupFilesDir/libchewing/system`，user dictionary 位于 `noBackupFilesDir/libchewing/user/userdict.dat`。这是 app-private 且不参与 Android backup 的存储；目前没有额外应用层加密。
 
-- `InputMethodService` 生命週期：`onCreateInputView` / `onStartInput` / batch edit。
-- 自繪 Keyboard View（硬體加速開啟）、鄰鍵 `getNearestKeys` / `ProximityInfo` 誤觸處理。
-- 候選欄分頁/展開、按壓 popup、長按 350ms 符號、Emoji/符號選擇器、純文字剪貼簿、Material You 3 動態色。
-- 做法對標 AOSP LatinIME；不拿 Compose 當輸入視窗主渲染。
+## Current layout model
 
-## 5. 依賴圖與越層規則（佔位）
+当前正式暴露的大千/Dachen layout 与 decoder 固定为同一语义，避免 UI 与 libchewing keyboard mode 漂移。Hsu/Eten26 只保留为未来 roadmap，在有完整可视布局、测试与 editor integration 之前不对使用者宣称支持。
 
-> 依賴圖於 Todo 21 落地後於此補圖。
+## Runtime verification
 
-- UI → core：唯讀介面呼叫。
-- core → JNI：唯一允許 JNI 的層。
-- 禁止：UI 層直調 JNI、core 層依賴 Android UI。
+Build 成功与 IME runtime 成功分离。CI 的 blocking path 覆盖 contracts、JVM tests、native bootstrap、Debug/Release APK；Android emulator runtime smoke 目前用于安装/注册/enable/select/JNI 证据，headless IME-window-visible assertion 仍为 non-blocking。
 
----
+## Non-goals
 
-_本檔為 Todo 1 骨架；後續 waves 將填充實作細節與依賴圖。_
+当前不引入 Compose 主渲染、不新增 KU-Yin 自有 Rust 层、不把 OpenCC/Emoji/clipboard/prediction 等规划写成已完成能力。若未来直接消费新版 libchewing Rust 构建或改 ABI，需独立架构决策。
