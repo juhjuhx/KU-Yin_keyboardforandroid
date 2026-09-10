@@ -1,49 +1,20 @@
 # Contributing to KU-Yin
 
-KU-Yin is an Android Bopomofo IME using Kotlin/View, JNI/C++ and libchewing. The current project is in recovery/validation rather than broad feature expansion, so contributions should keep changes focused and preserve diagnosable build/test boundaries.
+KU-Yin 是 Android Zhuyin/Bopomofo IME。贡献应保持可追溯、可测试，并尊重输入法属于高敏感软件这一事实。
 
-## Before contributing
+## 开始前
 
-Read, in order:
+请先阅读：`README.md`、`docs/ARCHITECTURE.md`、`docs/DEVELOPMENT.md`、`docs/UPSTREAM.md`、`SECURITY.md`。
 
-1. `docs/PROJECT_STATUS.md`
-2. `docs/NEXT_STEPS.md`
-3. `docs/superpowers/plans/2026-09-09-r4-closing-pass.md`
+历史 recovery 资料位于 Git history 与 `docs/archive/`，不再作为当前实现的 source of truth。
 
-Older scaffold/recovery plans are historical context and may no longer represent the current implementation.
+## 适合贡献的范围
 
-## Current scope
+优先欢迎可复现 Android runtime / OEM bug、大千输入正确性、editor/session policy、JNI/libchewing integration、accessibility、build reproducibility、安全/隐私 hardening 与文档修正。
 
-Good contribution targets include:
+不要在一个 bug-fix PR 里同时塞 SDK 大升级、UI 重写、decoder 更换和全新 feature family。
 
-- reproducible Android runtime/IME bug reports
-- Dachen input correctness
-- session/editor-policy correctness
-- JNI/libchewing integration fixes
-- focused tests for existing behavior
-- documentation corrections
-- build/reproducibility hardening
-
-Please avoid bundling unrelated toolchain upgrades, UI redesigns and new feature families into bug-fix PRs.
-
-## Toolchain
-
-The verified CI build currently uses:
-
-- JDK 17
-- Gradle 7.6.4
-- Android SDK / API 33 project configuration
-- Android NDK `27.3.13750724`
-- CMake 3.22.1 for the app native build
-- pinned native inputs staged by `scripts/bootstrap_native_deps.sh`
-
-See `BUILD.md` for the reference build sequence.
-
-## Testing
-
-For behavior changes, add or update the narrowest useful regression test first.
-
-Reference checks:
+## Build 与测试
 
 ```bash
 python3 scripts/check_dachen_contract.py
@@ -58,49 +29,22 @@ gradle assembleDebug --stacktrace
 gradle assembleRelease --stacktrace
 ```
 
-The lightweight Python checks are preflight/integration contracts. JVM tests are the behavioral source of truth for Kotlin logic.
+Python contracts 是快速 preflight；Kotlin 行为以 JVM tests 为主要 truth。涉及 IME lifecycle / native 的修改应附 runtime evidence。
 
-Android runtime/device verification is tracked separately; do not describe an APK as runtime-ready merely because `assembleDebug` succeeds.
+## 第三方代码
 
-## Pull requests
+不要因为另一个键盘“看起来能用”就直接复制实现。任何 source transplantation 都要检查具体文件/模块 license 与 provenance。libchewing 是当前 production decoder；fcitx5-android、FlorisBoard、HeliBoard、AOSP 等大多作为 architecture/behavior research reference，除非另有明确复用记录。
 
-Keep PRs small enough that one failure can be traced to one logical change. A good PR description should include:
+## 安全要求
 
-- problem/root cause
-- intended behavior
-- tests added or updated
-- static build evidence
-- runtime evidence when the change affects IME lifecycle/input behavior
-- known limitations or follow-up work
+禁止未经明确设计与说明的网络传输输入内容、plaintext keystroke logging / telemetry，以及在 app-private 预期路径之外持久化输入内容。不要以“CI 绿灯”替代敏感 editor/runtime security evidence。
 
-## Commit style
+## Pull Request
 
-Conventional-commit style is preferred:
+PR 描述应包含问题/根因、修改边界、测试、build 证据、runtime 证据（若相关）、第三方来源（若有）与已知限制。
 
-```text
-fix(input): correct selection reconciliation
-test(session): cover password editor policy
-docs: reconcile runtime verification status
-chore(ci): pin a build dependency
-```
-
-## Third-party code and licenses
-
-Do not copy implementation code from another keyboard/project without checking the exact file/module license and recording provenance. Architecture and behavior patterns may be studied without copying source.
-
-The current production decoder dependency is libchewing; fcitx5-android, FlorisBoard, HeliBoard and other keyboards are primarily reference/donor research sources unless explicit license/provenance review approves source reuse.
-
-## Security-sensitive changes
-
-IME code handles sensitive text. Avoid:
-
-- network-backed typing paths
-- keystroke/content logging
-- storing plaintext user input outside the intended private dictionary/session path
-- claiming password/no-learning protection without runtime evidence
-
-See `SECURITY.md`.
+Conventional Commit 风格推荐：`fix(input): ...`、`test(session): ...`、`docs: ...`、`chore(ci): ...`。
 
 ## License
 
-By contributing, you agree that your contribution is licensed under the repository's project license and any applicable upstream obligations.
+提交到本仓库的贡献按仓库 `LICENSE` 与适用上游义务处理。若引入第三方代码，请同时补齐 provenance / NOTICE 信息。

@@ -1,46 +1,25 @@
 # Security Policy
 
-KU-Yin is an Android input method. Security and privacy claims in this document are limited to behavior that is implemented or directly observable in the current recovery branch.
+KU-Yin 是输入法，可能接触密码、私人通信与其他高敏感文字。安全声明只覆盖当前源码与已验证证据。
 
-## Verified / implemented properties
+## 当前控制
 
-- The application does not request the Android `INTERNET` permission.
-- libchewing dictionaries and user data are handled locally.
-- user dictionary data is stored under app-private storage.
-- Android application backup is disabled in the current recovery branch.
-- editor policy distinguishes sensitive/password input and no-personalized-learning sessions.
-- the native libchewing adapter exposes personalized-learning enable/disable control for session policy.
-- the current build uses pinned upstream native/prebuilt revisions rather than floating branch names.
+- Manifest 不申请 Android `INTERNET` permission。
+- Android backup 明确关闭。
+- libchewing system/user data 位于 app-private `noBackupFilesDir`。
+- `EditorPolicy` 识别 password、FORCE_ASCII 与 `IME_FLAG_NO_PERSONALIZED_LEARNING`。
+- native adapter 可关闭 libchewing personalized learning。
+- 当前没有 clipboard feature，也未发现按键/preedit/candidate 明文日志路径；现有 `Log.e` 仅记录 generic JNI/init 错误。
+- native dependency 使用固定 revision，而非 floating branch。
 
-These properties reduce data-exfiltration and accidental-learning risk, but they do not substitute for runtime testing on Android devices.
+## 这些不代表什么
 
-## Current limitations
+不代表 root / 已攻破设备上的数据仍受保护；user dictionary 当前没有额外应用层加密；尚无完整 OEM / Android version runtime security matrix；static libchewing archive 尚未完成源码重编等价 / 每文件 hash gate；production release signing 尚未建立。
 
-The following should **not** be interpreted as completed security guarantees yet:
+详细审计见 `docs/SECURITY_AUDIT.md`。
 
-- runtime verification of password/FORCE_ASCII behavior is still pending
-- runtime verification of `IME_FLAG_NO_PERSONALIZED_LEARNING` behavior is still pending
-- physical-device and OEM-specific IME lifecycle testing is still pending
-- native staged artifacts do not yet have a repository-maintained per-file SHA-256 manifest/rebuild-comparison gate
-- OpenCC is not a production backend
-- there is no clipboard feature in the current recovery scope
-- Direct Boot support has not been verified as a release guarantee
-- OTP-specific behavior is not currently claimed as a verified feature
+## 漏洞报告
 
-## Sensitive input policy
+若 GitHub Security tab 提供 private vulnerability reporting，请优先使用私密 Security Advisory。不要在公开 Issue 贴出可直接利用的敏感 exploit、真实输入内容、私钥或用户数据。
 
-The current architecture routes `EditorInfo` through `EditorPolicy` / `ImeSessionController` so sensitive fields can use an ASCII-oriented session and disable personalized learning.
-
-This policy is considered **statically implemented**. It becomes a release-level guarantee only after the runtime checklist in `docs/NEXT_STEPS.md` is completed.
-
-## Dependency / supply-chain model
-
-Native dependencies are bootstrapped from pinned upstream revisions by `scripts/bootstrap_native_deps.sh`. Missing native ABI artifacts fail the build instead of silently creating a potentially unusable APK.
-
-A later hardening pass should add explicit per-file hashes and provenance/reproducibility documentation.
-
-## Reporting a vulnerability
-
-If you discover a security or privacy issue, prefer a private GitHub Security Advisory when the repository Security tab supports private reporting. Avoid posting sensitive exploit details in a public issue before maintainers have had a chance to review them.
-
-No guaranteed response-time SLA is currently published by this project.
+本项目目前不承诺固定响应 SLA。
