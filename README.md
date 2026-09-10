@@ -1,110 +1,94 @@
 # KU-Yin Keyboard for Android
 
-KU-Yin is an open-source Android Bopomofo IME focused on a local-first, privacy-conscious input path. The current implementation uses Kotlin/View for the Android UI, JNI/C++ for the native bridge, and libchewing for Bopomofo decoding.
+> 一個開源、local-first 的 Android 注音輸入法實驗專案，使用 Android `InputMethodService`、Kotlin/View UI、JNI 與 libchewing。
 
-> Current project state: **static build verified; Android runtime verification pending**.
+[![Build](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/workflows/build.yml/badge.svg)](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/workflows/build.yml)
+[![License: LGPL-2.1](https://img.shields.io/badge/License-LGPL--2.1-blue.svg)](LICENSE)
 
-See [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md) for the factual current state and [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md) for the immediate plan.
+**繁體中文** · [简体中文](README.zh-CN.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
-## What currently exists
+## 專案狀態
 
-- Android `InputMethodService`
-- Dachen (大千) Bopomofo keyboard surface
-- ASCII fallback surface with digits, Shift, Space, Backspace and Enter
-- candidate UI and composition synchronization through `InputConnection`
-- `EditorPolicy` and `ImeSessionController` boundaries for editor/session behavior
-- JNI bridge to pinned libchewing native artifacts
-- app-private libchewing dictionary installation
-- Debug and Release APK builds in GitHub Actions
-- deterministic JVM tests and lightweight source/build contracts
+目前版本為 **`0.1.0-alpha`**。KU-Yin 已從不可用的初始 APK 恢復為可建置的 Android IME 專案：JVM 測試、Debug APK、Release APK 與 native dependency bootstrap 已能在 GitHub Actions 通過。
 
-## Current verification status
+Android 13 emulator 已實際確認：APK 可安裝、系統可辨識 KU-Yin 為 IME、可 `enable` 並切換為預設輸入法。現階段自動化 runtime smoke 仍卡在 headless emulator 的「IME 視窗可見」斷言，因此本版本應視為 **alpha preview**，不是穩定發行版。
 
-The latest verified recovery head is documented in `docs/PROJECT_STATUS.md`. The current CI path verifies:
+## 目前具備的核心能力
 
-```text
-source/build contracts
-        ↓
-JDK 17 + Android SDK + Gradle 7.6.4
-        ↓
-pinned native dependency bootstrap
-        ↓
-JVM tests
-        ↓
-assembleDebug
-        ↓
-assembleRelease
-        ↓
-Debug / Release APK artifacts
+- 大千注音輸入與 libchewing 解碼核心
+- 組字、候選字與 `InputConnection` 同步
+- 候選字以 native candidate index 提交
+- ASCII / 密碼欄位輸入表面
+- Shift、數字、Space、Backspace、Enter 與 editor action
+- 游標／selection 變更後的 composition reconciliation
+- `IME_FLAG_NO_PERSONALIZED_LEARNING` 對應的個人化學習控制
+- `armeabi-v7a`、`arm64-v8a`、`x86`、`x86_64` 四種 ABI
+- 依賴固定版本的 libchewing native bootstrap
+
+## 下載與安裝
+
+請從 [GitHub Releases](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases) 下載最新 alpha 預覽版。`APK/README.md` 會列出目前 APK 類型與 SHA-256。
+
+目前會提供兩種產物：
+
+- **Debug APK**：debug-signed，可直接安裝測試。
+- **Release unsigned APK**：未簽章的開發者產物，用於驗證 release build；它不是正式可發布安裝包。
+
+安裝後，在 Android 的「設定 → 系統／一般管理 → 鍵盤／語言與輸入 → 螢幕鍵盤／管理鍵盤」中啟用 KU-Yin，再透過輸入法切換器選擇 KU-Yin。各品牌 Android 的選單名稱可能不同。
+
+## 隱私與安全
+
+輸入法可以接觸高度敏感的文字內容，因此 KU-Yin 以 local-first 為基本原則。現有輸入流程不需要雲端服務才能完成注音解碼；密碼欄位、ASCII 強制模式與禁止個人化學習等 editor policy 會在 IME 層處理。
+
+在正式處理敏感資料前，請先閱讀 [SECURITY.md](SECURITY.md)、原始碼與已知限制。本專案仍處於 alpha 階段，不應把目前的 CI 綠燈等同於所有 OEM／Android 版本都已完成安全與相容性驗證。
+
+## 自行建置
+
+主要工具鏈：
+
+- JDK 17
+- Android SDK / compileSdk 33
+- Gradle 7.6.4
+- NDK `27.3.13750724`
+- CMake `3.22.1`
+
+```bash
+bash scripts/bootstrap_native_deps.sh
+gradle testDebugUnitTest
+gradle assembleDebug
+gradle assembleRelease
 ```
 
-This proves the repository builds cleanly in GitHub Actions. It does **not** yet prove that the IME is release-ready on a real Android runtime.
+更完整的環境與驗證流程請看 [BUILD.md](BUILD.md)。
 
-## Architecture
+## 架構概覽
 
 ```text
-Android framework
-    │
-    ▼
-ChewingInputMethodService
-    │
-    ├── EditorPolicy
-    ├── ImeSessionController
-    ├── KeyboardView / CandidateView
-    └── ChewingEngine
-            │
-            ▼
-    AndroidChewingEngine
-            │
-            ▼
-       JNI / libchewing
+Android InputMethodService
+        │
+        ├── EditorPolicy
+        ├── ImeSessionController
+        ├── KeyboardView / CandidateView
+        └── ChewingEngine
+               └── AndroidChewingEngine
+                      └── JNI / libchewing
 ```
 
-The Android service is intended to remain an adapter: editor/session decisions live in pure Kotlin policy/controller code, and native decoding stays behind the `ChewingEngine` boundary.
+輸入法 service、editor policy、session state、UI 與 native decoding 盡量分離，讓核心行為可以被 JVM／instrumentation 測試覆蓋。
 
-## Privacy / capability notes
+## 已知限制
 
-- The application does not request the Android `INTERNET` permission.
-- libchewing user data is stored under app-private storage.
-- personalized-learning policy can be disabled for sensitive/no-learning editor sessions.
-- Android backup is disabled in the current recovery branch.
-- OpenCC conversion is **not** currently a production feature; the pass-through stub no longer presents itself as a working backend.
+- Android 13 headless emulator 的 IME-window-visible smoke 目前仍未通過；install/register/enable/select 已確認成功。
+- `compileSdk` / `targetSdk` 目前仍為 API 33，之後需要獨立升級。
+- OpenCC 轉換目前不是完整 production feature。
+- Hsu / Eten26 尚未作為完整使用者布局提供。
+- per-key accessibility virtual nodes、完整符號／Emoji、clipboard、gesture typing、prediction 等仍在後續範圍。
+- 正式 release signing 尚未建立，因此目前 Release APK 仍為 unsigned developer artifact。
 
-See [`SECURITY.md`](SECURITY.md) for the supported guarantees and known limitations.
+## 參與開發
 
-## Build
+請先閱讀 [CONTRIBUTING.md](CONTRIBUTING.md)、[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) 與 [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)。Bug、相容性結果與可重現的裝置測試都很有價值。
 
-The authoritative build path is GitHub Actions. For local build notes and exact commands, see [`BUILD.md`](BUILD.md).
+## 授權與第三方元件
 
-## Current limitations
-
-The following are intentionally outside the current static-recovery completion claim:
-
-- Android runtime / physical-device IME verification
-- API 36 toolchain migration
-- OpenCC production integration
-- Hsu / Eten26 completed visual keyboard layouts
-- per-key accessibility virtual nodes
-- full symbol/emoji system
-- clipboard, gesture typing and prediction features
-
-Google Play requires new apps and app updates to target Android 16 (API 36) starting 2026-08-31. The current project still uses API 33 and will migrate in a dedicated compatibility pass after runtime recovery is closed.
-
-## Development documents
-
-Current documents, in order of authority:
-
-1. [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md)
-2. [`docs/NEXT_STEPS.md`](docs/NEXT_STEPS.md)
-3. [`docs/superpowers/plans/2026-09-09-r4-closing-pass.md`](docs/superpowers/plans/2026-09-09-r4-closing-pass.md)
-4. [`docs/superpowers/specs/2026-09-09-recovery-v2-stable-kernel-design.md`](docs/superpowers/specs/2026-09-09-recovery-v2-stable-kernel-design.md)
-
-Older P0-P4 recovery files are retained as historical implementation records.
-
-## Attribution
-
-Project and AI-assisted contribution history is recorded in [`CONTRIBUTORS.md`](CONTRIBUTORS.md). Upstream/reference projects and code must retain their original license/provenance requirements when reused.
-
-## License
-
-See [`LICENSE`](LICENSE) and repository notices for licensing details.
+本 repository 根授權文件為 [GNU LGPL 2.1](LICENSE)。第三方元件、libchewing 與 native dependency 的來源與授權資訊請一併參考 [NOTICE](NOTICE)。

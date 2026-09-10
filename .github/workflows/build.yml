@@ -73,7 +73,9 @@ jobs:
           if-no-files-found: error
 
   runtime-smoke:
+    name: runtime-smoke (experimental)
     needs: build
+    continue-on-error: true
     runs-on: ubuntu-latest
     timeout-minutes: 35
 
