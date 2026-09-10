@@ -1,78 +1,106 @@
-# Contributing to android-keyboard
+# Contributing to KU-Yin
 
-Thank you for your interest in android-keyboard! This project is a fork of [fcitx5-android](https://github.com/fcitx5-android/fcitx5-android), focused on providing a privacy-first, high-performance Android bopomofo input experience.
+KU-Yin is an Android Bopomofo IME using Kotlin/View, JNI/C++ and libchewing. The current project is in recovery/validation rather than broad feature expansion, so contributions should keep changes focused and preserve diagnosable build/test boundaries.
 
-## Scope and Boundaries
+## Before contributing
 
-Before opening an Issue or PR, please note:
-1. **Upstream issues**: If the problem relates to fcitx5 engine core, general upstream UI, or generic protocols, report to [fcitx5-android upstream](https://github.com/fcitx5-android/fcitx5-android/issues) first.
-2. **This repo**: Issues about DaChen/Hsu/Eten26 layouts, OpenCC conversion, custom Canvas frontend, or project-specific privacy/security designs belong here.
-3. **Out of scope**: Nine-grid (九宮格), Japanese twelve-key, and engine-controlled keyboard layouts are not promised in this phase (see docs/ROADMAP.md).
+Read, in order:
 
-## Environment Setup
+1. `docs/PROJECT_STATUS.md`
+2. `docs/NEXT_STEPS.md`
+3. `docs/superpowers/plans/2026-09-09-r4-closing-pass.md`
 
-This project involves Kotlin + C++ (JNI) + Rust mixed compilation. Ensure:
-1. **Android SDK/NDK**: Configure sdk.dir and ndk.dir in local.properties.template.
-2. **Rust toolchain**: libchewing 0.13.x requires Rust.
-   `ash
-   curl --proto =https --tlsv1.2 -sSf https://sh.rustup.rs | sh
-   rustup toolchain install 1.88.0  # MSRV for libchewing 0.13.x
-   `
-3. **JDK 17**: Temurin 17 or equivalent recommended.
+Older scaffold/recovery plans are historical context and may no longer represent the current implementation.
 
-## Conventional Commits
+## Current scope
 
-This project follows [Conventional Commits](https://www.conventionalcommits.org/). Every commit must follow:
+Good contribution targets include:
 
-`
-<type>(<scope>): <subject>
-`
+- reproducible Android runtime/IME bug reports
+- Dachen input correctness
+- session/editor-policy correctness
+- JNI/libchewing integration fixes
+- focused tests for existing behavior
+- documentation corrections
+- build/reproducibility hardening
 
-| Type       | When to use                              |
-|------------|------------------------------------------|
-| feat       | New feature or layout                    |
-| fix        | Bug fix                                  |
-| docs       | Documentation only                       |
-| chore      | Build, CI, or tooling changes            |
-| refactor   | Code restructure with no behaviour change|
-| test       | Adding or fixing tests                   |
-| perf       | Performance improvement                  |
+Please avoid bundling unrelated toolchain upgrades, UI redesigns and new feature families into bug-fix PRs.
 
-Examples:
-`
-feat(decoder): pin chewing with 3 layouts, Dachen default
-feat(opencc): one-tap simp-trad s2tw/tw2s with fallback
-fix(frontend): prevent candidate popup in password fields
-chore(security): isolated id/provider/minimal perms
-docs(decoder): pin libchewing spec for T5
-`
+## Toolchain
+
+The verified CI build currently uses:
+
+- JDK 17
+- Gradle 7.6.4
+- Android SDK / API 33 project configuration
+- Android NDK `27.3.13750724`
+- CMake 3.22.1 for the app native build
+- pinned native inputs staged by `scripts/bootstrap_native_deps.sh`
+
+See `BUILD.md` for the reference build sequence.
 
 ## Testing
 
-All contributions must include or update tests where applicable.
-- Unit tests: ./gradlew test
-- Instrumented tests: ./gradlew connectedAndroidTest
-- Layout and IME behaviour changes should include regression tests where feasible.
-- CI runs both suites on every PR.
+For behavior changes, add or update the narrowest useful regression test first.
 
-## Pull Request Process
+Reference checks:
 
-1. Fork the repo and create a feature branch from main
-2. Make changes following the commit convention above
-3. Ensure all tests pass locally before submitting
-4. Open a PR against main with a clear description
-5. Respond to feedback promptly
+```bash
+python3 scripts/check_dachen_contract.py
+python3 scripts/check_p0_keyboard_contract.py
+python3 scripts/check_editor_sync_contract.py
+python3 scripts/check_p1_build_contract.py
+python3 scripts/check_p2_ui_contract.py
+python3 scripts/check_p3_architecture_security_contract.py
+bash scripts/bootstrap_native_deps.sh
+gradle testDebugUnitTest --stacktrace
+gradle assembleDebug --stacktrace
+gradle assembleRelease --stacktrace
+```
 
-## Code Style
+The lightweight Python checks are preflight/integration contracts. JVM tests are the behavioral source of truth for Kotlin logic.
 
-- Follow existing conventions in the module you edit.
-- Prefer Kotlin for new code unless the surrounding module is Java.
-- Keep changes focused -- one logical change per PR.
+Android runtime/device verification is tracked separately; do not describe an APK as runtime-ready merely because `assembleDebug` succeeds.
+
+## Pull requests
+
+Keep PRs small enough that one failure can be traced to one logical change. A good PR description should include:
+
+- problem/root cause
+- intended behavior
+- tests added or updated
+- static build evidence
+- runtime evidence when the change affects IME lifecycle/input behavior
+- known limitations or follow-up work
+
+## Commit style
+
+Conventional-commit style is preferred:
+
+```text
+fix(input): correct selection reconciliation
+test(session): cover password editor policy
+docs: reconcile runtime verification status
+chore(ci): pin a build dependency
+```
+
+## Third-party code and licenses
+
+Do not copy implementation code from another keyboard/project without checking the exact file/module license and recording provenance. Architecture and behavior patterns may be studied without copying source.
+
+The current production decoder dependency is libchewing; fcitx5-android, FlorisBoard, HeliBoard and other keyboards are primarily reference/donor research sources unless explicit license/provenance review approves source reuse.
+
+## Security-sensitive changes
+
+IME code handles sensitive text. Avoid:
+
+- network-backed typing paths
+- keystroke/content logging
+- storing plaintext user input outside the intended private dictionary/session path
+- claiming password/no-learning protection without runtime evidence
+
+See `SECURITY.md`.
 
 ## License
 
-By contributing, you agree your contributions are licensed under the same terms as the project. See [LICENSE](LICENSE).
-
-## Code of Conduct
-
-Be respectful, constructive, and inclusive.
+By contributing, you agree that your contribution is licensed under the repository's project license and any applicable upstream obligations.

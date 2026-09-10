@@ -1,238 +1,227 @@
 package com.example.androidkeyboard.engines.android
 
+import android.util.Log
 import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
-import android.util.Log
+import com.example.androidkeyboard.engines.core.EngineUpdate
 
-/**
- * Wave 4 T21: Android ChewingEngine implementation with libchewing JNI bindings.
- *
- * Uses libchewing 0.12.x (Rust reimplementation) via CAPI.
- * JNI functions match the libchewing C API naming.
- */
-class AndroidChewingEngine : ChewingEngine {
+/** Android libchewing adapter. JNI calls stay behind this boundary. */
+class AndroidChewingEngine(
+    private val systemDataPath: String,
+    private val userDataPath: String,
+) : ChewingEngine {
 
     private var nativeCtx: Long = 0L
-    private var _layout = Layout.DACHEN
-    private var _preedit = ""
-    private var _candidates = emptyList<String>()
-    private var _ready = false
-    private var _candPage = 0
-    private var _chiEngMode = CHINESE_MODE
-    private var _fullHalfMode = HALFSHAPE_MODE
+    private var nativeLibraryLoaded = false
+    private var preedit = ""
+    private var candidates = emptyList<String>()
+    private var ready = false
+    private var candidatePage = 0
+    private var candidatePageSize = 0
 
-    override val isReady: Boolean get() = _ready
-    private val TAG = "AndroidChewingEngine"
+    override val isReady: Boolean get() = ready
 
-    init { loadNativeLibrary() }
+    override val personalizedLearningEnabled: Boolean
+        get() = nativeCtx != 0L && chewing_get_auto_learn(nativeCtx) == AUTOLEARN_ENABLED
 
-    private fun loadNativeLibrary() {
-        try {
+    init {
+        nativeLibraryLoaded = try {
             System.loadLibrary("chewing-jni")
-            Log.d(TAG, "libchewing-jni loaded successfully")
-        } catch (e: UnsatisfiedLinkError) {
-            Log.w(TAG, "libchewing-jni not loaded: ${e.message}. Running in stub mode.")
+            true
+        } catch (error: UnsatisfiedLinkError) {
+            Log.e(TAG, "Unable to load chewing-jni", error)
+            false
         }
     }
 
     override fun init(layout: Layout) {
-        _layout = layout
+        if (!nativeLibraryLoaded) {
+            clearCachedState()
+            ready = false
+            return
+        }
+
+        closeNativeContext()
+        nativeCtx = try {
+            chewing_new2(systemDataPath, userDataPath)
+        } catch (error: UnsatisfiedLinkError) {
+            Log.e(TAG, "libchewing JNI surface is incomplete", error)
+            0L
+        }
+
         if (nativeCtx == 0L) {
-            nativeCtx = chewing_new()
-        } else {
-            chewing_reset(nativeCtx)
+            Log.e(TAG, "libchewing failed to initialize with app-private dictionary paths")
+            clearCachedState()
+            ready = false
+            return
         }
-        if (nativeCtx != 0L) {
-            val kbType = when (layout) {
-                Layout.DACHEN -> KB_DEFAULT
-                Layout.HSU -> KB_HSU
-                Layout.Eten26 -> KB_ET26
-                else -> KB_DEFAULT
-            }
-            chewing_set_kb_type(nativeCtx, kbType)
-            _ready = true
-        }
-        _preedit = ""
-        _candidates = emptyList()
-        _candPage = 0
-        _chiEngMode = CHINESE_MODE
-        _fullHalfMode = HALFSHAPE_MODE
+
+        // Dachen is the only decoder layout currently shipped, so the native
+        // decoder and rendered Chinese keyboard cannot drift apart.
+        chewing_set_kb_type(nativeCtx, KB_DEFAULT)
+        chewing_set_chi_eng_mode(nativeCtx, CHINESE_MODE)
+        chewing_set_shape_mode(nativeCtx, HALFSHAPE_MODE)
+        clearCachedState()
+        ready = true
+    }
+
+    override fun setPersonalizedLearningEnabled(enabled: Boolean) {
+        if (nativeCtx == 0L) return
+        chewing_set_auto_learn(
+            nativeCtx,
+            if (enabled) AUTOLEARN_ENABLED else AUTOLEARN_DISABLED,
+        )
     }
 
     override fun reset() {
-        if (nativeCtx != 0L) {
-            chewing_reset(nativeCtx)
-        }
-        _ready = false
-        _preedit = ""
-        _candidates = emptyList()
-        _candPage = 0
+        if (nativeCtx != 0L) chewing_reset(nativeCtx)
+        clearCachedState()
     }
 
-    override fun handleKeyEvent(keyCode: Int): Boolean {
-        if (nativeCtx == 0L) return false
+    override fun handleKeyUpdate(keyCode: Int): EngineUpdate {
+        if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
         val result = chewing_handle_default(nativeCtx, keyCode)
-        _preedit = getPreedit()
-        _candidates = buildCandidates()
-        _candPage = 0
-        return !isIgnored(result)
+        candidatePage = 0
+        return snapshot(consumed = !isIgnored(result))
     }
 
-    override fun getPreedit(): String {
-        if (nativeCtx == 0L) return _preedit
-        val s = chewing_buffer_string_static(nativeCtx)
-        _preedit = s
-        return s
+    override fun backspaceUpdate(): EngineUpdate {
+        if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
+        val hadComposition = chewing_buffer_check(nativeCtx) != 0 || preedit.isNotEmpty()
+        if (!hadComposition) return snapshot(consumed = false)
+        val result = chewing_handle_backspace(nativeCtx)
+        candidatePage = 0
+        return snapshot(consumed = !isIgnored(result) || hadComposition)
     }
 
-    override fun getCandidates(): List<String> = _candidates
-
-    override fun selectCandidate(index: Int) {
-        if (nativeCtx == 0L) return
-        chewing_cand_choose_by_index(nativeCtx, index)
-        _preedit = getPreedit()
-        _candidates = buildCandidates()
+    override fun selectCandidateUpdate(index: Int): EngineUpdate {
+        if (!isReady || nativeCtx == 0L || index < 0) return emptyUpdate(false)
+        val pageSize = candidatePageSize.takeIf { it > 0 }
+            ?: chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
+        val globalIndex = (candidatePage * pageSize) + index
+        val result = chewing_cand_choose_by_index(nativeCtx, globalIndex)
+        return snapshot(consumed = result == 0)
     }
 
-    override fun commit() {
-        if (nativeCtx == 0L) {
-            _preedit = ""
-            _candidates = emptyList()
-            return
-        }
-        chewing_commit_preedit_buf(nativeCtx)
-        _preedit = ""
-        _candidates = emptyList()
-        _candPage = 0
-    }
-
-    override fun backspace(): Boolean {
-        if (nativeCtx == 0L) return false
-        chewing_handle_backspace(nativeCtx)
-        _preedit = getPreedit()
-        _candidates = buildCandidates()
-        return _preedit.isNotEmpty() || chewing_buffer_check(nativeCtx) != 0
-    }
-
-    override fun toggleFullHalf(): Boolean {
-        if (nativeCtx == 0L) return false
-        _fullHalfMode = if (_fullHalfMode == FULLSHAPE_MODE) SYMBOL_MODE else FULLSHAPE_MODE
-        chewing_set_shape_mode(nativeCtx, _fullHalfMode)
-        return true
-    }
-
-    override fun toggleChiEng(): Boolean {
-        if (nativeCtx == 0L) return false
-        _chiEngMode = if (_chiEngMode == CHINESE_MODE) SYMBOL_MODE else CHINESE_MODE
-        chewing_set_chi_eng_mode(nativeCtx, _chiEngMode)
-        return true
-    }
-
-    override fun loadUserDict(path: String): Boolean {
-        if (nativeCtx == 0L) return false
-        // libchewing userdict is loaded automatically from data_path on init.
-        // Pass path to chewing_set_data_path() if you need dynamic reload.
-        // For now, return true if context is valid (userdict handled at init).
-        return nativeCtx != 0L
-    }
-
-    override fun saveUserDict(path: String) {
-        // libchewing saves user dictionary automatically when chewing_Terminate()
-        // is called. Manual save not exposed via CAPI; use chewing_userphrase_* API.
-        // This is a no-op placeholder until explicit save API is available.
-    }
-
-    private fun buildCandidates(): List<String> {
-        if (nativeCtx == 0L) return emptyList()
-        // Ensure the candidate path is open before reading choices.
-        chewing_cand_open(nativeCtx)
-        val total = chewing_cand_total_choice(nativeCtx)
-        if (total <= 0) return emptyList()
-        val pageSize = chewing_cand_choice_per_page(nativeCtx)
-        val start = _candPage * pageSize
-        return (start until minOf(start + pageSize, total))
-            .map { i -> chewing_cand_string_by_index_static(nativeCtx, i) ?: "" }
-            .filter { it.isNotEmpty() }
-    }
-
-    override fun nextPage(): Boolean {
-        if (nativeCtx == 0L) return false
+    override fun nextPageUpdate(): EngineUpdate? {
+        if (!isReady || nativeCtx == 0L) return null
         val totalPages = chewing_cand_total_page(nativeCtx)
-        if (_candPage < totalPages - 1) {
-            _candPage++
-            _candidates = buildCandidates()
-            return true
-        }
-        return false
+        if (candidatePage >= totalPages - 1) return null
+        candidatePage++
+        return snapshot(consumed = true)
     }
 
-    override fun prevPage(): Boolean {
-        if (nativeCtx == 0L) return false
-        if (_candPage > 0) {
-            _candPage--
-            _candidates = buildCandidates()
-            return true
-        }
-        return false
+    override fun prevPageUpdate(): EngineUpdate? {
+        if (!isReady || nativeCtx == 0L || candidatePage <= 0) return null
+        candidatePage--
+        return snapshot(consumed = true)
     }
 
-    private fun releaseNative() {
+    override fun commitUpdate(): EngineUpdate {
+        if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
+        val result = chewing_commit_preedit_buf(nativeCtx)
+        candidatePage = 0
+        return snapshot(consumed = result == 0)
+    }
+
+    override fun close() {
+        closeNativeContext()
+        ready = false
+        clearCachedState()
+    }
+
+    private fun closeNativeContext() {
         if (nativeCtx != 0L) {
             chewing_delete(nativeCtx)
             nativeCtx = 0L
         }
     }
 
-    companion object {
-        // libchewing constants
-        const val KB_DEFAULT = 0
-        const val KB_HSU = 1
-        const val KB_ET26 = 5
-        const val CHINESE_MODE = 1
-        const val SYMBOL_MODE = 0
-        const val FULLSHAPE_MODE = 1
-        const val HALFSHAPE_MODE = 0
-        const val KEYSTROKE_IGNORE = 1
-        const val KEYSTROKE_COMMIT = 2
-        const val KEYSTROKE_BELL = 4
+    private fun snapshot(consumed: Boolean): EngineUpdate {
+        if (!isReady || nativeCtx == 0L) return emptyUpdate(consumed)
 
-        // Bitmask predicates mirroring native chewing_keystroke_CheckIgnore /
-        // chewing_commit_Check. ignore iff (rtn & 1) != 0; committed iff (rtn & 2) != 0.
-        fun isIgnored(rtn: Int): Boolean = (rtn and KEYSTROKE_IGNORE) != 0
-        fun isCommitted(rtn: Int): Boolean = (rtn and KEYSTROKE_COMMIT) != 0
+        val committed = if (chewing_commit_check(nativeCtx) != 0) {
+            chewing_commit_string_static(nativeCtx).orEmpty()
+        } else {
+            ""
+        }
+
+        preedit = chewing_buffer_string_static(nativeCtx).orEmpty()
+        candidates = buildCandidates()
+        return EngineUpdate(
+            consumed = consumed,
+            preedit = preedit,
+            candidates = candidates,
+            committedText = committed,
+        )
     }
 
-    // JNI native declarations - matching chewing_jni.cpp
-    private external fun chewing_new(): Long
+    private fun buildCandidates(): List<String> {
+        if (!isReady || nativeCtx == 0L) return emptyList()
+        if (chewing_cand_open(nativeCtx) != 0) return emptyList()
+
+        val total = chewing_cand_total_choice(nativeCtx)
+        if (total <= 0) {
+            candidatePageSize = 0
+            return emptyList()
+        }
+
+        candidatePageSize = chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
+        val start = candidatePage * candidatePageSize
+        if (start >= total) return emptyList()
+        val end = minOf(start + candidatePageSize, total)
+        return (start until end)
+            .mapNotNull { index ->
+                chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty)
+            }
+    }
+
+    private fun clearCachedState() {
+        preedit = ""
+        candidates = emptyList()
+        candidatePage = 0
+        candidatePageSize = 0
+    }
+
+    private fun emptyUpdate(consumed: Boolean) = EngineUpdate(
+        consumed = consumed,
+        preedit = "",
+        candidates = emptyList(),
+        committedText = "",
+    )
+
+    companion object {
+        private const val TAG = "AndroidChewingEngine"
+        private const val KB_DEFAULT = 0
+        private const val CHINESE_MODE = 1
+        private const val HALFSHAPE_MODE = 0
+        // Pinned libchewing a6a8fa4: 0 = enabled, 1 = disabled.
+        private const val AUTOLEARN_ENABLED = 0
+        private const val AUTOLEARN_DISABLED = 1
+        private const val KEYSTROKE_IGNORE = 1
+
+        fun isIgnored(rtn: Int): Boolean = (rtn and KEYSTROKE_IGNORE) != 0
+    }
+
+    private external fun chewing_new2(systemDataPath: String, userDataPath: String): Long
     private external fun chewing_delete(ctx: Long)
     private external fun chewing_reset(ctx: Long): Int
-    private external fun chewing_init(ctx: Long, dataPath: String, hashPath: String): Int
-    private external fun chewing_terminate()
     private external fun chewing_handle_default(ctx: Long, key: Int): Int
     private external fun chewing_handle_backspace(ctx: Long): Int
-    private external fun chewing_handle_space(ctx: Long): Int
-    private external fun chewing_buffer_string_static(ctx: Long): String
+    private external fun chewing_buffer_string_static(ctx: Long): String?
     private external fun chewing_buffer_check(ctx: Long): Int
-    private external fun chewing_buffer_len(ctx: Long): Int
-    private external fun chewing_cursor_current(ctx: Long): Int
     private external fun chewing_cand_open(ctx: Long): Int
-    private external fun chewing_cand_close(ctx: Long): Int
     private external fun chewing_cand_total_choice(ctx: Long): Int
     private external fun chewing_cand_total_page(ctx: Long): Int
-    private external fun chewing_cand_current_page(ctx: Long): Int
     private external fun chewing_cand_choice_per_page(ctx: Long): Int
     private external fun chewing_cand_string_by_index_static(ctx: Long, index: Int): String?
     private external fun chewing_cand_choose_by_index(ctx: Long, index: Int): Int
     private external fun chewing_commit_preedit_buf(ctx: Long): Int
-    private external fun chewing_commit_string_static(ctx: Long): String
+    private external fun chewing_commit_string_static(ctx: Long): String?
     private external fun chewing_commit_check(ctx: Long): Int
     private external fun chewing_set_chi_eng_mode(ctx: Long, mode: Int)
-    private external fun chewing_get_chi_eng_mode(ctx: Long): Int
     private external fun chewing_set_shape_mode(ctx: Long, mode: Int)
-    private external fun chewing_get_shape_mode(ctx: Long): Int
     private external fun chewing_set_kb_type(ctx: Long, kbtype: Int): Int
-    private external fun chewing_get_kb_type(ctx: Long): Int
-    private external fun chewing_kb_str2num(kbStr: String): Int
-    private external fun chewing_userphrase_add(ctx: Long, phrase: String, bopomofo: String): Int
-    private external fun chewing_userphrase_lookup(ctx: Long, phrase: String, bopomofo: String): Int
+    private external fun chewing_set_auto_learn(ctx: Long, mode: Int)
+    private external fun chewing_get_auto_learn(ctx: Long): Int
 }

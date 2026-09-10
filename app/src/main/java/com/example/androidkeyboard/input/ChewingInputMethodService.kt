@@ -1,201 +1,395 @@
 package com.example.androidkeyboard.input
 
-import android.content.ClipboardManager
-import android.content.Context
 import android.inputmethodservice.InputMethodService
-import android.view.LayoutInflater
+import android.view.KeyEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputConnection
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
+import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
+import com.example.androidkeyboard.engines.core.ChewingEngine
+import com.example.androidkeyboard.engines.core.EngineUpdate
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateView
-import android.util.Log
+import com.example.androidkeyboard.ui.ImePalette
 
 class ChewingInputMethodService : InputMethodService() {
 
     private lateinit var keyboardView: KeyboardView
     private lateinit var candidateView: CandidateView
     private lateinit var symbolPicker: SymbolPicker
-    private lateinit var clipboard: ClipboardManager
-    private lateinit var chewing: AndroidChewingEngine
+    private lateinit var chewing: ChewingEngine
     private lateinit var converter: OpenCCConverter
     private lateinit var config: IMEConfig
 
+    private val sessionController = ImeSessionController()
+    private var activeSession = sessionController.current()
+    private var activeLayout = ChewingEngine.Layout.DACHEN
+    private var asciiShifted = false
+
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "onCreate: initializing")
         config = IMEConfig(this)
-        chewing = AndroidChewingEngine().apply { init(config.layout) }
+
+        val nativePaths = LibChewingDataInstaller.ensureInstalled(this)
+        activeLayout = config.layout
+        chewing = AndroidChewingEngine(
+            systemDataPath = nativePaths.systemDir.absolutePath,
+            userDataPath = nativePaths.userFile.absolutePath,
+        ).apply { init(activeLayout) }
+
         converter = OpenCCConverter().apply {
             init(config.s2tProfile, config.t2sProfile)
-            enabled = config.conversionEnabled
+            enabled = isReady && config.conversionEnabled
         }
     }
 
+    override fun onDestroy() {
+        chewing.close()
+        super.onDestroy()
+    }
+
     override fun onCreateInputView(): View {
-        Log.d(TAG, "onCreateInputView: creating view")
-        
         keyboardView = KeyboardView(this).apply {
-            setLayout(KeyboardLayout.Dachen.rows)
+            setLayout(rowsForActiveSession())
             setHaptic(config.hapticEnabled)
             setProximityTolerance(config.proximityTolerance)
             onKeyPress = ::handleKey
         }
-        
+
         candidateView = CandidateView(this).apply {
             setCandidates(emptyList())
             onItemClick = ::commitCandidate
-            onPrevPage = { if (chewing.prevPage()) updateCandidates() }
-            onNextPage = { if (chewing.nextPage()) updateCandidates() }
+            onPrevPage = {
+                if (activeSession.allowCandidates) {
+                    chewing.prevPageUpdate()?.let(::applyEngineUpdate)
+                }
+            }
+            onNextPage = {
+                if (activeSession.allowCandidates) {
+                    chewing.nextPageUpdate()?.let(::applyEngineUpdate)
+                }
+            }
         }
-        
+
         symbolPicker = SymbolPicker(this).apply {
             visibility = View.GONE
             onSymbolSelect = ::commitSymbol
             onClose = { symbolPicker.visibility = View.GONE }
         }
-        
-        clipboard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
-        // Candidate bar (44dp, TOP) + keyboard below it: explicit bounds so the
-        // candidate view can never overlay the keyboard and swallow touches.
-        val candH = (44f * resources.displayMetrics.density).toInt()
-        val container = FrameLayout(this).apply {
+        val candidateHeight = (44f * resources.displayMetrics.density).toInt()
+        val palette = ImePalette.from(this)
+        val content = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(palette.surface)
+            addView(
+                candidateView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    candidateHeight,
+                ),
+            )
+            addView(
+                keyboardView,
+                LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                ),
+            )
+        }
+
+        return FrameLayout(this).apply {
+            setBackgroundColor(palette.surface)
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+                FrameLayout.LayoutParams.WRAP_CONTENT,
             )
-            val candLp = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, candH
+            addView(
+                content,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT,
+                ),
             )
-            candLp.gravity = android.view.Gravity.TOP
-            addView(candidateView, candLp)
-            val kbLp = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.WRAP_CONTENT
+            addView(
+                symbolPicker,
+                FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    candidateHeight,
+                ),
             )
-            kbLp.topMargin = candH
-            kbLp.gravity = android.view.Gravity.TOP
-            addView(keyboardView, kbLp)
-            addView(symbolPicker)
         }
-        
-        Log.d(TAG, "onCreateInputView: returned view with keyboard=${keyboardView.height}dp")
-        return container
     }
 
     override fun onStartInput(attribute: EditorInfo, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
-        Log.d(TAG, "onStartInput: attribute=$attribute, restarting=$restarting")
-        
-        config.applyTo(chewing)
 
-        // Re-sync converter state so toggle/profile changes in Settings
-        // take effect without requiring a process kill.
-        converter.enabled = config.conversionEnabled
+        activeSession = sessionController.begin(
+            EditorPolicy.from(attribute.inputType, attribute.imeOptions)
+        )
+        asciiShifted = false
+
+        val desiredLayout = config.layout
+        if (!chewing.isReady || desiredLayout != activeLayout) {
+            chewing.init(desiredLayout)
+            activeLayout = desiredLayout
+        } else {
+            chewing.reset()
+        }
+        if (chewing.isReady) {
+            chewing.setPersonalizedLearningEnabled(activeSession.personalizedLearningEnabled)
+        }
+
         converter.init(config.s2tProfile, config.t2sProfile)
-        
-        // Refresh layout after view is created
+        converter.enabled = converter.isReady && config.conversionEnabled
+
+        if (::keyboardView.isInitialized) refreshKeyboardForSession()
+        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+    }
+
+    override fun onStartInputView(info: EditorInfo, restarting: Boolean) {
+        super.onStartInputView(info, restarting)
         if (::keyboardView.isInitialized) {
-            keyboardView.refreshLayout()
+            keyboardView.setHaptic(config.hapticEnabled)
+            keyboardView.setProximityTolerance(config.proximityTolerance)
+            refreshKeyboardForSession()
+        }
+        if (::candidateView.isInitialized) {
+            candidateView.refreshAppearance()
+            candidateView.setCandidates(emptyList())
+        }
+        if (::symbolPicker.isInitialized) {
+            symbolPicker.refreshAppearance()
+            symbolPicker.visibility = View.GONE
         }
     }
 
-    override fun onStartInputView(attribute: EditorInfo, restarting: Boolean) {
-        super.onStartInputView(attribute, restarting)
-        Log.d(TAG, "onStartInputView: keyboard view starting, restarting=$restarting")
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int,
+    ) {
+        super.onUpdateSelection(
+            oldSelStart,
+            oldSelEnd,
+            newSelStart,
+            newSelEnd,
+            candidatesStart,
+            candidatesEnd,
+        )
+
+        if (
+            sessionController.shouldResetComposition(
+                newSelStart = newSelStart,
+                newSelEnd = newSelEnd,
+                candidatesStart = candidatesStart,
+                candidatesEnd = candidatesEnd,
+            )
+        ) {
+            currentInputConnection?.finishComposingText()
+            chewing.reset()
+            if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+        }
+    }
+
+    override fun onFinishInputView(finishingInput: Boolean) {
+        asciiShifted = false
+        if (::symbolPicker.isInitialized) symbolPicker.visibility = View.GONE
+        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+        super.onFinishInputView(finishingInput)
     }
 
     override fun onFinishInput() {
-        super.onFinishInput()
-        Log.d(TAG, "onFinishInput")
-        currentInputConnection?.commitText("", 0)
+        currentInputConnection?.finishComposingText()
         chewing.reset()
-    }
-
-    override fun onFinishInputView(finishedTyping: Boolean) {
-        super.onFinishInputView(finishedTyping)
-        Log.d(TAG, "onFinishInputView: finishedTyping=$finishedTyping")
+        asciiShifted = false
+        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+        super.onFinishInput()
     }
 
     private fun handleKey(key: KeyDef) {
-        val ic = currentInputConnection ?: run {
-            Log.e(TAG, "handleKey: no input connection!")
+        val inputConnection = currentInputConnection ?: return
+
+        when (key.action) {
+            KeyAction.BACKSPACE -> handleBackspace(inputConnection)
+            KeyAction.SPACE -> handleSpace(inputConnection, key)
+            KeyAction.ENTER -> handleEnter(inputConnection)
+            KeyAction.SHIFT -> toggleAsciiShift()
+            KeyAction.DISMISS -> {
+                inputConnection.finishComposingText()
+                requestHideSelf(0)
+            }
+            KeyAction.INPUT -> handleInput(inputConnection, key)
+        }
+    }
+
+    private fun handleBackspace(inputConnection: InputConnection) {
+        if (!activeSession.allowComposition) {
+            inputConnection.finishComposingText()
+            inputConnection.deleteSurroundingText(1, 0)
+            clearCandidates()
             return
         }
-        Log.d(TAG, "handleKey: '${key.label}' code=${key.code}")
-        
-        when {
-            key.label == "back" -> {
-                if (chewing.backspace()) {
-                    updateCandidates()
-                } else {
-                    ic.deleteSurroundingText(1, 0)
-                }
-            }
-            key.label == " " -> {
-                // Space sends libchewing keycode 65 (KEY_SPACE)
-                val consumed = chewing.handleKeyEvent(65)
-                if (!consumed) {
-                    ic.commitText(" ", 1)
-                }
-                updateCandidates()
-            }
-            key.label == "▼" -> requestHideSelf(0)
-            key.isSpecial -> {
-                // Special keys without a bopomofo code are handled above; fall through
-                ic.commitText(key.label, 1)
-            }
-            else -> {
-                // Use the physical key's ASCII code directly (authoritative).
-                // KeyDef.code is set for every bopomofo/tone key in KeyboardLayout.
-                val libchewingKey = key.code
-                Log.d(TAG, "key '${key.label}' -> libchewing keycode $libchewingKey")
-                
-                if (libchewingKey > 0) {
-                    val consumed = chewing.handleKeyEvent(libchewingKey)
-                    Log.d(TAG, "handleKeyEvent($libchewingKey) returned: $consumed")
-                    // Refresh candidate view after each typed key so candidates stay current.
-                    updateCandidates()
-                } else {
-                    // Fallback for label-only paths: resolve via hint map
-                    val hinted = KeyMapping.getLibchewingKeyCode(key.label)
-                    if (hinted > 0) {
-                        chewing.handleKeyEvent(hinted)
-                        updateCandidates()
-                    } else {
-                        ic.commitText(key.label, 1)
-                    }
-                }
-            }
-        }
-    }
 
-    private fun updateCandidates() {
-        val candidates = chewing.getCandidates()
-        Log.d(TAG, "updateCandidates: ${candidates.size} candidates")
-        candidateView.setCandidates(candidates)
-    }
-
-    private fun commitSymbol(sym: String) {
-        currentInputConnection?.commitText(sym, 1)
-    }
-
-    private fun commitCandidate(candidate: String) {
-        val converted = if (converter.enabled) {
-            converter.simplifyToTraditional(candidate)
+        val update = chewing.backspaceUpdate()
+        if (update.consumed) {
+            applyEngineUpdate(update, inputConnection)
         } else {
-            candidate
+            inputConnection.finishComposingText()
+            inputConnection.deleteSurroundingText(1, 0)
+            clearCandidates()
         }
-        currentInputConnection?.commitText(converted, 1)
-        chewing.commit()
-        updateCandidates()
     }
 
-    companion object {
-        private const val TAG = "ChewingIMEService"
+    private fun handleSpace(inputConnection: InputConnection, key: KeyDef) {
+        if (!activeSession.allowComposition) {
+            inputConnection.finishComposingText()
+            inputConnection.commitText(" ", 1)
+            clearCandidates()
+            return
+        }
+
+        val update = chewing.handleKeyUpdate(key.code)
+        if (update.consumed || update.preedit.isNotEmpty() || update.committedText.isNotEmpty()) {
+            applyEngineUpdate(update, inputConnection)
+        } else {
+            inputConnection.finishComposingText()
+            inputConnection.commitText(" ", 1)
+            clearCandidates()
+        }
+    }
+
+    private fun handleEnter(inputConnection: InputConnection) {
+        if (activeSession.allowComposition && chewing.isReady) {
+            val update = chewing.commitUpdate()
+            if (
+                update.consumed ||
+                update.preedit.isNotEmpty() ||
+                update.committedText.isNotEmpty() ||
+                update.candidates.isNotEmpty()
+            ) {
+                applyEngineUpdate(update, inputConnection)
+            } else {
+                inputConnection.finishComposingText()
+            }
+        } else {
+            inputConnection.finishComposingText()
+        }
+
+        val imeAction = when (activeSession.editorAction) {
+            EditorAction.GO -> EditorInfo.IME_ACTION_GO
+            EditorAction.SEARCH -> EditorInfo.IME_ACTION_SEARCH
+            EditorAction.SEND -> EditorInfo.IME_ACTION_SEND
+            EditorAction.NEXT -> EditorInfo.IME_ACTION_NEXT
+            EditorAction.DONE -> EditorInfo.IME_ACTION_DONE
+            EditorAction.PREVIOUS -> EditorInfo.IME_ACTION_PREVIOUS
+            EditorAction.NONE,
+            EditorAction.UNSPECIFIED -> null
+        }
+
+        if (imeAction != null) {
+            inputConnection.performEditorAction(imeAction)
+        } else {
+            inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
+            inputConnection.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_ENTER))
+        }
+        clearCandidates()
+    }
+
+    private fun handleInput(inputConnection: InputConnection, key: KeyDef) {
+        if (!activeSession.allowComposition) {
+            inputConnection.finishComposingText()
+            inputConnection.commitText(key.label, 1)
+            clearCandidates()
+
+            if (asciiShifted && key.label.singleOrNull()?.isLetter() == true) {
+                asciiShifted = false
+                refreshKeyboardForSession()
+            }
+            return
+        }
+
+        val libchewingKey = key.code.takeIf { it > 0 }
+            ?: KeyMapping.getLibchewingKeyCode(key.label)
+
+        if (libchewingKey > 0 && chewing.isReady) {
+            applyEngineUpdate(chewing.handleKeyUpdate(libchewingKey), inputConnection)
+        } else {
+            inputConnection.finishComposingText()
+            inputConnection.commitText(key.label, 1)
+            clearCandidates()
+        }
+    }
+
+    private fun toggleAsciiShift() {
+        if (activeSession.keyboard != SessionKeyboard.ASCII) return
+        asciiShifted = !asciiShifted
+        refreshKeyboardForSession()
+    }
+
+    private fun rowsForActiveSession(): List<KeyboardRow> = when (activeSession.keyboard) {
+        SessionKeyboard.DACHEN -> KeyboardLayout.Dachen.rows
+        SessionKeyboard.ASCII -> KeyboardLayout.asciiRows(asciiShifted)
+    }
+
+    private fun refreshKeyboardForSession() {
+        if (!::keyboardView.isInitialized) return
+        keyboardView.setLayout(rowsForActiveSession())
+        keyboardView.refreshLayout()
+    }
+
+    private fun applyEngineUpdate(
+        update: EngineUpdate,
+        inputConnection: InputConnection? = currentInputConnection,
+    ) {
+        val editor = inputConnection ?: return
+
+        if (update.committedText.isNotEmpty()) {
+            editor.commitText(convertForOutput(update.committedText), 1)
+        }
+
+        if (activeSession.allowComposition && update.preedit.isNotEmpty()) {
+            editor.setComposingText(update.preedit, 1)
+        } else {
+            editor.finishComposingText()
+        }
+
+        if (::candidateView.isInitialized) {
+            candidateView.setCandidates(
+                if (activeSession.allowCandidates) update.candidates else emptyList()
+            )
+        }
+    }
+
+    private fun commitCandidate(index: Int, candidate: String) {
+        @Suppress("UNUSED_VARIABLE")
+        val renderedCandidate = candidate
+        if (!activeSession.allowCandidates) return
+        applyEngineUpdate(chewing.selectCandidateUpdate(index))
+    }
+
+    private fun commitSymbol(symbol: String) {
+        currentInputConnection?.let { inputConnection ->
+            inputConnection.finishComposingText()
+            inputConnection.commitText(symbol, 1)
+        }
+        clearCandidates()
+    }
+
+    private fun clearCandidates() {
+        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+    }
+
+    private fun convertForOutput(text: String): String = if (converter.isReady && converter.enabled) {
+        converter.simplifyToTraditional(text)
+    } else {
+        text
     }
 }

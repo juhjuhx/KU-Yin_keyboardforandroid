@@ -1,57 +1,94 @@
-# android-keyboard
+# KU-Yin Keyboard for Android
 
-> 本倉庫是 **fork-mirror 骨架**，以官方 [fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master`，**LGPL-2.1**）為底座的長期可迭代 Android 注音輸入法（IME）專案鏡像。
+> 一個開源、local-first 的 Android 注音輸入法實驗專案，使用 Android `InputMethodService`、Kotlin/View UI、JNI 與 libchewing。
 
-> ⚠️ **處於骨架（scaffold）階段**：本目錄目前僅有文件骨架，已建立 Android 工程骨架 `git clone` / `git init` / submodule 實抓。請參考 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) 與規劃文件。
+[![Build](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/workflows/build.yml/badge.svg)](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/workflows/build.yml)
+[![License: LGPL-2.1](https://img.shields.io/badge/License-LGPL--2.1-blue.svg)](LICENSE)
 
----
+**繁體中文** · [简体中文](README.zh-CN.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Português](README.pt-BR.md) · [Français](README.fr.md) · [Deutsch](README.de.md) · [Русский](README.ru.md)
 
-## 專案定位
+## 專案狀態
 
-- **上游來源**：[fcitx5-android/fcitx5-android](https://github.com/fcitx5-android/fcitx5-android)（`master` 分支，**LGPL-2.1** 授權）。本專案為其 fork-mirror，保留上游合規宣告與借用來源標註。
-- **解碼器**：`libchewing`，經 `fcitx5-chewing` 橋接（與 Linux 桌面端同款引擎）。
-- **簡繁轉換**：`OpenCC`（一鍵切換，預設台灣 `s2tw` / `tw2s`）。
-- **前端渲染**：Kotlin `View` / `Canvas` 自繪鍵盤（低延遲），**不**以 Compose 作為輸入視窗主渲染。
-- **預設注音佈局**：大千（DaChen）4x10；另備 Hsu、Eten26 選項。
+目前版本為 **`0.1.0-alpha`**。KU-Yin 已從不可用的初始 APK 恢復為可建置的 Android IME 專案：JVM 測試、Debug APK、Release APK 與 native dependency bootstrap 已能在 GitHub Actions 通過。
 
-> 以 SwiftFloris 授權同理，所有借用代碼與品牌素材皆標註來源與授權，詳見 `NOTICE`（沿用計畫 Todo 3，尚未落地）。
+Android 13 emulator 已實際確認：APK 可安裝、系統可辨識 KU-Yin 為 IME、可 `enable` 並切換為預設輸入法。現階段自動化 runtime smoke 仍卡在 headless emulator 的「IME 視窗可見」斷言，因此本版本應視為 **alpha preview**，不是穩定發行版。
 
----
+## 目前具備的核心能力
 
-## 目錄結構（骨架）
+- 大千注音輸入與 libchewing 解碼核心
+- 組字、候選字與 `InputConnection` 同步
+- 候選字以 native candidate index 提交
+- ASCII / 密碼欄位輸入表面
+- Shift、數字、Space、Backspace、Enter 與 editor action
+- 游標／selection 變更後的 composition reconciliation
+- `IME_FLAG_NO_PERSONALIZED_LEARNING` 對應的個人化學習控制
+- `armeabi-v7a`、`arm64-v8a`、`x86`、`x86_64` 四種 ABI
+- 依賴固定版本的 libchewing native bootstrap
 
+## 下載與安裝
+
+請從 [GitHub Releases](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases) 下載最新 alpha 預覽版。`APK/README.md` 會列出目前 APK 類型與 SHA-256。
+
+目前會提供兩種產物：
+
+- **Debug APK**：debug-signed，可直接安裝測試。
+- **Release unsigned APK**：未簽章的開發者產物，用於驗證 release build；它不是正式可發布安裝包。
+
+安裝後，在 Android 的「設定 → 系統／一般管理 → 鍵盤／語言與輸入 → 螢幕鍵盤／管理鍵盤」中啟用 KU-Yin，再透過輸入法切換器選擇 KU-Yin。各品牌 Android 的選單名稱可能不同。
+
+## 隱私與安全
+
+輸入法可以接觸高度敏感的文字內容，因此 KU-Yin 以 local-first 為基本原則。現有輸入流程不需要雲端服務才能完成注音解碼；密碼欄位、ASCII 強制模式與禁止個人化學習等 editor policy 會在 IME 層處理。
+
+在正式處理敏感資料前，請先閱讀 [SECURITY.md](SECURITY.md)、原始碼與已知限制。本專案仍處於 alpha 階段，不應把目前的 CI 綠燈等同於所有 OEM／Android 版本都已完成安全與相容性驗證。
+
+## 自行建置
+
+主要工具鏈：
+
+- JDK 17
+- Android SDK / compileSdk 33
+- Gradle 7.6.4
+- NDK `27.3.13750724`
+- CMake `3.22.1`
+
+```bash
+bash scripts/bootstrap_native_deps.sh
+gradle testDebugUnitTest
+gradle assembleDebug
+gradle assembleRelease
 ```
-android-keyboard/
-├── README.md              # 本檔：fork 聲明 + 專案定位
-└── docs/
-    ├── ARCHITECTURE.md    # 架構說明（core / UI 切分、解碼、前端）
-    ├── KEYMAP.md          # 鍵盤佈局與尺寸規格表（人體工學，超 Gboard 目標）
-    └── IOS-NOTES.md       # iOS 複用筆記（僅筆記，不實作）
+
+更完整的環境與驗證流程請看 [BUILD.md](BUILD.md)。
+
+## 架構概覽
+
+```text
+Android InputMethodService
+        │
+        ├── EditorPolicy
+        ├── ImeSessionController
+        ├── KeyboardView / CandidateView
+        └── ChewingEngine
+               └── AndroidChewingEngine
+                      └── JNI / libchewing
 ```
 
----
+輸入法 service、editor policy、session state、UI 與 native decoding 盡量分離，讓核心行為可以被 JVM／instrumentation 測試覆蓋。
 
-## 授權與上游聲明（Todo 1 範圍）
+## 已知限制
 
-| 項目 | 值 |
-|------|----|
-| 上游 | https://github.com/fcitx5-android/fcitx5-android |
-| 上游分支 | `master` |
-| 上游授權 | LGPL-2.1 |
-| 本專案定位 | fork-mirror 骨架 |
+- Android 13 headless emulator 的 IME-window-visible smoke 目前仍未通過；install/register/enable/select 已確認成功。
+- `compileSdk` / `targetSdk` 目前仍為 API 33，之後需要獨立升級。
+- OpenCC 轉換目前不是完整 production feature。
+- Hsu / Eten26 尚未作為完整使用者布局提供。
+- per-key accessibility virtual nodes、完整符號／Emoji、clipboard、gesture typing、prediction 等仍在後續範圍。
+- 正式 release signing 尚未建立，因此目前 Release APK 仍為 unsigned developer artifact。
 
-> `LICENSE` / `NOTICE` / `docs/RELEASE.md` / `docs/UPSTREAM.md` 屬計畫 Todo 3–4 範圍，尚未於本體落地（參見 Todo 1 Accept 範圍）。
+## 參與開發
 
----
+請先閱讀 [CONTRIBUTING.md](CONTRIBUTING.md)、[docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md) 與 [docs/NEXT_STEPS.md](docs/NEXT_STEPS.md)。Bug、相容性結果與可重現的裝置測試都很有價值。
 
-## 規劃引用
+## 授權與第三方元件
 
-- 完整工作計畫：`D:\666\opencode\.omo\plans\android-keyboard.md`
-- 草稿：`.omo/drafts/android-keyboard.md`
-
-## 後續文檔（Wave 0 研究產物）
-
-- `docs/ROADMAP.md` — 設計方向、TUI 架構圖、路線圖、Addy 路由表、handoff 清單
-- `docs/AUDIT.md` — 七維審計（內容/資料/美觀/接口/架構/效能/安全）+ 效能開銷分析
-- `docs/OSS-NOTES.md` — 可借用開源清單（mzbgf/HeliBoard/Futo/WeType/0.13 新訊）
-- `docs/diagram/architecture.svg` — 架構圖（深色模板）
+本 repository 根授權文件為 [GNU LGPL 2.1](LICENSE)。第三方元件、libchewing 與 native dependency 的來源與授權資訊請一併參考 [NOTICE](NOTICE)。

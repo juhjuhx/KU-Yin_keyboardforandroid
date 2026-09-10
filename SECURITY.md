@@ -1,33 +1,46 @@
 # Security Policy
 
-## Privacy-First Philosophy
+KU-Yin is an Android input method. Security and privacy claims in this document are limited to behavior that is implemented or directly observable in the current recovery branch.
 
-android-keyboard treats user privacy as the highest guiding principle. As an Input Method Editor (IME), we commit to the following Privacy by Design principles:
+## Verified / implemented properties
 
-1. **Zero Internet Permission**: This project does not request the INTERNET permission. No data leaves your device.
-2. **Dictionary stays in-process**: All decoding, dictionary memory, and user dictionary are completed within the local process -- no cloud sync.
-3. **Clipboard text-only**: When intercepting and processing the clipboard, only plain text is extracted to prevent rich text or malicious payloads from leaking.
-4. **Supply-chain security**: All upstream dependencies use submodule SHA pinning to prevent dependency poisoning.
-5. **Permission isolation**: Uses a standalone applicationId and FileProvider to avoid installation conflicts.
+- The application does not request the Android `INTERNET` permission.
+- libchewing dictionaries and user data are handled locally.
+- user dictionary data is stored under app-private storage.
+- Android application backup is disabled in the current recovery branch.
+- editor policy distinguishes sensitive/password input and no-personalized-learning sessions.
+- the native libchewing adapter exposes personalized-learning enable/disable control for session policy.
+- the current build uses pinned upstream native/prebuilt revisions rather than floating branch names.
 
-## Reporting a Vulnerability
+These properties reduce data-exfiltration and accidental-learning risk, but they do not substitute for runtime testing on Android devices.
 
-If you discover a security vulnerability or privacy risk, do not discuss it in public GitHub Issues.
+## Current limitations
 
-Please report via:
-1. **GitHub Security Advisories**: Submit a private report at the repo Security tab
-2. **Email**: Encrypted email (PGP key recommended)
+The following should **not** be interpreted as completed security guarantees yet:
 
-## Response Commitment
+- runtime verification of password/FORCE_ASCII behavior is still pending
+- runtime verification of `IME_FLAG_NO_PERSONALIZED_LEARNING` behavior is still pending
+- physical-device and OEM-specific IME lifecycle testing is still pending
+- native staged artifacts do not yet have a repository-maintained per-file SHA-256 manifest/rebuild-comparison gate
+- OpenCC is not a production backend
+- there is no clipboard feature in the current recovery scope
+- Direct Boot support has not been verified as a release guarantee
+- OTP-specific behavior is not currently claimed as a verified feature
 
-- **Initial acknowledgement**: Within 48 hours of receiving the report.
-- **Fix timeline**:
-  - Critical/High: Emergency hotfix released within 7 days.
-  - Medium/Low: Fixed in the next regular Wave iteration.
-- **Public disclosure**: Coordinated with the reporter after the fix is released.
+## Sensitive input policy
 
-## Known Security Features
+The current architecture routes `EditorInfo` through `EditorPolicy` / `ImeSessionController` so sensitive fields can use an ASCII-oriented session and disable personalized learning.
 
-- Supports Direct Boot (follows upstream secure behaviour).
-- Disables candidate display in password fields (prevents password character leakage).
-- Disables keyboard rebuild on OTP multi-field input (prevents crash/flashing).
+This policy is considered **statically implemented**. It becomes a release-level guarantee only after the runtime checklist in `docs/NEXT_STEPS.md` is completed.
+
+## Dependency / supply-chain model
+
+Native dependencies are bootstrapped from pinned upstream revisions by `scripts/bootstrap_native_deps.sh`. Missing native ABI artifacts fail the build instead of silently creating a potentially unusable APK.
+
+A later hardening pass should add explicit per-file hashes and provenance/reproducibility documentation.
+
+## Reporting a vulnerability
+
+If you discover a security or privacy issue, prefer a private GitHub Security Advisory when the repository Security tab supports private reporting. Avoid posting sensitive exploit details in a public issue before maintainers have had a chance to review them.
+
+No guaranteed response-time SLA is currently published by this project.
