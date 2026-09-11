@@ -83,6 +83,29 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1b
     return ctx ? static_cast<jint>(chewing_buffer_Check(ctx)) : 0;
 }
 
+JNIEXPORT jstring JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1bopomofo_1string_1static(
+    JNIEnv *env, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    if (!ctx) return env->NewStringUTF("");
+    const char *text = chewing_bopomofo_String_static(ctx);
+    return env->NewStringUTF(text ? text : "");
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1bopomofo_1check(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_bopomofo_Check(ctx)) : 0;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cursor_1current(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_cursor_Current(ctx)) : 0;
+}
+
 JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1open(
     JNIEnv *, jobject, jlong handle) {
