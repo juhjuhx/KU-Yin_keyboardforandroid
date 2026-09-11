@@ -21,7 +21,7 @@ class ImeRuntimeSmokeTest {
     private val instrumentation = InstrumentationRegistry.getInstrumentation()
 
     @Test
-    fun nativeEngineInitializesAndLearningGateWorks() {
+    fun nativeEngineSurfacesVisibleDachenPhoneticPreedit() {
         val context = instrumentation.targetContext
         val nativePaths = LibChewingDataInstaller.ensureInstalled(context)
         val engine = AndroidChewingEngine(
@@ -36,10 +36,11 @@ class ImeRuntimeSmokeTest {
             engine.setPersonalizedLearningEnabled(false)
             assertFalse("no-learning policy should reach libchewing", engine.personalizedLearningEnabled)
 
-            val update = engine.handleKeyUpdate('5'.code)
+            val update = engine.handleKeyUpdate('1'.code)
             assertTrue(
-                "a valid Dachen key should produce a decoder transition",
-                update.consumed || update.preedit.isNotEmpty() || update.candidates.isNotEmpty(),
+                "Dachen key '1' (ㄅ) must surface visible phonetic preedit; " +
+                    "consumed=${update.consumed}, preedit='${update.preedit}', candidates=${update.candidates}",
+                update.preedit.contains("ㄅ"),
             )
         } finally {
             engine.close()
