@@ -46,6 +46,7 @@ sealed interface ImeCommand {
 sealed interface ImeEffect {
     data class SendChewingKey(val code: Int) : ImeEffect
     object BackspaceChewing : ImeEffect
+    object DeleteBackward : ImeEffect
     object CommitComposition : ImeEffect
     data class CommitText(val text: String) : ImeEffect
     object PerformEditorAction : ImeEffect
@@ -55,6 +56,7 @@ sealed interface ImeEffect {
 
 data class ControllerContext(
     val hasActiveComposition: Boolean,
+    val allowComposition: Boolean = true,
 )
 
 data class ControllerResult(
@@ -67,35 +69,140 @@ class KeyboardController {
         state: KeyboardRuntimeState,
         command: ImeCommand,
         context: ControllerContext,
-    ): ControllerResult = when (command) {
-        ImeCommand.ToggleLanguage -> toggleLanguage(state, context)
-        ImeCommand.OpenSymbols -> ControllerResult(
-            state = state.copy(page = KeyboardPage.SYMBOLS_PRIMARY),
-            effects = emptyList(),
-        )
-        ImeCommand.OpenEmoji -> ControllerResult(
-            state = state.copy(page = KeyboardPage.EMOJI),
-            effects = emptyList(),
-        )
-        ImeCommand.ReturnToLetters -> ControllerResult(
-            state = state.copy(page = KeyboardPage.LETTERS),
-            effects = emptyList(),
-        )
-        ImeCommand.Shift -> ControllerResult(
-            state = state.copy(shifted = !state.shifted),
-            effects = emptyList(),
-        )
-        ImeCommand.ToggleCandidateExpanded -> ControllerResult(
-            state = state.copy(candidateExpanded = !state.candidateExpanded),
-            effects = emptyList(),
-        )
-        else -> ControllerResult(state = state, effects = emptyList())
+    ): ControllerResult {
+        val effectiveState = normalizeForEditorPolicy(state, context)
+        return when (command) {
+            is ImeCommand.Input -> input(effectiveState, command)
+            ImeCommand.Backspace -> backspace(effectiveState)
+            ImeCommand.Space -> space(effectiveState)
+            ImeCommand.Enter -> enter(effectiveState, context)
+            ImeCommand.ToggleLanguage -> toggleLanguage(effectiveState, context)
+            ImeCommand.OpenSymbols -> ControllerResult(
+                state = effectiveState.copy(page = KeyboardPage.SYMBOLS_PRIMARY),
+                effects = emptyList(),
+            )
+            ImeCommand.OpenEmoji -> ControllerResult(
+                state = effectiveState.copy(page = KeyboardPage.EMOJI),
+                effects = emptyList(),
+            )
+            ImeCommand.ReturnToLetters -> ControllerResult(
+                state = effectiveState.copy(page = KeyboardPage.LETTERS),
+                effects = emptyList(),
+            )
+            ImeCommand.Shift -> ControllerResult(
+                state = effectiveState.copy(shifted = !effectiveState.shifted),
+                effects = emptyList(),
+            )
+            ImeCommand.NextInputMethod -> ControllerResult(
+                state = effectiveState,
+                effects = compositionBoundaryEffects(
+                    effectiveState,
+                    context,
+                    ImeEffect.ShowNextInputMethod,
+                ),
+            )
+            ImeCommand.Dismiss -> ControllerResult(
+                state = effectiveState,
+                effects = compositionBoundaryEffects(
+                    effectiveState,
+                    context,
+                    ImeEffect.HideKeyboard,
+                ),
+            )
+            ImeCommand.ToggleCandidateExpanded -> ControllerResult(
+                state = effectiveState.copy(
+                    candidateExpanded = !effectiveState.candidateExpanded,
+                ),
+                effects = emptyList(),
+            )
+        }
     }
+
+    private fun normalizeForEditorPolicy(
+        state: KeyboardRuntimeState,
+        context: ControllerContext,
+    ): KeyboardRuntimeState {
+        if (context.allowComposition || state.inputMode == InputMode.ENGLISH) return state
+        return state.copy(
+            inputMode = InputMode.ENGLISH,
+            page = KeyboardPage.LETTERS,
+            shifted = false,
+            candidateExpanded = false,
+        )
+    }
+
+    private fun input(
+        state: KeyboardRuntimeState,
+        command: ImeCommand.Input,
+    ): ControllerResult = when (state.inputMode) {
+        InputMode.ZHUYIN -> ControllerResult(
+            state = state,
+            effects = listOf(ImeEffect.SendChewingKey(command.codePoint)),
+        )
+        InputMode.ENGLISH -> {
+            val char = command.codePoint.toChar()
+            val text = if (state.shifted && char.isLetter()) {
+                char.uppercaseChar().toString()
+            } else {
+                char.toString()
+            }
+            ControllerResult(
+                state = state.copy(shifted = false),
+                effects = listOf(ImeEffect.CommitText(text)),
+            )
+        }
+    }
+
+    private fun backspace(state: KeyboardRuntimeState): ControllerResult = when (state.inputMode) {
+        InputMode.ZHUYIN -> ControllerResult(
+            state = state,
+            effects = listOf(ImeEffect.BackspaceChewing),
+        )
+        InputMode.ENGLISH -> ControllerResult(
+            state = state,
+            effects = listOf(ImeEffect.DeleteBackward),
+        )
+    }
+
+    private fun space(state: KeyboardRuntimeState): ControllerResult = when (state.inputMode) {
+        InputMode.ZHUYIN -> ControllerResult(
+            state = state,
+            effects = listOf(ImeEffect.SendChewingKey(' '.code)),
+        )
+        InputMode.ENGLISH -> ControllerResult(
+            state = state,
+            effects = listOf(ImeEffect.CommitText(" ")),
+        )
+    }
+
+    private fun enter(
+        state: KeyboardRuntimeState,
+        context: ControllerContext,
+    ): ControllerResult = ControllerResult(
+        state = state,
+        effects = compositionBoundaryEffects(
+            state,
+            context,
+            ImeEffect.PerformEditorAction,
+        ),
+    )
 
     private fun toggleLanguage(
         state: KeyboardRuntimeState,
         context: ControllerContext,
     ): ControllerResult {
+        if (!context.allowComposition) {
+            return ControllerResult(
+                state = state.copy(
+                    inputMode = InputMode.ENGLISH,
+                    page = KeyboardPage.LETTERS,
+                    shifted = false,
+                    candidateExpanded = false,
+                ),
+                effects = emptyList(),
+            )
+        }
+
         val nextMode = when (state.inputMode) {
             InputMode.ZHUYIN -> InputMode.ENGLISH
             InputMode.ENGLISH -> InputMode.ZHUYIN
@@ -116,6 +223,18 @@ class KeyboardController {
             ),
             effects = effects,
         )
+    }
+
+    private fun compositionBoundaryEffects(
+        state: KeyboardRuntimeState,
+        context: ControllerContext,
+        terminalEffect: ImeEffect,
+    ): List<ImeEffect> = if (
+        state.inputMode == InputMode.ZHUYIN && context.hasActiveComposition
+    ) {
+        listOf(ImeEffect.CommitComposition, terminalEffect)
+    } else {
+        listOf(terminalEffect)
     }
 }
 
