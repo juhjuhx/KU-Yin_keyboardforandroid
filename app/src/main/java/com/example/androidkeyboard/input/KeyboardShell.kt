@@ -30,6 +30,7 @@ data class KeyboardRuntimeState(
 
 sealed interface ImeCommand {
     data class Input(val codePoint: Int) : ImeCommand
+    data class InsertText(val text: String) : ImeCommand
     object Backspace : ImeCommand
     object Space : ImeCommand
     object Enter : ImeCommand
@@ -73,6 +74,7 @@ class KeyboardController {
         val effectiveState = normalizeForEditorPolicy(state, context)
         return when (command) {
             is ImeCommand.Input -> input(effectiveState, command)
+            is ImeCommand.InsertText -> insertText(effectiveState, command, context)
             ImeCommand.Backspace -> backspace(effectiveState)
             ImeCommand.Space -> space(effectiveState)
             ImeCommand.Enter -> enter(effectiveState, context)
@@ -152,6 +154,19 @@ class KeyboardController {
             )
         }
     }
+
+    private fun insertText(
+        state: KeyboardRuntimeState,
+        command: ImeCommand.InsertText,
+        context: ControllerContext,
+    ): ControllerResult = ControllerResult(
+        state = state.copy(shifted = false),
+        effects = compositionBoundaryEffects(
+            state,
+            context,
+            ImeEffect.CommitText(command.text),
+        ),
+    )
 
     private fun backspace(state: KeyboardRuntimeState): ControllerResult = when (state.inputMode) {
         InputMode.ZHUYIN -> ControllerResult(
