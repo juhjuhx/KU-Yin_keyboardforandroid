@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night-qualified application theme. SettingsActivity uses this theme via the
+         application manifest, so Preference text/surfaces must not inherit the
+         light-only values from res/values/themes.xml. -->
+    <style name="Theme.AndroidKeyboard" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#D0BCFF</item>
+        <item name="colorOnPrimary">#381E72</item>
+        <item name="colorSurface">@color/keyboard_bg_dark</item>
+        <item name="colorOnSurface">@color/key_text_dark</item>
+        <item name="android:colorBackground">@color/keyboard_bg_dark</item>
+        <item name="android:windowBackground">@color/keyboard_bg_dark</item>
+        <item name="android:navigationBarColor">@color/keyboard_bg_dark</item>
+        <item name="android:statusBarColor">@color/keyboard_bg_dark</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+    </style>
+</resources>
