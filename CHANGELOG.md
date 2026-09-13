@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.1.2-alpha] - 2026-09-13
+
+### P0 real-device fixes
+
+- Restored visible Dachen/Zhuyin preedit on real devices by surfacing libchewing's current bopomofo buffer and merging it with the composition buffer at the native cursor position.
+- Added regression coverage for visible phonetic preedit so `consumed=true` with an empty preedit no longer counts as a successful input transition.
+- Fixed the Settings screen dark-mode contrast by adding an explicit night-qualified app theme.
+- Added a static UI contract guarding the night theme against accidental fallback to the light window background.
+
+### Verification
+
+- Core CI contracts, native bootstrap, JVM tests, Debug APK, and unsigned Release APK build successfully.
+- Android instrumentation confirms Dachen key `1` surfaces `ㄅ` in preedit.
+- Install/register/enable/select succeed on Android 13 emulator.
+- The headless emulator IME-window-visible assertion remains experimental/non-blocking and is not used as evidence that physical-device UI has been verified.
+
+### Release status
+
+- Bumped application version to `0.1.2-alpha` / versionCode 3.
+- Debug APK is intended for direct device testing.
+- Release APK remains unsigned and is a developer artifact, not a production-signed package.
+
 ## [0.1.1-alpha] - 2026-09-10
 
 ### Repository / release
