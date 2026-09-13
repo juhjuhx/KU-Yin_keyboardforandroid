@@ -87,7 +87,9 @@ class AndroidChewingEngine(
 
     override fun backspaceUpdate(): EngineUpdate {
         if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
-        val hadComposition = chewing_buffer_check(nativeCtx) != 0 || preedit.isNotEmpty()
+        val hadComposition = chewing_buffer_check(nativeCtx) != 0 ||
+            chewing_bopomofo_check(nativeCtx) != 0 ||
+            preedit.isNotEmpty()
         if (!hadComposition) return snapshot(consumed = false)
         val result = chewing_handle_backspace(nativeCtx)
         candidatePage = 0
@@ -146,7 +148,14 @@ class AndroidChewingEngine(
             ""
         }
 
-        preedit = chewing_buffer_string_static(nativeCtx).orEmpty()
+        val compositionBuffer = chewing_buffer_string_static(nativeCtx).orEmpty()
+        val currentBopomofo = if (chewing_bopomofo_check(nativeCtx) != 0) {
+            chewing_bopomofo_string_static(nativeCtx).orEmpty()
+        } else {
+            ""
+        }
+        val cursor = chewing_cursor_current(nativeCtx)
+        preedit = composeVisiblePreedit(compositionBuffer, currentBopomofo, cursor)
         candidates = buildCandidates()
         return EngineUpdate(
             consumed = consumed,
@@ -210,6 +219,9 @@ class AndroidChewingEngine(
     private external fun chewing_handle_backspace(ctx: Long): Int
     private external fun chewing_buffer_string_static(ctx: Long): String?
     private external fun chewing_buffer_check(ctx: Long): Int
+    private external fun chewing_bopomofo_string_static(ctx: Long): String?
+    private external fun chewing_bopomofo_check(ctx: Long): Int
+    private external fun chewing_cursor_current(ctx: Long): Int
     private external fun chewing_cand_open(ctx: Long): Int
     private external fun chewing_cand_total_choice(ctx: Long): Int
     private external fun chewing_cand_total_page(ctx: Long): Int
@@ -224,4 +236,27 @@ class AndroidChewingEngine(
     private external fun chewing_set_kb_type(ctx: Long, kbtype: Int): Int
     private external fun chewing_set_auto_learn(ctx: Long, mode: Int)
     private external fun chewing_get_auto_learn(ctx: Long): Int
+}
+
+/**
+ * Build the visible Android preedit from libchewing's two composition surfaces.
+ * libchewing keeps converted/preedit text and the currently-entered Bopomofo syllable
+ * separately; the Bopomofo string belongs at the decoder cursor position.
+ */
+internal fun composeVisiblePreedit(
+    compositionBuffer: String,
+    currentBopomofo: String,
+    cursorCodePointIndex: Int,
+): String {
+    if (currentBopomofo.isEmpty()) return compositionBuffer
+    if (compositionBuffer.isEmpty()) return currentBopomofo
+
+    val codePointCount = compositionBuffer.codePointCount(0, compositionBuffer.length)
+    val safeCursor = cursorCodePointIndex.coerceIn(0, codePointCount)
+    val insertionOffset = compositionBuffer.offsetByCodePoints(0, safeCursor)
+    return buildString(compositionBuffer.length + currentBopomofo.length) {
+        append(compositionBuffer, 0, insertionOffset)
+        append(currentBopomofo)
+        append(compositionBuffer, insertionOffset, compositionBuffer.length)
+    }
 }

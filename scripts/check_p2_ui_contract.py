@@ -11,6 +11,8 @@ candidate = (ROOT / "app/src/main/java/com/example/androidkeyboard/ui/CandidateV
 symbol = (ROOT / "app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt").read_text(encoding="utf-8")
 palette_path = ROOT / "app/src/main/java/com/example/androidkeyboard/ui/ImePalette.kt"
 palette = palette_path.read_text(encoding="utf-8") if palette_path.exists() else ""
+night_theme_path = ROOT / "app/src/main/res/values-night/themes.xml"
+night_theme = night_theme_path.read_text(encoding="utf-8") if night_theme_path.exists() else ""
 
 
 def action_block(source: str, action: str, next_actions: tuple[str, ...]) -> str:
@@ -47,6 +49,9 @@ checks = {
     "candidate view uses adaptive IME palette": "ImePalette" in candidate,
     "symbol picker uses adaptive IME palette": "ImePalette" in symbol,
     "custom-view text respects font scale": "scaledDensity" in keyboard and "scaledDensity" in candidate and "scaledDensity" in symbol,
+    "settings theme has a night-qualified override": night_theme_path.exists() and "Theme.AndroidKeyboard" in night_theme,
+    "night theme does not force light window background": "@color/keyboard_bg_light" not in night_theme,
+    "night theme exposes dark readable surface colors": "@color/keyboard_bg_dark" in night_theme and "@color/key_text_dark" in night_theme,
 }
 
 failed = [name for name, ok in checks.items() if not ok]
