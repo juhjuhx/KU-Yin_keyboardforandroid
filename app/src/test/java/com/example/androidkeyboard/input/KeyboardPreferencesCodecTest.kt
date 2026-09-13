@@ -9,7 +9,7 @@ class KeyboardPreferencesCodecTest {
 
     @Test
     fun defaultsMatchV02KeyboardShellContract() {
-        val prefs = KeyboardPreferenceCodec.decode(emptyMap())
+        val prefs = KeyboardPreferenceCodec.decode(emptyMap<String, Any?>())
 
         assertEquals(DefaultInputMode.ZHUYIN, prefs.defaultMode)
         assertFalse(prefs.rememberLastMode)
