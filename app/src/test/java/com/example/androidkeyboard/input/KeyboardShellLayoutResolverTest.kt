@@ -8,6 +8,7 @@ import org.junit.Test
 class KeyboardShellLayoutResolverTest {
 
     private val resolver = KeyboardShellLayoutResolver()
+    private val controller = KeyboardController()
 
     @Test
     fun defaultZhuyinSurfaceHasDachenAndShellControls() {
@@ -50,6 +51,45 @@ class KeyboardShellLayoutResolverTest {
         assertTrue(inserts.any { it.text == "1" })
         assertTrue(inserts.any { it.text == "?" })
         assertTrue(keys.any { it.command == ImeCommand.ReturnToLetters })
+    }
+
+    @Test
+    fun primaryAndSecondarySymbolPagesUseRealStateTransitions() {
+        val primaryState = KeyboardRuntimeState.defaultZhuyin().copy(
+            page = KeyboardPage.SYMBOLS_PRIMARY,
+        )
+        val primaryLayout = resolver.resolve(primaryState, KeyboardPreferences())
+        val primaryKeys = primaryLayout.rows.flatMap { it.keys }
+
+        assertTrue(
+            primaryKeys.any {
+                it.label == "#+=" && it.command == ImeCommand.OpenSymbolsSecondary
+            },
+        )
+
+        val secondaryResult = controller.reduce(
+            state = primaryState,
+            command = ImeCommand.OpenSymbolsSecondary,
+            context = ControllerContext(hasActiveComposition = false),
+        )
+        assertEquals(KeyboardPage.SYMBOLS_SECONDARY, secondaryResult.state.page)
+        assertTrue(secondaryResult.effects.isEmpty())
+
+        val secondaryLayout = resolver.resolve(secondaryResult.state, KeyboardPreferences())
+        val secondaryKeys = secondaryLayout.rows.flatMap { it.keys }
+        assertTrue(
+            secondaryKeys.any {
+                it.label == "?123" && it.command == ImeCommand.OpenSymbolsPrimary
+            },
+        )
+
+        val primaryResult = controller.reduce(
+            state = secondaryResult.state,
+            command = ImeCommand.OpenSymbolsPrimary,
+            context = ControllerContext(hasActiveComposition = false),
+        )
+        assertEquals(KeyboardPage.SYMBOLS_PRIMARY, primaryResult.state.page)
+        assertTrue(primaryResult.effects.isEmpty())
     }
 
     @Test
