@@ -17,10 +17,12 @@ class KeyboardView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     private data class RenderedKey(
+        val id: String,
         val label: String,
+        val secondaryLabel: String?,
+        val role: KeyRole,
         val command: ImeCommand,
         val widthPct: Float,
-        val isSpecial: Boolean,
         val legacyKey: KeyDef? = null,
     )
 
@@ -80,14 +82,16 @@ class KeyboardView @JvmOverloads constructor(
 
     /** Compatibility adapter for the released KeyDef-based surface. */
     fun setLayout(rows: List<KeyboardRow>) {
-        this.rows = rows.map { row ->
+        this.rows = rows.mapIndexed { rowIndex, row ->
             RenderedRow(
-                keys = row.keys.map { key ->
+                keys = row.keys.mapIndexed { keyIndex, key ->
                     RenderedKey(
+                        id = "legacy:r$rowIndex:c$keyIndex",
                         label = key.label,
+                        secondaryLabel = null,
+                        role = key.toKeyRole(),
                         command = key.toImeCommand(),
                         widthPct = key.widthPct,
-                        isSpecial = key.isSpecial,
                         legacyKey = key,
                     )
                 },
@@ -262,10 +266,21 @@ class KeyboardView @JvmOverloads constructor(
         KeyAction.DISMISS -> ImeCommand.Dismiss
     }
 
+    private fun KeyDef.toKeyRole(): KeyRole = when (action) {
+        KeyAction.INPUT -> KeyRole.CHARACTER
+        KeyAction.SPACE -> KeyRole.SPACE
+        KeyAction.ENTER -> KeyRole.ACTION
+        KeyAction.BACKSPACE,
+        KeyAction.SHIFT,
+        KeyAction.DISMISS -> KeyRole.FUNCTION
+    }
+
     private fun ResolvedKey.toRenderedKey(): RenderedKey = RenderedKey(
+        id = id,
         label = label,
+        secondaryLabel = secondaryLabel,
+        role = role,
         command = command,
         widthPct = widthPct,
-        isSpecial = isSpecial,
     )
 }

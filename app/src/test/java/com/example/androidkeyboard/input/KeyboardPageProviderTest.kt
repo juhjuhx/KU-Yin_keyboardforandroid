@@ -1,6 +1,7 @@
 package com.example.androidkeyboard.input
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -16,6 +17,21 @@ class KeyboardPageProviderTest {
 
         val tail = layout.rows.last().keys.first { it.label == "ㄥ" }
         assertEquals(ImeCommand.Input('/'.code), tail.command)
+    }
+
+    @Test
+    fun dachenProviderExposesStableIdentitySecondaryLegendAndCharacterRole() {
+        val layout = DachenPageProvider().resolve(KeyboardRuntimeState.defaultZhuyin())
+
+        val first = layout.rows.first().keys.first()
+        assertEquals("dachen:input:49", first.id)
+        assertEquals("1", first.secondaryLabel)
+        assertEquals(KeyRole.CHARACTER, first.role)
+
+        val tail = layout.rows.last().keys.first { it.label == "ㄥ" }
+        assertEquals("dachen:input:47", tail.id)
+        assertEquals("/", tail.secondaryLabel)
+        assertEquals(KeyRole.CHARACTER, tail.role)
     }
 
     @Test
@@ -41,10 +57,13 @@ class KeyboardPageProviderTest {
 
         assertEquals("q", q.label)
         assertEquals(ImeCommand.Input('q'.code), q.command)
+        assertEquals("english:input:113", q.id)
+        assertNull(q.secondaryLabel)
+        assertEquals(KeyRole.CHARACTER, q.role)
     }
 
     @Test
-    fun englishProviderUsesUppercaseLabelsWithoutChangingPhysicalCode() {
+    fun englishProviderUsesUppercaseLabelsWithoutChangingPhysicalCodeOrStableIdentity() {
         val state = KeyboardRuntimeState.defaultZhuyin().copy(
             inputMode = InputMode.ENGLISH,
             shifted = true,
@@ -55,6 +74,8 @@ class KeyboardPageProviderTest {
 
         assertEquals("Q", q.label)
         assertEquals(ImeCommand.Input('q'.code), q.command)
+        assertEquals("english:input:113", q.id)
+        assertEquals(KeyRole.CHARACTER, q.role)
     }
 
     @Test
@@ -66,7 +87,9 @@ class KeyboardPageProviderTest {
 
         assertEquals("⇧", shift.label)
         assertEquals(15f, shift.widthPct, 0.0001f)
-        assertTrue(shift.isSpecial)
+        assertEquals("english:shift", shift.id)
+        assertEquals(KeyRole.FUNCTION, shift.role)
+        assertNull(shift.secondaryLabel)
         assertEquals(ImeCommand.Shift, shift.command)
     }
 }

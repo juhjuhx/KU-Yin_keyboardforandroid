@@ -2,6 +2,7 @@ package com.example.androidkeyboard.input
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -22,6 +23,24 @@ class KeyboardShellLayoutResolverTest {
         assertEquals(1, keys.count { it.command == ImeCommand.Space })
         assertTrue(keys.any { it.command == ImeCommand.ToggleLanguage })
         assertTrue(keys.any { it.command == ImeCommand.Enter })
+    }
+
+    @Test
+    fun secondaryLabelsPreferenceOnlyChangesPresentationMetadata() {
+        val visible = resolver.resolve(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            preferences = KeyboardPreferences(showSecondaryLabels = true),
+        ).rows.flatMap { it.keys }.first { it.label == "ㄅ" }
+        val hidden = resolver.resolve(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            preferences = KeyboardPreferences(showSecondaryLabels = false),
+        ).rows.flatMap { it.keys }.first { it.label == "ㄅ" }
+
+        assertEquals("1", visible.secondaryLabel)
+        assertNull(hidden.secondaryLabel)
+        assertEquals(visible.id, hidden.id)
+        assertEquals(visible.command, hidden.command)
+        assertEquals(visible.role, hidden.role)
     }
 
     @Test
