@@ -17,6 +17,7 @@ import com.example.androidkeyboard.engines.opencc.OpenCCConverter
 import com.example.androidkeyboard.ui.CandidateState
 import com.example.androidkeyboard.ui.CandidateView
 import com.example.androidkeyboard.ui.ImePalette
+import com.example.androidkeyboard.ui.candidateContainerHeightPx
 import com.example.androidkeyboard.ui.candidateStateOf
 
 class ChewingInputMethodService : InputMethodService() {
@@ -93,6 +94,7 @@ class ChewingInputMethodService : InputMethodService() {
             visibility = View.GONE
             onItemClick = { index, _ -> dispatchCommand(ImeCommand.SelectCandidate(index)) }
             onToggleExpand = { dispatchCommand(ImeCommand.ToggleCandidateExpanded) }
+            onRequiredRowsChanged = { rows -> applyCandidateGeometry(lastCandidateState, rows) }
             onPrevPage = {
                 if (activeSession.allowCandidates) {
                     chewing.prevPageUpdate()?.let(::applyEngineUpdate)
@@ -487,19 +489,28 @@ class ChewingInputMethodService : InputMethodService() {
         lastCandidateState = state
         if (!::candidateView.isInitialized) return
         candidateView.setCandidateState(state)
+        applyCandidateGeometry(state, candidateView.contentRowCount())
+    }
+
+    private fun applyCandidateGeometry(state: CandidateState, rows: Int) {
+        if (!::candidateView.isInitialized) return
         if (state.items.isEmpty()) {
-            candidateView.visibility = View.GONE
+            if (candidateView.visibility != View.GONE) candidateView.visibility = View.GONE
             return
         }
-        candidateView.visibility = View.VISIBLE
+        if (candidateView.visibility != View.VISIBLE) candidateView.visibility = View.VISIBLE
         val rowH = (CandidateView.ROW_HEIGHT_DP * resources.displayMetrics.density).toInt()
-        val rows = if (state.expanded) {
-            candidateView.contentRowCount().coerceIn(1, CandidateView.MAX_EXPANDED_ROWS)
-        } else {
-            1
+        val newHeight = candidateContainerHeightPx(
+            expanded = state.expanded,
+            rows = rows,
+            rowHeightPx = rowH,
+            maxRows = CandidateView.MAX_EXPANDED_ROWS,
+        )
+        val lp = candidateView.layoutParams
+        if (lp != null && lp.height != newHeight) {
+            lp.height = newHeight
+            candidateView.requestLayout()
         }
-        candidateView.layoutParams = candidateView.layoutParams?.apply { height = rows * rowH }
-        candidateView.requestLayout()
     }
 
     private fun selectCandidate(index: Int) {

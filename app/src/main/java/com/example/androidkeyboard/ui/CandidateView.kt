@@ -39,6 +39,42 @@ fun candidateStateOf(
 )
 
 /**
+ * Pure flow-layout row assignment: row index per cell for final cell widths.
+ * Caller supplies final widths (already floored/capped for touch targets);
+ * oversized cells are coerced to one full row each.
+ */
+fun assignFlowRows(cellWidths: List<Float>, maxRowWidth: Float): List<Int> {
+    if (cellWidths.isEmpty()) return emptyList()
+    val limit = maxRowWidth.coerceAtLeast(1f)
+    val rows = ArrayList<Int>(cellWidths.size)
+    var row = 0
+    var x = 0f
+    for (raw in cellWidths) {
+        val cellW = raw.coerceAtMost(limit)
+        if (x > 0f && x + cellW > limit) {
+            row++
+            x = 0f
+        }
+        rows.add(row)
+        x += cellW
+    }
+    return rows
+}
+
+fun flowRowCount(cellWidths: List<Float>, maxRowWidth: Float): Int =
+    assignFlowRows(cellWidths, maxRowWidth).maxOrNull()?.plus(1) ?: 0
+
+fun candidateContainerHeightPx(
+    expanded: Boolean,
+    rows: Int,
+    rowHeightPx: Int,
+    maxRows: Int,
+): Int {
+    if (!expanded) return rowHeightPx
+    return rows.coerceAtLeast(1).coerceAtMost(maxRows.coerceAtLeast(1)) * rowHeightPx
+}
+
+/**
  * Renders one libchewing candidate page. Paging and ranking stay decoder-owned;
  * this view only projects [CandidateState] into a collapsed strip or an
  * expanded grid. Never touches InputConnection or libchewing: user gestures
@@ -72,9 +108,11 @@ class CandidateView @JvmOverloads constructor(
     var onPrevPage: (() -> Unit)? = null
     var onNextPage: (() -> Unit)? = null
     var onToggleExpand: (() -> Unit)? = null
+    var onRequiredRowsChanged: ((Int) -> Unit)? = null
 
     private var chips: List<Chip> = emptyList()
     private var chevronRect = RectF()
+    private var contentRows = 0
     private var scrollXPx = 0f
     private var scrollYPx = 0f
     private var maxScrollXPx = 0f
@@ -117,11 +155,8 @@ class CandidateView @JvmOverloads constructor(
         rebuildLayout()
     }
 
-    /** Row count of the current content; the service sizes this view from it. */
-    fun contentRowCount(): Int {
-        if (state.items.isEmpty()) return 0
-        return if (state.expanded) expandedRows() else 1
-    }
+    /** Row count of the last laid-out content; the service sizes this view from it. */
+    fun contentRowCount(): Int = contentRows
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
@@ -130,26 +165,22 @@ class CandidateView @JvmOverloads constructor(
 
     private fun rowHeightPx(): Float = ROW_HEIGHT_DP * resources.displayMetrics.density
 
-    private fun expandedRows(): Int {
-        if (state.items.isEmpty() || width <= 0) return 0
-        val chipPad = CHIP_PADDING_DP * resources.displayMetrics.density
-        val chevronW = CHEVRON_WIDTH_DP * resources.displayMetrics.density
-        var rows = 1
-        var x = 0f
-        val cells = state.items.size + 1
-        for (i in 0 until cells) {
-            val cellW = if (i < state.items.size) {
-                (textPaint.measureText(state.items[i]) + chipPad * 2).coerceAtMost(width.toFloat())
-            } else {
-                chevronW
-            }
-            if (x > 0f && x + cellW > width) {
-                rows++
-                x = 0f
-            }
-            x += cellW
+    private fun updateContentRows(rows: Int) {
+        if (rows == contentRows) return
+        contentRows = rows
+        onRequiredRowsChanged?.invoke(rows)
+    }
+
+    private fun expandedCellWidths(rowWidth: Float, chipPad: Float, minCell: Float): List<Float> {
+        val widths = ArrayList<Float>(state.items.size + 1)
+        for (text in state.items) {
+            widths.add(
+                ((textPaint.measureText(text) + chipPad * 2).coerceAtLeast(minCell))
+                    .coerceAtMost(rowWidth),
+            )
         }
-        return rows
+        widths.add(minCell.coerceAtMost(rowWidth))
+        return widths
     }
 
     private fun rebuildLayout() {
@@ -157,10 +188,12 @@ class CandidateView @JvmOverloads constructor(
         chevronRect = RectF()
         maxScrollXPx = 0f
         maxScrollYPx = 0f
-        if (state.items.isEmpty() || width <= 0) {
+        if (state.items.isEmpty()) {
+            updateContentRows(0)
             invalidate()
             return
         }
+        if (width <= 0) return
         val density = resources.displayMetrics.density
         val rowH = rowHeightPx()
         val chipPad = CHIP_PADDING_DP * density
@@ -193,35 +226,40 @@ class CandidateView @JvmOverloads constructor(
         chips = built
         chevronRect = RectF(width - chevronW, 0f, width.toFloat(), rowH)
         maxScrollXPx = (x - stripW).coerceAtLeast(0f)
+        updateContentRows(1)
     }
 
     private fun rebuildExpanded(rowH: Float, chipPad: Float) {
-        val chevronW = CHEVRON_WIDTH_DP * resources.displayMetrics.density
+        val density = resources.displayMetrics.density
+        val widthf = width.toFloat()
+        val minCell = CHEVRON_WIDTH_DP * density
+        val widths = expandedCellWidths(widthf, chipPad, minCell)
+        val assignment = assignFlowRows(widths, widthf)
         val built = ArrayList<Chip>(state.items.size)
         var x = 0f
-        var y = 0f
+        var row = -1
         state.items.forEachIndexed { index, text ->
-            val cellW = (textPaint.measureText(text) + chipPad * 2)
-                .coerceAtLeast(chevronW)
-                .coerceAtMost(width.toFloat())
-            if (x > 0f && x + cellW > width) {
+            val itemRow = assignment[index]
+            if (itemRow != row) {
+                row = itemRow
                 x = 0f
-                y += rowH
             }
-            built.add(Chip(index, ellipsized(text, cellW - chipPad), RectF(x, y, x + cellW, y + rowH)))
+            val cellW = widths[index]
+            built.add(Chip(index, ellipsized(text, cellW - chipPad), RectF(x, row * rowH, x + cellW, row * rowH + rowH)))
             x += cellW
         }
-        val chevronCellW = chevronW.coerceAtMost(width.toFloat())
-        var cx = x
-        var cy = y
-        if (cx > 0f && cx + chevronCellW > width) {
-            cx = 0f
-            cy += rowH
+        val chevronRow = assignment.last()
+        var cx = 0f
+        for (i in 0 until widths.size - 1) {
+            if (assignment[i] == chevronRow) cx += widths[i]
         }
-        chevronRect = RectF(cx, cy, cx + chevronCellW, cy + rowH)
+        val chevronW = widths.last()
+        val cy = chevronRow * rowH
+        chevronRect = RectF(cx, cy, cx + chevronW, cy + rowH)
         chips = built
-        val rows = (cy / rowH).toInt() + 1
+        val rows = flowRowCount(widths, widthf)
         maxScrollYPx = (rows * rowH - MAX_EXPANDED_ROWS * rowH).coerceAtLeast(0f)
+        updateContentRows(rows)
     }
 
     override fun onDraw(canvas: Canvas) {
