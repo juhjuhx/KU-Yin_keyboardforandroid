@@ -37,6 +37,8 @@ sealed interface ImeCommand {
     object Shift : ImeCommand
     object ToggleLanguage : ImeCommand
     object OpenSymbols : ImeCommand
+    object OpenSymbolsPrimary : ImeCommand
+    object OpenSymbolsSecondary : ImeCommand
     object OpenEmoji : ImeCommand
     object ReturnToLetters : ImeCommand
     object NextInputMethod : ImeCommand
@@ -81,6 +83,14 @@ class KeyboardController {
             ImeCommand.ToggleLanguage -> toggleLanguage(effectiveState, context)
             ImeCommand.OpenSymbols -> ControllerResult(
                 state = effectiveState.copy(page = KeyboardPage.SYMBOLS_PRIMARY),
+                effects = emptyList(),
+            )
+            ImeCommand.OpenSymbolsPrimary -> ControllerResult(
+                state = effectiveState.copy(page = KeyboardPage.SYMBOLS_PRIMARY),
+                effects = emptyList(),
+            )
+            ImeCommand.OpenSymbolsSecondary -> ControllerResult(
+                state = effectiveState.copy(page = KeyboardPage.SYMBOLS_SECONDARY),
                 effects = emptyList(),
             )
             ImeCommand.OpenEmoji -> ControllerResult(
