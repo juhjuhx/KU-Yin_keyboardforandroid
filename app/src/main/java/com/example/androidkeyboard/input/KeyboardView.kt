@@ -101,7 +101,7 @@ class KeyboardView @JvmOverloads constructor(
     fun setResolvedLayout(layout: ResolvedKeyboardLayout) {
         rows = layout.rows.map { row ->
             RenderedRow(
-                keys = row.keys.map(ResolvedKey::toRenderedKey),
+                keys = row.keys.map { it.toRenderedKey() },
             )
         }
         requestLayout()
