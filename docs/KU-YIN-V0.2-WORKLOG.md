@@ -8,7 +8,8 @@ Production architecture (not README/prototype guesses) is source of truth.
 ## Current state (2026-09-14)
 
 Latest behavior-bearing implementation verified in this round:
-`382969c77058928180e403d116a33553393e9d87`.
+`96c7b8f` (merge of remote M1/M2 + ResolvedKey Option A with the M3 candidate
+slice below).
 
 - Branch: `feat/keyboard-shell-v0.2`; base `main` remains untouched.
 - PR #4 remains **Draft**. Do not merge `main`; do not publish a release.
@@ -28,6 +29,10 @@ Recent commits:
 - `175e143` docs(v0.2): refresh architecture and donor handoff
 - `c95770c` test(ui): lock future-safe resolved key contract (**expected RED**)
 - `382969c` feat(ui): add stable resolved key metadata (**GREEN**)
+- `8716634` test(candidates): lock M3 candidate state and selection contracts (**expected RED**)
+- `09cc375` feat(candidates): add CandidateState presentation and selection bridge (**GREEN**)
+- `2b77e78` docs(v0.2): record M3 donor audit
+- `96c7b8f` Merge origin M1/M2 audits and ResolvedKey OPTION A with M3 candidate slice
 
 ## Architecture (as built, not aspirational)
 
@@ -211,6 +216,63 @@ Known non-blocking/pre-existing warnings remain:
 - release lint reports Kotlin metadata-version warnings but `lintVitalRelease` and `assembleRelease` still complete successfully.
 - experimental runtime-smoke is not accepted as physical-device evidence.
 
+## M3 CandidateState + horizontal/expanded presentation (this round)
+
+Design (spec section 14, smallest projection — no second candidate engine):
+
+- `CandidateState(items, canPageBackward, canPageForward, expanded)` lives in
+  `ui/CandidateView.kt`; pure mapper `candidateStateOf(update, expanded,
+  canPageBackward, canPageForward)` keeps decoder page order untouched.
+- `ImeCommand.SelectCandidate(index)` → controller returns state unchanged +
+  `ImeEffect.SelectCandidate(index)` → service executes the pre-existing
+  `selectCandidateUpdate → applyEngineUpdate` path (no hard commit; only
+  decoder-reported `committedText` is committed). Editor-sync contract keeps
+  `onItemClick: ((Int, String) -> Unit)?` and the no-direct-commit rule.
+- Expand/collapse travels the pre-existing
+  `ImeCommand.ToggleCandidateExpanded` → `runtimeState.candidateExpanded`;
+  the service projects the flag into `CandidateState` and sizes the container
+  (collapsed 1×44dp, expanded up to 4 rows, GONE when empty).
+- Decoder page bounds are exposed as non-mutating engine queries
+  `canPageCandidatesBackward/Forward()` (P3-safe names); Android adapter reads
+  `candidatePage` / `chewing_cand_total_page`.
+- `CandidateView` stays a dependency-free custom View: content-width chips,
+  collapsed drag-scroll + fixed ˄ chevron, expanded wrapped grid (≤4 rows,
+  vertical scroll) + ˅ chevron, fling-to-page preserved, cached layout (no
+  per-`onDraw` allocation), `ImePalette` dark/light, content descriptions,
+  44dp+ touch targets. No InputConnection/libchewing access from the View.
+
+Files: `KeyboardShell.kt` (+command/effect/controller case),
+`engines/core/ChewingEngine.kt` (+2 queries),
+`engines/android/AndroidChewingEngine.kt` (+2 overrides),
+`ui/CandidateView.kt` (state model + rewritten rendering),
+`ChewingInputMethodService.kt` (selection bridge, state projection, container
+sizing, `lastCandidateState` render cache), `KeyboardCommandEffectTest.kt`
+(+3), new `ui/CandidateStateTest.kt` (+4).
+
+### RED — `8716634`
+
+Local `compileDebugUnitTestKotlin` failed on unresolved `SelectCandidate`
+and `candidateStateOf`: the tests exercised the missing contract.
+
+### GREEN — `09cc375` + merge `96c7b8f`
+
+Local `:app:testDebugUnitTest`: 78 tests, 0 failures (7 new M3 tests).
+Test sensitivity proven: temporarily removing the `InsertText`-style boundary
+from the new path fails the matching test; restored before commit.
+All six static contracts pass locally.
+
+CI run `34833978395` on exact merge head `96c7b8f`, authoritative `build` job
+**SUCCESS**: static contracts, pinned bootstrap `3587ba33…`, JVM unit tests,
+`assembleDebug`, `assembleRelease`, artifact uploads.
+
+Artifacts from run `34833978395`:
+
+- `debug-apk` artifact ID `10343647062` (9,855,234 bytes).
+- `release-apk` artifact ID `10343731931` (8,662,802 bytes).
+
+Known non-blocking/pre-existing warnings remain (same list as above);
+experimental runtime-smoke is not accepted as physical-device evidence.
+
 ## Device verification
 
 **Not done for v0.2 in this session.** This remains a release blocker.
@@ -225,6 +287,17 @@ Physical-device priority checks:
 6. secondary Dachen legends render correctly once the visual layer is implemented;
 7. later v0.2 shell pages/settings survive restart and reset safely.
 
+M3 candidate-presentation checks (unverified on JVM — custom View needs a
+device/emulator; classify as unverified, do not guess):
+
+8. collapsed strip shows content-width chips with a fixed ˄ chevron;
+9. horizontal drag scrolls an overflowing page; fling still pages;
+10. tapping a candidate selects without hard-committing the composition;
+11. ˄ expands to the wrapped grid, ˅ collapses back, order unchanged;
+12. empty candidate list hides the strip safely (no crash, no ghost bar);
+13. dark/light themes render readable Traditional Chinese chips;
+14. long candidate strings do not corrupt layout.
+
 ## Updated roadmap
 
 ```text
@@ -235,7 +308,7 @@ M-device  physical continuous-composition gate (parallel user validation)
     ▼
 A seam     ResolvedKey id + secondaryLabel + role  ✅ implementation green
     ▼
-M3         CandidateState + horizontal / expanded presentation
+M3         CandidateState + horizontal / expanded presentation  ✅ implementation green
     ▼
 M4         Symbols / Emoji providers + local recents
     ▼
@@ -255,7 +328,9 @@ M10        release preparation
 
 ## Next handoff
 
-Start M3 from the exact Option A implementation contract above. Candidate work must preserve these constraints:
+M3 is implementation-green (see evidence above); M3 view behavior items 8–14
+still need the physical-device pass. Start M4 (Symbols/Emoji providers +
+local recents) from this head. Standing constraints carry over:
 
 - candidate ordering/paging remains decoder-owned;
 - candidate selection must not hard-commit the whole composition unless libchewing reports committed text;
