@@ -15,6 +15,8 @@ android_engine = read("app/src/main/java/com/example/androidkeyboard/engines/and
 service = read("app/src/main/java/com/example/androidkeyboard/input/ChewingInputMethodService.kt")
 settings = read("app/src/main/java/com/example/androidkeyboard/SettingsActivity.kt")
 layout = read("app/src/main/java/com/example/androidkeyboard/input/KeyboardLayout.kt")
+shell = read("app/src/main/java/com/example/androidkeyboard/input/KeyboardShell.kt")
+page_providers = read("app/src/main/java/com/example/androidkeyboard/input/KeyboardPageProviders.kt")
 manifest = read("app/src/main/AndroidManifest.xml")
 symbol_picker = read("app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt")
 
@@ -34,13 +36,17 @@ checks = [
     ("manifest has no Internet permission", "android.permission.INTERNET" not in manifest),
     ("View haptics need no VIBRATE permission", "android.permission.VIBRATE" not in manifest),
     ("symbol picker no longer carries unused anchor API", "anchorX" not in symbol_picker),
-    ("ASCII surface provides explicit shift action", "KeyAction.SHIFT" in layout and "asciiRows(shifted" in layout),
+    ("legacy ASCII table still exposes explicit shift data", "KeyAction.SHIFT" in layout and "asciiRows(shifted" in layout),
     ("service creates editor policy", "EditorPolicy.from(attribute.inputType, attribute.imeOptions)" in service),
     ("service owns session controller", "ImeSessionController()" in service and "sessionController.begin(" in service),
     ("service applies personalized-learning policy", "setPersonalizedLearningEnabled(activeSession.personalizedLearningEnabled)" in service),
-    ("service switches keyboard surface by session", "rowsForActiveSession" in service and "SessionKeyboard.ASCII" in service),
-    ("service handles semantic enter", "KeyAction.ENTER" in service and "performEditorAction" in service),
-    ("service handles ASCII shift", "KeyAction.SHIFT" in service and "toggleAsciiShift" in service),
+    ("service renders keyboard surface from v0.2 runtime state", "KeyboardShellLayoutResolver()" in service and "shellLayoutResolver.resolve(runtimeState" in service),
+    ("service routes semantic commands through controller", "KeyboardController()" in service and "dispatchCommand" in service and "keyboardController.reduce(" in service),
+    ("service passes editor composition policy into controller", "allowComposition = activeSession.allowComposition" in service),
+    ("secure editor policy normalizes shell to English", "!context.allowComposition" in shell and "InputMode.ENGLISH" in shell),
+    ("enter is semantic command/effect", "object Enter : ImeCommand" in shell and "ImeEffect.PerformEditorAction" in service and "performEditorAction" in service),
+    ("ASCII shift is runtime state rather than service-local flag", "object Shift : ImeCommand" in shell and "shifted = !effectiveState.shifted" in shell and "asciiShifted" not in service),
+    ("English page derives labels from runtime shift state", "asciiRows(shifted = state.shifted)" in page_providers),
     ("service reconciles editor selection", "override fun onUpdateSelection" in service and "shouldResetComposition" in service),
 ]
 
