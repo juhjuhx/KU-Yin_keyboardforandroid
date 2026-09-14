@@ -199,4 +199,68 @@ class KeyboardCommandEffectTest {
 
         assertEquals(listOf(ImeEffect.ShowNextInputMethod), result.effects)
     }
+
+    @Test
+    fun symbolInsertCommitsActiveZhuyinCompositionBeforeLiteral() {
+        val result = controller.reduce(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            command = ImeCommand.InsertText("，"),
+            context = ControllerContext(
+                hasActiveComposition = true,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(
+            listOf(ImeEffect.CommitComposition, ImeEffect.CommitText("，")),
+            result.effects,
+        )
+    }
+
+    @Test
+    fun symbolInsertWithoutCompositionCommitsLiteralOnly() {
+        val result = controller.reduce(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            command = ImeCommand.InsertText("，"),
+            context = ControllerContext(
+                hasActiveComposition = false,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(listOf(ImeEffect.CommitText("，")), result.effects)
+    }
+
+    @Test
+    fun toggleLanguageWithoutCompositionSwitchesWithoutCommit() {
+        val result = controller.reduce(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            command = ImeCommand.ToggleLanguage,
+            context = ControllerContext(
+                hasActiveComposition = false,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(InputMode.ENGLISH, result.state.inputMode)
+        assertEquals(KeyboardPage.LETTERS, result.state.page)
+        assertTrue(result.effects.isEmpty())
+    }
+
+    @Test
+    fun nextInputMethodCommitsActiveZhuyinCompositionFirst() {
+        val result = controller.reduce(
+            state = KeyboardRuntimeState.defaultZhuyin(),
+            command = ImeCommand.NextInputMethod,
+            context = ControllerContext(
+                hasActiveComposition = true,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(
+            listOf(ImeEffect.CommitComposition, ImeEffect.ShowNextInputMethod),
+            result.effects,
+        )
+    }
 }
