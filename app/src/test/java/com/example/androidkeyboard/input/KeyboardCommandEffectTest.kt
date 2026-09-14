@@ -263,4 +263,55 @@ class KeyboardCommandEffectTest {
             result.effects,
         )
     }
+
+    @Test
+    fun toggleCandidateExpandedOnlyChangesPresentationState() {
+        val initial = KeyboardRuntimeState.defaultZhuyin()
+
+        val result = controller.reduce(
+            state = initial,
+            command = ImeCommand.ToggleCandidateExpanded,
+            context = ControllerContext(
+                hasActiveComposition = true,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(initial.copy(candidateExpanded = true), result.state)
+        assertTrue(result.effects.isEmpty())
+    }
+
+    @Test
+    fun toggleCandidateExpandedCollapsesWithoutSideEffects() {
+        val initial = KeyboardRuntimeState.defaultZhuyin().copy(candidateExpanded = true)
+
+        val result = controller.reduce(
+            state = initial,
+            command = ImeCommand.ToggleCandidateExpanded,
+            context = ControllerContext(
+                hasActiveComposition = false,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(initial.copy(candidateExpanded = false), result.state)
+        assertTrue(result.effects.isEmpty())
+    }
+
+    @Test
+    fun selectCandidateKeepsStateAndEmitsSelectionOnly() {
+        val initial = KeyboardRuntimeState.defaultZhuyin()
+
+        val result = controller.reduce(
+            state = initial,
+            command = ImeCommand.SelectCandidate(2),
+            context = ControllerContext(
+                hasActiveComposition = true,
+                allowComposition = true,
+            ),
+        )
+
+        assertEquals(initial, result.state)
+        assertEquals(listOf(ImeEffect.SelectCandidate(2)), result.effects)
+    }
 }
