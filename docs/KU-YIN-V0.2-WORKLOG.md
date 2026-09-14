@@ -8,8 +8,7 @@ Production architecture (not README/prototype guesses) is source of truth.
 ## Current state (2026-09-14)
 
 Latest behavior-bearing implementation verified in this round:
-`96c7b8f` (merge of remote M1/M2 + ResolvedKey Option A with the M3 candidate
-slice below).
+`bbb7ffc` (M3.1 candidate geometry hardening, below).
 
 - Branch: `feat/keyboard-shell-v0.2`; base `main` remains untouched.
 - PR #4 remains **Draft**. Do not merge `main`; do not publish a release.
@@ -33,6 +32,8 @@ Recent commits:
 - `09cc375` feat(candidates): add CandidateState presentation and selection bridge (**GREEN**)
 - `2b77e78` docs(v0.2): record M3 donor audit
 - `96c7b8f` Merge origin M1/M2 audits and ResolvedKey OPTION A with M3 candidate slice
+- `8b64c3b` test(candidates): lock M3.1 flow-row and container-height contracts (**expected RED**)
+- `bbb7ffc` fix(candidates): self-healing container height and conditional layout (**GREEN**)
 
 ## Architecture (as built, not aspirational)
 
@@ -273,6 +274,55 @@ Artifacts from run `34833978395`:
 Known non-blocking/pre-existing warnings remain (same list as above);
 experimental runtime-smoke is not accepted as physical-device evidence.
 
+## M3.1 Hardening — geometry only, no semantic change
+
+Issue: expanded candidate container height was computed from the width at the
+last engine update, so rotation/resize could leave the panel clipped until the
+next keypress; and `requestLayout()` ran on every engine update even when
+geometry was unchanged.
+
+Fix (`8b64c3b` RED → `bbb7ffc` GREEN):
+
+- Pure, production-used helpers in `ui/CandidateView.kt`: `assignFlowRows`
+  (row assignment for final cell widths), `flowRowCount`,
+  `candidateContainerHeightPx` (collapsed 1 row, expanded capped at
+  `MAX_EXPANDED_ROWS`). Unifying count and placement on one algorithm also
+  removed a latent divergence where the old row counter ignored the minimum
+  touch-target cell floor used by placement.
+- `CandidateView` tracks laid-out `contentRows` and fires the new
+  `onRequiredRowsChanged(rows)` callback only on change, from every layout
+  rebuild (`setCandidateState`, `onSizeChanged`, `refreshAppearance`).
+  Oscillation is impossible: a height-only change re-fires `onSizeChanged`
+  but recomputes identical rows, so no second notification.
+- Service splits `renderCandidateState` (state store) from
+  `applyCandidateGeometry(state, rows)` (visibility + height, applied only on
+  change); the resize callback path reuses it with `lastCandidateState` and
+  never touches decoder/runtime state or the engine.
+- `requestLayout()` now fires only when container height actually changes;
+  visibility changes rely on their own layout pass. No drawing-path changes
+  (P3 RectF/toString micro-allocs explicitly deferred to M8).
+
+Tests: 7 new JVM tests in `ui/CandidateStateTest.kt` (row assignment, wrap
+behavior, width-shrink sensitivity, oversized cell, empty, collapsed/expanded
+heights, cap). RED was unresolved-reference compile failure on the new pure
+API. The `requestLayout` gating itself is View-measurement code and is
+classified device/instrumentation-level (rotation CASE 6 below). Local
+`:app:testDebugUnitTest`: 85 tests, 0 failures. All six static contracts pass.
+
+CI run `34845869840` on exact head `bbb7ffc`, authoritative `build` job
+**SUCCESS**: static contracts, pinned bootstrap `3587ba33…`, JVM unit tests,
+`assembleDebug`, `assembleRelease`, artifact uploads.
+
+Artifacts from run `34845869840`:
+
+- `debug-apk` artifact ID `10347804063` (9,854,283 bytes).
+- `release-apk` artifact ID `10347374957` (8,663,959 bytes).
+
+Security invariants re-verified: no INTERNET permission, `allowBackup=false`,
+no new logging/network/clipboard/telemetry, libchewing source of truth,
+native pin unchanged, EditorPolicy untouched (no M3.1 file touches those
+areas; P3 contract green).
+
 ## Device verification
 
 **Not done for v0.2 in this session.** This remains a release blocker.
@@ -310,7 +360,9 @@ A seam     ResolvedKey id + secondaryLabel + role  ✅ implementation green
     ▼
 M3         CandidateState + horizontal / expanded presentation  ✅ implementation green
     ▼
-M4         Symbols / Emoji providers + local recents
+M3.1       candidate geometry hardening (resize self-heal, layout gating)  ✅ implementation green
+    ▼
+M4         Symbols / Emoji providers + local recents  ⛔ BLOCKED by device gate
     ▼
 M5         configurable bottom-row Settings UI + validation
     ▼
@@ -328,9 +380,10 @@ M10        release preparation
 
 ## Next handoff
 
-M3 is implementation-green (see evidence above); M3 view behavior items 8–14
-still need the physical-device pass. Start M4 (Symbols/Emoji providers +
-local recents) from this head. Standing constraints carry over:
+M3 + M3.1 are implementation-green (see evidence above). **M4 remains blocked
+by the device gate**: no physical-device run happened in this session, so
+CASE 4 (candidate continuation) and CASE 6 (rotation height) are unverified
+and M4 must not start. Standing constraints carry over:
 
 - candidate ordering/paging remains decoder-owned;
 - candidate selection must not hard-commit the whole composition unless libchewing reports committed text;
