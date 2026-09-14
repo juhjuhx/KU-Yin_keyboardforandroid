@@ -47,11 +47,11 @@ class KeyboardShellLayoutResolver(
         KeyboardPage.LETTERS -> resolveLetters(state, preferences)
         KeyboardPage.SYMBOLS_PRIMARY -> resolveLiteralPage(
             rows = PRIMARY_SYMBOL_ROWS,
-            includeSecondarySwitch = true,
+            symbolPage = KeyboardPage.SYMBOLS_PRIMARY,
         )
         KeyboardPage.SYMBOLS_SECONDARY -> resolveLiteralPage(
             rows = SECONDARY_SYMBOL_ROWS,
-            includeSecondarySwitch = false,
+            symbolPage = KeyboardPage.SYMBOLS_SECONDARY,
         )
         KeyboardPage.EMOJI -> resolveEmojiPage()
     }
@@ -106,7 +106,7 @@ class KeyboardShellLayoutResolver(
 
     private fun resolveLiteralPage(
         rows: List<List<String>>,
-        includeSecondarySwitch: Boolean,
+        symbolPage: KeyboardPage,
     ): ResolvedKeyboardLayout {
         val body = rows.map { labels ->
             ResolvedKeyboardRow(
@@ -120,13 +120,24 @@ class KeyboardShellLayoutResolver(
                 },
             )
         }
+        val pageSwitch = when (symbolPage) {
+            KeyboardPage.SYMBOLS_PRIMARY -> ResolvedKey(
+                label = "#+=",
+                command = ImeCommand.OpenSymbolsSecondary,
+                widthPct = 1.1f,
+                isSpecial = true,
+            )
+            KeyboardPage.SYMBOLS_SECONDARY -> ResolvedKey(
+                label = "?123",
+                command = ImeCommand.OpenSymbolsPrimary,
+                widthPct = 1.1f,
+                isSpecial = true,
+            )
+            else -> error("resolveLiteralPage only supports symbol pages")
+        }
         val navigation = mutableListOf(
             ResolvedKey("ABC", ImeCommand.ReturnToLetters, 1.35f, true),
-        )
-        if (includeSecondarySwitch) {
-            navigation += ResolvedKey("#+=", ImeCommand.InsertText(""), 1.1f, true)
-        }
-        navigation += listOf(
+            pageSwitch,
             ResolvedKey("⌫", ImeCommand.Backspace, 1.1f, true),
             ResolvedKey("空白", ImeCommand.Space, 3f, true),
             ResolvedKey("↵", ImeCommand.Enter, 1.35f, true),
