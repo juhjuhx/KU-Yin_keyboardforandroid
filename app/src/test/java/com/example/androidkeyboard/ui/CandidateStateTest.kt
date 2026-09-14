@@ -68,4 +68,53 @@ class CandidateStateTest {
 
         assertEquals(listOf("我", "你"), state.items)
     }
+
+    @Test
+    fun flowAssignsSingleRowWhenEverythingFits() {
+        val rows = assignFlowRows(listOf(40f, 50f, 60f), maxRowWidth = 200f)
+
+        assertEquals(listOf(0, 0, 0), rows)
+        assertEquals(1, flowRowCount(listOf(40f, 50f, 60f), maxRowWidth = 200f))
+    }
+
+    @Test
+    fun flowWrapsOverflowOntoNextRow() {
+        val rows = assignFlowRows(listOf(80f, 80f, 80f), maxRowWidth = 200f)
+
+        assertEquals(listOf(0, 0, 1), rows)
+        assertEquals(2, flowRowCount(listOf(80f, 80f, 80f), maxRowWidth = 200f))
+    }
+
+    @Test
+    fun narrowerWidthProducesMoreRowsForSameCells() {
+        val widths = listOf(80f, 80f, 80f)
+
+        assertEquals(1, flowRowCount(widths, maxRowWidth = 300f))
+        assertEquals(2, flowRowCount(widths, maxRowWidth = 200f))
+        assertEquals(3, flowRowCount(widths, maxRowWidth = 100f))
+    }
+
+    @Test
+    fun oversizedCellOccupiesItsOwnRow() {
+        val rows = assignFlowRows(listOf(500f, 40f), maxRowWidth = 200f)
+
+        assertEquals(listOf(0, 1), rows)
+    }
+
+    @Test
+    fun emptyCellsNeedNoRows() {
+        assertEquals(emptyList<Int>(), assignFlowRows(emptyList(), maxRowWidth = 200f))
+        assertEquals(0, flowRowCount(emptyList(), maxRowWidth = 200f))
+    }
+
+    @Test
+    fun collapsedContainerIsOneRow() {
+        assertEquals(44, candidateContainerHeightPx(expanded = false, rows = 1, rowHeightPx = 44, maxRows = 4))
+    }
+
+    @Test
+    fun expandedContainerGrowsWithRowsUpToCap() {
+        assertEquals(88, candidateContainerHeightPx(expanded = true, rows = 2, rowHeightPx = 44, maxRows = 4))
+        assertEquals(176, candidateContainerHeightPx(expanded = true, rows = 9, rowHeightPx = 44, maxRows = 4))
+    }
 }
