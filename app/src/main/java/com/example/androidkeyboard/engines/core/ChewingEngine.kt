@@ -30,5 +30,8 @@ interface ChewingEngine {
     fun commitUpdate(): EngineUpdate
     fun nextPageUpdate(): EngineUpdate?
     fun prevPageUpdate(): EngineUpdate?
+    /** Non-mutating presentation queries: does another decoder page exist? */
+    fun canPageCandidatesBackward(): Boolean
+    fun canPageCandidatesForward(): Boolean
     fun close()
 }

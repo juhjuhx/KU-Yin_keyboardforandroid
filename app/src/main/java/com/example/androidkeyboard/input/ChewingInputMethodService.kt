@@ -14,8 +14,10 @@ import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.EngineUpdate
 import com.example.androidkeyboard.engines.core.IMEConfig
 import com.example.androidkeyboard.engines.opencc.OpenCCConverter
+import com.example.androidkeyboard.ui.CandidateState
 import com.example.androidkeyboard.ui.CandidateView
 import com.example.androidkeyboard.ui.ImePalette
+import com.example.androidkeyboard.ui.candidateStateOf
 
 class ChewingInputMethodService : InputMethodService() {
 
@@ -37,6 +39,12 @@ class ChewingInputMethodService : InputMethodService() {
     private var runtimeState = KeyboardRuntimeState.defaultZhuyin()
     private var rememberedMode: InputMode? = null
     private var hasActiveComposition = false
+    private var lastCandidateState = CandidateState(
+        items = emptyList(),
+        canPageBackward = false,
+        canPageForward = false,
+        expanded = false,
+    )
 
     override fun onCreate() {
         super.onCreate()
@@ -74,8 +82,17 @@ class ChewingInputMethodService : InputMethodService() {
         }
 
         candidateView = CandidateView(this).apply {
-            setCandidates(emptyList())
-            onItemClick = ::commitCandidate
+            renderCandidateState(
+                CandidateState(
+                    items = emptyList(),
+                    canPageBackward = false,
+                    canPageForward = false,
+                    expanded = runtimeState.candidateExpanded,
+                ),
+            )
+            visibility = View.GONE
+            onItemClick = { index, _ -> dispatchCommand(ImeCommand.SelectCandidate(index)) }
+            onToggleExpand = { dispatchCommand(ImeCommand.ToggleCandidateExpanded) }
             onPrevPage = {
                 if (activeSession.allowCandidates) {
                     chewing.prevPageUpdate()?.let(::applyEngineUpdate)
@@ -177,7 +194,7 @@ class ChewingInputMethodService : InputMethodService() {
         }
         if (::candidateView.isInitialized) {
             candidateView.refreshAppearance()
-            candidateView.setCandidates(emptyList())
+            clearCandidates()
         }
         if (::symbolPicker.isInitialized) {
             symbolPicker.refreshAppearance()
@@ -265,6 +282,7 @@ class ChewingInputMethodService : InputMethodService() {
 
         if (runtimeState != previousState) {
             refreshKeyboardSurface()
+            renderCandidateState(lastCandidateState.copy(expanded = runtimeState.candidateExpanded))
         }
     }
 
@@ -278,6 +296,7 @@ class ChewingInputMethodService : InputMethodService() {
             ImeEffect.PerformEditorAction -> performEditorAction()
             ImeEffect.HideKeyboard -> hideKeyboard()
             ImeEffect.ShowNextInputMethod -> showNextInputMethod()
+            is ImeEffect.SelectCandidate -> selectCandidate(effect.index)
         }
     }
 
@@ -449,17 +468,41 @@ class ChewingInputMethodService : InputMethodService() {
         } else {
             emptyList()
         }
-        if (::candidateView.isInitialized) {
-            candidateView.setCandidates(visibleCandidates)
-        }
+        val canBackward = activeSession.allowCandidates && chewing.canPageCandidatesBackward()
+        val canForward = activeSession.allowCandidates && chewing.canPageCandidatesForward()
+        renderCandidateState(
+            candidateStateOf(
+                update.copy(candidates = visibleCandidates),
+                expanded = runtimeState.candidateExpanded,
+                canPageBackward = canBackward,
+                canPageForward = canForward,
+            ),
+        )
 
         hasActiveComposition = activeSession.allowComposition &&
             (update.preedit.isNotEmpty() || visibleCandidates.isNotEmpty())
     }
 
-    private fun commitCandidate(index: Int, candidate: String) {
-        @Suppress("UNUSED_VARIABLE")
-        val renderedCandidate = candidate
+    private fun renderCandidateState(state: CandidateState) {
+        lastCandidateState = state
+        if (!::candidateView.isInitialized) return
+        candidateView.setCandidateState(state)
+        if (state.items.isEmpty()) {
+            candidateView.visibility = View.GONE
+            return
+        }
+        candidateView.visibility = View.VISIBLE
+        val rowH = (CandidateView.ROW_HEIGHT_DP * resources.displayMetrics.density).toInt()
+        val rows = if (state.expanded) {
+            candidateView.contentRowCount().coerceIn(1, CandidateView.MAX_EXPANDED_ROWS)
+        } else {
+            1
+        }
+        candidateView.layoutParams = candidateView.layoutParams?.apply { height = rows * rowH }
+        candidateView.requestLayout()
+    }
+
+    private fun selectCandidate(index: Int) {
         if (!activeSession.allowCandidates) return
         applyEngineUpdate(chewing.selectCandidateUpdate(index))
     }
@@ -469,7 +512,13 @@ class ChewingInputMethodService : InputMethodService() {
     }
 
     private fun clearCandidates() {
-        if (::candidateView.isInitialized) candidateView.setCandidates(emptyList())
+        renderCandidateState(
+            lastCandidateState.copy(
+                items = emptyList(),
+                canPageBackward = false,
+                canPageForward = false,
+            ),
+        )
     }
 
     private fun EngineUpdate.hasEngineState(): Boolean =

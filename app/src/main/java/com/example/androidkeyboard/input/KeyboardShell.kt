@@ -44,6 +44,7 @@ sealed interface ImeCommand {
     object NextInputMethod : ImeCommand
     object Dismiss : ImeCommand
     object ToggleCandidateExpanded : ImeCommand
+    data class SelectCandidate(val index: Int) : ImeCommand
 }
 
 sealed interface ImeEffect {
@@ -55,6 +56,7 @@ sealed interface ImeEffect {
     object PerformEditorAction : ImeEffect
     object HideKeyboard : ImeEffect
     object ShowNextInputMethod : ImeEffect
+    data class SelectCandidate(val index: Int) : ImeEffect
 }
 
 data class ControllerContext(
@@ -126,6 +128,10 @@ class KeyboardController {
                     candidateExpanded = !effectiveState.candidateExpanded,
                 ),
                 effects = emptyList(),
+            )
+            is ImeCommand.SelectCandidate -> ControllerResult(
+                state = effectiveState,
+                effects = listOf(ImeEffect.SelectCandidate(command.index)),
             )
         }
     }
