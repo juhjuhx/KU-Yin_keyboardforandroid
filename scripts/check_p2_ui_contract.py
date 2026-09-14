@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""P2 contract: Android IME view lifecycle, touch semantics, and readable adaptive UI."""
+"""P2 contract: Android IME view lifecycle, touch semantics, adaptive UI, and v0.2 shell wiring."""
 
 from pathlib import Path
 import sys
@@ -37,10 +37,17 @@ checks = {
     "candidate and keyboard use natural vertical layout": "LinearLayout" in service and "topMargin = candidateHeight" not in service,
     "keyboard orientation uses Configuration instead of defaultDisplay": "resources.configuration.orientation" in keyboard and "defaultDisplay" not in keyboard,
     "keyboard tracks move/cancel before committing": "MotionEvent.ACTION_MOVE" in keyboard,
-    "keyboard does not commit on ACTION_DOWN": "onKeyPress?.invoke" not in down,
-    "keyboard commits on ACTION_UP": "onKeyPress?.invoke" in up,
+    "keyboard does not dispatch semantic commands on ACTION_DOWN": "onCommand?.invoke" not in down,
+    "keyboard dispatches semantic commands on ACTION_UP": "onCommand?.invoke" in up,
     "keyboard exposes click semantics": "performClick()" in keyboard,
     "keyboard haptics respect system settings": "FLAG_IGNORE_GLOBAL_SETTING" not in keyboard,
+    "keyboard consumes resolved shell layouts": "ResolvedKeyboardLayout" in keyboard and "ResolvedKey" in keyboard and "setResolvedLayout" in keyboard,
+    "keyboard exposes semantic command callback": "var onCommand: ((ImeCommand) -> Unit)?" in keyboard,
+    "IME owns v0.2 keyboard controller": "KeyboardController()" in service,
+    "IME owns v0.2 shell layout resolver": "KeyboardShellLayoutResolver()" in service,
+    "IME dispatches semantic keyboard commands": "dispatchCommand" in service and "onCommand = ::dispatchCommand" in service,
+    "IME executes controller effects": "executeEffect" in service and "ImeEffect" in service,
+    "IME renders resolved shell layouts": "setResolvedLayout" in service and "shellLayoutResolver.resolve" in service,
     "candidate view exposes click semantics": "performClick()" in candidate,
     "symbol picker exposes click semantics": "performClick()" in symbol,
     "symbol picker guards empty symbol hit-testing": "symbols.isEmpty()" in symbol and "return false" in symbol,
