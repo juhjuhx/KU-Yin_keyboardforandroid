@@ -61,14 +61,14 @@ jobs:
         run: gradle assembleRelease --stacktrace
 
       - name: Upload Debug APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
       - name: Upload Release APK
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: release-apk
           path: app/build/outputs/apk/release/*.apk
@@ -117,7 +117,7 @@ jobs:
 
       - name: Upload runtime smoke report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: runtime-smoke-report
           path: app/build/reports/androidTests/connected
