@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_PACKAGE="com.example.androidkeyboard"
+APP_PACKAGE="io.github.juhjuhx.kuyin"
 
 bash scripts/bootstrap_native_deps.sh
 gradle installDebug --stacktrace
