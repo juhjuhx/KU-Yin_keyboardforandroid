@@ -16,7 +16,24 @@ class KeyboardView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
-    data class KeySlot(val key: KeyDef, val rect: RectF)
+    private data class RenderedKey(
+        val id: String,
+        val label: String,
+        val secondaryLabel: String?,
+        val role: KeyRole,
+        val command: ImeCommand,
+        val widthPct: Float,
+        val legacyKey: KeyDef? = null,
+    )
+
+    private data class RenderedRow(
+        val keys: List<RenderedKey>,
+    )
+
+    private data class KeySlot(
+        val key: RenderedKey,
+        val rect: RectF,
+    )
 
     private val keyPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.FILL_AND_STROKE
@@ -26,7 +43,7 @@ class KeyboardView @JvmOverloads constructor(
         style = Paint.Style.FILL
     }
     private val keySlots = mutableListOf<KeySlot>()
-    private var rows: List<KeyboardRow> = emptyList()
+    private var rows: List<RenderedRow> = emptyList()
     private var keyHeightDp = 60f
     private var hGapDp = 3f
     private var vGapDp = 6f
@@ -35,7 +52,11 @@ class KeyboardView @JvmOverloads constructor(
     private var proximityTolerance = 0.15f
     private var palette = ImePalette.from(context)
 
+    /** Legacy callback retained while v0.2 finishes migrating the service. */
     var onKeyPress: ((KeyDef) -> Unit)? = null
+
+    /** Primary v0.2 callback: the view emits semantic commands, not editor mutations. */
+    var onCommand: ((ImeCommand) -> Unit)? = null
 
     init {
         isClickable = true
@@ -59,8 +80,34 @@ class KeyboardView @JvmOverloads constructor(
         invalidate()
     }
 
+    /** Compatibility adapter for the released KeyDef-based surface. */
     fun setLayout(rows: List<KeyboardRow>) {
-        this.rows = rows
+        this.rows = rows.mapIndexed { rowIndex, row ->
+            RenderedRow(
+                keys = row.keys.mapIndexed { keyIndex, key ->
+                    RenderedKey(
+                        id = "legacy:r$rowIndex:c$keyIndex",
+                        label = key.label,
+                        secondaryLabel = null,
+                        role = key.toKeyRole(),
+                        command = key.toImeCommand(),
+                        widthPct = key.widthPct,
+                        legacyKey = key,
+                    )
+                },
+            )
+        }
+        requestLayout()
+        rebuildKeySlots()
+    }
+
+    /** Render the resolved v0.2 shell while keeping touch/haptic behavior in this view. */
+    fun setResolvedLayout(layout: ResolvedKeyboardLayout) {
+        rows = layout.rows.map { row ->
+            RenderedRow(
+                keys = row.keys.map { it.toRenderedKey() },
+            )
+        }
         requestLayout()
         rebuildKeySlots()
     }
@@ -167,7 +214,9 @@ class KeyboardView @JvmOverloads constructor(
                 if (commitIndex >= 0) {
                     performClick()
                     vibrate()
-                    onKeyPress?.invoke(keySlots[commitIndex].key)
+                    val key = keySlots[commitIndex].key
+                    onCommand?.invoke(key.command)
+                    key.legacyKey?.let { onKeyPress?.invoke(it) }
                 }
             }
 
@@ -207,4 +256,31 @@ class KeyboardView @JvmOverloads constructor(
         val dy = maxOf(0f, rect.top - py, py - rect.bottom)
         return kotlin.math.sqrt(dx * dx + dy * dy)
     }
+
+    private fun KeyDef.toImeCommand(): ImeCommand = when (action) {
+        KeyAction.INPUT -> ImeCommand.Input(code)
+        KeyAction.SPACE -> ImeCommand.Space
+        KeyAction.BACKSPACE -> ImeCommand.Backspace
+        KeyAction.ENTER -> ImeCommand.Enter
+        KeyAction.SHIFT -> ImeCommand.Shift
+        KeyAction.DISMISS -> ImeCommand.Dismiss
+    }
+
+    private fun KeyDef.toKeyRole(): KeyRole = when (action) {
+        KeyAction.INPUT -> KeyRole.CHARACTER
+        KeyAction.SPACE -> KeyRole.SPACE
+        KeyAction.ENTER -> KeyRole.ACTION
+        KeyAction.BACKSPACE,
+        KeyAction.SHIFT,
+        KeyAction.DISMISS -> KeyRole.FUNCTION
+    }
+
+    private fun ResolvedKey.toRenderedKey(): RenderedKey = RenderedKey(
+        id = id,
+        label = label,
+        secondaryLabel = secondaryLabel,
+        role = role,
+        command = command,
+        widthPct = widthPct,
+    )
 }

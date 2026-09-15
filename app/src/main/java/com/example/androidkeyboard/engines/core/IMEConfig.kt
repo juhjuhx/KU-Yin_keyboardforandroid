@@ -4,10 +4,13 @@ import android.content.Context
 import androidx.preference.PreferenceManager
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
 import com.example.androidkeyboard.engines.core.ChineseConverter.Profile
+import com.example.androidkeyboard.input.KeyboardPreferenceKeys
+import com.example.androidkeyboard.input.SharedPreferencesKeyboardPreferencesRepository
 
 /** Persistent user-facing IME preferences. Decoder lifecycle is owned by the service. */
 class IMEConfig(context: Context) {
     private val prefs = PreferenceManager.getDefaultSharedPreferences(context.applicationContext)
+    private val keyboardPreferences = SharedPreferencesKeyboardPreferencesRepository(prefs)
 
     /** Only Dachen has a complete visual keyboard in the current release. */
     val layout: Layout
@@ -32,23 +35,18 @@ class IMEConfig(context: Context) {
         get() = prefs.getBoolean(KEY_CONVERSION_ENABLED, false)
         set(value) = prefs.edit().putBoolean(KEY_CONVERSION_ENABLED, value).apply()
 
+    /** Delegates to the typed keyboard repository while preserving the released key. */
     var hapticEnabled: Boolean
-        get() = prefs.getBoolean(KEY_HAPTIC_ENABLED, true)
-        set(value) = prefs.edit().putBoolean(KEY_HAPTIC_ENABLED, value).apply()
+        get() = keyboardPreferences.load().hapticEnabled
+        set(value) = keyboardPreferences.setHapticEnabled(value)
 
     /**
-     * ListPreference stores strings. Reading through prefs.all also migrates older
-     * builds that stored this value as a Float under the same key.
+     * Delegates legacy Float/String migration and range validation to the typed keyboard
+     * repository. Writes remain ListPreference-compatible strings under the released key.
      */
     var proximityTolerance: Float
-        get() = when (val stored = prefs.all[KEY_PROXIMITY_TOLERANCE]) {
-            is Number -> stored.toFloat()
-            is String -> stored.toFloatOrNull() ?: DEFAULT_PROXIMITY_TOLERANCE
-            else -> DEFAULT_PROXIMITY_TOLERANCE
-        }.coerceIn(0f, 0.5f)
-        set(value) = prefs.edit()
-            .putString(KEY_PROXIMITY_TOLERANCE, value.coerceIn(0f, 0.5f).toString())
-            .apply()
+        get() = keyboardPreferences.load().proximityTolerance
+        set(value) = keyboardPreferences.setProximityTolerance(value)
 
     private inline fun <reified T : Enum<T>> enumValue(key: String, default: T): T {
         val raw = prefs.getString(key, default.name) ?: default.name
@@ -59,8 +57,7 @@ class IMEConfig(context: Context) {
         const val KEY_S2T_PROFILE = "s2t_profile"
         const val KEY_T2S_PROFILE = "t2s_profile"
         const val KEY_CONVERSION_ENABLED = "conversion_enabled"
-        const val KEY_HAPTIC_ENABLED = "haptic_enabled"
-        const val KEY_PROXIMITY_TOLERANCE = "proximity_tolerance"
-        private const val DEFAULT_PROXIMITY_TOLERANCE = 0.15f
+        const val KEY_HAPTIC_ENABLED = KeyboardPreferenceKeys.HAPTIC_ENABLED
+        const val KEY_PROXIMITY_TOLERANCE = KeyboardPreferenceKeys.PROXIMITY_TOLERANCE
     }
 }

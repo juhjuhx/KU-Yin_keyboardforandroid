@@ -35,11 +35,13 @@ jobs:
         with: {java-version: "17", distribution: "temurin"}
       - name: Setup Android SDK
         if: steps.existing.outputs.exists != 'true'
-        uses: android-actions/setup-android@v3
-      - name: Setup Gradle 7.6.4
+        uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+      - name: Setup Gradle 8.11.1
         if: steps.existing.outputs.exists != 'true'
         uses: gradle/actions/setup-gradle@v6
-        with: {gradle-version: "7.6.4"}
+        with: {gradle-version: "8.11.1"}
       - name: Bootstrap pinned native dependencies
         if: steps.existing.outputs.exists != 'true'
         run: bash scripts/bootstrap_native_deps.sh

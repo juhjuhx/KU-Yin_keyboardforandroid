@@ -2,17 +2,21 @@
 """Fail-fast P1 contract for clean-clone native Android builds."""
 
 from pathlib import Path
+import re
 import sys
 import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 workflow = (ROOT / ".github/workflows/build.yml").read_text(encoding="utf-8")
+app_gradle = (ROOT / "app/build.gradle.kts").read_text(encoding="utf-8")
 cmake = (ROOT / "app/src/main/cpp/CMakeLists.txt").read_text(encoding="utf-8")
 jni = (ROOT / "app/src/main/cpp/chewing_jni.cpp").read_text(encoding="utf-8")
 engine = (ROOT / "app/src/main/java/com/example/androidkeyboard/engines/android/AndroidChewingEngine.kt").read_text(encoding="utf-8")
 service = (ROOT / "app/src/main/java/com/example/androidkeyboard/input/ChewingInputMethodService.kt").read_text(encoding="utf-8")
 bootstrap_path = ROOT / "scripts/bootstrap_native_deps.sh"
 bootstrap = bootstrap_path.read_text(encoding="utf-8") if bootstrap_path.exists() else ""
+runtime_smoke_path = ROOT / "scripts/runtime_smoke.sh"
+runtime_smoke = runtime_smoke_path.read_text(encoding="utf-8") if runtime_smoke_path.exists() else ""
 installer_path = ROOT / "app/src/main/java/com/example/androidkeyboard/engines/android/LibChewingDataInstaller.kt"
 installer = installer_path.read_text(encoding="utf-8") if installer_path.exists() else ""
 manifest_path = ROOT / "app/src/main/AndroidManifest.xml"
@@ -52,14 +56,25 @@ def unresolved_manifest_application_resources() -> list[str]:
     return unresolved
 
 
+def quoted_assignment(text: str, name: str) -> str | None:
+    """Return a simple quoted Kotlin/shell assignment value when present."""
+    match = re.search(rf"\b{re.escape(name)}\s*=\s*\"([^\"]+)\"", text)
+    return match.group(1) if match else None
+
+
+application_id = quoted_assignment(app_gradle, "applicationId")
+runtime_smoke_app_id = quoted_assignment(runtime_smoke, "APP_PACKAGE")
+
 checks = {
-    "workflow pins Gradle 7.6.4": 'gradle-version: "7.6.4"' in workflow,
+    "workflow pins Gradle 8.11.1": 'gradle-version: "8.11.1"' in workflow,
     "workflow bootstraps native dependencies": "scripts/bootstrap_native_deps.sh" in workflow,
     "workflow runs clean Gradle unit tests": "gradle testDebugUnitTest" in workflow,
     "workflow builds debug APK": "gradle assembleDebug" in workflow,
     "native bootstrap script exists": bootstrap_path.exists(),
     "native bootstrap pins immutable fcitx prebuilt commit": PREBUILT_COMMIT in bootstrap,
     "native bootstrap records exact libchewing source commit": SOURCE_COMMIT in bootstrap,
+    "runtime smoke script exists": runtime_smoke_path.exists(),
+    "runtime smoke uses Gradle applicationId": bool(application_id) and runtime_smoke_app_id == application_id,
     "CMake links the pinned chewing C API archive": "libchewing_capi.a" in cmake,
     "CMake fails when native dependency is missing": "FATAL_ERROR" in cmake,
     "CMake no longer warning-continues without libchewing": "without libchewing" not in cmake.lower(),

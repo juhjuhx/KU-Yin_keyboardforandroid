@@ -3,30 +3,131 @@ package com.example.androidkeyboard.ui
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
+import android.text.TextPaint
+import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.VelocityTracker
 import android.view.View
+import android.view.ViewConfiguration
+import com.example.androidkeyboard.engines.core.EngineUpdate
 import kotlin.math.abs
 
-/** Displays one libchewing candidate page. Paging itself stays decoder-owned. */
+/**
+ * UI projection of decoder candidate state. Ordering is decoder-owned:
+ * [items] must always be the decoder page order, untouched by presentation.
+ */
+data class CandidateState(
+    val items: List<String>,
+    val canPageBackward: Boolean,
+    val canPageForward: Boolean,
+    val expanded: Boolean,
+)
+
+/** Pure decoder-update to presentation-projection mapping. Emits no effects. */
+fun candidateStateOf(
+    update: EngineUpdate,
+    expanded: Boolean,
+    canPageBackward: Boolean,
+    canPageForward: Boolean,
+): CandidateState = CandidateState(
+    items = update.candidates.toList(),
+    canPageBackward = canPageBackward,
+    canPageForward = canPageForward,
+    expanded = expanded,
+)
+
+/**
+ * Pure flow-layout row assignment: row index per cell for final cell widths.
+ * Caller supplies final widths (already floored/capped for touch targets);
+ * oversized cells are coerced to one full row each.
+ */
+fun assignFlowRows(cellWidths: List<Float>, maxRowWidth: Float): List<Int> {
+    if (cellWidths.isEmpty()) return emptyList()
+    val limit = maxRowWidth.coerceAtLeast(1f)
+    val rows = ArrayList<Int>(cellWidths.size)
+    var row = 0
+    var x = 0f
+    for (raw in cellWidths) {
+        val cellW = raw.coerceAtMost(limit)
+        if (x > 0f && x + cellW > limit) {
+            row++
+            x = 0f
+        }
+        rows.add(row)
+        x += cellW
+    }
+    return rows
+}
+
+fun flowRowCount(cellWidths: List<Float>, maxRowWidth: Float): Int =
+    assignFlowRows(cellWidths, maxRowWidth).maxOrNull()?.plus(1) ?: 0
+
+fun candidateContainerHeightPx(
+    expanded: Boolean,
+    rows: Int,
+    rowHeightPx: Int,
+    maxRows: Int,
+): Int {
+    if (!expanded) return rowHeightPx
+    return rows.coerceAtLeast(1).coerceAtMost(maxRows.coerceAtLeast(1)) * rowHeightPx
+}
+
+/**
+ * Renders one libchewing candidate page. Paging and ranking stay decoder-owned;
+ * this view only projects [CandidateState] into a collapsed strip or an
+ * expanded grid. Never touches InputConnection or libchewing: user gestures
+ * are forwarded through callbacks into the service/controller bridge.
+ */
 class CandidateView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
 ) : View(context, attrs) {
 
-    private val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+    companion object {
+        const val ROW_HEIGHT_DP = 44f
+        const val MAX_EXPANDED_ROWS = 4
+        private const val CHEVRON_WIDTH_DP = 48f
+        private const val CHIP_PADDING_DP = 16f
+    }
+
+    private data class Chip(
+        val index: Int,
+        val label: CharSequence,
+        val rect: RectF,
+    )
+
+    private val textPaint = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply {
         textAlign = Paint.Align.CENTER
     }
     private var palette = ImePalette.from(context)
-    private var candidates: List<String> = emptyList()
+    private var state: CandidateState = CandidateState(emptyList(), false, false, false)
 
     var onItemClick: ((Int, String) -> Unit)? = null
     var onPrevPage: (() -> Unit)? = null
     var onNextPage: (() -> Unit)? = null
+    var onToggleExpand: (() -> Unit)? = null
+    var onRequiredRowsChanged: ((Int) -> Unit)? = null
+
+    private var chips: List<Chip> = emptyList()
+    private var chevronRect = RectF()
+    private var contentRows = 0
+    private var scrollXPx = 0f
+    private var scrollYPx = 0f
+    private var maxScrollXPx = 0f
+    private var maxScrollYPx = 0f
 
     private var touchDownX = 0f
     private var touchDownY = 0f
-    private var pressedIndex = -1
+    private var lastX = 0f
+    private var lastY = 0f
+    private var scrolling = false
+    private var pressedChip = -1
+    private var pressedChevron = false
+    private var velocity: VelocityTracker? = null
+    private val touchSlop = ViewConfiguration.get(context).scaledTouchSlop
+    private val minFlingVelocity = ViewConfiguration.get(context).scaledMinimumFlingVelocity
 
     init {
         isClickable = true
@@ -36,76 +137,233 @@ class CandidateView @JvmOverloads constructor(
     fun refreshAppearance() {
         palette = ImePalette.from(context)
         textPaint.textSize = 20f * resources.displayMetrics.scaledDensity
+        rebuildLayout()
+    }
+
+    fun setCandidateState(next: CandidateState) {
+        if (next == state) return
+        state = next
+        scrollXPx = 0f
+        scrollYPx = 0f
+        pressedChip = -1
+        pressedChevron = false
+        contentDescription = if (next.items.isEmpty()) {
+            null
+        } else {
+            "候選字共 ${next.items.size} 個，${if (next.expanded) "已展開" else "已收合"}"
+        }
+        rebuildLayout()
+    }
+
+    /** Row count of the last laid-out content; the service sizes this view from it. */
+    fun contentRowCount(): Int = contentRows
+
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        if (w != oldw || h != oldh) rebuildLayout()
+    }
+
+    private fun rowHeightPx(): Float = ROW_HEIGHT_DP * resources.displayMetrics.density
+
+    private fun updateContentRows(rows: Int) {
+        if (rows == contentRows) return
+        contentRows = rows
+        onRequiredRowsChanged?.invoke(rows)
+    }
+
+    private fun expandedCellWidths(rowWidth: Float, chipPad: Float, minCell: Float): List<Float> {
+        val widths = ArrayList<Float>(state.items.size + 1)
+        for (text in state.items) {
+            widths.add(
+                ((textPaint.measureText(text) + chipPad * 2).coerceAtLeast(minCell))
+                    .coerceAtMost(rowWidth),
+            )
+        }
+        widths.add(minCell.coerceAtMost(rowWidth))
+        return widths
+    }
+
+    private fun rebuildLayout() {
+        chips = emptyList()
+        chevronRect = RectF()
+        maxScrollXPx = 0f
+        maxScrollYPx = 0f
+        if (state.items.isEmpty()) {
+            updateContentRows(0)
+            invalidate()
+            return
+        }
+        if (width <= 0) return
+        val density = resources.displayMetrics.density
+        val rowH = rowHeightPx()
+        val chipPad = CHIP_PADDING_DP * density
+        if (state.expanded) {
+            rebuildExpanded(rowH, chipPad)
+        } else {
+            rebuildCollapsed(rowH, chipPad, CHEVRON_WIDTH_DP * density)
+        }
+        scrollXPx = scrollXPx.coerceIn(0f, maxScrollXPx)
+        scrollYPx = scrollYPx.coerceIn(0f, maxScrollYPx)
         invalidate()
     }
 
-    fun setCandidates(items: List<String>) {
-        candidates = items.toList()
-        pressedIndex = -1
-        invalidate()
+    private fun ellipsized(text: String, maxWidthPx: Float): CharSequence {
+        if (textPaint.measureText(text) <= maxWidthPx) return text
+        return TextUtils.ellipsize(text, textPaint, maxWidthPx, TextUtils.TruncateAt.END)
     }
 
-    // Kept for source compatibility with the earlier view contract. Native paging
-    // is owned by AndroidChewingEngine, so the rendered list is always one page.
-    fun getCurrentPage(): Int = 0
-    fun getPageCount(): Int = 1
+    private fun rebuildCollapsed(rowH: Float, chipPad: Float, chevronW: Float) {
+        val stripW = (width - chevronW).coerceAtLeast(chevronW)
+        val built = ArrayList<Chip>(state.items.size)
+        var x = 0f
+        state.items.forEachIndexed { index, text ->
+            val cellW = (textPaint.measureText(text) + chipPad * 2)
+                .coerceAtLeast(chevronW)
+                .coerceAtMost(stripW.coerceAtLeast(1f))
+            built.add(Chip(index, ellipsized(text, cellW - chipPad), RectF(x, 0f, x + cellW, rowH)))
+            x += cellW
+        }
+        chips = built
+        chevronRect = RectF(width - chevronW, 0f, width.toFloat(), rowH)
+        maxScrollXPx = (x - stripW).coerceAtLeast(0f)
+        updateContentRows(1)
+    }
+
+    private fun rebuildExpanded(rowH: Float, chipPad: Float) {
+        val density = resources.displayMetrics.density
+        val widthf = width.toFloat()
+        val minCell = CHEVRON_WIDTH_DP * density
+        val widths = expandedCellWidths(widthf, chipPad, minCell)
+        val assignment = assignFlowRows(widths, widthf)
+        val built = ArrayList<Chip>(state.items.size)
+        var x = 0f
+        var row = -1
+        state.items.forEachIndexed { index, text ->
+            val itemRow = assignment[index]
+            if (itemRow != row) {
+                row = itemRow
+                x = 0f
+            }
+            val cellW = widths[index]
+            built.add(Chip(index, ellipsized(text, cellW - chipPad), RectF(x, row * rowH, x + cellW, row * rowH + rowH)))
+            x += cellW
+        }
+        val chevronRow = assignment.last()
+        var cx = 0f
+        for (i in 0 until widths.size - 1) {
+            if (assignment[i] == chevronRow) cx += widths[i]
+        }
+        val chevronW = widths.last()
+        val cy = chevronRow * rowH
+        chevronRect = RectF(cx, cy, cx + chevronW, cy + rowH)
+        chips = built
+        val rows = flowRowCount(widths, widthf)
+        maxScrollYPx = (rows * rowH - MAX_EXPANDED_ROWS * rowH).coerceAtLeast(0f)
+        updateContentRows(rows)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.drawColor(palette.surface)
-        if (candidates.isEmpty() || width <= 0) return
+        if (chips.isEmpty() || width <= 0) return
 
-        val slotWidth = width.toFloat() / candidates.size
-        candidates.forEachIndexed { index, candidate ->
-            textPaint.color = if (index == pressedIndex) palette.accent else palette.text
+        val dx = if (state.expanded) 0f else -scrollXPx
+        val dy = if (state.expanded) -scrollYPx else 0f
+        canvas.save()
+        canvas.translate(dx, dy)
+        for (chip in chips) {
+            textPaint.color = if (chip.index == pressedChip) palette.accent else palette.text
             canvas.drawText(
-                candidate,
-                slotWidth * (index + 0.5f),
-                height / 2f - (textPaint.ascent() + textPaint.descent()) / 2f,
+                chip.label.toString(),
+                chip.rect.centerX(),
+                chip.rect.centerY() - (textPaint.ascent() + textPaint.descent()) / 2f,
                 textPaint,
             )
         }
+        canvas.restore()
+        val glyph = if (state.expanded) "˅" else "˄"
+        val chevronDraw = RectF(
+            chevronRect.left,
+            chevronRect.top + dy,
+            chevronRect.right,
+            chevronRect.bottom + dy,
+        )
+        textPaint.color = if (pressedChevron) palette.accent else palette.text
+        canvas.drawText(
+            glyph,
+            chevronDraw.centerX(),
+            chevronDraw.centerY() - (textPaint.ascent() + textPaint.descent()) / 2f,
+            textPaint,
+        )
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (candidates.isEmpty() || width <= 0) return false
+        if (state.items.isEmpty() || width <= 0) return false
 
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 touchDownX = event.x
                 touchDownY = event.y
-                pressedIndex = candidateIndexAt(event.x)
+                lastX = event.x
+                lastY = event.y
+                scrolling = false
+                velocity = (velocity ?: VelocityTracker.obtain()).also { it.clear(); it.addMovement(event) }
+                val hit = hitAt(event.x, event.y)
+                pressedChip = hit.first
+                pressedChevron = hit.second
                 invalidate()
             }
 
             MotionEvent.ACTION_MOVE -> {
-                val index = candidateIndexAt(event.x)
-                if (index != pressedIndex) {
-                    pressedIndex = index
+                velocity?.addMovement(event)
+                if (!scrolling &&
+                    (abs(event.x - touchDownX) > touchSlop || abs(event.y - touchDownY) > touchSlop)
+                ) {
+                    scrolling = true
+                    pressedChip = -1
+                    pressedChevron = false
+                }
+                if (scrolling) {
+                    if (state.expanded) {
+                        scrollYPx = (scrollYPx - (event.y - lastY)).coerceIn(0f, maxScrollYPx)
+                    } else {
+                        scrollXPx = (scrollXPx - (event.x - lastX)).coerceIn(0f, maxScrollXPx)
+                    }
+                    lastX = event.x
+                    lastY = event.y
                     invalidate()
                 }
             }
 
             MotionEvent.ACTION_UP -> {
-                val dx = event.x - touchDownX
-                val dy = abs(event.y - touchDownY)
-                val swipeThreshold = height.coerceAtLeast(1).toFloat()
-
-                if (abs(dx) > swipeThreshold && abs(dx) > dy) {
-                    if (dx > 0) onPrevPage?.invoke() else onNextPage?.invoke()
-                } else {
-                    val index = candidateIndexAt(event.x)
-                    if (index >= 0 && index == pressedIndex) {
+                velocity?.addMovement(event)
+                velocity?.computeCurrentVelocity(1000)
+                val vx = velocity?.xVelocity ?: 0f
+                val vy = velocity?.yVelocity ?: 0f
+                if (scrolling && abs(vx) > minFlingVelocity && abs(vx) > abs(vy) * 1.5f) {
+                    if (vx > 0) onPrevPage?.invoke() else onNextPage?.invoke()
+                } else if (!scrolling) {
+                    val hit = hitAt(event.x, event.y)
+                    if (hit.first >= 0 && hit.first == pressedChip) {
                         performClick()
-                        onItemClick?.invoke(index, candidates[index])
+                        onItemClick?.invoke(hit.first, state.items[hit.first])
+                    } else if (hit.second && pressedChevron) {
+                        performClick()
+                        onToggleExpand?.invoke()
                     }
                 }
-                pressedIndex = -1
+                pressedChip = -1
+                pressedChevron = false
+                velocity?.recycle()
+                velocity = null
                 invalidate()
             }
 
             MotionEvent.ACTION_CANCEL -> {
-                pressedIndex = -1
+                pressedChip = -1
+                pressedChevron = false
+                velocity?.recycle()
+                velocity = null
                 invalidate()
             }
         }
@@ -117,9 +375,13 @@ class CandidateView @JvmOverloads constructor(
         return true
     }
 
-    private fun candidateIndexAt(x: Float): Int {
-        if (candidates.isEmpty() || width <= 0 || x < 0f || x >= width) return -1
-        val slotWidth = width.toFloat() / candidates.size
-        return (x / slotWidth).toInt().coerceIn(candidates.indices)
+    private fun hitAt(x: Float, y: Float): Pair<Int, Boolean> {
+        if (chevronRect.contains(x, y + if (state.expanded) scrollYPx else 0f)) return -1 to true
+        val lx = if (state.expanded) x else x + scrollXPx
+        val ly = if (state.expanded) y + scrollYPx else y
+        for (chip in chips) {
+            if (chip.rect.contains(lx, ly)) return chip.index to false
+        }
+        return -1 to false
     }
 }

@@ -5,15 +5,15 @@ plugins {
 
 android {
     namespace = "com.example.androidkeyboard"
-    compileSdk = 33
-    ndkVersion = "27.3.13750724"
+    compileSdk = 36
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
-        applicationId = "com.example.androidkeyboard"
+        applicationId = "io.github.juhjuhx.kuyin"
         minSdk = 24
-        targetSdk = 33
-        versionCode = 3
-        versionName = "0.1.2-alpha"
+        targetSdk = 36
+        versionCode = 20001
+        versionName = "0.2.0-alpha.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
