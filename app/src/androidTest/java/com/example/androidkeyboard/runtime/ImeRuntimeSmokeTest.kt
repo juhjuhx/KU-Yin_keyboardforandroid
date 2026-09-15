@@ -141,7 +141,7 @@ class ImeRuntimeSmokeTest {
     }
 
     private companion object {
-        const val APP_PACKAGE = "com.example.androidkeyboard"
+        const val APP_PACKAGE = "io.github.juhjuhx.kuyin"
         const val POLL_ATTEMPTS = 40
         const val POLL_INTERVAL_MS = 250L
     }

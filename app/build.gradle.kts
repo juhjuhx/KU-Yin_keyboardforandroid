@@ -9,11 +9,11 @@ android {
     ndkVersion = "27.3.13750724"
 
     defaultConfig {
-        applicationId = "com.example.androidkeyboard"
+        applicationId = "io.github.juhjuhx.kuyin"
         minSdk = 24
         targetSdk = 33
-        versionCode = 3
-        versionName = "0.1.2-alpha"
+        versionCode = 20001
+        versionName = "0.2.0-alpha.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {

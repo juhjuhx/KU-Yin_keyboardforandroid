@@ -8,8 +8,8 @@
 
 | Requirement | Current state | GitHub | Play | F-Droid | Severity | Required action |
 |---|---|---|---|---|---|---|
-| applicationId | `com.example.androidkeyboard` (namespace identical) | OK (any ID works) | BLOCKER (must be final before first upload; permanent) | BLOCKER (metadata filename = ID) | P0 | Choose final ID → user approval → rename (§3) |
-| versionCode/versionName | 3 / `0.1.2-alpha`; tags v0.1.0–v0.1.2 released; README fixed to match | OK | Needs `0.2.0-alpha.1`-style scheme + monotonic code | Needs scheme + per-ABI `VercodeOperation` later | P1 | Approve scheme (§4); do not rename yet |
+| applicationId | `io.github.juhjuhx.kuyin` (applied R1; namespace/packages unchanged) | OK | Final ✅ | Final ✅ | — | Done; old alpha installs do not migrate (accepted) |
+| versionCode/versionName | 20001 / `0.2.0-alpha.1` (applied R1); tags v0.1.0–v0.1.2 released | OK | Scheme ✅ | Scheme ✅ (+ per-ABI ops later) | — | Tag `v0.2.0-alpha.1` at release cut |
 | compileSdk/targetSdk | 33 / 33 | OK | BLOCKER (need 36+ since 2026-08-31; extension to 2026-11-01 possible) | OK (any) | P0 for Play | Dedicated toolchain slice (§5) |
 | minSdk | 24 | OK | OK | OK | — | Preserve unless proven otherwise |
 | AGP/Gradle/Kotlin/JDK | 7.4.2 / 7.6.4 / 1.9.22 / 17 | OK | Need 8.9.1+ / 8.11.1+ (JDK 17 unchanged) | OK (F-Droid server provides its own; versions declared in metadata) | P1 for Play | Same slice as targetSdk (§5) |
@@ -31,13 +31,17 @@
 | Dependency vulns | AndroidX core/appcompat/material/constraint/preference + junit only; no network libs; versions pinned but aging | Low risk | Review at submission | Review at submission | P2 | Periodic review; no scanner wired yet |
 | Device acceptance | BLOCKED-NO-DEVICE (CASE 4/6) | Blocks stable tag | Blocks production | Blocks inclusion request | P0 | Physical-device run |
 
-## 2. Application ID decision (STOP — needs approval)
+## 2. Application ID decision (APPROVED and applied in R1)
 
-Current: `com.example.androidkeyboard` (applicationId == namespace == Kotlin
-package root). JNI function names embed the Java package
-(`Java_com_example_androidkeyboard_…`), **not** the applicationId: renaming the
-applicationId alone does NOT require JNI changes, as long as Kotlin package
-declarations stay untouched.
+Locked: `io.github.juhjuhx.kuyin` (option A). Namespace, Kotlin packages, and
+JNI class names intentionally unchanged: JNI binds to the Java package, not
+the applicationId, so no native changes were required.
+
+Accepted migration consequence: the new ID is a new Android app identity.
+Alpha installs under `com.example.androidkeyboard` will not upgrade in place;
+their private preferences/userdict are not directly accessible from the new
+sandbox (no fake cross-sandbox migration attempted). Accepted because the old
+ID never reached stable public release.
 
 Options:
 
@@ -56,12 +60,15 @@ automatically — needs explicit migration code or a documented clean break);
 existing alpha installs become a *different app* (side-by-side, no upgrade
 path). Namespace/package refactor is optional cosmetics — defer it.
 
-## 3. Versioning proposal (proposal only, do not apply yet)
+## 3. Versioning (applied in R1: 0.2.0-alpha.1 / 20001)
 
-- Scheme: `0.2.0-alpha.1`, `0.2.0-alpha.2`, … → `0.2.0-beta.1` → `0.2.0`.
-- `versionCode`: continue monotonic integers from 3 (next: 4). For future
-  multi-ABI F-Droid splits, reserve the lowest digit(s) per ABI via
-  `VercodeOperation` at that time — do not renumber now.
+- Scheme: `0.2.0-alpha.1`, `0.2.0-alpha.2`, … → `0.2.0-beta.1` → `0.2.0`
+  (SemVer prerelease naming).
+- `versionCode`: monotonically increasing integers, currently **20001**
+  (jumped from 3 to leave room and to mark the release-engineering epoch;
+  codes need not encode SemVer ordering). For future multi-ABI F-Droid
+  splits, reserve the lowest digit(s) per ABI via `VercodeOperation` at that
+  time — do not renumber now.
 - Fixed in this audit: README claimed `0.1.1-alpha` while Gradle/tags/releases
   are `0.1.2-alpha` (docs-only fix committed).
 - Rule: version bump + tag + release notes travel together; never bump
@@ -144,12 +151,12 @@ IssueTracker: https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues
 Changelog: https://github.com/juhjuhx/KU-Yin_keyboardforandroid/blob/main/CHANGELOG.md
 AutoUpdateMode: Version v%v
 UpdateCheckMode: Tags
-CurrentVersion: 0.1.2-alpha
-CurrentVersionCode: 3
+CurrentVersion: 0.2.0-alpha.1
+CurrentVersionCode: 20001
 Builds:
-  - versionName: 0.1.2-alpha
-    versionCode: 3
-    commit: v0.1.2-alpha
+  - versionName: 0.2.0-alpha.1
+    versionCode: 20001
+    commit: v0.2.0-alpha.1
     subdir: app
     gradle:
       - yes
