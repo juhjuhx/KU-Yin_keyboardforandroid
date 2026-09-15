@@ -380,10 +380,12 @@ M10        release preparation
 
 ## Next handoff
 
-M3 + M3.1 are implementation-green (see evidence above). **M4 remains blocked
-by the device gate**: no physical-device run happened in this session, so
-CASE 4 (candidate continuation) and CASE 6 (rotation height) are unverified
-and M4 must not start. Standing constraints carry over:
+M3 + M3.1 are implementation-green (see evidence above). M4 design is now
+**user-approved as a whole package** (see approval record below), but **M4
+production remains blocked by the device gate**: no physical-device run
+happened in this session, so CASE 4 (candidate continuation) and CASE 6
+(rotation height) are unverified and M4 must not start until the gate passes.
+Standing constraints carry over:
 
 - candidate ordering/paging remains decoder-owned;
 - candidate selection must not hard-commit the whole composition unless libchewing reports committed text;
@@ -400,3 +402,45 @@ Every agent continuing this branch should read, in this order:
 4. current PR #4 diff / current branch head
 
 Do not infer current truth from an old chat or from the Google AI Studio prototype.
+
+## M4 design approvals (user-approved 全包, 2026-09-14; production still gated)
+
+The user approved the complete M4 design package from the DESIGN FREEZE
+handoff. This section is the durable record; the freeze analysis itself lives
+in session history, not in this file.
+
+1. **Architecture: OPTION A** — KU-Yin-owned `SymbolRepository` /
+   `EmojiRepository` / `RecentEmojiRepository` (pure Kotlin) → existing
+   `KeyboardShellLayoutResolver` → `ResolvedKeyboardLayout` → `KeyboardView`.
+   No EmojiEngine/SymbolEngine, no second state machine/preferences/layout
+   system. Rejected: B (10MB+ bundled font + `EmojiCompat.init` cold-start tax
+   + new dependency surface for an a11y/variant benefit v0.2 does not need),
+   C (picker-framework debt outweighs marginal UX).
+2. **Emoji data: A1** — `emoji-test.txt` (pinned version, e.g. Emoji 16.0)
+   → offline generator → `fully-qualified` only → generated Kotlin source
+   (lazy per-category views). Copyright header + version recorded in NOTICE /
+   WORKLOG at integration. Rejected: A2 (stale, unverifiable), A3 (cross-device
+   inconsistency defeats IME determinism).
+3. **Composition: S1** — entering Symbols/Emoji commits composition immediately
+   (execution side already exists in `insertText` and is test-locked); browse
+   is a temporary page, never dual-live with the decoder.
+4. **Insertion: `ImeCommand.InsertText` only**; stay on SYMBOLS/EMOJI page after
+   insert; return via ABC / `ReturnToLetters`; no auto-return preference.
+5. **Variants: V1** (base emoji only). V2/V3 deferred to post-v0.2.
+6. **Recents:上限 30**, dedup by full Unicode sequence, move-to-front,
+   single-key JSON in app-private SharedPreferences (existing repository
+   infrastructure), `v:1` version field, corrupt-key fallback to empty,
+   cleared by reset-to-default; never in libchewing storage, never logged.
+7. **Settings: REQUIRED** `showEmojiKey` (default false stays),
+   `emojiRecentsEnabled` (default true); **OPTIONAL** `defaultSymbolsPage`
+   (approved for inclusion); **DO NOT ADD** `stickyEmojiVariant`,
+   auto-return-after-insert, search/aliases/cloud anything.
+
+Symbols are a separate dataset (TW-first PRIMARY/SECONDARY groups per §10 of
+the freeze brief, not emoji). Symbol/emoji pages reuse the existing
+`KeyboardPage` → resolver → layout → View chain; legacy `SymbolPicker`
+retires in M4.9. Planned slices M4.0–M4.10 as specified in the freeze package.
+
+**Gate restated**: M4 production starts only after (1) device gate PASS
+(CASE 4 + CASE 6 minimum), (2) this architecture approval (done),
+(3) data-strategy approval (done — A1).
