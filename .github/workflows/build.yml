@@ -43,10 +43,10 @@ jobs:
         with:
           packages: platform-tools
 
-      - name: Setup Gradle 7.6.4
+      - name: Setup Gradle 8.11.1
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "7.6.4"
+          gradle-version: "8.11.1"
 
       - name: Bootstrap pinned native dependencies
         run: bash scripts/bootstrap_native_deps.sh
@@ -101,10 +101,10 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Setup Gradle 7.6.4
+      - name: Setup Gradle 8.11.1
         uses: gradle/actions/setup-gradle@v6
         with:
-          gradle-version: "7.6.4"
+          gradle-version: "8.11.1"
 
       - name: Enable KVM group perms
         run: |

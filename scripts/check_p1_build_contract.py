@@ -53,7 +53,7 @@ def unresolved_manifest_application_resources() -> list[str]:
 
 
 checks = {
-    "workflow pins Gradle 7.6.4": 'gradle-version: "7.6.4"' in workflow,
+    "workflow pins Gradle 8.11.1": 'gradle-version: "8.11.1"' in workflow,
     "workflow bootstraps native dependencies": "scripts/bootstrap_native_deps.sh" in workflow,
     "workflow runs clean Gradle unit tests": "gradle testDebugUnitTest" in workflow,
     "workflow builds debug APK": "gradle assembleDebug" in workflow,

@@ -5,13 +5,13 @@ plugins {
 
 android {
     namespace = "com.example.androidkeyboard"
-    compileSdk = 33
+    compileSdk = 36
     ndkVersion = "27.3.13750724"
 
     defaultConfig {
         applicationId = "io.github.juhjuhx.kuyin"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 36
         versionCode = 20001
         versionName = "0.2.0-alpha.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
