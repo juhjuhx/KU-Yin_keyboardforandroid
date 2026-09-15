@@ -9,6 +9,7 @@ service = (ROOT / "app/src/main/java/com/example/androidkeyboard/input/ChewingIn
 keyboard = (ROOT / "app/src/main/java/com/example/androidkeyboard/input/KeyboardView.kt").read_text(encoding="utf-8")
 candidate = (ROOT / "app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt").read_text(encoding="utf-8")
 symbol = (ROOT / "app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt").read_text(encoding="utf-8")
+settings = (ROOT / "app/src/main/java/com/example/androidkeyboard/SettingsActivity.kt").read_text(encoding="utf-8")
 palette_path = ROOT / "app/src/main/java/com/example/androidkeyboard/ui/ImePalette.kt"
 palette = palette_path.read_text(encoding="utf-8") if palette_path.exists() else ""
 night_theme_path = ROOT / "app/src/main/res/values-night/themes.xml"
@@ -59,6 +60,12 @@ checks = {
     "settings theme has a night-qualified override": night_theme_path.exists() and "Theme.AndroidKeyboard" in night_theme,
     "night theme does not force light window background": "@color/keyboard_bg_light" not in night_theme,
     "night theme exposes dark readable surface colors": "@color/keyboard_bg_dark" in night_theme and "@color/key_text_dark" in night_theme,
+    "settings handles target-36 system-bar and display-cutout insets": (
+        "ViewCompat.setOnApplyWindowInsetsListener" in settings
+        and "WindowInsetsCompat.Type.systemBars()" in settings
+        and "WindowInsetsCompat.Type.displayCutout()" in settings
+        and "ViewCompat.requestApplyInsets" in settings
+    ),
 }
 
 failed = [name for name, ok in checks.items() if not ok]
