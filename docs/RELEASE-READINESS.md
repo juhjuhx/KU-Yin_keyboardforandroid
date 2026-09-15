@@ -15,7 +15,7 @@
 | AGP/Gradle/Kotlin/JDK | 7.4.2 / 7.6.4 / 1.9.22 / 17 | OK | Need 8.9.1+ / 8.11.1+ (JDK 17 unchanged) | OK (F-Droid server provides its own; versions declared in metadata) | P1 for Play | Same slice as targetSdk (§5) |
 | NDK/CMake | r27.3 / 3.22.1 | OK | Need r28+ (or r27 link flags) for 16K default | Server NDK declared via `ndk:` | P1 for Play | Same slice; verify final ELF (§6) |
 | 16 KB page size | arm64 `.so` measured 4K → UNALIGNED | OK | BLOCKER for API 35+ targets | OK (device-dependent) | P0 for Play | NDK route + CI gate (§6) |
-| APK signing | unsigned dev artifact | OK w/ clear label | BLOCKER (needs upload key + Play App Signing) | F-Droid signs itself | P0 for Play | Signing design → approval (§7) |
+| APK signing | unsigned dev artifact; arch APPROVED (app-signing key + separate upload key, §6); no keys created | OK w/ clear label | Needs keys + Play App Signing enrollment | F-Droid signs itself | P0 for Play | Generate keys offline at release cut |
 | AAB | locally proven (`bundleRelease` works); CI lane added in this audit | N/A | BLOCKER (new apps must ship AAB) | N/A (APK) | P1 for Play | CI lane added; verify on next green run |
 | ABIs | armeabi-v7a, arm64-v8a, x86, x86_64 (single fat APK) | OK | OK (AAB splits automatically) | Needs per-ABI version-code scheme later | P2 | Decide at F-Droid submission |
 | Privacy policy | `PRIVACY.md` draft added (code-mapped) | Recommended | BLOCKER (URL required) + Data Safety form | Recommended | P1 | Publish page (Pages) + review |
@@ -107,23 +107,26 @@ needed, via Play Console form.
   NDK move lands) encodes the check: reports ALIGNED/UNALIGNED per ABI from a
   built APK/AAB, exit 1 on violation.
 
-## 6. Signing design (design only — no keys created)
+## 6. Signing architecture (APPROVED — no keys created)
 
 Constraints: never commit keystores/passwords/material; never print secrets.
 
+- **APP SIGNING KEY**: long-lived, user-controlled, kept offline/secure
+  (e.g. encrypted USB + paper backup, ≥2 locations). Enrolled with Play App
+  Signing as the app-signing key, and used to sign GitHub release APKs.
+- **PLAY UPLOAD KEY**: separate from the app signing key, resettable via Play
+  Console, used only to authenticate AAB uploads. CI holds no key material
+  until an explicit release lane is approved.
 - **Debug**: default debug key (unchanged).
-- **GitHub direct**: dedicated dev-distribution key, self-managed offline
-  (e.g. encrypted USB + paper backup), CI holds nothing until a release lane
-  is approved. Unsigned APKs stay clearly labelled developer artifacts.
-- **Play**: mandatory Play App Signing for new apps. Upload key (dev-held)
-  signs the AAB; Google holds the app-signing key. Consequence: a Play
-  install and a GitHub-direct install carry **different certificates and can
-  never upgrade each other** — cross-store updates are impossible by design
-  for new apps. Decide the primary distribution home accordingly.
+- Consequence: a Play install (Google-held app-signing key) and a GitHub
+  direct install (dev-held key) carry **different certificates and can never
+  upgrade each other** — cross-store updates are impossible by design for new
+  apps. Primary distribution home is therefore a product decision, not a
+  technical default.
 - **F-Droid**: signs with its own keys by default (reproducible/upstream
   signing is an advanced opt-in, out of scope for first inclusion).
-- Backup/recovery: offline copies in ≥2 locations; loss of the upload key is
-  recoverable via Play Console reset, loss discipline still required.
+- Unsigned APKs stay clearly labelled developer artifacts; only a signed
+  release APK may ever be presented as a public installable.
 
 ## 7. Privacy & Data Safety (evidence-mapped, see PRIVACY.md)
 
