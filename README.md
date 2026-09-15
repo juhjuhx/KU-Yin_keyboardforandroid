@@ -24,7 +24,7 @@ KU-Yin 的核心不是自造中文解碼器，而是在 Android IME 層把成熟
 
 ## 目前狀態
 
-目前原始碼版本為 **`0.1.1-alpha`**。這是可建置、可安裝測試的 alpha，並非穩定版。
+目前原始碼版本為 **`0.1.2-alpha`**。這是可建置、可安裝測試的 alpha，並非穩定版。
 
 目前已建立的驗證鏈包含 JVM 單元測試、輸入映射／架構 contracts、固定 native dependency bootstrap、Debug APK、unsigned Release APK，以及 Android 13 emulator 的安裝、IME 註冊、啟用與選擇。headless emulator 的 IME window-visible assertion 仍屬實驗性、非阻塞檢查；實際 OEM／實機相容性仍需持續擴充。
 
