@@ -1,18 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">"Android Keyboard"</string>
-    <string name="ime_name">"KU-Yin (Chewing)"</string>
-    <string name="ime_description">"Bopomofo input method with DaChen layout"</string>
-    <string name="pref_key_layout">"layout"</string>
-    <string name="pref_key_theme">"theme"</string>
-    <string name="pref_key_vibration">"vibration"</string>
-    <string name="pref_key_opencc">"opencc"</string>
-    <!-- Theme options -->
-    <string name="pref_theme_light">"Light"</string>
-    <string name="pref_theme_dark">"Dark"</string>
-    <string name="pref_theme_oled">"OLED Black"</string>
-    <!-- Layout options -->
-    <string name="pref_layout_dachen">"DaChen (大千)"</string>
-    <string name="pref_layout_hsu">"Hsu (許氏)"</string>
-    <string name="pref_layout_eten">"Eten26"</string>
+    <string name="app_name">KU-Yin 酷音鍵盤</string>
+    <string name="ime_name">酷音注音輸入法 (KU-Yin)</string>
+    <string name="subtype_zhuyin">繁體中文 (注音)</string>
+    <string name="subtype_english">English (US)</string>
+    <string name="feedback_title">使用者回饋與問題回報</string>
+    <string name="feedback_desc">回報使用時遇到的問題或提供新功能、詞庫補充建議</string>
+    <string name="feedback_category_bug">問題回報</string>
+    <string name="feedback_category_feature">功能建議</string>
+    <string name="feedback_category_dictionary">詞庫補充</string>
+    <string name="feedback_category_other">其他回饋</string>
+    <string name="feedback_submit_btn">送出回饋</string>
+    <string name="feedback_view_history">查看回饋紀錄</string>
+    <string name="feedback_empty_history">尚無回饋紀錄，歡迎提供寶貴意見！</string>
 </resources>

@@ -1,0 +1,6 @@
+{
+  "name": "KU-Yin 酷音鍵盤",
+  "description": "酷音注音輸入法 (KU-Yin Zhuyin Keyboard) for Android - 支援注音聲調輸入、候選字詞、英數與全半形符號切換的完整輸入法",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
