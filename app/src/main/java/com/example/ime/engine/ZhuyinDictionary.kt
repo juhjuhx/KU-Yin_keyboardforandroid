@@ -1310,48 +1310,41 @@ class ZhuyinDictionary(context: Context) {
         "ㄩㄥˋ" to listOf("用")
     )
 
-    // 取得候選詞/字列表 (支援新酷音 / RIME 連打、首字母縮寫與前綴智慧預測)
+    // 分層候選：精確 > 有效延續 > 聲調回退；同層按頻率再按穩定順序
     fun query(syllables: String): List<String> {
         if (syllables.isBlank()) return emptyList()
 
-        val results = mutableListOf<String>()
         val strippedQuery = syllables.filterNot { ZhuyinConstants.isTone(it.toString()) }
+        val exact = LinkedHashSet<String>()
+        phraseDictionary[syllables]?.let { exact.addAll(it) }
+        charDictionary[syllables]?.let { exact.addAll(it) }
 
-        // 1. 精準完全符合多字詞庫 (例如 ㄨㄕㄕ、ㄨㄛㄕㄕㄟ、ㄨㄛˇㄕˋㄕㄟˊ -> "我是誰")
-        phraseDictionary[syllables]?.let {
-            results.addAll(it)
-        }
-        if (strippedQuery != syllables) {
-            phraseDictionary[strippedQuery]?.let {
-                results.addAll(it)
-            }
-        }
-
-        // 2. 智慧前綴與縮寫匹配 (例如打 ㄨㄕ 或 ㄨㄛㄕ 立即預測 "我是誰"、"我是")
+        val continuation = LinkedHashSet<String>()
         for ((key, phrases) in phraseDictionary) {
+            if (key == syllables) continue
             val strippedKey = key.filterNot { ZhuyinConstants.isTone(it.toString()) }
-            if (key.startsWith(syllables) || strippedKey.startsWith(strippedQuery) || (syllables.length >= 2 && syllables.startsWith(key))) {
-                results.addAll(phrases)
+            if (key.startsWith(syllables) || strippedKey.startsWith(strippedQuery)) {
+                continuation.addAll(phrases)
             }
         }
 
-        // 3. 查單音節字庫 (若完全符合帶聲調的音節)
-        charDictionary[syllables]?.let {
-            results.addAll(it)
-        }
-
-        // 4. 若為無聲調或尚未結尾，查所有包含該聲調的候選字
+        val fallback = LinkedHashSet<String>()
         if (!ZhuyinConstants.isTone(syllables.takeLast(1))) {
-            // 自動補一聲
-            charDictionary[syllables]?.let { results.addAll(it) }
-            // 自動補二、三、四、輕聲
-            for (tone in listOf("ˊ", "ˇ", "ˋ", "˙")) {
-                charDictionary[syllables + tone]?.let { results.addAll(it) }
+            for (tone in listOf("", "ˊ", "ˇ", "ˋ", "˙")) {
+                charDictionary[syllables + tone]?.let { fallback.addAll(it) }
             }
         }
 
-        // 去除重複並按照使用者常用頻率排序
-        return results.distinct().sortedByDescending { getWordFrequency(it) }
+        val frequency = (exact + continuation + fallback).associateWith { getWordFrequency(it) }
+        val seen = HashSet<String>()
+        fun rank(words: Collection<String>): List<String> {
+            val unique = words.filter { seen.add(it) }
+            val order = unique.withIndex().associate { (index, word) -> word to index }
+            return unique.sortedWith(
+                compareByDescending<String> { frequency[it] ?: 0 }.thenBy { order[it] }
+            )
+        }
+        return rank(exact) + rank(continuation) + rank(fallback)
     }
 
     // 紀錄使用者選字頻率 (自適應學習)

@@ -359,17 +359,7 @@ fun CandidateBar(
     val subTextColor = theme?.keyTextSub ?: Color(0xFF94A3B8)
     val candidateCardBg = theme?.keyBgNormal ?: Color(0xFF1E293B)
 
-    val clipboardManager = androidx.compose.ui.platform.LocalClipboardManager.current
-    var clipboardContent by remember { mutableStateOf<String?>(null) }
-
-    LaunchedEffect(Unit) {
-        try {
-            val clip = clipboardManager.getText()?.text
-            if (!clip.isNullOrBlank()) {
-                clipboardContent = clip
-            }
-        } catch (_: Exception) {}
-    }
+    // 零網路/無剪貼簿讀取政策：已移除剪貼簿自動讀取，不再存取系統剪貼簿
 
     Row(
         modifier = Modifier
@@ -444,7 +434,7 @@ fun CandidateBar(
                 }
             }
         } else {
-            // 無候選字時：若有剪貼簿內容則優先呈現「📋 快速貼上」按鈕，其次為常用標點
+            // 無候選字時：呈現常用標點
             LazyRow(
                 modifier = Modifier
                     .weight(1f)
@@ -452,39 +442,6 @@ fun CandidateBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                if (isClipboardBarEnabled && !clipboardContent.isNullOrBlank()) {
-                    item {
-                        Surface(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(6.dp))
-                                .clickable {
-                                    clipboardContent?.let { onPasteClipboard(it) }
-                                },
-                            color = accentColor.copy(alpha = 0.15f),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.5f))
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.ContentPaste,
-                                    contentDescription = "剪貼簿貼上",
-                                    tint = accentColor,
-                                    modifier = Modifier.size(14.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = "貼上: " + if (clipboardContent!!.length > 8) clipboardContent!!.take(8) + "…" else clipboardContent!!,
-                                    color = textColor,
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Medium
-                                )
-                            }
-                        }
-                    }
-                }
-
                 val quickPunct = listOf("，", "。", "！", "？", "、", "～", "…", "「", "」")
                 items(quickPunct) { punct ->
                     Surface(
@@ -550,14 +507,13 @@ fun ZhuyinKeyboardLayout(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 3.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         // 第一排 (11 個鍵)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             ZhuyinConstants.ROW_1.forEach { keyDef ->
                 ZhuyinKeyView(
@@ -574,7 +530,7 @@ fun ZhuyinKeyboardLayout(
         // 第二排 (10 個鍵)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             ZhuyinConstants.ROW_2.forEach { keyDef ->
                 ZhuyinKeyView(
@@ -591,7 +547,7 @@ fun ZhuyinKeyboardLayout(
         // 第三排 (10 個鍵)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             ZhuyinConstants.ROW_3.forEach { keyDef ->
                 ZhuyinKeyView(
@@ -608,7 +564,7 @@ fun ZhuyinKeyboardLayout(
         // 第四排 (8 個注音鍵 + Backspace)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ZhuyinConstants.ROW_4.forEach { keyDef ->
@@ -634,7 +590,7 @@ fun ZhuyinKeyboardLayout(
         // 第五排 (功能鍵 + 空白鍵 + 送出)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 切換英文
@@ -673,10 +629,11 @@ fun ZhuyinKeyboardLayout(
             Box(
                 modifier = Modifier
                     .weight(3.0f)
-                    .height(44.dp)
+                    .height(48.dp)
+                    .clickable { onSpacePress() }
+                    .padding(horizontal = 1.5.dp, vertical = 2.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(keyBgNormal)
-                    .clickable { onSpacePress() },
+                    .background(keyBgNormal),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -732,14 +689,13 @@ fun EnglishKeyboardLayout(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 3.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         // 第一排
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             row1.forEach { char ->
                 val display = if (isUppercase) char.uppercase() else char
@@ -758,7 +714,7 @@ fun EnglishKeyboardLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             row2.forEach { char ->
                 val display = if (isUppercase) char.uppercase() else char
@@ -775,7 +731,7 @@ fun EnglishKeyboardLayout(
         // 第三排 (Shift + 字母 + Backspace)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Shift
@@ -810,7 +766,7 @@ fun EnglishKeyboardLayout(
         // 第四排 (注音切換 + 符號 + 空格 + Enter)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ActionKeyView(
@@ -838,10 +794,11 @@ fun EnglishKeyboardLayout(
             Box(
                 modifier = Modifier
                     .weight(3.4f)
-                    .height(44.dp)
+                    .height(48.dp)
+                    .clickable { onSpacePress() }
+                    .padding(horizontal = 1.5.dp, vertical = 2.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(keyBgNormal)
-                    .clickable { onSpacePress() },
+                    .background(keyBgNormal),
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "Space", color = Color(0xFF94A3B8), fontSize = 13.sp)
@@ -886,14 +843,13 @@ fun SymbolsKeyboardLayout(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 3.dp),
-        verticalArrangement = Arrangement.spacedBy(5.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         // 數字排
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             row1.forEach { sym ->
                 SingleKeyView(
@@ -909,7 +865,7 @@ fun SymbolsKeyboardLayout(
         // 常用全形標點 1
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             row2.forEach { sym ->
                 SingleKeyView(
@@ -925,7 +881,7 @@ fun SymbolsKeyboardLayout(
         // 常用全形標點 2
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp)
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             row3.forEach { sym ->
                 SingleKeyView(
@@ -941,7 +897,7 @@ fun SymbolsKeyboardLayout(
         // 運算符號 + Backspace
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             row4.forEach { sym ->
@@ -965,7 +921,7 @@ fun SymbolsKeyboardLayout(
         // 底部導航
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(3.dp),
+            horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ActionKeyView(
@@ -985,10 +941,11 @@ fun SymbolsKeyboardLayout(
             Box(
                 modifier = Modifier
                     .weight(3.4f)
-                    .height(44.dp)
+                    .height(48.dp)
+                    .clickable { onSpacePress() }
+                    .padding(horizontal = 1.5.dp, vertical = 2.dp)
                     .clip(RoundedCornerShape(6.dp))
-                    .background(keyBgNormal)
-                    .clickable { onSpacePress() },
+                    .background(keyBgNormal),
                 contentAlignment = Alignment.Center
             ) {
                 Text(text = "空白", color = Color(0xFF94A3B8), fontSize = 13.sp)
@@ -1015,24 +972,24 @@ fun EmojiKeyboardLayout(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(6.dp)
+            .fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         // 表情網格
         val emojis = ZhuyinConstants.EMOJI_LIST.chunked(8)
         emojis.forEach { chunk ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(0.dp)
             ) {
                 chunk.forEach { emoji ->
                     Box(
                         modifier = Modifier
                             .weight(1f)
-                            .height(40.dp)
-                            .clip(RoundedCornerShape(6.dp))
-                            .clickable { onEmojiPress(emoji) },
+                            .height(44.dp)
+                            .clickable { onEmojiPress(emoji) }
+                            .padding(horizontal = 2.dp, vertical = 2.dp)
+                            .clip(RoundedCornerShape(6.dp)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = emoji, fontSize = 22.sp)
@@ -1054,7 +1011,6 @@ fun EmojiKeyboardLayout(
                 onClick = onSwitchToZhuyin
             )
 
-            Spacer(modifier = Modifier.weight(3f))
 
             ActionKeyView(
                 modifier = Modifier.weight(1.2f),
@@ -1083,13 +1039,14 @@ fun ZhuyinKeyView(
 
     Box(
         modifier = modifier
-            .height(44.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(currentBg)
+            .height(48.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple()
             ) { onClick() }
+            .padding(horizontal = 1.5.dp, vertical = 2.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(currentBg)
     ) {
         // 右上角英數對照 (大千鍵位提示)
         if (keyDef.sub.isNotEmpty()) {
@@ -1131,13 +1088,14 @@ fun SingleKeyView(
 
     Box(
         modifier = modifier
-            .height(44.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(currentBg)
+            .height(48.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple()
-            ) { onClick() },
+            ) { onClick() }
+            .padding(horizontal = 1.5.dp, vertical = 2.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(currentBg),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -1165,13 +1123,14 @@ fun ActionKeyView(
 
     Box(
         modifier = modifier
-            .height(44.dp)
-            .clip(RoundedCornerShape(6.dp))
-            .background(currentBg)
+            .height(48.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple()
-            ) { onClick() },
+            ) { onClick() }
+            .padding(horizontal = 1.5.dp, vertical = 2.dp)
+            .clip(RoundedCornerShape(6.dp))
+            .background(currentBg),
         contentAlignment = Alignment.Center
     ) {
         if (icon != null) {
