@@ -29,10 +29,10 @@ jobs:
           TAG: ${{ steps.version.outputs.tag }}
         run: |
           if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then echo "exists=true" >> "$GITHUB_OUTPUT"; else echo "exists=false" >> "$GITHUB_OUTPUT"; fi
-      - name: Set up JDK 17
+      - name: Set up JDK 21
         if: steps.existing.outputs.exists != 'true'
         uses: actions/setup-java@v5
-        with: {java-version: "17", distribution: "temurin"}
+        with: {java-version: "21", distribution: "temurin"}
       - name: Setup Android SDK
         if: steps.existing.outputs.exists != 'true'
         uses: android-actions/setup-android@v3
