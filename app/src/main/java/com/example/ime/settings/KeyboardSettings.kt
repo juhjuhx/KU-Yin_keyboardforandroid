@@ -23,7 +23,7 @@ class KeyboardSettings(context: Context) {
         set(value) = prefs.edit().putInt(KEY_THEME_INDEX, value).apply()
 
     var isClipboardBarEnabled: Boolean
-        get() = prefs.getBoolean(KEY_CLIPBOARD_BAR, true)
+        get() = prefs.getBoolean(KEY_CLIPBOARD_BAR, false)
         set(value) = prefs.edit().putBoolean(KEY_CLIPBOARD_BAR, value).apply()
 
     var candidateFontSizeSp: Int

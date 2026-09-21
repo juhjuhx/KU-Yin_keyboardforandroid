@@ -21,6 +21,14 @@ gradle/wrapper/gradle-wrapper.jar
 app/src/main/jniLibs/
 !app/src/main/jniLibs/.gitkeep
 
+# Pinned native deps and downloaded dictionaries (regenerated via scripts/bootstrap_native_deps.sh)
+app/src/main/cpp/.deps/
+app/src/main/assets/
+
+# macOS metadata
+.DS_Store
+app/.DS_Store
+
 # Local config (contains SDK paths)
 local.properties
 !local.properties.example

@@ -2,6 +2,7 @@ package com.example
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
@@ -55,7 +56,6 @@ import com.example.feedback.ui.FeedbackViewModel
 import com.example.ime.engine.KuYinEngine
 import com.example.ime.engine.ZhuyinDictionary
 import com.example.ime.settings.KeyboardSettings
-import com.example.ime.sync.UpstreamSyncManager
 import com.example.ime.ui.KEYBOARD_THEMES
 import com.example.ime.ui.KuYinKeyboardUi
 import com.example.ime.ui.OpenSourceCommunityCard
@@ -132,7 +132,6 @@ fun KuYinSetupScreen(
     var soundState by remember { mutableStateOf(settings.isSoundEnabled) }
     var candidateFontSize by remember { mutableStateOf(settings.candidateFontSizeSp) }
     var themeIndex by remember { mutableIntStateOf(settings.keyboardThemeIndex) }
-    var clipboardBarEnabled by remember { mutableStateOf(settings.isClipboardBarEnabled) }
     var showResetDialog by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
@@ -555,28 +554,6 @@ fun KuYinSetupScreen(
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
-                        // 剪貼簿快速貼上列
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text("候選字列剪貼簿捷徑", fontWeight = FontWeight.SemiBold)
-                                Text("無拼音時於工具列提供剪貼簿內容一鍵貼上", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            }
-                            Switch(
-                                checked = clipboardBarEnabled,
-                                onCheckedChange = {
-                                    clipboardBarEnabled = it
-                                    settings.isClipboardBarEnabled = it
-                                },
-                                modifier = Modifier.testTag("switch_clipboard_bar")
-                            )
-                        }
-
-                        HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
-
                         // 清除自訂字詞學習紀錄
                         OutlinedButton(
                             onClick = { showResetDialog = true },
@@ -597,7 +574,7 @@ fun KuYinSetupScreen(
                         // Report a Bug 按鈕 (開啟專案 GitHub Issues 頁面)
                         Button(
                             onClick = {
-                                UpstreamSyncManager.openReportBug(context)
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/new")))
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -616,7 +593,7 @@ fun KuYinSetupScreen(
 
                         OutlinedButton(
                             onClick = {
-                                UpstreamSyncManager.openGitHubRepo(context)
+                                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/juhjuhx/KU-Yin_keyboardforandroid")))
                             },
                             modifier = Modifier
                                 .fillMaxWidth()

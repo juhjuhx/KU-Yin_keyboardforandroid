@@ -8,6 +8,7 @@ import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
+import com.example.R
 import com.example.androidkeyboard.engines.core.IMEConfig
 
 /** Settings surface for features that are implemented in the current IME build. */

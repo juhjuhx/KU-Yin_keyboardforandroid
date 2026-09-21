@@ -1,16 +1,16 @@
 package com.example.ime.ui
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,17 +25,29 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.ime.sync.UpstreamSyncManager
-import kotlinx.coroutines.launch
+
+private const val GITHUB_REPO = "juhjuhx/KU-Yin_keyboardforandroid"
+private const val REPO_URL = "https://github.com/juhjuhx/KU-Yin_keyboardforandroid"
+private const val ISSUES_URL = "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues"
+private const val RELEASES_URL = "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases"
+
+private fun openUrl(context: Context, url: String, toastMsg: String) {
+  val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+  }
+  try {
+    context.startActivity(intent)
+    Toast.makeText(context, toastMsg, Toast.LENGTH_SHORT).show()
+  } catch (e: Exception) {
+    Toast.makeText(context, "無法開啟瀏覽器: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+  }
+}
 
 @Composable
 fun UpstreamSyncCard(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    val syncState by UpstreamSyncManager.syncState.collectAsStateWithLifecycle()
 
     ElevatedCard(
         modifier = modifier
@@ -80,19 +92,18 @@ fun UpstreamSyncCard(
                             style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = "GitHub: ${UpstreamSyncManager.GITHUB_REPO}",
+                            text = "GitHub: $GITHUB_REPO",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
 
-                // 狀態 Badge
                 AssistChip(
                     onClick = {},
                     label = {
                         Text(
-                            text = if (syncState.hasUpdate) "有新版本" else "v${syncState.currentVersion} 最新",
+                            text = "離線版本",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -102,13 +113,12 @@ fun UpstreamSyncCard(
                             modifier = Modifier
                                 .size(8.dp)
                                 .clip(CircleShape)
-                                .background(if (syncState.hasUpdate) Color(0xFFF59E0B) else Color(0xFF10B981))
+                                .background(Color(0xFF10B981))
                         )
                     }
                 )
             }
 
-            // 版本與詞庫狀態條
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -126,67 +136,33 @@ fun UpstreamSyncCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("本地安裝版本", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("v${syncState.currentVersion} (穩定發行版)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                        Text("v0.2.0-alpha.1 (離線發行版)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("繁體大千注音詞庫", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("${syncState.totalLexiconWords}+ 詞組 (完整性已校驗)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF16A34A))
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("上次上游同步檢查", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text(syncState.lastCheckedFormatted, style = MaterialTheme.typography.bodySmall)
+                        Text("1250+ 詞組 (完整性已校驗)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF16A34A))
                     }
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
 
                     Text(
-                        text = syncState.statusMessage,
+                        text = "零網路政策：上游自動檢查已停用，版本資訊僅供離線參考",
                         style = MaterialTheme.typography.bodySmall,
-                        color = if (syncState.hasUpdate) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
 
-            // 檢查更新按鈕
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Button(
-                    onClick = {
-                        coroutineScope.launch {
-                            UpstreamSyncManager.checkUpstreamUpdates(context, force = true)
-                        }
-                    },
-                    enabled = !syncState.isChecking,
-                    modifier = Modifier
-                        .weight(1f)
-                        .testTag("btn_check_upstream_updates")
-                ) {
-                    if (syncState.isChecking) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(16.dp),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("正在檢查中…")
-                    } else {
-                        Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("檢查上游更新")
-                    }
-                }
-
                 OutlinedButton(
                     onClick = {
-                        UpstreamSyncManager.openReleases(context)
+                        openUrl(context, RELEASES_URL, "正在開啟版本日誌…")
                     },
                     modifier = Modifier.testTag("btn_view_releases")
                 ) {
@@ -251,7 +227,6 @@ fun OpenSourceCommunityCard(
                 }
             }
 
-            // GitHub 網址展示與複製
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = "GitHub 專案倉庫位址",
@@ -273,7 +248,7 @@ fun OpenSourceCommunityCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = UpstreamSyncManager.REPO_URL,
+                            text = REPO_URL,
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier.weight(1f)
@@ -281,7 +256,7 @@ fun OpenSourceCommunityCard(
                         Row {
                             IconButton(
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(UpstreamSyncManager.REPO_URL))
+                                    clipboardManager.setText(AnnotatedString(REPO_URL))
                                     Toast.makeText(context, "已複製專案 GitHub 倉庫網址", Toast.LENGTH_SHORT).show()
                                 }
                             ) {
@@ -289,7 +264,7 @@ fun OpenSourceCommunityCard(
                             }
                             IconButton(
                                 onClick = {
-                                    UpstreamSyncManager.openGitHubRepo(context)
+                                    openUrl(context, REPO_URL, "正在開啟 GitHub 專案倉庫…")
                                 }
                             ) {
                                 Icon(Icons.AutoMirrored.Filled.OpenInNew, contentDescription = "開啟網頁", modifier = Modifier.size(18.dp))
@@ -299,7 +274,6 @@ fun OpenSourceCommunityCard(
                 }
             }
 
-            // GitHub Issues 網址展示與回報
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text(
                     text = "GitHub Issues 問題回報網址",
@@ -321,7 +295,7 @@ fun OpenSourceCommunityCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = UpstreamSyncManager.ISSUES_URL,
+                            text = ISSUES_URL,
                             style = MaterialTheme.typography.bodySmall,
                             fontFamily = FontFamily.Monospace,
                             modifier = Modifier.weight(1f)
@@ -329,7 +303,7 @@ fun OpenSourceCommunityCard(
                         Row {
                             IconButton(
                                 onClick = {
-                                    clipboardManager.setText(AnnotatedString(UpstreamSyncManager.ISSUES_URL))
+                                    clipboardManager.setText(AnnotatedString(ISSUES_URL))
                                     Toast.makeText(context, "已複製 GitHub Issues 網址", Toast.LENGTH_SHORT).show()
                                 }
                             ) {
@@ -337,7 +311,7 @@ fun OpenSourceCommunityCard(
                             }
                             IconButton(
                                 onClick = {
-                                    UpstreamSyncManager.openReportBug(context)
+                                    openUrl(context, "$ISSUES_URL/new", "正在為您前往 GitHub 提交 Bug 報告…")
                                 }
                             ) {
                                 Icon(Icons.Default.BugReport, contentDescription = "開 Issue 回報", modifier = Modifier.size(18.dp))
@@ -347,7 +321,6 @@ fun OpenSourceCommunityCard(
                 }
             }
 
-            // F-Droid & Google Play 發行準備狀況
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -405,14 +378,13 @@ fun OpenSourceCommunityCard(
                 }
             }
 
-            // 快捷按鈕
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Button(
                     onClick = {
-                        UpstreamSyncManager.openReportBug(context)
+                        openUrl(context, "$ISSUES_URL/new", "正在為您前往 GitHub 提交 Bug 報告…")
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -429,7 +401,7 @@ fun OpenSourceCommunityCard(
 
                 OutlinedButton(
                     onClick = {
-                        UpstreamSyncManager.openGitHubRepo(context)
+                        openUrl(context, REPO_URL, "正在開啟 GitHub 專案倉庫…")
                     },
                     modifier = Modifier
                         .weight(1f)

@@ -153,18 +153,6 @@ class ExampleRobolectricTest {
   }
 
   @Test
-  fun `test upstream sync manager URLs and state`() {
-    assertEquals("juhjuhx/KU-Yin_keyboardforandroid", com.example.ime.sync.UpstreamSyncManager.GITHUB_REPO)
-    assertEquals("https://github.com/juhjuhx/KU-Yin_keyboardforandroid", com.example.ime.sync.UpstreamSyncManager.REPO_URL)
-    assertEquals("https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues", com.example.ime.sync.UpstreamSyncManager.ISSUES_URL)
-
-    val state = com.example.ime.sync.UpstreamSyncManager.syncState.value
-    assertEquals("1.0.0", state.currentVersion)
-    assertTrue(state.totalLexiconWords >= 1250)
-    assertTrue(state.lexiconIntegrityVerified)
-  }
-
-  @Test
   fun `test decoupled IKuYinEngine interface`() {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val engine: com.example.ime.api.IKuYinEngine = com.example.ime.engine.KuYinEngine(context)
