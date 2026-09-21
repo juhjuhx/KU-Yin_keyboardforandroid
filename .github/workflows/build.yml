@@ -55,21 +55,13 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
-      - name: Build Release APK
-        run: ./gradlew assembleRelease --stacktrace
+      # Release APK stays out until the signing decision lands (no keystore yet).
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: debug-apk
           path: app/build/outputs/apk/debug/*.apk
-          if-no-files-found: error
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-apk
-          path: app/build/outputs/apk/release/*.apk
           if-no-files-found: error
 
   runtime-smoke:
@@ -89,10 +81,8 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
-      - name: Setup Gradle 7.6.4
+      - name: Setup Gradle (wrapper)
         uses: gradle/actions/setup-gradle@v6
-        with:
-          gradle-version: "7.6.4"
 
       - name: Enable KVM group perms
         run: |

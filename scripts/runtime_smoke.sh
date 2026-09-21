@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_PACKAGE="com.example.androidkeyboard"
+APP_PACKAGE="$(sed -n 's/.*applicationId = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n1)"
 
 bash scripts/bootstrap_native_deps.sh
-gradle installDebug --stacktrace
+./gradlew installDebug --stacktrace
 
 installed=""
 for _ in $(seq 1 40); do
@@ -52,4 +52,4 @@ done
 printf 'Selected IME: %s\n' "$selected"
 [ "$selected" = "$IME_COMPONENT" ]
 
-gradle connectedDebugAndroidTest --stacktrace
+./gradlew connectedDebugAndroidTest --stacktrace

@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 workflow = (ROOT / ".github/workflows/build.yml").read_text(encoding="utf-8")
+wrapper_props = (ROOT / "gradle/wrapper/gradle-wrapper.properties").read_text(encoding="utf-8")
 cmake = (ROOT / "app/src/main/cpp/CMakeLists.txt").read_text(encoding="utf-8")
 jni = (ROOT / "app/src/main/cpp/chewing_jni.cpp").read_text(encoding="utf-8")
 engine = (ROOT / "app/src/main/java/com/example/androidkeyboard/engines/android/AndroidChewingEngine.kt").read_text(encoding="utf-8")
@@ -53,10 +54,12 @@ def unresolved_manifest_application_resources() -> list[str]:
 
 
 checks = {
-    "workflow pins Gradle 7.6.4": 'gradle-version: "7.6.4"' in workflow,
+    "workflow uses Gradle wrapper without floating version pin": "./gradlew testDebugUnitTest" in workflow
+    and "gradle-version:" not in workflow,
+    "wrapper pins immutable Gradle distribution": "gradle-9.3.1" in wrapper_props,
     "workflow bootstraps native dependencies": "scripts/bootstrap_native_deps.sh" in workflow,
-    "workflow runs clean Gradle unit tests": "gradle testDebugUnitTest" in workflow,
-    "workflow builds debug APK": "gradle assembleDebug" in workflow,
+    "workflow runs clean Gradle unit tests": "./gradlew testDebugUnitTest" in workflow,
+    "workflow builds debug APK": "./gradlew assembleDebug" in workflow,
     "native bootstrap script exists": bootstrap_path.exists(),
     "native bootstrap pins immutable fcitx prebuilt commit": PREBUILT_COMMIT in bootstrap,
     "native bootstrap records exact libchewing source commit": SOURCE_COMMIT in bootstrap,
