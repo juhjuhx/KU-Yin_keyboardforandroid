@@ -119,6 +119,15 @@ class AndroidChewingEngine(
         return snapshot(consumed = true)
     }
 
+    override fun canPageCandidatesBackward(): Boolean =
+        isReady && nativeCtx != 0L && candidatePage > 0
+
+    override fun canPageCandidatesForward(): Boolean {
+        if (!isReady || nativeCtx == 0L) return false
+        val totalPages = chewing_cand_total_page(nativeCtx)
+        return candidatePage < totalPages - 1
+    }
+
     override fun commitUpdate(): EngineUpdate {
         if (!isReady || nativeCtx == 0L) return emptyUpdate(false)
         val result = chewing_commit_preedit_buf(nativeCtx)

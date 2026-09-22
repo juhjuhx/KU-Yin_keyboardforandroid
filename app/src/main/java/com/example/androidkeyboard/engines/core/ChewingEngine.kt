@@ -30,5 +30,7 @@ interface ChewingEngine {
     fun commitUpdate(): EngineUpdate
     fun nextPageUpdate(): EngineUpdate?
     fun prevPageUpdate(): EngineUpdate?
+    fun canPageCandidatesBackward(): Boolean
+    fun canPageCandidatesForward(): Boolean
     fun close()
 }
