@@ -13,6 +13,8 @@ import com.example.androidkeyboard.input.EditorPolicy
 import com.example.ime.engine.KeyboardMode
 import com.example.ime.engine.KuYinEngine
 import com.example.ime.service.CompositionResetPolicy
+import com.example.ime.session.ComposeDecoderSession
+import com.example.ime.session.ZhuyinDictionarySession
 import com.example.ime.service.EditorDeletion
 import com.example.ime.service.ImeLifecycleOwner
 import com.example.ime.settings.KeyboardSettings
@@ -23,6 +25,7 @@ class KuYinInputMethodService : InputMethodService() {
 
     private lateinit var lifecycleOwner: ImeLifecycleOwner
     private lateinit var engine: KuYinEngine
+    private lateinit var session: ComposeDecoderSession
     private lateinit var settings: KeyboardSettings
     private lateinit var feedbackHelper: FeedbackHelper
 
@@ -36,6 +39,7 @@ class KuYinInputMethodService : InputMethodService() {
 
         settings = KeyboardSettings(this)
         engine = KuYinEngine(this)
+        session = ZhuyinDictionarySession(engine)
         feedbackHelper = FeedbackHelper(this, settings)
     }
 
@@ -65,6 +69,7 @@ class KuYinInputMethodService : InputMethodService() {
             setContent {
                 KuYinKeyboardUi(
                     engine = engine,
+                    session = session,
                     settings = settings,
                     actionLabel = currentActionLabel.value,
                     onCommitText = { text ->

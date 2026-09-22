@@ -49,7 +49,9 @@ class ChewingEngineSessionTest {
     @Test
     fun `tap projects engine preedit and candidates with no commit`() {
         val session = ChewingEngineSession(FakeChewingEngine())
-        assertNull(session.dispatch(ImeCommand.TapZhuyinKey("ㄋ")))
+        val result = session.dispatch(ImeCommand.TapZhuyinKey("ㄋ"))
+        assertNull(result.commitText)
+        assertTrue(result.consumed)
         val state = session.state.value
         assertEquals("ㄋ", state.preedit)
         assertEquals(listOf("你", "尼"), state.candidates)
@@ -60,14 +62,14 @@ class ChewingEngineSessionTest {
         val engine = FakeChewingEngine()
         val session = ChewingEngineSession(engine)
         session.dispatch(ImeCommand.TapZhuyinKey("ㄋ"))
-        assertEquals("你", session.dispatch(ImeCommand.SelectCandidate(0)))
+        assertEquals(DispatchResult("你", true), session.dispatch(ImeCommand.SelectCandidate(0)))
     }
 
     @Test
     fun `space on empty preedit yields literal without touching engine`() {
         val engine = FakeChewingEngine()
         val session = ChewingEngineSession(engine)
-        assertEquals(" ", session.dispatch(ImeCommand.Space))
+        assertEquals(DispatchResult(" ", true), session.dispatch(ImeCommand.Space))
         assertEquals(0, engine.commitCalls)
         assertTrue(session.state.value.candidates.isEmpty())
     }

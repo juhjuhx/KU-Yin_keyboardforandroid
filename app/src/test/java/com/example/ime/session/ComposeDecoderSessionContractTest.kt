@@ -21,22 +21,26 @@ private class FakeSession : ComposeDecoderSession {
     )
     override val state: StateFlow<ComposeImeState> = _state.asStateFlow()
 
-    override fun dispatch(command: ImeCommand): String? {
+    override fun dispatch(command: ImeCommand): DispatchResult {
         val current = _state.value
         when (command) {
             is ImeCommand.ToggleCandidatesExpanded -> {
                 _state.value = current.copy(candidatesExpanded = !current.candidatesExpanded)
+                return DispatchResult(null, false)
             }
             is ImeCommand.SelectCandidate -> {
-                if (command.index !in current.candidates.indices) return null
-                return current.candidates[command.index]
+                if (command.index !in current.candidates.indices) {
+                    return DispatchResult(null, false)
+                }
+                return DispatchResult(current.candidates[command.index], true)
             }
             is ImeCommand.ClearComposing, ImeCommand.Reset -> {
                 _state.value = current.copy(preedit = "", candidates = emptyList())
+                return DispatchResult(null, true)
             }
             else -> {}
         }
-        return null
+        return DispatchResult(null, false)
     }
 }
 
@@ -55,7 +59,9 @@ class ComposeDecoderSessionContractTest {
     @Test
     fun `selecting from empty candidates commits nothing`() {
         val session = FakeSession()
-        assertNull(session.dispatch(ImeCommand.SelectCandidate(0)))
+        val result = session.dispatch(ImeCommand.SelectCandidate(0))
+        assertNull(result.commitText)
+        assertFalse(result.consumed)
         assertTrue(session.state.value.candidates.isEmpty())
     }
 

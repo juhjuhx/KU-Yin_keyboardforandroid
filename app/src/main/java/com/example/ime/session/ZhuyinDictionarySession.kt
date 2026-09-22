@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class ZhuyinDictionarySession(context: Context) : ComposeDecoderSession {
+class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderSession {
 
-    private val engine = KuYinEngine(context)
+    constructor(context: Context) : this(KuYinEngine(context))
     private val _state = MutableStateFlow(ComposeImeState())
     override val state: StateFlow<ComposeImeState> = _state.asStateFlow()
 
@@ -26,28 +26,32 @@ class ZhuyinDictionarySession(context: Context) : ComposeDecoderSession {
         )
     }
 
-    override fun dispatch(command: ImeCommand): String? {
+    override fun dispatch(command: ImeCommand): DispatchResult {
         var commit: String? = null
         when (command) {
             is ImeCommand.TapZhuyinKey -> engine.onZhuyinKey(command.char) { commit = it }
             is ImeCommand.SelectCandidate -> {
-                val candidate = _state.value.candidates.getOrNull(command.index) ?: return null
+                val candidate = _state.value.candidates.getOrNull(command.index)
+                    ?: return DispatchResult(null, false)
                 engine.selectCandidate(candidate) { commit = it }
             }
-            ImeCommand.Backspace -> engine.onBackspace { }
+            ImeCommand.Backspace -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+                engine.onBackspace { }
+            }
             ImeCommand.Space -> engine.onSpace { commit = it }
-            ImeCommand.Enter -> return null
-            ImeCommand.PageForward -> return null
-            ImeCommand.PageBackward -> return null
+            ImeCommand.Enter -> return DispatchResult(null, false)
+            ImeCommand.PageForward -> return DispatchResult(null, false)
+            ImeCommand.PageBackward -> return DispatchResult(null, false)
             ImeCommand.ToggleCandidatesExpanded -> {
                 _state.value = _state.value.copy(
                     candidatesExpanded = !_state.value.candidatesExpanded
                 )
-                return null
+                return DispatchResult(null, false)
             }
             ImeCommand.ClearComposing, ImeCommand.Reset -> engine.clearComposing()
         }
         refresh()
-        return commit
+        return DispatchResult(commit, true)
     }
 }

@@ -55,6 +55,7 @@ import com.example.feedback.ui.FeedbackSubmissionDialog
 import com.example.feedback.ui.FeedbackViewModel
 import com.example.ime.engine.KuYinEngine
 import com.example.ime.engine.ZhuyinDictionary
+import com.example.ime.session.ZhuyinDictionarySession
 import com.example.ime.settings.KeyboardSettings
 import com.example.ime.ui.KEYBOARD_THEMES
 import com.example.ime.ui.KuYinKeyboardUi
@@ -140,6 +141,7 @@ fun KuYinSetupScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val localView = LocalView.current
     val directEngine = remember { KuYinEngine(context) }
+    val directSession = remember { ZhuyinDictionarySession(directEngine) }
     val feedbackHelper = remember { FeedbackHelper(context, settings) }
     var showDirectKeyboard by remember { mutableStateOf(true) }
 
@@ -380,6 +382,7 @@ fun KuYinSetupScreen(
                                     key(themeIndex) {
                                         KuYinKeyboardUi(
                                             engine = directEngine,
+                                            session = directSession,
                                             settings = settings,
                                             actionLabel = "換行",
                                             onCommitText = { text ->

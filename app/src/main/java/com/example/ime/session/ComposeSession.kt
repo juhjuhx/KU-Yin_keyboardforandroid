@@ -23,7 +23,12 @@ sealed interface ImeCommand {
     data object Reset : ImeCommand
 }
 
+data class DispatchResult(
+    val commitText: String?,
+    val consumed: Boolean
+)
+
 interface ComposeDecoderSession {
     val state: StateFlow<ComposeImeState>
-    fun dispatch(command: ImeCommand): String?
+    fun dispatch(command: ImeCommand): DispatchResult
 }

@@ -29,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ime.engine.*
+import com.example.ime.session.ComposeDecoderSession
+import com.example.ime.session.ImeCommand
 import com.example.ime.settings.KeyboardSettings
 
 data class KeyboardThemeColors(
@@ -122,6 +124,7 @@ val KEYBOARD_THEMES = listOf(
 @Composable
 fun KuYinKeyboardUi(
     engine: KuYinEngine,
+    session: ComposeDecoderSession,
     settings: KeyboardSettings,
     actionLabel: String,
     onCommitText: (String) -> Unit,
@@ -133,8 +136,9 @@ fun KuYinKeyboardUi(
 ) {
     val mode by engine.mode.collectAsState()
     val shiftState by engine.shiftState.collectAsState()
-    val composingZhuyin by engine.composingZhuyin.collectAsState()
-    val candidates by engine.candidates.collectAsState()
+    val sessionState by session.state.collectAsState()
+    val composingZhuyin = sessionState.preedit
+    val candidates = sessionState.candidates
 
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
     val keyboardBg = currentTheme.keyboardBg
@@ -165,11 +169,14 @@ fun KuYinKeyboardUi(
                 mode = mode,
                 onCandidateClick = { candidate ->
                     onFeedback()
-                    engine.selectCandidate(candidate, onCommitText)
+                    val index = session.state.value.candidates.indexOf(candidate)
+                    if (index >= 0) {
+                        session.dispatch(ImeCommand.SelectCandidate(index)).commitText?.let(onCommitText)
+                    }
                 },
                 onClearComposing = {
                     onFeedback()
-                    engine.clearComposing()
+                    session.dispatch(ImeCommand.ClearComposing)
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
@@ -202,22 +209,24 @@ fun KuYinKeyboardUi(
                         actionLabel = actionLabel,
                         onZhuyinPress = { key ->
                             onFeedback()
-                            engine.onZhuyinKey(key, onCommitText)
+                            session.dispatch(ImeCommand.TapZhuyinKey(key)).commitText?.let(onCommitText)
                         },
                         onSpacePress = {
                             onFeedback()
-                            engine.onSpace(onCommitText)
+                            session.dispatch(ImeCommand.Space).commitText?.let(onCommitText)
                         },
                         onBackspacePress = {
                             onFeedback()
-                            engine.onBackspace(onDeleteSurroundingText)
+                            val result = session.dispatch(ImeCommand.Backspace)
+                            result.commitText?.let(onCommitText)
+                            if (!result.consumed) onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
                             if (composingZhuyin.isNotEmpty()) {
                                 // 如果正在拼音，按 Enter 直接送出拼音本身
                                 onCommitText(composingZhuyin)
-                                engine.clearComposing()
+                                session.dispatch(ImeCommand.ClearComposing)
                             } else {
                                 onPerformEditorAction()
                             }
