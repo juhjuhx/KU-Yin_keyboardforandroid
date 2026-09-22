@@ -60,3 +60,5 @@ app/src/main/cpp/libchewing-src/
 *.tmp
 *.temp
 *.log
+
+.worktrees/
