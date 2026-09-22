@@ -2,13 +2,18 @@ package com.example.ime
 
 import android.content.Intent
 import android.inputmethodservice.InputMethodService
+import android.text.InputType
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.example.MainActivity
+import com.example.androidkeyboard.input.EditorPolicy
+import com.example.ime.engine.KeyboardMode
 import com.example.ime.engine.KuYinEngine
+import com.example.ime.service.CompositionResetPolicy
+import com.example.ime.service.EditorDeletion
 import com.example.ime.service.ImeLifecycleOwner
 import com.example.ime.settings.KeyboardSettings
 import com.example.ime.ui.KuYinKeyboardUi
@@ -66,7 +71,7 @@ class KuYinInputMethodService : InputMethodService() {
                         currentInputConnection?.commitText(text, 1)
                     },
                     onDeleteSurroundingText = {
-                        currentInputConnection?.deleteSurroundingText(1, 0)
+                        performEditorBackspace()
                     },
                     onPerformEditorAction = {
                         handleEditorAction()
@@ -92,6 +97,19 @@ class KuYinInputMethodService : InputMethodService() {
         return view
     }
 
+    override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
+        super.onStartInput(attribute, restarting)
+        val policy = EditorPolicy.from(
+            attribute?.inputType ?: InputType.TYPE_CLASS_TEXT,
+            attribute?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED
+        )
+        engine.applyPolicy(policy)
+        if (!policy.allowComposition) {
+            engine.setMode(KeyboardMode.ENGLISH)
+        }
+        engine.clearComposing()
+    }
+
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         window?.window?.decorView?.let { decor ->
@@ -112,6 +130,29 @@ class KuYinInputMethodService : InputMethodService() {
         engine.clearComposing()
     }
 
+    override fun onUpdateSelection(
+        oldSelStart: Int,
+        oldSelEnd: Int,
+        newSelStart: Int,
+        newSelEnd: Int,
+        candidatesStart: Int,
+        candidatesEnd: Int
+    ) {
+        super.onUpdateSelection(
+            oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
+        )
+        if (CompositionResetPolicy.shouldReset(
+                hasComposing = engine.composingZhuyin.value.isNotEmpty(),
+                oldSelStart = oldSelStart,
+                oldSelEnd = oldSelEnd,
+                newSelStart = newSelStart,
+                newSelEnd = newSelEnd
+            )
+        ) {
+            engine.clearComposing()
+        }
+    }
+
     override fun onFinishInputView(finishingInput: Boolean) {
         super.onFinishInputView(finishingInput)
         engine.clearComposing()
@@ -121,6 +162,16 @@ class KuYinInputMethodService : InputMethodService() {
     override fun onDestroy() {
         super.onDestroy()
         lifecycleOwner.onDestroy()
+    }
+
+    private fun performEditorBackspace() {
+        val ic = currentInputConnection ?: return
+        val hasSelection = !ic.getSelectedText(0).isNullOrEmpty()
+        when (EditorDeletion.plan(hasSelection)) {
+            EditorDeletion.Plan.DeleteSelection -> ic.commitText("", 1)
+            EditorDeletion.Plan.DeleteCodePointBeforeCursor ->
+                ic.deleteSurroundingTextInCodePoints(1, 0)
+        }
     }
 
     private fun handleEditorAction() {
