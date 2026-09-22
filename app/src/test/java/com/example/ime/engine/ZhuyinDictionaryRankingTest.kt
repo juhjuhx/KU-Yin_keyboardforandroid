@@ -72,6 +72,17 @@ class ZhuyinDictionaryRankingTest {
     }
 
     @Test
+    fun `tone-incompatible continuation is excluded`() {
+        val results = dict.query("ㄕˋ")
+        assertFalse(results.contains("什麼"))
+    }
+
+    @Test
+    fun `tone-only query returns empty`() {
+        assertTrue(dict.query("ˇ").isEmpty())
+    }
+
+    @Test
     fun `selecting candidate commits once and clears composing`() {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val engine = KuYinEngine(context)

@@ -44,6 +44,9 @@ jobs:
       - name: Bootstrap pinned native dependencies
         if: steps.existing.outputs.exists != 'true'
         run: bash scripts/bootstrap_native_deps.sh
+      - name: Validate production Compose contract
+        if: steps.existing.outputs.exists != 'true'
+        run: python3 scripts/check_production_compose_contract.py
       - name: Test and build alpha APKs
         if: steps.existing.outputs.exists != 'true'
         run: ./gradlew testDebugUnitTest assembleDebug --stacktrace
