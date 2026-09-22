@@ -173,7 +173,7 @@ fun KuYinKeyboardUi(
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
-                    onCommitText(punct)
+                    engine.commitPunctuation(punct, onCommitText)
                 },
                 onPasteClipboard = { text ->
                     onFeedback()
@@ -236,7 +236,7 @@ fun KuYinKeyboardUi(
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            onCommitText(p)
+                            engine.commitPunctuation(p, onCommitText)
                         }
                     )
                 }
@@ -278,7 +278,7 @@ fun KuYinKeyboardUi(
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            onCommitText(p)
+                            engine.commitPunctuation(p, onCommitText)
                         }
                     )
                 }
