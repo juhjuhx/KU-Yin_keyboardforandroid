@@ -1,0 +1,1664 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="light" data-taui-contract="1.0.0">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f2f1ee">
+  <title>TAUI Adaptive Workspace</title>
+  <style>:root {
+  color-scheme: light;
+
+  --taui-color-canvas: #f2f1ee;
+  --taui-color-canvas-elevated: #f7f6f3;
+  --taui-color-surface: #fffefa;
+  --taui-color-surface-subtle: #f8f7f4;
+  --taui-color-surface-warm: #f5f1e9;
+  --taui-color-surface-selected: #eaf3fb;
+  --taui-color-surface-pressed: #e8e6e1;
+  --taui-color-foreground: #242424;
+  --taui-color-foreground-secondary: #5d5b57;
+  --taui-color-foreground-tertiary: #74726d;
+  --taui-color-stroke: #dedbd4;
+  --taui-color-stroke-strong: #c7c3ba;
+  --taui-color-brand: #0f6cbd;
+  --taui-color-brand-hover: #115ea3;
+  --taui-color-brand-pressed: #0c3b5e;
+  --taui-color-brand-soft: #dcecf8;
+  --taui-color-tactile: #8d877c;
+  --taui-color-danger: #a4262c;
+  --taui-color-success: #107c10;
+  --taui-color-warning: #8a6d1d;
+  --taui-color-focus: #161616;
+  --taui-color-overlay: rgb(16 16 16 / 0.34);
+
+  --taui-space-1: 4px;
+  --taui-space-2: 8px;
+  --taui-space-3: 12px;
+  --taui-space-4: 16px;
+  --taui-space-5: 20px;
+  --taui-space-6: 24px;
+  --taui-space-8: 32px;
+  --taui-space-10: 40px;
+  --taui-space-12: 48px;
+
+  --taui-radius-control: 6px;
+  --taui-radius-surface: 10px;
+  --taui-radius-large: 14px;
+  --taui-radius-pill: 999px;
+
+  --taui-shadow-raised: 0 1px 2px rgb(35 33 28 / 0.08), 0 5px 14px rgb(35 33 28 / 0.05);
+  --taui-shadow-floating: 0 10px 30px rgb(28 26 22 / 0.16), 0 2px 8px rgb(28 26 22 / 0.10);
+  --taui-shadow-modal: 0 24px 70px rgb(20 19 17 / 0.24), 0 4px 18px rgb(20 19 17 / 0.14);
+  --taui-shadow-contact: 0 1px 2px rgb(26 24 21 / 0.16), inset 0 1px 0 rgb(255 255 255 / 0.72);
+  --taui-shadow-pressed: inset 0 2px 4px rgb(42 38 31 / 0.16), inset 0 -1px 0 rgb(255 255 255 / 0.4);
+
+  --taui-control-pointer: 36px;
+  --taui-control-touch: 48px;
+
+  --taui-motion-fast: 90ms;
+  --taui-motion-standard: 180ms;
+  --taui-motion-context: 240ms;
+  --taui-ease-standard: cubic-bezier(.2, 0, 0, 1);
+  --taui-ease-emphasized: cubic-bezier(.2, .8, .2, 1);
+
+  --taui-layout-globalbar: 56px;
+  --taui-layout-nav: 232px;
+  --taui-layout-rail: 72px;
+  --taui-layout-inspector: 304px;
+  --taui-layout-content-max: 1460px;
+
+  --taui-type-ui: "Segoe UI Variable", "Segoe UI", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --taui-color-canvas: #191919;
+  --taui-color-canvas-elevated: #202020;
+  --taui-color-surface: #242424;
+  --taui-color-surface-subtle: #2a2a2a;
+  --taui-color-surface-warm: #2c2924;
+  --taui-color-surface-selected: #173a59;
+  --taui-color-surface-pressed: #303030;
+  --taui-color-foreground: #f4f4f4;
+  --taui-color-foreground-secondary: #c8c6c2;
+  --taui-color-foreground-tertiary: #9f9d98;
+  --taui-color-stroke: #3b3a37;
+  --taui-color-stroke-strong: #52504b;
+  --taui-color-brand: #4f9bd4;
+  --taui-color-brand-hover: #67a9db;
+  --taui-color-brand-pressed: #8cc2e8;
+  --taui-color-brand-soft: #173a59;
+  --taui-color-tactile: #9a958d;
+  --taui-color-focus: #ffffff;
+  --taui-color-overlay: rgb(0 0 0 / 0.58);
+  --taui-shadow-contact: 0 1px 2px rgb(0 0 0 / 0.5), inset 0 1px 0 rgb(255 255 255 / 0.10);
+  --taui-shadow-raised: 0 1px 2px rgb(0 0 0 / 0.45), 0 8px 18px rgb(0 0 0 / 0.16);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --taui-motion-fast: 1ms;
+    --taui-motion-standard: 1ms;
+    --taui-motion-context: 1ms;
+  }
+}
+
+
+
+* { box-sizing: border-box; }
+html, body { min-width: 320px; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--taui-type-ui);
+  color: var(--taui-color-foreground);
+  background: var(--taui-color-canvas);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+button, input { font: inherit; color: inherit; }
+button { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--taui-color-focus); outline-offset: 2px; }
+button { cursor: pointer; }
+.skip-link { position: absolute; inset-inline-start: 12px; top: -48px; z-index: 100; padding: 8px 14px; border-radius: 6px; background: var(--taui-color-foreground); color: var(--taui-color-canvas); font-size: 13px; font-weight: 600; text-decoration: none; transition: top var(--taui-motion-fast) var(--taui-ease-standard); }
+.skip-link:focus-visible { top: 10px; }
+
+.app-shell { min-height: 100vh; display: grid; grid-template-rows: var(--taui-layout-globalbar) 1fr; }
+.global-bar {
+  position: sticky; inset-block-start: 0; z-index: 40;
+  min-width: 0; height: var(--taui-layout-globalbar);
+  display: grid; grid-template-columns: minmax(160px, auto) minmax(220px, 620px) minmax(160px, auto);
+  align-items: center; gap: var(--taui-space-4); padding-inline: var(--taui-space-5);
+  background: color-mix(in srgb, var(--taui-color-surface) 96%, var(--taui-color-canvas));
+  border-block-end: 1px solid var(--taui-color-stroke);
+}
+.brand-cluster, .global-actions { display: flex; align-items: center; min-width: 0; }
+.brand-cluster { gap: 10px; }
+.global-actions { justify-content: flex-end; gap: var(--taui-space-2); }
+.product-mark { width: 26px; height: 26px; position: relative; transform: rotate(-6deg); }
+.product-mark span { position: absolute; display: block; border-radius: 7px; border: 1px solid var(--taui-color-stroke-strong); background: linear-gradient(145deg, var(--taui-color-surface), var(--taui-color-surface-warm)); box-shadow: var(--taui-shadow-contact); }
+.product-mark span:first-child { inset: 1px 7px 7px 1px; }
+.product-mark span:last-child { inset: 8px 1px 1px 8px; background: linear-gradient(145deg, var(--taui-color-brand-soft), color-mix(in srgb,var(--taui-color-brand-soft) 70%, var(--taui-color-surface))); }
+.product-name { display: flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+.product-name strong { font-size: 14px; letter-spacing: .02em; }
+.product-name span { color: var(--taui-color-foreground-secondary); font-size: 13px; }
+
+.tactile-control,
+.secondary-button,
+.primary-button,
+.icon-button,
+.avatar-button,
+.command-trigger {
+  border: 1px solid var(--taui-color-stroke-strong);
+  background: linear-gradient(180deg, color-mix(in srgb,var(--taui-color-surface) 98%,white) 0%, var(--taui-color-surface-subtle) 100%);
+  box-shadow: var(--taui-shadow-contact);
+}
+.tactile-control:active,
+.secondary-button:active,
+.primary-button:active,
+.icon-button:active,
+.avatar-button:active,
+.command-trigger:active { transform: translateY(1px); box-shadow: var(--taui-shadow-pressed); }
+
+.command-trigger {
+  justify-self: center; width: min(100%, 620px); height: 36px; border-radius: var(--taui-radius-control);
+  display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--taui-space-2);
+  padding-inline: 11px; color: var(--taui-color-foreground-secondary); text-align: start;
+}
+.command-trigger:hover { border-color: color-mix(in srgb,var(--taui-color-stroke-strong) 70%, var(--taui-color-foreground-secondary)); }
+.command-trigger kbd, .command-search-row kbd, .command-list kbd {
+  font-family: inherit; font-size: 11px; color: var(--taui-color-foreground-tertiary);
+  border: 1px solid var(--taui-color-stroke); border-radius: 4px; padding: 2px 5px; background: var(--taui-color-surface);
+}
+.command-placeholder { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-glyph { display: inline-flex; line-height: 1; }
+.icon-button, .avatar-button { width: 36px; height: 36px; border-radius: var(--taui-radius-control); padding: 0; display: grid; place-items: center; }
+.avatar-button { border-radius: 50%; font-size: 11px; font-weight: 700; background: linear-gradient(145deg, var(--taui-color-brand-soft), var(--taui-color-surface)); color: var(--taui-color-brand-pressed); }
+.sync-state { display: flex; align-items: center; gap: 7px; color: var(--taui-color-foreground-secondary); font-size: 12px; margin-inline-end: var(--taui-space-1); }
+.status-dot { inline-size: 8px; block-size: 8px; border-radius: 50%; display: inline-block; flex: 0 0 auto; border: 1px solid color-mix(in srgb,currentColor 40%, transparent); }
+.status-dot--success { background: var(--taui-color-success); color: var(--taui-color-success); box-shadow: 0 0 0 3px color-mix(in srgb,var(--taui-color-success) 12%, transparent); }
+.status-dot--live { background: var(--taui-color-danger); color: var(--taui-color-danger); box-shadow: 0 0 0 3px color-mix(in srgb,var(--taui-color-danger) 10%, transparent); }
+
+.app-body { min-width: 0; display: grid; grid-template-columns: var(--taui-layout-nav) minmax(0, 1fr); }
+.primary-nav {
+  position: sticky; top: var(--taui-layout-globalbar); align-self: start; height: calc(100vh - var(--taui-layout-globalbar));
+  display: flex; flex-direction: column; gap: 4px; padding: var(--taui-space-4) var(--taui-space-3);
+  background: var(--taui-color-canvas-elevated); border-inline-end: 1px solid var(--taui-color-stroke);
+}
+.nav-section-label { padding: 4px 10px 8px; color: var(--taui-color-foreground-tertiary); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.destination {
+  position: relative; min-height: 40px; border: 0; border-radius: var(--taui-radius-control); padding: 0 10px;
+  display: flex; align-items: center; gap: 11px; background: transparent; text-align: start; color: var(--taui-color-foreground-secondary);
+  transition: background-color var(--taui-motion-fast) var(--taui-ease-standard), color var(--taui-motion-fast) var(--taui-ease-standard);
+}
+.destination:hover { background: color-mix(in srgb,var(--taui-color-surface) 68%, transparent); color: var(--taui-color-foreground); }
+.destination.is-selected {
+  color: var(--taui-color-foreground); background: linear-gradient(180deg, color-mix(in srgb,var(--taui-color-surface-selected) 94%,white), var(--taui-color-surface-selected));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .5), 0 1px 2px rgb(30 50 65 / .06);
+}
+.destination.is-selected::before { content:""; position: absolute; inset-inline-start: 2px; width: 3px; height: 20px; border-radius: 2px; background: var(--taui-color-brand); }
+.destination-icon { width: 22px; height: 24px; display: inline-flex; align-items: center; justify-content: center; }
+.glyph { width: 20px; height: 20px; flex: 0 0 auto; }
+.destination-label { font-size: 14px; font-weight: 500; }
+.nav-spacer { flex: 1; }
+.destination--utility { margin-block-start: var(--taui-space-2); }
+
+.main-stage { min-width: 0; }
+.main-frame { max-width: var(--taui-layout-content-max); margin-inline: auto; padding: 28px clamp(20px, 3vw, 44px) 48px; }
+.page-context { display: flex; justify-content: space-between; align-items: flex-end; gap: var(--taui-space-6); margin-block-end: var(--taui-space-6); }
+.page-context-copy { min-width: 0; max-width: 760px; }
+.breadcrumb { display: flex; gap: 7px; color: var(--taui-color-foreground-tertiary); font-size: 12px; margin-block-end: 7px; }
+.page-context h1 { margin: 0; font-size: clamp(28px, 3vw, 34px); line-height: 1.16; letter-spacing: -.025em; }
+.page-context p { margin: 7px 0 0; max-width: 68ch; color: var(--taui-color-foreground-secondary); font-size: 14px; line-height: 1.55; }
+.page-actions { display: flex; align-items: center; gap: var(--taui-space-2); flex: 0 0 auto; }
+.primary-button, .secondary-button, .text-button { min-height: 36px; border-radius: var(--taui-radius-control); padding-inline: 13px; font-weight: 600; font-size: 13px; transition: background-color var(--taui-motion-fast) var(--taui-ease-standard), box-shadow var(--taui-motion-fast) var(--taui-ease-standard), transform var(--taui-motion-fast) var(--taui-ease-standard); }
+.primary-button { color: white; border-color: color-mix(in srgb,var(--taui-color-brand) 78%,black); background: linear-gradient(180deg, color-mix(in srgb,var(--taui-color-brand) 90%,white), var(--taui-color-brand)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .24), 0 1px 2px rgb(20 70 110 / .28); }
+.primary-button:hover { background: linear-gradient(180deg, color-mix(in srgb,var(--taui-color-brand-hover) 90%,white), var(--taui-color-brand-hover)); }
+.secondary-button { color: var(--taui-color-foreground); }
+.text-button { min-height: 34px; border: 0; background: transparent; color: var(--taui-color-brand); padding-inline: 8px; }
+.text-button:hover { background: var(--taui-color-brand-soft); }
+.page-actions [data-open-inspector] { display: none; }
+
+.workspace-layout { display: grid; grid-template-columns: minmax(0,1fr) var(--taui-layout-inspector); gap: var(--taui-space-6); align-items: start; }
+.content-column { min-width: 0; container-type: inline-size; container-name: content; }
+.focus-surface {
+  position: relative; isolation: isolate; overflow: hidden;
+  border: 1px solid var(--taui-color-stroke); border-radius: var(--taui-radius-large);
+  background: linear-gradient(145deg, var(--taui-color-surface) 0%, var(--taui-color-surface-warm) 100%);
+  box-shadow: var(--taui-shadow-raised); padding: clamp(22px, 3vw, 34px);
+}
+.focus-surface-glow { position: absolute; z-index: -1; inline-size: 380px; block-size: 260px; inset-inline-end: -100px; inset-block-start: -120px; border-radius: 50%; background: radial-gradient(circle, color-mix(in srgb,var(--taui-color-brand) 11%, transparent), transparent 68%); pointer-events: none; }
+.focus-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--taui-space-5); }
+.eyebrow, .section-kicker { display: block; color: var(--taui-color-foreground-tertiary); font-size: 10px; line-height: 1.3; font-weight: 800; letter-spacing: .13em; }
+.focus-head h2, .section-heading h2, .inspector-head h2, .sheet-head h2 { margin: 6px 0 0; letter-spacing: -.02em; }
+.focus-head h2 { font-size: clamp(24px, 3vw, 31px); }
+.focus-head p { max-width: 62ch; margin: 8px 0 0; color: var(--taui-color-foreground-secondary); font-size: 14px; line-height: 1.6; }
+.project-state { position: relative; overflow: hidden; display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: var(--taui-radius-pill); background: color-mix(in srgb,var(--taui-color-surface) 72%, transparent); border: 1px solid var(--taui-color-stroke); font-size: 12px; white-space: nowrap; }
+.project-state::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: linear-gradient(115deg, transparent 30%, color-mix(in srgb, var(--taui-color-brand) 45%, transparent) 50%, transparent 70%); -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .8; pointer-events: none; }
+.focus-grid { margin-block-start: 30px; display: grid; grid-template-columns: minmax(0,1.2fr) minmax(260px,.8fr); gap: 34px; }
+.next-action h3 { margin: 7px 0 8px; font-size: 19px; line-height: 1.35; }
+.next-action p { margin: 0; max-width: 58ch; color: var(--taui-color-foreground-secondary); font-size: 14px; line-height: 1.62; }
+.action-row { margin-block-start: 20px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.project-progress { align-self: stretch; border-inline-start: 1px solid var(--taui-color-stroke); padding-inline-start: 26px; }
+.progress-top { display: flex; justify-content: space-between; align-items: baseline; color: var(--taui-color-foreground-secondary); font-size: 12px; }
+.progress-top strong { color: var(--taui-color-foreground); font-size: 17px; font-variant-numeric: tabular-nums; }
+.progress-track { height: 5px; border-radius: 4px; overflow: hidden; margin-block: 9px 20px; background: var(--taui-color-stroke); }
+.progress-track span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,var(--taui-color-brand),color-mix(in srgb,var(--taui-color-brand) 58%, #6aaad9)); transition: width var(--taui-motion-context) var(--taui-ease-standard); }
+.phase-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.phase-list li { display: grid; grid-template-columns: 10px 1fr; gap: 10px; align-items: center; color: var(--taui-color-foreground-tertiary); }
+.phase-list li > span { width: 8px; height: 8px; border-radius: 50%; background: var(--taui-color-stroke-strong); }
+.phase-list li.is-done > span { background: var(--taui-color-success); }
+.phase-list li.is-current > span { background: var(--taui-color-brand); box-shadow: 0 0 0 3px var(--taui-color-brand-soft); }
+.phase-list strong { display: block; font-size: 12px; color: var(--taui-color-foreground); }
+.phase-list small { display: block; margin-block-start: 1px; font-size: 11px; color: var(--taui-color-foreground-tertiary); }
+
+.next-section { margin-block-start: 34px; }
+.section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--taui-space-4); margin-block-end: 10px; }
+.section-heading h2 { font-size: 20px; }
+.attention-list { border-block: 1px solid var(--taui-color-stroke); }
+.attention-row { width: 100%; min-height: 66px; padding: 10px 4px; display: grid; grid-template-columns: 38px minmax(0,1fr) auto; align-items: center; gap: 12px; border: 0; border-block-end: 1px solid var(--taui-color-stroke); background: transparent; text-align: start; transition: background-color var(--taui-motion-fast) var(--taui-ease-standard); }
+.attention-row:last-child { border-block-end: 0; }
+.attention-row:hover { background: color-mix(in srgb,var(--taui-color-surface) 65%, transparent); }
+.attention-row { position: relative; }
+.attention-row::after { content: ""; position: absolute; inset: 0; border-radius: inherit; opacity: 0; background: radial-gradient(120px circle at var(--enter-x, 50%) var(--enter-y, 50%), color-mix(in srgb, var(--taui-color-brand) 10%, transparent), transparent 70%); transition: opacity var(--taui-motion-fast) var(--taui-ease-standard); pointer-events: none; }
+.attention-row:hover::after { opacity: 1; }
+.attention-icon { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; font-weight: 700; font-size: 12px; border: 1px solid var(--taui-color-stroke); box-shadow: inset 0 1px 0 rgb(255 255 255 / .5); }
+.attention-icon--blue { background: var(--taui-color-brand-soft); color: var(--taui-color-brand-pressed); }
+.attention-icon--warm { background: #f2e8d9; color: #74522b; }
+.attention-icon--green { background: #e5f1e4; color: #266b2d; }
+.attention-copy { min-width: 0; }
+.attention-copy strong, .attention-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.attention-copy strong { font-size: 14px; }
+.attention-copy small { margin-block-start: 3px; color: var(--taui-color-foreground-tertiary); font-size: 12px; }
+.attention-meta { color: var(--taui-color-foreground-tertiary); font-size: 11px; padding: 4px 7px; border: 1px solid var(--taui-color-stroke); border-radius: var(--taui-radius-pill); }
+.system-strip { margin-block-start: 28px; min-height: 46px; display: flex; align-items: center; gap: 18px 28px; flex-wrap: wrap; padding: 10px 14px; border-radius: var(--taui-radius-surface); background: color-mix(in srgb,var(--taui-color-surface-subtle) 72%, transparent); border: 1px solid var(--taui-color-stroke); color: var(--taui-color-foreground-secondary); font-size: 12px; }
+.system-strip > div { display: flex; align-items: center; gap: 7px; }
+.system-strip strong { color: var(--taui-color-foreground); }
+.muted-label { color: var(--taui-color-foreground-tertiary); }
+.tabular { font-variant-numeric: tabular-nums; }
+
+.context-inspector { position: sticky; top: calc(var(--taui-layout-globalbar) + 24px); border: 1px solid var(--taui-color-stroke); border-radius: var(--taui-radius-large); background: var(--taui-color-surface); box-shadow: 0 1px 2px rgb(35 33 28 / .04); overflow: hidden; }
+.inspector-head { padding: 19px 18px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-block-end: 1px solid var(--taui-color-stroke); }
+.inspector-head h2, .sheet-head h2 { font-size: 17px; }
+.context-badge { padding: 4px 7px; border: 1px solid var(--taui-color-stroke); border-radius: var(--taui-radius-pill); color: var(--taui-color-foreground-secondary); font-size: 10px; }
+.inspector-section { min-height: 72px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-block-end: 1px solid var(--taui-color-stroke); }
+.inspector-section:last-child { border-block-end: 0; }
+.inspector-section--stacked { align-items: stretch; flex-direction: column; gap: 12px; }
+.control-copy strong, .control-copy small { display: block; }
+.control-copy strong { font-size: 13px; }
+.control-copy small { margin-block-start: 4px; color: var(--taui-color-foreground-tertiary); font-size: 11px; line-height: 1.45; }
+.tactile-switch { position: relative; flex: 0 0 auto; width: 46px; height: 26px; padding: 0; border: 1px solid var(--taui-color-stroke-strong); border-radius: var(--taui-radius-pill); background: linear-gradient(180deg,var(--taui-color-surface-pressed),var(--taui-color-surface-subtle)); box-shadow: inset 0 2px 4px rgb(40 38 34 / .12), inset 0 -1px 0 rgb(255 255 255 / .55); }
+.tactile-switch span { position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--taui-color-stroke-strong); background: radial-gradient(circle at 35% 25%, white 0 10%, var(--taui-color-surface) 35%, var(--taui-color-surface-pressed) 100%); box-shadow: var(--taui-shadow-contact); transition: transform var(--taui-motion-standard) var(--taui-ease-standard); }
+.tactile-switch[aria-checked="true"] { background: linear-gradient(180deg,color-mix(in srgb,var(--taui-color-brand) 82%,white),var(--taui-color-brand)); border-color: var(--taui-color-brand-pressed); }
+.tactile-switch[aria-checked="true"] span { transform: translateX(20px); }
+.slider-shell { display: grid; grid-template-columns: minmax(0,1fr) 34px; align-items: center; gap: 10px; }
+.tactile-slider { width: 100%; height: 24px; margin: 0; accent-color: var(--taui-color-brand); }
+.tactile-slider::-webkit-slider-thumb { filter: drop-shadow(0 1px 1px rgb(0 0 0 / .15)); }
+.slider-shell output { text-align: end; color: var(--taui-color-foreground-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
+.segmented { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; padding: 3px; border: 1px solid var(--taui-color-stroke); border-radius: 8px; background: var(--taui-color-canvas-elevated); }
+.segmented button { min-height: 30px; border: 0; border-radius: 5px; background: transparent; color: var(--taui-color-foreground-secondary); font-size: 11px; }
+.segmented button.is-selected { background: var(--taui-color-surface); color: var(--taui-color-foreground); box-shadow: var(--taui-shadow-contact); font-weight: 600; }
+.inspector-section--status { display: block; background: var(--taui-color-surface-subtle); }
+.inspector-section--status > div { display: flex; align-items: center; gap: 8px; }
+.inspector-section--status strong { font-size: 12px; }
+.inspector-section--status small { display: block; margin: 5px 0 0 16px; color: var(--taui-color-foreground-tertiary); font-size: 11px; }
+
+.bottom-nav { display: none; }
+.is-loading-data .progress-track span { background: linear-gradient(90deg, var(--taui-color-stroke) 25%, var(--taui-color-surface-selected) 50%, var(--taui-color-stroke) 75%); background-size: 200% 100%; animation: taui-shimmer 1.1s linear infinite; }
+.is-loading-data .attention-list { opacity: .55; }
+@keyframes taui-shimmer { to { background-position: -200% 0; } }
+
+.command-dialog, .modal-sheet { padding: 0; border: 0; background: transparent; color: var(--taui-color-foreground); }
+.command-dialog::backdrop, .modal-sheet::backdrop { background: var(--taui-color-overlay); }
+.command-dialog[open] .command-frame, .modal-sheet[open] .sheet-frame { animation: taui-dialog-in var(--taui-motion-context) var(--taui-ease-emphasized); }
+@keyframes taui-dialog-in { from { opacity: 0; transform: scale(.98) translateY(4px); } }
+.command-dialog { width: min(640px, calc(100vw - 32px)); max-height: min(620px, calc(100vh - 40px)); }
+.command-frame { overflow: hidden; border: 1px solid var(--taui-color-stroke-strong); border-radius: 12px; background: var(--taui-color-surface); box-shadow: var(--taui-shadow-modal); }
+.command-search-row { min-height: 54px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; padding-inline: 16px; border-block-end: 1px solid var(--taui-color-stroke); }
+.command-search-row input { width: 100%; border: 0; outline: 0; background: transparent; font-size: 15px; }
+.command-hint { min-height: 34px; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-inline: 16px; color: var(--taui-color-foreground-tertiary); font-size: 10px; font-weight: 700; letter-spacing: .04em; background: var(--taui-color-surface-subtle); }
+.command-list { padding: 6px; max-height: 430px; overflow: auto; }
+.command-list [role="option"] { width: 100%; min-height: 52px; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: center; padding: 7px 10px; border: 0; border-radius: 7px; background: transparent; text-align: start; }
+.command-list [role="option"]:hover, .command-list [role="option"].is-active { background: var(--taui-color-surface-selected); }
+.command-list [role="option"] > span:nth-child(2) strong, .command-list [role="option"] > span:nth-child(2) small { display: block; }
+.command-list [role="option"] strong { font-size: 13px; }
+.command-list [role="option"] small { margin-block-start: 2px; color: var(--taui-color-foreground-tertiary); font-size: 11px; }
+.command-icon { width: 30px; height: 30px; display: grid; place-items: center; border: 1px solid var(--taui-color-stroke); border-radius: 7px; background: var(--taui-color-surface-subtle); }
+.command-empty { padding: 30px 18px; text-align: center; color: var(--taui-color-foreground-secondary); font-size: 13px; }
+
+.inspector-dialog { width: min(480px, calc(100vw - 24px)); }
+.sheet-frame { overflow: hidden; border: 1px solid var(--taui-color-stroke-strong); border-radius: 14px; background: var(--taui-color-surface); box-shadow: var(--taui-shadow-modal); }
+.sheet-head { min-height: 64px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-block-end: 1px solid var(--taui-color-stroke); }
+.sheet-content { max-height: 70vh; overflow: auto; }
+
+@container content (max-width: 720px) {
+  .focus-grid { grid-template-columns: 1fr; gap: 24px; }
+  .project-progress { border-inline-start: 0; border-block-start: 1px solid var(--taui-color-stroke); padding-inline-start: 0; padding-block-start: 22px; }
+}
+
+@media (min-width: 840px) and (max-width: 1199px) {
+  .app-body { grid-template-columns: var(--taui-layout-rail) minmax(0,1fr); }
+  .primary-nav { padding-inline: 8px; align-items: center; }
+  .nav-section-label, .destination-label { display: none; }
+  .destination { width: 48px; min-height: 48px; justify-content: center; padding: 0; }
+  .destination.is-selected::before { inset-inline-start: -4px; }
+  .workspace-layout { grid-template-columns: minmax(0,1fr); }
+  .context-inspector { display: none; }
+  .page-actions [data-open-inspector] { display: inline-flex; align-items: center; }
+  .main-frame { padding-inline: clamp(20px,4vw,34px); }
+}
+
+@media (min-width: 600px) and (max-width: 839px) {
+  .global-bar { grid-template-columns: auto minmax(160px,1fr) auto; padding-inline: 14px; }
+  .product-name span, .wide-only { display: none; }
+  .app-body { grid-template-columns: var(--taui-layout-rail) minmax(0,1fr); }
+  .primary-nav { padding-inline: 8px; align-items: center; }
+  .nav-section-label, .destination-label { display: none; }
+  .destination { width: 48px; min-height: 48px; justify-content: center; padding: 0; }
+  .destination.is-selected::before { inset-inline-start: -4px; }
+  .main-frame { padding: 24px 24px 40px; }
+  .workspace-layout { grid-template-columns: 1fr; }
+  .context-inspector { display: none; }
+  .page-actions [data-open-inspector] { display: inline-flex; align-items: center; }
+  .page-context { align-items: flex-start; }
+}
+
+@media (max-width: 599px) {
+  .app-shell { padding-block-end: 72px; grid-template-rows: 56px 1fr; }
+  .global-bar { height: 56px; grid-template-columns: minmax(0,1fr) 48px auto; padding-inline: 8px; gap: 4px; }
+  .brand-cluster { min-width: 0; }
+  .product-mark { width: 24px; height: 24px; }
+  .product-name span { display: none; }
+  .command-trigger { position: static; width: 48px; height: 48px; transform: none; border-radius: var(--taui-radius-control); grid-template-columns: 1fr; padding: 0; place-items: center; box-shadow: var(--taui-shadow-contact); }
+  .command-trigger:active { transform: translateY(1px); }
+  .command-placeholder, .command-trigger kbd { display: none; }
+  .search-glyph { font-size: 22px; }
+  .sync-state { display: none; }
+  .global-actions { gap: 2px; }
+  .icon-button, .avatar-button { width: 48px; height: 48px; }
+  .app-body { display: block; }
+  .primary-nav { display: none; }
+  .main-frame { padding: 20px 14px 32px; }
+  .page-context { align-items: flex-start; flex-direction: column; gap: 14px; margin-block-end: 18px; }
+  .page-context h1 { font-size: 28px; }
+  .page-context p { font-size: 13px; }
+  .page-actions { width: 100%; }
+  .page-actions .primary-button { flex: 1; min-height: 48px; }
+  .page-actions [data-open-inspector] { display: inline-flex; align-items: center; min-height: 48px; }
+  .workspace-layout { display: block; }
+  .context-inspector { display: none; }
+  .focus-surface { border-radius: 12px; padding: 20px 17px; }
+  .focus-head { display: block; }
+  .project-state { width: fit-content; margin-block-start: 14px; }
+  .focus-grid { margin-block-start: 24px; grid-template-columns: 1fr; gap: 22px; }
+  .project-progress { border-inline-start: 0; border-block-start: 1px solid var(--taui-color-stroke); padding-inline-start: 0; padding-block-start: 20px; }
+  .attention-row { grid-template-columns: 36px minmax(0,1fr); min-height: 64px; }
+  .attention-meta { display: none; }
+  .system-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px; }
+  .system-strip > div:first-child { grid-column: 1 / -1; }
+  .bottom-nav { position: fixed; z-index: 38; inset-inline: 0; inset-block-end: 0; min-height: 68px; padding: 5px max(6px, env(safe-area-inset-right)) max(5px, env(safe-area-inset-bottom)) max(6px, env(safe-area-inset-left)); display: grid; grid-template-columns: repeat(5,1fr); background: var(--taui-color-surface); border-block-start: 1px solid var(--taui-color-stroke); box-shadow: 0 -8px 24px rgb(30 28 25 / .06); }
+  .bottom-destination { min-width: 0; min-height: 54px; border: 0; border-radius: 8px; background: transparent; display: grid; place-items: center; align-content: center; gap: 2px; color: var(--taui-color-foreground-secondary); }
+  .bottom-destination > span { display: inline-flex; }
+  .bottom-destination small { font-size: 10px; }
+  .bottom-destination.is-selected { color: var(--taui-color-brand); background: var(--taui-color-brand-soft); }
+  .command-dialog { width: calc(100vw - 16px); margin-block: 12vh auto auto; }
+  .command-hint span:last-child { display: none; }
+  .inspector-dialog { width: 100vw; max-width: none; margin: auto 0 0; }
+  .inspector-dialog .sheet-frame { border-radius: 16px 16px 0 0; border-inline: 0; border-block-end: 0; }
+}
+
+@media (min-width: 1600px) {
+  :root { --taui-layout-inspector: 328px; }
+  .main-frame { padding-inline: 48px; }
+  .workspace-layout { gap: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+}
+</style>
+
+<!-- TAUI-HANDOFF:BEGIN -->
+<!--
+TAUI HANDOFF INDEX — KEEP THIS BLOCK WITH THE HTML
+Contract version: 1.0.0
+Last consolidated: 2026-09-15
+
+For future human/AI maintainers:
+1. Read <script id="taui-design-contract" type="application/json"> first for machine-readable invariants.
+2. Read <script id="taui-master-prompt" type="text/plain"> for the full design/implementation prompt.
+3. Treat the visible DOM/CSS/JS as one implementation of the contract, not the source of truth for the design philosophy.
+4. When requirements conflict, explicit product requirements override the contract, but document the intentional exception.
+5. Do not add another full UI runtime merely to obtain one visual component; prefer local/open-code implementation or TAUI primitives.
+6. Preserve accessibility, command discovery, adaptive composition, and low navigation depth when changing the visual design.
+-->
+<meta name="taui-design-system" content="TAUI — Tactile Adaptive User Interface">
+<meta name="taui-design-contract-version" content="1.0.0">
+<meta name="taui-design-contract-updated" content="2026-09-15">
+<script type="application/json" id="taui-design-contract">
+{
+  "schema": "taui.design-contract.v1",
+  "version": "1.0.0",
+  "updated": "2026-09-15",
+  "name": "TAUI — Tactile Adaptive User Interface",
+  "purpose": "A durable design-system and implementation handoff embedded inside the standalone prototype. Future agents must read this contract before changing layout, visual language, component behavior, responsive rules, or accessibility behavior.",
+  "productIntent": {
+    "primaryOutcome": "Create a cross-device professional interface with high findability, high readability, low cognitive load, predictable hierarchy, adaptive composition, and restrained industrial tactility.",
+    "designLineage": {
+      "fluent2": "Use for information architecture, hierarchy, spacing discipline, accessibility, navigation clarity, semantic states, and cross-platform consistency.",
+      "material": "Use for spatial model, elevation relationships, responsive/adaptive layout, motion origin, state transitions, and physical hierarchy.",
+      "smartisan": "Use for product personality, Chinese typography polish, subtle skeuomorphic/tactile micro-details, industrial control feel, and humanized interaction details. Do not reproduce legacy Smartisan skins."
+    },
+    "antiGoal": "Do not create a visual collage of Microsoft + Material + Smartisan. The result must read as one independent product language."
+  },
+  "priorityOrder": [
+    "Findability",
+    "Readability",
+    "Hierarchy",
+    "Adaptability",
+    "Accessibility",
+    "Interaction feedback",
+    "Efficiency",
+    "Aesthetic refinement",
+    "Delight"
+  ],
+  "informationArchitecture": {
+    "rule": "Core functionality should usually be reachable within one primary destination decision and one contextual/content decision.",
+    "levels": {
+      "L0Global": [
+        "Search",
+        "Command",
+        "Notifications",
+        "Account",
+        "Application-level controls"
+      ],
+      "L1PrimaryDestinations": [
+        "Home",
+        "Projects",
+        "Media",
+        "AI",
+        "Files",
+        "Tools",
+        "Settings"
+      ],
+      "L2CurrentContext": [
+        "Overview",
+        "Timeline",
+        "Transcript",
+        "Assets",
+        "Properties",
+        "History"
+      ]
+    },
+    "avoid": [
+      "permanent L3/L4/L5 sidebar trees",
+      "settings maze",
+      "features hidden behind generic More menus",
+      "deep navigation used only to tidy the UI"
+    ],
+    "preferForDepth": [
+      "Inspector",
+      "Context panel",
+      "Popover",
+      "Context menu",
+      "Command palette",
+      "Inline expansion",
+      "Bottom sheet",
+      "Dialog"
+    ]
+  },
+  "commandDiscovery": {
+    "shortcut": "Cmd/Ctrl + K",
+    "searches": [
+      "commands",
+      "pages",
+      "settings",
+      "recent items",
+      "projects",
+      "people",
+      "files"
+    ],
+    "principle": "Support both spatial discovery and intent discovery. The command palette is not an AI chat; AI may be one provider inside it."
+  },
+  "layout": {
+    "visualCenter": "One primary visual center per screen. Secondary panels must not compete with the primary workspace.",
+    "pageFlow": [
+      "Global context",
+      "Page context",
+      "Primary workspace",
+      "Primary action",
+      "Secondary/contextual information"
+    ],
+    "grid": {
+      "desktop": "12-column flexible",
+      "tablet": "8-column",
+      "phone": "4-column",
+      "professionalWorkspace": "CSS Grid with explicit nav/content/inspector tracks"
+    },
+    "contentWidth": "Reading/data surfaces may use max-width; professional canvases such as timelines, node editors, stage views, VJ canvases, and image editors may use full available width.",
+    "cardRule": "Cards are objects, not layout containers. Avoid dashboard card farms and nested cards."
+  },
+  "adaptiveLayout": {
+    "basis": "Use usable viewport/container size, not device brand or physical resolution.",
+    "classes": {
+      "compact": "<600px",
+      "medium": "600–839px",
+      "expanded": "840–1199px",
+      "large": "1200–1599px",
+      "wide": ">=1600px"
+    },
+    "compact": [
+      "No permanent sidebar",
+      "Inspector becomes bottom/full-height sheet",
+      "Keep only high-frequency toolbar actions",
+      "Bottom navigation up to 3–5 destinations",
+      "Reading focus upper half; action focus lower half"
+    ],
+    "medium": [
+      "Navigation rail",
+      "Primary content retains priority",
+      "Inspector is temporary or sheet-like"
+    ],
+    "expanded": [
+      "Full navigation",
+      "Primary workspace",
+      "Optional persistent contextual inspector"
+    ],
+    "wide": [
+      "Increase contextual visibility and information density",
+      "Do not simply enlarge typography/buttons/cards"
+    ]
+  },
+  "scaling": {
+    "rule": "Use CSS logical pixels, viewport/container dimensions, user zoom, and font scaling. Never branch layout directly on 1080p/1440p/4K.",
+    "targets": [
+      "Windows 100–200% scaling",
+      "macOS Retina",
+      "Linux fractional scaling",
+      "Browser zoom 80–200%",
+      "mobile high-DPI",
+      "portrait/landscape",
+      "split view",
+      "resizable desktop windows"
+    ]
+  },
+  "spacing": {
+    "baseUnitPx": 4,
+    "scalePx": [
+      4,
+      8,
+      12,
+      16,
+      20,
+      24,
+      32,
+      40,
+      48,
+      64,
+      80
+    ],
+    "preferredPx": [
+      8,
+      12,
+      16,
+      24,
+      32
+    ],
+    "rule": "Use proximity to signal relationship. Prefer space and background shifts to divider forests."
+  },
+  "typography": {
+    "fontStack": [
+      "Segoe UI Variable",
+      "Segoe UI",
+      "Noto Sans TC",
+      "PingFang TC",
+      "Microsoft JhengHei",
+      "system-ui",
+      "sans-serif"
+    ],
+    "numeric": "font-variant-numeric: tabular-nums",
+    "ramp": {
+      "caption": "12/16",
+      "bodyCompact": "13/18",
+      "body": "14/20",
+      "bodyComfortable": "16/24",
+      "subtitle": "16/22 Semibold",
+      "title3": "20/28 Semibold",
+      "title2": "24/32 Semibold",
+      "title1": "28–32/36–40 Semibold",
+      "hero": "36–44/46–56"
+    },
+    "chinese": [
+      "Handle Chinese punctuation and mixed Latin/CJK carefully",
+      "Keep line-height around 1.55–1.7 for Chinese body copy",
+      "Avoid thin weights for fake premium aesthetics",
+      "Avoid decorative all-caps English in dense tools"
+    ]
+  },
+  "color": {
+    "philosophy": [
+      "Neutral-first",
+      "Brand-second",
+      "Semantic-third",
+      "Decoration-last"
+    ],
+    "currentTokens": {
+      "canvas": "#f2f1ee",
+      "surface": "#fffefa",
+      "warmSurface": "#f5f1e9",
+      "text": "#242424",
+      "secondaryText": "#5d5b57",
+      "tertiaryText": "#74726d",
+      "stroke": "#dedbd4",
+      "brand": "#0f6cbd",
+      "danger": "#a4262c"
+    },
+    "rule": "Tertiary/caption text must continue to meet WCAG contrast at its actual text size."
+  },
+  "surfaceModel": {
+    "levels": [
+      "Canvas",
+      "Surface",
+      "Raised",
+      "Floating",
+      "Modal"
+    ],
+    "rules": [
+      "One consistent light direction",
+      "No shadow on canvas",
+      "Subtle border/background for ordinary surfaces",
+      "Raised only for active/tactile controls",
+      "Floating for menus/popovers/command palette",
+      "Modal for blocking dialogs"
+    ]
+  },
+  "tactileDesign": {
+    "principle": "Functional skeuomorphism: abstract information stays flat; controls with real-world physical analogues may gain restrained tactile treatment.",
+    "approxIntensity": {
+      "paragraph": 0,
+      "navigation": "0–2%",
+      "dataTable": 0,
+      "card": "0–5%",
+      "button": "5–8%",
+      "toggle": "8–12%",
+      "slider": "10–15%",
+      "transport": "15–20%",
+      "dial": "20–30%",
+      "vumeter": "20–30%",
+      "dragHandle": "15–20%"
+    },
+    "allowedDetails": [
+      "control rim",
+      "subtle top highlight",
+      "inset edge",
+      "contact shadow",
+      "1px press travel",
+      "slider thumb depth",
+      "physical indicator",
+      "drag affordance"
+    ],
+    "forbidden": [
+      "full-app metal texture",
+      "leather/wood/glass skinning",
+      "nostalgic Smartisan clone"
+    ]
+  },
+  "controls": {
+    "buttonHierarchy": [
+      "Primary",
+      "Secondary",
+      "Subtle",
+      "Transparent/Icon"
+    ],
+    "primaryRule": "Usually one primary action per local region.",
+    "touchTarget": "Prefer ~48×48 CSS px hit target on touch/coarse pointer. Visual icons may remain 20–24px.",
+    "buttonMotion": "Pressed state may translateY(1px), reduce outer shadow, and slightly increase inner contact shadow."
+  },
+  "inspector": {
+    "role": "Show properties/actions only for the current selection/context.",
+    "desktop": "persistent right pane when valuable",
+    "tablet": "temporary/context panel",
+    "phone": "bottom sheet or full-height sheet",
+    "order": [
+      "Current object",
+      "Essential controls",
+      "Common properties",
+      "Advanced controls"
+    ]
+  },
+  "progressiveDisclosure": {
+    "rule": "Organize complexity instead of deleting professional capability.",
+    "exampleExportPrimary": [
+      "Codec",
+      "Resolution",
+      "Quality",
+      "Destination"
+    ],
+    "exampleExportAdvanced": [
+      "Profile",
+      "GOP",
+      "B-frame",
+      "Rate control",
+      "Metadata",
+      "Color flags"
+    ]
+  },
+  "icons": {
+    "core": "Use one consistent icon grammar; Fluent System Icons are the preferred baseline for functional UI.",
+    "objectIcons": "May have subtle custom tactile treatment if they represent physical objects such as camera/recorder/mixer.",
+    "avoid": "Do not mix Fluent, Material Symbols, Font Awesome, Lucide, Heroicons, etc. in the same product without deliberate normalization."
+  },
+  "motion": {
+    "principles": [
+      "Functional",
+      "Natural",
+      "Consistent",
+      "Brief",
+      "Spatially explainable"
+    ],
+    "timingMs": {
+      "hover": "80–120",
+      "press": "60–100",
+      "menuPopover": "120–180",
+      "panel": "160–220",
+      "dialog": "180–240",
+      "largeContext": "220–320"
+    },
+    "spatialRules": [
+      "Panels originate from related edge/trigger",
+      "Dialogs may use subtle 0.98→1 scale plus opacity/elevation",
+      "Dropdowns emerge near trigger",
+      "Inspector enters from related viewport edge"
+    ],
+    "reducedMotion": "Respect prefers-reduced-motion; remove travel/parallax/bounce while preserving necessary state change."
+  },
+  "accessibility": {
+    "baseline": "WCAG 2.1 AA or better",
+    "requirements": [
+      "Body text >=4.5:1 where applicable",
+      "Large text/UI graphical elements >=3:1",
+      "Full keyboard operation",
+      "Visible focus",
+      "Logical focus order",
+      "Semantic HTML",
+      "ARIA only when needed",
+      "Screen-reader names",
+      "High contrast consideration",
+      "200% zoom usability",
+      "State not encoded by color alone"
+    ],
+    "implementation": "React Aria Components is the preferred interaction primitive layer for React implementations."
+  },
+  "externalLibraries": {
+    "core": {
+      "reactAria": "Core interaction primitives: keyboard, focus, overlays, listbox, tabs, slider, switch, selection."
+    },
+    "reference": {
+      "shadcn": "Open-code component ownership/architecture reference",
+      "magicUI": "Signature moments and decorative animation reference only",
+      "aceternity": "Marketing/hero/special composition reference only",
+      "reactBits": "Animated/interactive experimental reference only",
+      "fluentUI": "IA/accessibility/component behavior reference and icon source"
+    },
+    "intakeChecklist": [
+      "What problem does it solve?",
+      "Does TAUI already solve it?",
+      "Accessibility quality?",
+      "Bundle/performance cost?",
+      "Motion compatibility?",
+      "Can we own/maintain it?",
+      "License acceptable?"
+    ]
+  },
+  "technicalArchitecture": {
+    "recommended": [
+      "React",
+      "TypeScript",
+      "React Aria Components",
+      "CSS Variables",
+      "CSS Grid",
+      "Container Queries",
+      "Fluent System Icons"
+    ],
+    "ownership": "TAUI owns visual tokens, surfaces, typography, adaptive composition, motion, and tactile states.",
+    "separation": "Design system must not depend on feature/business modules. Features consume the design system.",
+    "preferredTree": [
+      "src/app",
+      "src/features",
+      "src/design-system/tokens",
+      "src/design-system/primitives",
+      "src/design-system/components",
+      "src/design-system/patterns",
+      "src/design-system/motion",
+      "src/layouts",
+      "src/routes",
+      "src/utilities"
+    ]
+  },
+  "designTokens": {
+    "requiredCategories": [
+      "color",
+      "typography",
+      "spacing",
+      "radius",
+      "stroke",
+      "elevation",
+      "motion duration",
+      "motion easing",
+      "size",
+      "z-index",
+      "breakpoints"
+    ],
+    "principle": "Prefer semantic aliases such as --surface-primary and --text-secondary over scattered raw hex/pixel values."
+  },
+  "density": {
+    "modes": [
+      "Comfortable",
+      "Compact"
+    ],
+    "rule": "Compact adjusts padding/row height/gaps, not readability-critical font sizes."
+  },
+  "states": {
+    "empty": "Short explanation + primary action + optional secondary action; no oversized generic illustration.",
+    "loading": "Prefer skeleton/progressive/local progress over full-page spinner.",
+    "longRunning": [
+      "current stage",
+      "progress",
+      "elapsed state",
+      "cancel",
+      "background option",
+      "recovery"
+    ],
+    "error": [
+      "What happened",
+      "What is affected",
+      "What the user can do"
+    ]
+  },
+  "darkMode": {
+    "rule": "Do not invert light theme mechanically. Re-author canvas/surface/stroke/text/elevation relationships; use less shadow and more luminance/border contrast."
+  },
+  "personality": [
+    "Calm",
+    "Precise",
+    "Industrial",
+    "Human",
+    "Confident",
+    "Functional",
+    "Tactile",
+    "Modern"
+  ],
+  "avoidVisualSlop": [
+    "generic SaaS card farms",
+    "purple-blue gradients everywhere",
+    "giant hero in productivity UI",
+    "random sparkles",
+    "glassmorphism overload",
+    "excessive pill badges",
+    "everything rounded 16–24px",
+    "emoji as production icons",
+    "meaningless decorative charts"
+  ],
+  "radiusGuidance": {
+    "industrial": "2–4px",
+    "buttonsInputs": "6–8px",
+    "surfaces": "8–12px",
+    "floatingLarge": "12–16px",
+    "pill": "only when semantically appropriate"
+  },
+  "contextPreservation": [
+    "Preserve list scroll/filter/selection/sort/search when entering detail and returning",
+    "Inspector must not destroy workspace context",
+    "Modal close returns focus to trigger"
+  ],
+  "performance": [
+    "Avoid heavy backdrop-filter and large blur",
+    "Avoid continuous ambient animation",
+    "Prefer transform/opacity for motion",
+    "Virtualize large data",
+    "Responsive/lazy-loaded media",
+    "No always-running WebGL unless product function requires it"
+  ],
+  "reviewChecklist": [
+    "Hierarchy",
+    "Findability",
+    "Navigation depth",
+    "Readability",
+    "Contrast",
+    "Touch target",
+    "Keyboard navigation",
+    "Focus order",
+    "Responsive behavior",
+    "320px width",
+    "Tablet split view",
+    "Desktop 125–200% scaling",
+    "Dark theme",
+    "Reduced motion",
+    "Long Chinese text",
+    "Long English text",
+    "Empty/loading/error states",
+    "Overflow",
+    "Very large display"
+  ],
+  "implementationSequence": [
+    "App Shell",
+    "Navigation",
+    "Primary Workspace",
+    "Inspector",
+    "Command Search",
+    "Responsive adaptation",
+    "Tactile controls",
+    "Motion",
+    "Accessibility",
+    "Polish"
+  ],
+  "acceptanceCriteria": [
+    "Core functions are discoverable through predictable paths",
+    "No unnecessary deep permanent navigation",
+    "Desktop/tablet/mobile are recomposed, not merely scaled",
+    "320px viewport has no page-level horizontal overflow",
+    "200% browser zoom does not remove core capability",
+    "Primary touch targets are approximately 48px where appropriate",
+    "Keyboard can operate core workflow",
+    "Focus-visible is clear",
+    "Body text meets WCAG AA",
+    "Reduced-motion mode remains understandable",
+    "Light and dark themes preserve hierarchy",
+    "No card farm",
+    "No meaningless ambient animation",
+    "One coherent icon language",
+    "No competing full component runtimes",
+    "Tactile effects never impair reading",
+    "Smartisan influence appears as detail/personality, not nostalgia skin",
+    "Material influence appears as spatial behavior, not component cloning",
+    "Fluent influence appears as clarity/IA/accessibility, not Microsoft cloning"
+  ],
+  "handoffInstructions": {
+    "mandatoryReadOrder": [
+      "#taui-design-contract",
+      "#taui-master-prompt",
+      "visible DOM/CSS/JS implementation"
+    ],
+    "beforeEditing": [
+      "Summarize current product task",
+      "Map requested change against acceptance criteria",
+      "Identify which TAUI contract sections are affected",
+      "Preserve unrelated behaviors",
+      "Run responsive/accessibility regression checks"
+    ],
+    "doNot": [
+      "Delete this contract without replacement",
+      "Change the design language based on a one-off screen request",
+      "Add new runtime UI frameworks without architectural review",
+      "Hide core functions behind deeper navigation merely for visual cleanliness"
+    ]
+  }
+}
+</script>
+<script type="text/plain" id="taui-master-prompt">
+TAUI — Tactile Adaptive User Interface / Smartisan Modern Adaptive Workspace
+MASTER DESIGN + IMPLEMENTATION PROMPT
+
+ROLE
+You are simultaneously a Senior Product Designer, Design System Architect, Frontend Architect, Accessibility Engineer, Interaction Designer, and Industrial Designer. Build one coherent product language rather than a collage of Microsoft Fluent, Material Design, and Smartisan OS.
+
+DESIGN LINEAGE
+- Fluent 2 supplies information architecture, readable hierarchy, spacing discipline, navigation clarity, accessibility, semantic states, and cross-platform consistency.
+- Material supplies spatial hierarchy, elevation relationships, adaptive layout, motion origin, component/state relationships, and physical logic.
+- Smartisan supplies industrial product personality, refined Chinese typography, subtle tactile/skeuomorphic micro-details, object feel, and humane interaction polish.
+- Do not visually copy any one brand. The final interface should feel independent.
+
+0. PROJECT INPUT
+Product name: [PRODUCT_NAME]
+Product type: [PRODUCT_TYPE]
+Primary scenario: [PRIMARY_SCENARIO]
+Primary users: [TARGET_USERS]
+Core tasks: [CORE_TASKS]
+Important information: [IMPORTANT_INFORMATION]
+Professional / advanced functions: [ADVANCED_FUNCTIONS]
+Primary devices: [PHONE / TABLET / LAPTOP / DESKTOP / LARGE DISPLAY]
+Brand accent: [BRAND_COLOR]
+If information is insufficient to decide architecture, ask no more than five questions that materially change the design. Otherwise proceed.
+
+1. PRIMARY DESIGN OBJECTIVE
+Prioritize in this exact order:
+Findability → Readability → Hierarchy → Adaptability → Accessibility → Interaction feedback → Efficiency → Aesthetic refinement → Delight.
+Aesthetic effects must never reduce any earlier priority.
+For every screen ask: Where am I? What matters now? Where should I expect the function I need? Can frequent work be reached within one or two navigation decisions? Is anything present only as decoration?
+
+2. INFORMATION ARCHITECTURE
+Use: Application → Primary Destination → Workspace/Content → Contextual Action.
+L0 Global: Search, Command, Notifications, Account, application controls.
+L1 Primary destinations: Home, Projects, Media, AI, Files, Tools, Settings.
+L2 Current context: Overview, Timeline, Transcript, Assets, Properties, History.
+Avoid permanent L3/L4/L5 sidebar trees unless the domain itself is hierarchical data. For depth prefer Inspector, context panel, popover, context menu, command palette, inline expansion, bottom sheet, or dialog.
+
+3. COMMAND DISCOVERY
+Provide Cmd/Ctrl + K on medium/large applications. Search commands, pages, settings, recent items, projects, people, and files. Support two discovery paths: spatial discovery through layout and intent discovery through search. Do not turn the command palette into an AI chat; AI may be one provider within it.
+
+4. LAYOUT PHILOSOPHY
+One primary visual center per screen. Avoid card farms. Preferred page sequence: Global context → Page context → Primary workspace → Primary action → Secondary/contextual information. Secondary information must not compete with the workspace.
+
+5. ADAPTIVE LAYOUT
+Do not branch UI by brand/device name. Use usable viewport/container size.
+Compact <600px; Medium 600–839px; Expanded 840–1199px; Large 1200–1599px; Wide >=1600px. Use CSS Container Queries for local component adaptation.
+
+6. COMPACT LAYOUT
+Compact is recomposed, not shrunken desktop. Remove permanent sidebar, turn Inspector into bottom/full-height sheet, keep only frequent toolbar actions, move secondary actions to overflow/context, limit bottom navigation to roughly 3–5 destinations, keep reading focus in upper content and action focus within reachable lower regions. Avoid a FAB that covers content unless semantics truly justify a FAB.
+
+7. MEDIUM LAYOUT
+Use navigation rail + primary content. Keep Inspector temporary/sheet-like by default. Preserve workspace width rather than inflating mobile components.
+
+8. EXPANDED / LARGE LAYOUT
+Use full navigation + primary workspace + optional persistent contextual Inspector. Inspector content must change with selection/context; never show unrelated properties permanently.
+
+9. WIDE LAYOUT
+Increase information density, contextual visibility, persistent inspector, multicolumn relationships, preview/canvas space. Do not simply enlarge fonts, cards, or buttons.
+
+10. DPI / SCALING
+Never design by 1080p/1440p/4K. Use CSS logical pixels, viewport/container dimensions, device scale, browser zoom, and font scaling. Support Windows 100–200%, macOS Retina, Linux fractional scaling, browser zoom 80–200%, mobile high-DPI, portrait/landscape, split view, and resizable desktop windows. Core capability must remain available after reflow.
+
+11. SPACING
+Use 4px base. Scale: 4,8,12,16,20,24,32,40,48,64,80. Prefer 8/12/16/24/32. Use proximity for grouping. Prefer spacing/background shifts over divider forests.
+
+12. GRID
+Desktop: 12-column flexible. Tablet: 8-column. Phone: 4-column. Professional workspace may use explicit CSS Grid tracks such as nav / minmax(0,1fr) / inspector. Reading surfaces may use max-width; professional canvases may use full width.
+
+13. TYPOGRAPHY
+Use Segoe UI Variable, Segoe UI, Noto Sans TC, PingFang TC, Microsoft JhengHei, system-ui, sans-serif. Use tabular numerals for dense data. Suggested ramp: Caption 12/16; Body compact 13/18; Body 14/20; Comfortable body 16/24; Subtitle 16/22 Semibold; Title3 20/28; Title2 24/32; Title1 28–32/36–40; Hero 36–44/46–56. Productivity tools should not use oversized landing-page hero typography.
+
+14. CHINESE TYPOGRAPHY
+Treat punctuation, mixed CJK/Latin, numeric alignment, line height, long labels, and weight deliberately. Chinese body copy: about 14–16px with 1.55–1.7 line-height. Dense professional tool copy: 13–14px / 18–20px. Avoid thin text used only to look premium and avoid gratuitous all-caps English.
+
+15. COLOR
+Neutral-first → Brand-second → Semantic-third → Decoration-last. Keep main surfaces quiet. Brand color communicates navigation/primary action hierarchy. Smartisan-inspired red/warm metal/paper tones may appear in physical indicators or special controls but should not take over navigation.
+
+16. SURFACE MODEL
+Only five conceptual depth levels: Canvas, Surface, Raised, Floating, Modal. Canvas has no shadow. Ordinary surfaces use background or subtle border. Raised is reserved for active/tactile objects. Floating is for menu/popover/command palette. Modal is for blocking overlays. Maintain a consistent light direction.
+
+17. FUNCTIONAL SKEUOMORPHISM
+Abstract information stays flat. Physical controls may gain controlled tactility. Approximate tactile intensity: paragraph 0%; navigation 0–2%; data table 0%; card 0–5%; button 5–8%; toggle 8–12%; slider 10–15%; transport 15–20%; dial/VU 20–30%; drag handle 15–20%. Tactility comes from 1px highlights, rims, inset edges, contact shadows, press travel, slider-thumb depth, and physical indicators. Never skin the whole app in metal, leather, wood, or glass.
+
+18. BUTTONS
+Hierarchy: Primary, Secondary, Subtle, Transparent/Icon. Normally only one local Primary. Tactile primary controls may gain a tiny top highlight and contact shadow. Press: translateY(1px), reduce outer shadow, slightly increase inner shadow. Disabled controls remain legible and do not communicate state by opacity alone.
+
+19. TOUCH TARGETS
+On touch/coarse pointer, target around 48×48 CSS px. Icons may visually remain 20–24px. Desktop visual density can be tighter but hit targets should remain reliable.
+
+20. CARDS
+Cards are independent/selectable/draggable/preview objects, not a generic layout solution. Settings/forms/property lists should primarily use headings, spacing, surfaces, and dividers. Never nest card inside card inside card.
+
+21. INSPECTOR
+Inspector is a first-class TAUI pattern. It shows only current selection/context properties. Desktop: persistent when useful. Tablet: temporary panel. Phone: bottom sheet/full-height sheet. Order: current object → essential controls → common properties → advanced controls.
+
+22. PROGRESSIVE DISCLOSURE
+Do not delete professional capability in pursuit of minimalism. Organize complexity. Common controls are visible; advanced controls expand in current context rather than sending users into another unrelated page.
+
+23. SEARCH / COMMAND PALETTE
+Must be keyboard accessible, searchable, predictable, grouped, show shortcuts where useful, support recent actions, fuzzy intent, and settings discovery. Results can include Commands, Pages, Settings, Recent, Projects, People, Files. AI can be an optional provider, not the whole interaction model.
+
+24. ICONS
+Use a single normalized icon language, with Fluent System Icons as the preferred functional baseline. Do not mix Fluent, Material Symbols, Font Awesome, Lucide, Heroicons, etc. casually. Physical-object icons may receive subtle custom tactile treatment if their grammar remains coherent.
+
+25. MOTION
+Motion is functional, natural, consistent, brief. Suggested timing: hover 80–120ms; press 60–100ms; menu/popover 120–180ms; panel 160–220ms; dialog 180–240ms; large context 220–320ms. Avoid ambient floating, continuous glow, random springs, every-card entrance animations.
+
+26. SPATIAL MOTION
+Movement must explain where an object comes from. Panels enter from related edge or source; dropdown appears near trigger; Inspector enters from related region; dialog may use subtle 0.98→1 scale plus opacity/elevation. Prefer spatial logic over arbitrary fade.
+
+27. REDUCED MOTION
+Respect prefers-reduced-motion. Remove travel, parallax, bounce, and nonessential scale animation while preserving state comprehension.
+
+28. ACCESSIBILITY
+WCAG 2.1 AA minimum. Body text ≥4.5:1 where applicable; large text/UI graphical elements ≥3:1. Full keyboard operation, visible focus, logical focus order, semantic HTML, ARIA only when needed, screen-reader names, high-contrast consideration, 200% zoom usability, and no state encoded by color alone. Never use div onClick as a substitute for button.
+
+29. INTERACTION FOUNDATION
+Preferred React stack: React + TypeScript + React Aria Components + CSS Variables + CSS Grid + Container Queries. Fluent System Icons for functional icons. React Aria owns keyboard behavior, focus, dialog/modal/menu/listbox/tabs/slider/switch/selection/overlays. TAUI owns visual tokens, surfaces, motion, typography, tactile states, and adaptive composition. Do not combine multiple full component runtimes without architectural review.
+
+30. EXTERNAL UI LIBRARIES
+React Aria: core interaction primitives. shadcn/ui: open-code component architecture reference. Magic UI: signature moments/decorative animation reference. Aceternity: marketing/hero/special composition reference. React Bits: animated/interactive experiment reference. Fluent UI: design behavior/reference/icon source. Before adopting external code, answer: what problem, duplication, accessibility, bundle/perf cost, motion compatibility, maintainability, and license.
+
+31. TECHNICAL ARCHITECTURE
+Prefer src/app, src/features, src/design-system/tokens, primitives, components, patterns, motion, src/layouts, src/routes, src/utilities. Keep files responsibility-focused. Design system must not depend on feature/business modules; features consume the design system.
+
+32. TOKEN ARCHITECTURE
+Define semantic tokens for color, typography, spacing, radius, stroke, elevation, motion duration/easing, size, z-index, breakpoints. Prefer --surface-primary and --text-secondary over scattered raw hex/pixel values.
+
+33. CONTAINER-FIRST RESPONSIVE DESIGN
+Local components should adapt to their own available space via container queries where useful. This is critical for split view, floating panels, resizable sidebars, embedded tools, and multitasking.
+
+34. VISUAL DENSITY
+Support Comfortable and Compact density. Compact reduces padding, row height, gap, and secondary-metadata spacing; it must not make core text illegible.
+
+35. PROFESSIONAL TOOL PRINCIPLE
+Do not remove capability to appear simple. Organize complexity. Advanced users may access Inspector, keyboard shortcuts, command palette, context menu, multi-selection, bulk actions, history, undo/redo, while novice users are not forced to see all of them at once.
+
+36. EMPTY STATE
+Short title + concise explanation + primary action + optional secondary action. Avoid giant generic illustrations. If personality is needed, use one restrained tactile object/illustration.
+
+37. LOADING STATE
+Prefer skeleton/progressive/local progress over page-wide spinner. Long AI/render/export jobs should expose stage, progress, elapsed state, cancel, background option, and recovery.
+
+38. ERROR HANDLING
+Errors answer: what happened, what is affected, what can the user do? Provide retry/recovery or point to invalid input. Avoid generic “Something went wrong.”
+
+39. DARK MODE
+Do not mechanically invert light theme. Re-author canvas/surface/raised/stroke/text relationships. Dark mode uses less shadow and more luminance/border contrast. Tactility should be even more restrained.
+
+40. PRODUCT PERSONALITY
+Calm, Precise, Industrial, Human, Confident, Functional, Tactile, Modern. Avoid gaming UI, cyberpunk, glassmorphism overload, neo-brutalism overload, gradient SaaS template, Apple clone, Windows clone, Material clone, or Smartisan nostalgia clone. Think modern professional equipment: precision camera, recorder, industrial control, and high-quality production software.
+
+41. VISUAL RESTRAINT
+One main Brand accent per screen region, semantic warning/danger when needed, neutrals elsewhere. Gradients only for subtle depth, special visualization, or signature branded moments—not every card.
+
+42. AVOID AI UI SLOP
+Avoid 20 same-looking rounded cards, purple-blue gradients, giant hero, meaningless metrics, random sparkles, glass panels everywhere, excessive pill badges, all surfaces rounded 16–24px, generic SaaS dashboard, decorative charts, unnecessary sidebar sections, emoji as production icons. Every element must have a reason.
+
+43. RADIUS
+2–4px for precise industrial details; 6–8px for controls/inputs; 8–12px for ordinary surfaces; 12–16px for large floating surfaces; 24px+ only for semantically pill-shaped/sheet/special elements. Do not apply giant radius universally.
+
+44. NAVIGATION SELECTION
+Use a restrained combination of background shift + brand indicator + text emphasis. Do not simultaneously pile on bold, shadow, gradient, border, glow, filled icon, and colored background.
+
+45. VISUAL CENTER
+Desktop visual center may shift slightly right due to navigation. Tablet approaches geometric center. Phone reading focus sits higher while action focus sits lower. Do not cover content with floating controls.
+
+46. CONTEXT PRESERVATION
+List→Detail→Back preserves scroll, filter, selection, sort, search. Inspector changes do not destroy workspace context. Closing a modal returns focus to its trigger.
+
+47. PERFORMANCE
+Avoid heavy backdrop-filter, giant blur, continuous animation, layout-triggering animation, huge DOM, unnecessary canvas, and always-running WebGL. Prefer transform/opacity for motion, virtualization for large datasets, responsive/lazy media.
+
+48. MOTION PERFORMANCE
+Before every animation ask: Is it needed? Can it use transform/opacity? Will it trigger layout/paint? Will many elements animate simultaneously? Does reduced-motion work? Is it smooth on low-power mobile hardware?
+
+49. DESIGN REVIEW CHECKLIST
+Review hierarchy, findability, navigation depth, readability, contrast, touch target, keyboard navigation, focus order, responsive behavior, 320px width, tablet split view, desktop 125–200% scaling, dark theme, reduced motion, long Chinese text, long English text, empty/loading/error state, overflow, very large display.
+
+50. OUTPUT REQUIREMENT
+Before implementation: summarize product task in one sentence; list 3–6 primary user jobs; define IA; create desktop/tablet/mobile TUI wireframes; propose tokens; list component inventory; state where tactility is used and where surfaces remain flat; explain responsive transformation and accessibility strategy. Then implement.
+
+51. IMPLEMENTATION SEQUENCE
+Build vertical slices in this order: App Shell → Navigation → Primary Workspace → Inspector → Command Search → Responsive adaptation → Tactile controls → Motion → Accessibility → Polish. After each slice: review, test, responsive check, accessibility check.
+
+52. FINAL ACCEPTANCE CRITERIA
+Core functions are discoverable through predictable paths. No unnecessary deep navigation. Desktop/tablet/mobile are genuinely recomposed. 320px viewport has no page-level horizontal overflow. 200% zoom does not remove core functions. Primary touch targets are ~48px where appropriate. Keyboard operates core workflow. Focus-visible is clear. Body text meets WCAG AA. Reduced-motion works. Light/dark preserve hierarchy. No card farm, meaningless animation, mixed icon language, or competing full component runtimes. Tactile effects never impair reading. Smartisan influence is detail/personality rather than nostalgia skin. Material influence is spatial behavior rather than component clone. Fluent influence is clarity/IA/accessibility rather than Microsoft clone.
+
+FINAL PRINCIPLE
+If a visual effect is beautiful but slows finding a function, remove it.
+If an animation is cool but communicates no spatial/state relationship, remove it.
+If a card exists only to fill the layout, remove the card.
+If a function requires more than three nested decisions to find, redesign the information architecture.
+If desktop/tablet/mobile look like the same page scaled, redesign responsive composition.
+Build an interface a new user can understand quickly and an expert can use for hours without feeling slowed down.
+
+</script>
+<!-- TAUI-HANDOFF:END -->
+
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M15.8 15.8 20.5 20.5"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 12 4 20 11"/><path d="M6.5 9.5V20h11V9.5"/></symbol>
+    <symbol id="i-projects" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M7 4h13l-3 16H4z"/></symbol>
+    <symbol id="i-media" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M8 5l11 7-11 7z"/></symbol>
+    <symbol id="i-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M12 3c1 6 3 8 9 9-6 1-8 3-9 9-1-6-3-8-9-9 6-1 8-3 9-9z"/></symbol>
+    <symbol id="i-files" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 4h14v16H5z"/><path d="M5 9.5h14M5 14.5h14"/></symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v3.2M12 18v3.2M2.8 12h3.2M18 12h3.2M5.5 5.5l2.2 2.2M16.3 16.3l2.2 2.2M18.5 5.5l-2.2 2.2M7.7 16.3l-2.2 2.2"/></symbol>
+    <symbol id="i-theme" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-focus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="2.6" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  </svg>
+  <a class="skip-link" href="#main-content">跳至主要內容</a>
+  <div class="app-shell">
+    <header class="global-bar">
+      <div class="brand-cluster">
+        <div class="product-mark" aria-hidden="true"><span></span><span></span></div>
+        <div class="product-name"><strong>TAUI</strong><span>Workspace</span></div>
+      </div>
+
+      <button class="command-trigger tactile-control" type="button" aria-label="Command search" data-open-command>
+        <span class="search-glyph" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-search"></use></svg></span>
+        <span class="command-placeholder">搜尋功能、專案與指令</span>
+        <kbd>⌘ K</kbd>
+      </button>
+
+      <div class="global-actions">
+        <div class="sync-state" aria-label="System synchronized"><span class="status-dot status-dot--success"></span><span class="wide-only">已同步</span></div>
+        <button class="icon-button" type="button" aria-pressed="false" aria-label="Toggle dark theme" data-theme-toggle><svg class="glyph" aria-hidden="true"><use href="#i-theme"></use></svg></button>
+        <button class="avatar-button" type="button" aria-label="Account: Alex Lin">AL</button>
+      </div>
+    </header>
+
+    <div class="app-body">
+      <nav class="primary-nav" aria-label="Primary">
+        <div class="nav-section-label">工作區</div>
+        <button class="destination is-selected" type="button" data-destination="home" aria-current="page" aria-label="Home">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-home"></use></svg></span><span class="destination-label">首頁</span>
+        </button>
+        <button class="destination" type="button" data-destination="projects" aria-label="Projects">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-projects"></use></svg></span><span class="destination-label">專案</span>
+        </button>
+        <button class="destination" type="button" data-destination="media" aria-label="Media">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-media"></use></svg></span><span class="destination-label">媒體</span>
+        </button>
+        <button class="destination" type="button" data-destination="ai" aria-label="AI Studio">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-ai"></use></svg></span><span class="destination-label">AI Studio</span>
+        </button>
+        <button class="destination" type="button" data-destination="files" aria-label="Files">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-files"></use></svg></span><span class="destination-label">檔案</span>
+        </button>
+        <div class="nav-spacer"></div>
+        <button class="destination destination--utility" type="button" aria-label="Settings">
+          <span class="destination-icon" aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-settings"></use></svg></span><span class="destination-label">設定</span>
+        </button>
+      </nav>
+
+      <main class="main-stage" id="main-content">
+        <div class="main-frame">
+          <header class="page-context">
+            <div class="page-context-copy">
+              <div class="breadcrumb"><span>Workspace</span><span aria-hidden="true">/</span><span data-breadcrumb-current>首頁</span></div>
+              <h1 data-page-title>Home</h1>
+              <p data-page-description>把最重要的專案、下一步與狀態集中在同一個可掃讀的工作中心。</p>
+            </div>
+            <div class="page-actions">
+              <button class="secondary-button" type="button" data-open-inspector aria-label="Open inspector">調整視圖</button>
+              <button class="primary-button tactile-control" type="button">＋ 新增專案</button>
+            </div>
+          </header>
+
+          <div class="workspace-layout">
+            <div class="content-column">
+              <section class="focus-surface" aria-labelledby="active-project-title">
+                <div class="focus-surface-glow" aria-hidden="true"></div>
+                <div class="focus-head">
+                  <div>
+                    <span class="eyebrow">ACTIVE PROJECT</span>
+                    <h2 id="active-project-title">Project Aurora</h2>
+                    <p>新的跨裝置產品設計系統，正在進行 layout 與 interaction validation。</p>
+                  </div>
+                  <div class="project-state"><span class="status-dot status-dot--live"></span><span>設計中</span></div>
+                </div>
+
+                <div class="focus-grid">
+                  <div class="next-action">
+                    <span class="section-kicker">下一步</span>
+                    <h3>完成 adaptive shell review</h3>
+                    <p>確認手機、平板與桌面都維持同一套資訊語義，並把 inspector 轉成正確的 context surface。</p>
+                    <div class="action-row">
+                      <button class="primary-button tactile-control" type="button">開啟工作區</button>
+                      <button class="text-button" type="button">查看規格</button>
+                    </div>
+                  </div>
+                  <div class="project-progress" aria-label="Project progress" data-region="progress">
+                    <div class="progress-top"><span>整體完成度</span><strong>68%</strong></div>
+                    <div class="progress-track"><span style="width:68%"></span></div>
+                    <ol class="phase-list" data-region="phases">
+                      <li class="is-done"><span></span><div><strong>Research</strong><small>完成</small></div></li>
+                      <li class="is-done"><span></span><div><strong>Architecture</strong><small>完成</small></div></li>
+                      <li class="is-current"><span></span><div><strong>Interface</strong><small>進行中</small></div></li>
+                      <li><span></span><div><strong>Validation</strong><small>待處理</small></div></li>
+                    </ol>
+                  </div>
+                </div>
+              </section>
+
+              <section class="next-section" aria-labelledby="attention-title">
+                <div class="section-heading">
+                  <div><h2 id="attention-title">需要你處理</h2></div>
+                  <button class="text-button" type="button">全部顯示</button>
+                </div>
+                <div class="attention-list" data-region="attention">
+                  <button class="attention-row" type="button">
+                    <span class="attention-icon attention-icon--blue" aria-hidden="true">A</span>
+                    <span class="attention-copy"><strong>確認手機版導覽層級</strong><small>Project Aurora · 今天</small></span>
+                    <span class="attention-meta">High</span>
+                  </button>
+                  <button class="attention-row" type="button">
+                    <span class="attention-icon attention-icon--warm" aria-hidden="true">M</span>
+                    <span class="attention-copy"><strong>檢查 Motion reduced-mode</strong><small>Design system · 2 小時前</small></span>
+                    <span class="attention-meta">Review</span>
+                  </button>
+                  <button class="attention-row" type="button">
+                    <span class="attention-icon attention-icon--green" aria-hidden="true">R</span>
+                    <span class="attention-copy"><strong>整理第三方 UI 元件使用範圍</strong><small>Research · 昨天</small></span>
+                    <span class="attention-meta">Ready</span>
+                  </button>
+                </div>
+              </section>
+
+              <section class="system-strip" aria-label="Workspace status" data-region="system">
+                <div><span class="status-dot status-dot--success"></span><span>Remote workstation</span><strong>Online</strong></div>
+                <div><span class="muted-label">Latency</span><strong class="tabular">18 ms</strong></div>
+                <div><span class="muted-label">Sync</span><strong>Current</strong></div>
+              </section>
+            </div>
+
+            <aside class="context-inspector" data-region="inspector" aria-label="Context inspector">
+              <div class="inspector-head">
+                <div><span class="eyebrow">CONTEXT</span><h2>工作環境</h2></div>
+                <span class="context-badge">Aurora</span>
+              </div>
+              <div class="inspector-section">
+                <div class="control-copy"><strong>專注模式</strong><small>降低非必要訊息的視覺權重</small></div>
+                <button class="tactile-switch" type="button" role="switch" aria-checked="false" aria-label="Focus mode"><span></span></button>
+              </div>
+              <div class="inspector-section inspector-section--stacked">
+                <label class="control-copy" for="intensity"><strong>Workspace intensity</strong><small>控制資訊密度與輔助提示強度</small></label>
+                <div class="slider-shell">
+                  <input id="intensity" class="tactile-slider" type="range" min="0" max="100" value="62" aria-label="Workspace intensity">
+                  <output for="intensity" data-slider-output>62</output>
+                </div>
+              </div>
+              <div class="inspector-section inspector-section--stacked">
+                <div class="control-copy"><strong>資訊密度</strong><small>依目前視窗保留合理閱讀距離</small></div>
+                <div class="segmented" role="group" aria-label="Information density">
+                  <button type="button">舒適</button><button class="is-selected" type="button">平衡</button><button type="button">緊湊</button>
+                </div>
+              </div>
+              <div class="inspector-section inspector-section--status">
+                <div><span class="status-dot status-dot--success"></span><strong>Accessibility checks</strong></div><small>核心互動狀態正常</small>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <nav class="bottom-nav" aria-label="Bottom destinations">
+      <button class="bottom-destination is-selected" type="button" data-destination="home" aria-current="page" aria-label="Home"><span aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-home"></use></svg></span><small>首頁</small></button>
+      <button class="bottom-destination" type="button" data-destination="projects" aria-label="Projects"><span aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-projects"></use></svg></span><small>專案</small></button>
+      <button class="bottom-destination" type="button" data-destination="media" aria-label="Media"><span aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-media"></use></svg></span><small>媒體</small></button>
+      <button class="bottom-destination" type="button" data-destination="ai" aria-label="AI Studio"><span aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-ai"></use></svg></span><small>AI</small></button>
+      <button class="bottom-destination" type="button" data-destination="files" aria-label="Files"><span aria-hidden="true"><svg class="glyph" aria-hidden="true"><use href="#i-files"></use></svg></span><small>檔案</small></button>
+    </nav>
+  </div>
+
+  <dialog class="modal-sheet inspector-dialog" aria-label="Context inspector" data-inspector-dialog>
+    <form method="dialog" class="sheet-frame">
+      <header class="sheet-head"><div><h2>工作環境</h2></div><button class="icon-button" aria-label="Close inspector" value="cancel"><svg class="glyph" aria-hidden="true"><use href="#i-close"></use></svg></button></header>
+      <div class="sheet-content">
+        <div class="inspector-section"><div class="control-copy"><strong>專注模式</strong><small>降低非必要訊息的視覺權重</small></div><button class="tactile-switch" type="button" role="switch" aria-checked="false" aria-label="Focus mode in inspector"><span></span></button></div>
+        <div class="inspector-section inspector-section--stacked"><label class="control-copy" for="intensity-sheet"><strong>Workspace intensity</strong><small>控制資訊密度與輔助提示強度</small></label><div class="slider-shell"><input id="intensity-sheet" class="tactile-slider" type="range" min="0" max="100" value="62" aria-label="Workspace intensity in inspector"><output>62</output></div></div>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog class="command-dialog" aria-label="Command palette" data-command-dialog>
+    <div class="command-frame">
+      <div class="command-search-row"><svg class="glyph" aria-hidden="true"><use href="#i-search"></use></svg><input type="search" aria-label="Search commands" placeholder="輸入功能、專案或指令…" autocomplete="off" data-command-search><kbd>ESC</kbd></div>
+      <div class="command-hint"><span>快速前往</span><span>↑↓ 選擇 · Enter 執行</span></div>
+      <div class="command-list" role="listbox" aria-label="Command results" data-command-list>
+        <button role="option" type="button" data-command="home" data-search="home 首頁 workspace"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-home"></use></svg></span><span><strong>Home</strong><small>前往首頁</small></span><kbd>G H</kbd></button>
+        <button role="option" type="button" data-command="projects" data-search="projects 專案 project"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-projects"></use></svg></span><span><strong>Projects</strong><small>前往專案</small></span><kbd>G P</kbd></button>
+        <button role="option" type="button" data-command="media" data-search="media 媒體 video audio"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-media"></use></svg></span><span><strong>Media</strong><small>開啟媒體工作區</small></span><kbd>G M</kbd></button>
+        <button role="option" type="button" data-command="ai" data-search="ai studio agent model 人工智慧"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-ai"></use></svg></span><span><strong>AI Studio</strong><small>前往 AI Studio</small></span><kbd>G A</kbd></button>
+        <button role="option" type="button" data-command="focus" data-search="focus 專注 mode"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-focus"></use></svg></span><span><strong>Toggle focus mode</strong><small>切換專注模式</small></span><kbd>F</kbd></button>
+        <button role="option" type="button" data-command="theme" data-search="theme dark light 主題 深色"><span class="command-icon"><svg class="glyph" aria-hidden="true"><use href="#i-theme"></use></svg></span><span><strong>Toggle theme</strong><small>切換明暗主題</small></span><kbd>T</kbd></button>
+      </div>
+      <div class="command-empty" hidden data-command-empty>找不到符合的功能。試試「media」、「focus」或「project」。</div>
+    </div>
+  </dialog>
+
+  <script>(() => {
+  const root = document.documentElement;
+  const destinations = {
+    home: { title: 'Home', crumb: '首頁', description: '把最重要的專案、下一步與狀態集中在同一個可掃讀的工作中心。' },
+    projects: { title: 'Projects', crumb: '專案', description: '用單一專案視角管理工作、資產與下一步，不增加額外導航深度。' },
+    media: { title: 'Media', crumb: '媒體', description: '集中處理影音、素材與播放控制；專業參數在 context inspector 漸進揭露。' },
+    ai: { title: 'AI Studio', crumb: 'AI Studio', description: '把模型、Agent 與工作流放在可預測的操作層，而不是藏進多層設定。' },
+    files: { title: 'Files', crumb: '檔案', description: '快速尋找與組織資產，並保持跨專案的一致語義與排序。' },
+  };
+
+  const pageTitle = document.querySelector('[data-page-title]');
+  const pageDescription = document.querySelector('[data-page-description]');
+  const breadcrumb = document.querySelector('[data-breadcrumb-current]');
+
+  function selectDestination(id) {
+    const destination = destinations[id];
+    if (!destination) return;
+    document.querySelectorAll('[data-destination]').forEach((button) => {
+      const selected = button.dataset.destination === id;
+      button.classList.toggle('is-selected', selected);
+      if (selected) button.setAttribute('aria-current', 'page');
+      else button.removeAttribute('aria-current');
+    });
+    pageTitle.textContent = destination.title;
+    pageDescription.textContent = destination.description;
+    breadcrumb.textContent = destination.crumb;
+  }
+
+  document.querySelectorAll('[data-destination]').forEach((button) => {
+    button.addEventListener('click', () => selectDestination(button.dataset.destination));
+  });
+
+  const switches = [...document.querySelectorAll('[role="switch"]')];
+  function setSwitch(button, value) {
+    button.setAttribute('aria-checked', value ? 'true' : 'false');
+  }
+  switches.forEach((button) => button.addEventListener('click', () => {
+    const next = button.getAttribute('aria-checked') !== 'true';
+    switches.forEach((other) => setSwitch(other, next));
+  }));
+
+  document.querySelectorAll('.tactile-slider').forEach((slider) => {
+    const output = slider.parentElement.querySelector('output');
+    const sync = () => { if (output) output.value = slider.value; };
+    slider.addEventListener('input', sync);
+    sync();
+  });
+
+  document.querySelectorAll('.segmented').forEach((group) => {
+    group.querySelectorAll('button').forEach((button) => button.addEventListener('click', () => {
+      group.querySelectorAll('button').forEach((item) => item.classList.toggle('is-selected', item === button));
+    }));
+  });
+  document.addEventListener('pointerover', (event) => {
+    const row = event.target && event.target.closest ? event.target.closest('.attention-row') : null;
+    if (!row) return;
+    const rect = row.getBoundingClientRect();
+    row.style.setProperty('--enter-x', ((event.clientX - rect.left) / rect.width * 100).toFixed(1) + '%');
+    row.style.setProperty('--enter-y', ((event.clientY - rect.top) / rect.height * 100).toFixed(1) + '%');
+  });
+
+  const themeToggle = document.querySelector('[data-theme-toggle]');
+  function toggleTheme() {
+    const dark = root.dataset.theme !== 'dark';
+    root.dataset.theme = dark ? 'dark' : 'light';
+    themeToggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
+  }
+  themeToggle.addEventListener('click', toggleTheme);
+
+  const inspectorDialog = document.querySelector('[data-inspector-dialog]');
+  document.querySelectorAll('[data-open-inspector]').forEach((button) => button.addEventListener('click', () => {
+    if (!inspectorDialog.open) inspectorDialog.showModal();
+  }));
+
+  const commandDialog = document.querySelector('[data-command-dialog]');
+  const commandSearch = document.querySelector('[data-command-search]');
+  const commandButtons = [...document.querySelectorAll('[data-command]')];
+  const commandEmpty = document.querySelector('[data-command-empty]');
+  let activeIndex = 0;
+
+  function visibleCommands() { return commandButtons.filter((button) => !button.hidden); }
+  function syncActive(index = 0) {
+    const visible = visibleCommands();
+    if (!visible.length) return;
+    activeIndex = Math.max(0, Math.min(index, visible.length - 1));
+    commandButtons.forEach((button) => button.classList.remove('is-active'));
+    visible[activeIndex].classList.add('is-active');
+  }
+  function fuzzyMatch(target, query) {
+    let from = 0;
+    for (const ch of query) {
+      from = target.indexOf(ch, from);
+      if (from < 0) return false;
+      from += 1;
+    }
+    return true;
+  }
+  function filterCommands(value) {
+    const query = value.trim().toLowerCase();
+    commandButtons.forEach((button) => { button.hidden = query && !fuzzyMatch(button.dataset.search, query); });
+    const visible = visibleCommands();
+    commandEmpty.hidden = visible.length > 0;
+    syncActive(0);
+  }
+  function openCommand() {
+    if (!commandDialog.open) commandDialog.showModal();
+    filterCommands('');
+    commandSearch.value = '';
+    requestAnimationFrame(() => commandSearch.focus());
+  }
+  function closeCommand() { if (commandDialog.open) commandDialog.close(); }
+  function runCommand(command) {
+    if (destinations[command]) selectDestination(command);
+    if (command === 'focus') {
+      const next = switches[0].getAttribute('aria-checked') !== 'true';
+      switches.forEach((button) => setSwitch(button, next));
+    }
+    if (command === 'theme') toggleTheme();
+    closeCommand();
+  }
+
+  document.querySelector('[data-open-command]').addEventListener('click', openCommand);
+  document.addEventListener('keydown', (event) => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      openCommand();
+    }
+  });
+  commandSearch.addEventListener('input', () => filterCommands(commandSearch.value));
+  commandSearch.addEventListener('keydown', (event) => {
+    const visible = visibleCommands();
+    if (event.key === 'ArrowDown') { event.preventDefault(); syncActive((activeIndex + 1) % Math.max(1, visible.length)); }
+    if (event.key === 'ArrowUp') { event.preventDefault(); syncActive((activeIndex - 1 + Math.max(1, visible.length)) % Math.max(1, visible.length)); }
+    if (event.key === 'Enter' && visible.length) { event.preventDefault(); runCommand(visible[activeIndex].dataset.command); }
+  });
+  commandButtons.forEach((button) => button.addEventListener('click', () => runCommand(button.dataset.command)));
+  commandDialog.addEventListener('close', () => document.querySelector('[data-open-command]').focus());
+
+  const TAUI_DATA_URL = window.TAUI_DATA_URL || null;
+  const FALLBACK_DATA = {
+    progress: 68,
+    phases: [
+      { name: 'Research', note: '完成', state: 'done' },
+      { name: 'Architecture', note: '完成', state: 'done' },
+      { name: 'Interface', note: '進行中', state: 'current' },
+      { name: 'Validation', note: '待處理', state: 'todo' }
+    ],
+    attention: [
+      { icon: 'A', tone: 'blue', title: '確認手機版導覽層級', meta: 'Project Aurora · 今天', tag: 'High' },
+      { icon: 'M', tone: 'warm', title: '檢查 Motion reduced-mode', meta: 'Design system · 2 小時前', tag: 'Review' },
+      { icon: 'R', tone: 'green', title: '整理第三方 UI 元件使用範圍', meta: 'Research · 昨天', tag: 'Ready' }
+    ],
+    system: [
+      { kind: 'status', text: 'Remote workstation', value: 'Online', ok: true },
+      { kind: 'metric', label: 'Latency', value: '18 ms' },
+      { kind: 'metric', label: 'Sync', value: 'Current' }
+    ]
+  };
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+
+  function renderProgress(region, pct, phases) {
+    const value = region.querySelector('.progress-top strong');
+    const track = region.querySelector('.progress-track span');
+    if (value) value.textContent = pct + '%';
+    if (track) track.style.width = pct + '%';
+    const list = region.querySelector('[data-region="phases"]');
+    if (!list || !Array.isArray(phases)) return;
+    list.textContent = '';
+    phases.forEach((phase) => {
+      const li = el('li', phase.state === 'done' ? 'is-done' : phase.state === 'current' ? 'is-current' : null);
+      li.appendChild(el('span'));
+      const copy = el('div');
+      copy.appendChild(el('strong', null, phase.name));
+      copy.appendChild(el('small', null, phase.note));
+      li.appendChild(copy);
+      list.appendChild(li);
+    });
+  }
+
+  function renderAttention(region, items) {
+    region.textContent = '';
+    if (!Array.isArray(items) || !items.length) {
+      region.appendChild(el('div', 'command-empty', '目前沒有待辦事項。'));
+      return;
+    }
+    items.forEach((item) => {
+      const row = el('button', 'attention-row');
+      row.type = 'button';
+      const icon = el('span', 'attention-icon attention-icon--' + item.tone, item.icon);
+      icon.setAttribute('aria-hidden', 'true');
+      const copy = el('span', 'attention-copy');
+      copy.appendChild(el('strong', null, item.title));
+      copy.appendChild(el('small', null, item.meta));
+      row.appendChild(icon);
+      row.appendChild(copy);
+      row.appendChild(el('span', 'attention-meta', item.tag));
+      region.appendChild(row);
+    });
+  }
+
+  function renderSystem(region, entries) {
+    if (!Array.isArray(entries) || !entries.length) return;
+    region.textContent = '';
+    entries.forEach((entry) => {
+      const cell = el('div');
+      if (entry.kind === 'status') {
+        cell.appendChild(el('span', 'status-dot ' + (entry.ok ? 'status-dot--success' : 'status-dot--live')));
+        cell.appendChild(el('span', null, entry.text));
+        cell.appendChild(el('strong', null, entry.value));
+      } else {
+        cell.appendChild(el('span', 'muted-label', entry.label));
+        const value = el('strong', null, entry.value);
+        if (entry.label === 'Latency') value.classList.add('tabular');
+        cell.appendChild(value);
+      }
+      region.appendChild(cell);
+    });
+  }
+
+  function markLocalPreview() {
+    const label = document.querySelector('.sync-state .wide-only');
+    if (label) label.textContent = '本機預覽';
+  }
+
+  function renderAll(data) {
+    const scoped = (name) => document.querySelector('[data-region="' + name + '"]');
+    const progress = scoped('progress');
+    if (progress && typeof data.progress === 'number') renderProgress(progress, data.progress, data.phases);
+    const attention = scoped('attention');
+    if (attention) renderAttention(attention, data.attention);
+    const system = scoped('system');
+    if (system) renderSystem(system, data.system);
+  }
+
+  function bootWorkspaceData() {
+    if (!TAUI_DATA_URL) {
+      renderAll(FALLBACK_DATA);
+      markLocalPreview();
+      return;
+    }
+    document.body.classList.add('is-loading-data');
+    fetch(TAUI_DATA_URL, { headers: { accept: 'application/json' } })
+      .then((res) => {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then((data) => { renderAll(data); })
+      .catch(() => { renderAll(FALLBACK_DATA); markLocalPreview(); })
+      .finally(() => { document.body.classList.remove('is-loading-data'); });
+  }
+  bootWorkspaceData();
+})();
+</script>
+</body>
+</html>
