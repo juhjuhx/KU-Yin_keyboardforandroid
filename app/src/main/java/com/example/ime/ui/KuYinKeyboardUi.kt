@@ -148,6 +148,12 @@ fun KuYinKeyboardUi(
         engine.setMode(mode)
     }
 
+    val applyPunctuation: (String) -> Unit = { p ->
+        val result = session.dispatch(ImeCommand.Punctuation(p))
+        result.commitText?.let(onCommitText)
+        result.additionalCommits.forEach(onCommitText)
+    }
+
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
     val keyboardBg = currentTheme.keyboardBg
     val keyBgNormal = currentTheme.keyBgNormal
@@ -188,9 +194,7 @@ fun KuYinKeyboardUi(
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
-                    val result = session.dispatch(ImeCommand.Punctuation(punct))
-                    result.commitText?.let(onCommitText)
-                    result.additionalCommits.forEach(onCommitText)
+                    applyPunctuation(punct)
                 },
                 onPasteClipboard = { text ->
                     onFeedback()
@@ -251,9 +255,7 @@ fun KuYinKeyboardUi(
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            val result = session.dispatch(ImeCommand.Punctuation(p))
-                            result.commitText?.let(onCommitText)
-                            result.additionalCommits.forEach(onCommitText)
+                            applyPunctuation(p)
                         }
                     )
                 }
@@ -295,9 +297,7 @@ fun KuYinKeyboardUi(
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            val result = session.dispatch(ImeCommand.Punctuation(p))
-                            result.commitText?.let(onCommitText)
-                            result.additionalCommits.forEach(onCommitText)
+                            applyPunctuation(p)
                         }
                     )
                 }

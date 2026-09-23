@@ -107,6 +107,21 @@ class EnterCommandContractTest {
     }
 
     @Test
+    fun `dictionary enter with unmatched composing commits raw zhuyin once`() {
+        val session = dictionarySession()
+        session.dispatch(ImeCommand.TapZhuyinKey("ㄅ"))
+        session.dispatch(ImeCommand.TapZhuyinKey("ㄅ"))
+        assertTrue(session.state.value.candidates.isEmpty())
+        val first = session.dispatch(ImeCommand.Enter)
+        assertEquals("ㄅㄅ", first.commitText)
+        assertTrue(first.consumed)
+        assertEquals("", session.state.value.preedit)
+        val second = session.dispatch(ImeCommand.Enter)
+        assertNull(second.commitText)
+        assertFalse(second.consumed)
+    }
+
+    @Test
     fun `chewing enter on empty preedit is unconsumed without touching engine`() {
         val engine = EnterFakeChewingEngine()
         val session = ChewingEngineSession(engine)

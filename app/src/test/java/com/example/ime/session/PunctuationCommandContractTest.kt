@@ -107,4 +107,15 @@ class PunctuationCommandContractTest {
         assertEquals(listOf("。"), appliedCommits(session, "。"))
         assertEquals(0, engine.commitCalls)
     }
+
+    @Test
+    fun `dictionary punct with unmatched composing commits raw then punctuation`() {
+        val session = dictionarySession()
+        session.dispatch(ImeCommand.TapZhuyinKey("ㄅ"))
+        session.dispatch(ImeCommand.TapZhuyinKey("ㄅ"))
+        assertTrue(session.state.value.candidates.isEmpty())
+        assertEquals(listOf("ㄅㄅ", "，"), appliedCommits(session, "，"))
+        assertEquals("", session.state.value.preedit)
+        assertTrue(session.state.value.candidates.isEmpty())
+    }
 }
