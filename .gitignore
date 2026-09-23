@@ -62,3 +62,6 @@ app/src/main/cpp/libchewing-src/
 *.log
 
 .worktrees/
+
+# Local review artifacts (OCR JSON, workspace inventories - never commit raw dumps)
+review-artifacts/
