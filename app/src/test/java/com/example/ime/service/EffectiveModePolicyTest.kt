@@ -1,8 +1,8 @@
 package com.example.ime.service
 
-import com.example.androidkeyboard.input.EditorInfo
+import android.text.InputType
+import android.view.inputmethod.EditorInfo
 import com.example.androidkeyboard.input.EditorPolicy
-import com.example.androidkeyboard.input.InputType
 import com.example.ime.engine.KeyboardMode
 import org.junit.Assert.assertEquals
 import org.junit.Test
