@@ -9,7 +9,7 @@ KU-Yin 是输入法，可能接触密码、私人通信与其他高敏感文字�
 - libchewing system/user data 位于 app-private `noBackupFilesDir`。
 - `EditorPolicy` 识别 password、FORCE_ASCII 与 `IME_FLAG_NO_PERSONALIZED_LEARNING`。
 - native adapter 可关闭 libchewing personalized learning。
-- 当前没有 clipboard feature，也未发现按键/preedit/candidate 明文日志路径；现有 `Log.e` 仅记录 generic JNI/init 错误。
+- 当前没有 clipboard 读取/收割路径；写入仅限用户手势触发的分享。
 - native dependency 使用固定 revision，而非 floating branch。
 
 ## 这些不代表什么

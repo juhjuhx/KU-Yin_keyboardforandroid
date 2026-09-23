@@ -8,6 +8,7 @@
 | Kotlin | `gradle/libs.versions.toml` | 2.2.10 |
 | compileSdk / targetSdk | `app/build.gradle.kts` | 36 / 36 (minorApiLevel 1) |
 | minSdk | `app/build.gradle.kts` | 24 |
+| applicationId | `app/build.gradle.kts` | io.github.juhjuhx.kuyin |
 | NDK | `app/build.gradle.kts` | 28.2.13676358 |
 | CMake | `app/build.gradle.kts` + `app/src/main/cpp/CMakeLists.txt` | 3.22.1, C++17 |
 | Test | catalog + runners | JUnit4, Robolectric 4.16.1, Espresso, Roborazzi |
