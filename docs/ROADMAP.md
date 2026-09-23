@@ -1,37 +1,28 @@
-# Roadmap
+# Roadmap (FUTURE work only; done items live in HISTORY/CURRENT_STATE)
 
-Roadmap 以“可用性与风险”排序，不承诺发布日期。
+## DONE (do not re-plan)
 
-## P0 — release hardening
+- applicationId migration → `io.github.juhjuhx.kuyin` (shipped in build file)
+- SDK modernization → JDK21/Gradle9/AGP9/Kotlin2.2/compile-target36/NDK28.2 (shipped)
+- C4-D2 decoder sessions + D2.5 state ownership (branch work, SDK verification pending)
 
-- 在实体 Android 设备完成大千输入、候选、password/ASCII、selection/app-switch smoke matrix。
-- 建立正式 release signing / key management；在完成前 Release APK 继续标示 unsigned。
-- 将 placeholder `com.example.androidkeyboard` applicationId/namespace 迁移为正式稳定命名，配套 upgrade strategy。
-- 建立 native artifact hash manifest / source rebuild equivalence 检查，强化 libchewing supply-chain provenance。
+## CURRENT
 
-## P1 — Android platform maintenance
+- D2.5 SDK gate: JVM + assembleDebug + runtime smoke on exact candidate SHA
+- D3 production libchewing switch (needs D2.5 PASS + human authorization)
 
-- 独立升级 compileSdk/targetSdk 与 AGP/Gradle/Kotlin，不和输入行为修改混做。
-- 建立 API 级别与主要 OEM compatibility matrix。
-- per-key accessibility virtual nodes / TalkBack / Switch Access。
-- IME switching、insets、横屏、平板和大屏 geometry 回归。
+## NEXT
 
-## P2 — input completeness
+- Physical CASE-4/CASE-6 + long-sentence auto-selection acceptance
+- M4 UX slices (candidate strip, geometry, touch, QWERTY, symbols, long-press, emoji, toolbar)
+- Formal release signing / key management (Release APK stays unsigned until then)
+- libchewing supply-chain: per-file hash manifest + source-rebuild equivalence
 
-- 完整符号/Emoji surface。
-- Hsu / Eten26：只有在 UI layout、decoder behavior、tests 同时完成后才公开。
-- 评估真实 OpenCC backend；目前 pass-through/stub 不视为 feature。
-- user dictionary 管理、导入/导出必须先完成隐私与格式设计。
+## LATER
 
-## P3 — advanced features
-
-- Clipboard、gesture typing、prediction/LM、更多语言模式。
-- 任何会读取/持久化更多输入内容的功能都必须先有独立 threat model 与 opt-in 设计。
-
-## Upstream modernization
-
-官方 libchewing 已迁移 Codeberg，2026 年 0.12/0.13 系列加入 `chewing_new3()`、`chewing_handle_KeyboardEvent()` 等新接口。KU-Yin 目前仍使用固定 prebuilt 对应的 C API；升级 decoder 应通过独立 PR 验证 ABI、dictionary、learning、candidate 和四 ABI build，而非自动漂移。
-
-## Project visual identity
-
-代码/release 基线稳定后，将单独设计 KU-Yin 主视觉、repo banner 与 Android launcher icon。视觉资产不与功能 recovery 混在本轮 consolidation。
+- Device/OEM compatibility matrix, accessibility virtual nodes, insets/rotation/tablet
+- Hsu/Eten26 only with layout+decoder+tests complete together
+- OpenCC backend evaluation (current stub is not a feature), userdict import/export (privacy design first)
+- Clipboard/gesture/prediction features each need threat model + opt-in first
+- Upstream libchewing (Codeberg 0.12/0.13 APIs) via independent ABI-verified PR, never auto-drift
+- Brand/visual identity after code baseline stabilizes

@@ -2,13 +2,25 @@
 
 ## Project source of truth
 
-Read in this order before making changes: `README.md`, `docs/ARCHITECTURE.md`, `docs/DEVELOPMENT.md`, `docs/UPSTREAM.md`, `SECURITY.md`, `docs/SECURITY_AUDIT.md`, `docs/ROADMAP.md`.
+Read in this order before making changes (later overrides earlier on conflict):
 
-Historical recovery records live in Git history and `docs/archive/`; do not treat old plans as current behavior.
+1. `AGENTS.md` (this file: instructions + order)
+2. `docs/CURRENT_STATE.md` (what is active NOW)
+3. `docs/ARCHITECTURE.md` (normative architecture)
+4. `docs/DEVELOPMENT.md` (canonical build/toolchain)
+5. `SECURITY.md` (security policy)
+6. `docs/SECURITY_AUDIT.md` (evidence-backed audit)
+7. `docs/UPSTREAM.md` (dependency/provenance truth)
+8. `docs/ROADMAP.md` (future only)
+9. `docs/HISTORY.md` (historical only)
+10. `docs/COMPOSE-MAINLINE.md` (migration record only)
+11. `docs/archive/` (superseded documents)
+
+`README.md` is the public landing page, not an architecture authority.
 
 ## Core architecture
 
-`InputMethodService → EditorPolicy / ImeSessionController / UI → ChewingEngine → AndroidChewingEngine → JNI/C++ → libchewing C API`.
+`InputMethodService → EditorPolicy (+preferred/effective mode) / UI → ComposeDecoderSession → ZhuyinDictionarySession (production) → Compose UI → InputConnection`, with `ChewingEngineSession → AndroidChewingEngine → JNI/C++ → libchewing C API` wired and tested as the D3 production target.
 
 Keep Android lifecycle, UI and JNI boundaries explicit. UI should not call native symbols directly.
 
