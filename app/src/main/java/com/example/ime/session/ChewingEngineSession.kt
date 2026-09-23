@@ -30,6 +30,11 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
         _state.value = ComposeImeState(candidatesExpanded = _state.value.candidatesExpanded)
     }
 
+    private fun completeComposition(): DispatchResult {
+        if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+        return project(engine.commitUpdate())
+    }
+
     override fun dispatch(command: ImeCommand): DispatchResult {
         when (command) {
             is ImeCommand.TapZhuyinKey -> {
@@ -47,7 +52,12 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
                 if (_state.value.preedit.isEmpty()) return DispatchResult(" ", true)
                 return project(engine.commitUpdate())
             }
-            ImeCommand.Enter -> return DispatchResult(null, false)
+            is ImeCommand.Punctuation -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(command.text, true)
+                val flushed = project(engine.commitUpdate())
+                return DispatchResult(flushed.commitText, true, listOf(command.text))
+            }
+            ImeCommand.Enter, ImeCommand.Complete -> return completeComposition()
             ImeCommand.PageForward -> {
                 val update = engine.nextPageUpdate() ?: return DispatchResult(null, false)
                 return project(update)

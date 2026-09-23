@@ -16,6 +16,8 @@ sealed interface ImeCommand {
     data object Backspace : ImeCommand
     data object Space : ImeCommand
     data object Enter : ImeCommand
+    data class Punctuation(val text: String) : ImeCommand
+    data object Complete : ImeCommand
     data object PageForward : ImeCommand
     data object PageBackward : ImeCommand
     data object ToggleCandidatesExpanded : ImeCommand
@@ -25,7 +27,8 @@ sealed interface ImeCommand {
 
 data class DispatchResult(
     val commitText: String?,
-    val consumed: Boolean
+    val consumed: Boolean,
+    val additionalCommits: List<String> = emptyList()
 )
 
 interface ComposeDecoderSession {

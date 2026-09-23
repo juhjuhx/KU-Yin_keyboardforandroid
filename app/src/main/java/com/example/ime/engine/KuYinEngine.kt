@@ -62,19 +62,14 @@ class KuYinEngine(context: Context) : IKuYinEngine {
         }
     }
 
-    // 切換中英文/符號模式時，若有未上屏之暫存注音或候選字，自動提交上屏
-    override fun switchMode(newMode: KeyboardMode, onCommit: (String) -> Unit) {
-        if (newMode == KeyboardMode.ZHUYIN && !policy.allowComposition) {
-            clearComposing()
-            return
-        }
-        if (_composingZhuyin.value.isNotEmpty()) {
-            val commitText = _candidates.value.firstOrNull() ?: _composingZhuyin.value
-            onCommit(commitText)
-            if (policy.allowPersonalizedLearning) dictionary.recordWordSelection(commitText)
-            clearComposing()
-        }
+    // Legacy entry point kept for API stability: production completes composition
+    // via session BEFORE switching, so this only flips presentation mode now.
+    override fun switchMode(newMode: KeyboardMode, _onCommit: (String) -> Unit) {
+        if (newMode == KeyboardMode.ZHUYIN && !policy.allowComposition) return
         _mode.value = newMode
+        if (newMode != KeyboardMode.ZHUYIN) {
+            clearComposing()
+        }
     }
 
     override fun toggleShift() {

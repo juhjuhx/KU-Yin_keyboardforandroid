@@ -132,13 +132,21 @@ fun KuYinKeyboardUi(
     onPerformEditorAction: () -> Unit,
     onHideKeyboard: () -> Unit,
     onFeedback: () -> Unit,
-    onOpenFeedback: () -> Unit = {}
+    onOpenFeedback: () -> Unit = {},
+    onUserModeSelected: (KeyboardMode) -> Unit = {}
 ) {
     val mode by engine.mode.collectAsState()
     val shiftState by engine.shiftState.collectAsState()
     val sessionState by session.state.collectAsState()
     val composingZhuyin = sessionState.preedit
     val candidates = sessionState.candidates
+
+    val switchPresentationMode: (KeyboardMode) -> Unit = { mode ->
+        val result = session.dispatch(ImeCommand.Complete)
+        result.commitText?.let(onCommitText)
+        onUserModeSelected(mode)
+        engine.setMode(mode)
+    }
 
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
     val keyboardBg = currentTheme.keyboardBg
@@ -180,7 +188,9 @@ fun KuYinKeyboardUi(
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
-                    engine.commitPunctuation(punct, onCommitText)
+                    val result = session.dispatch(ImeCommand.Punctuation(punct))
+                    result.commitText?.let(onCommitText)
+                    result.additionalCommits.forEach(onCommitText)
                 },
                 onPasteClipboard = { text ->
                     onFeedback()
@@ -223,29 +233,27 @@ fun KuYinKeyboardUi(
                         },
                         onEnterPress = {
                             onFeedback()
-                            if (composingZhuyin.isNotEmpty()) {
-                                // 如果正在拼音，按 Enter 直接送出拼音本身
-                                onCommitText(composingZhuyin)
-                                session.dispatch(ImeCommand.ClearComposing)
-                            } else {
-                                onPerformEditorAction()
-                            }
+                            val result = session.dispatch(ImeCommand.Enter)
+                            result.commitText?.let(onCommitText)
+                            if (!result.consumed) onPerformEditorAction()
                         },
                         onSwitchToEnglish = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ENGLISH, onCommitText)
+                            switchPresentationMode(KeyboardMode.ENGLISH)
                         },
                         onSwitchToSymbols = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.SYMBOLS, onCommitText)
+                            switchPresentationMode(KeyboardMode.SYMBOLS)
                         },
                         onSwitchToEmoji = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.EMOJI, onCommitText)
+                            switchPresentationMode(KeyboardMode.EMOJI)
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            engine.commitPunctuation(p, onCommitText)
+                            val result = session.dispatch(ImeCommand.Punctuation(p))
+                            result.commitText?.let(onCommitText)
+                            result.additionalCommits.forEach(onCommitText)
                         }
                     )
                 }
@@ -279,15 +287,17 @@ fun KuYinKeyboardUi(
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         },
                         onSwitchToSymbols = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.SYMBOLS, onCommitText)
+                            switchPresentationMode(KeyboardMode.SYMBOLS)
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            engine.commitPunctuation(p, onCommitText)
+                            val result = session.dispatch(ImeCommand.Punctuation(p))
+                            result.commitText?.let(onCommitText)
+                            result.additionalCommits.forEach(onCommitText)
                         }
                     )
                 }
@@ -312,11 +322,11 @@ fun KuYinKeyboardUi(
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         },
                         onSwitchToEnglish = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ENGLISH, onCommitText)
+                            switchPresentationMode(KeyboardMode.ENGLISH)
                         },
                         onSpacePress = {
                             onFeedback()
@@ -338,7 +348,7 @@ fun KuYinKeyboardUi(
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         }
                     )
                 }

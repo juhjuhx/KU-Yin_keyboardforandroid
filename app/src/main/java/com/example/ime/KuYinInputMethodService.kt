@@ -13,7 +13,9 @@ import com.example.androidkeyboard.input.EditorPolicy
 import com.example.ime.engine.KeyboardMode
 import com.example.ime.engine.KuYinEngine
 import com.example.ime.service.CompositionResetPolicy
+import com.example.ime.service.EffectiveModePolicy
 import com.example.ime.session.ComposeDecoderSession
+import com.example.ime.session.ImeCommand
 import com.example.ime.session.ZhuyinDictionarySession
 import com.example.ime.service.EditorDeletion
 import com.example.ime.service.ImeLifecycleOwner
@@ -28,6 +30,7 @@ class KuYinInputMethodService : InputMethodService() {
     private lateinit var session: ComposeDecoderSession
     private lateinit var settings: KeyboardSettings
     private lateinit var feedbackHelper: FeedbackHelper
+    private var userPreferredMode: KeyboardMode = KeyboardMode.ZHUYIN
 
     private val currentActionLabel = mutableStateOf("換行")
     private var composeView: ComposeView? = null
@@ -94,7 +97,8 @@ class KuYinInputMethodService : InputMethodService() {
                             putExtra("EXTRA_OPEN_FEEDBACK", true)
                         }
                         startActivity(intent)
-                    }
+                    },
+                    onUserModeSelected = { userPreferredMode = it }
                 )
             }
         }
@@ -109,10 +113,8 @@ class KuYinInputMethodService : InputMethodService() {
             attribute?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED
         )
         engine.applyPolicy(policy)
-        if (!policy.allowComposition) {
-            engine.setMode(KeyboardMode.ENGLISH)
-        }
-        engine.clearComposing()
+        session.dispatch(ImeCommand.Reset)
+        engine.setMode(EffectiveModePolicy.effectiveMode(userPreferredMode, policy))
     }
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
@@ -132,7 +134,7 @@ class KuYinInputMethodService : InputMethodService() {
             else -> "換行"
         }
 
-        engine.clearComposing()
+        session.dispatch(ImeCommand.Reset)
     }
 
     override fun onUpdateSelection(
@@ -147,21 +149,26 @@ class KuYinInputMethodService : InputMethodService() {
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
         if (CompositionResetPolicy.shouldReset(
-                hasComposing = engine.composingZhuyin.value.isNotEmpty(),
+                hasComposing = session.state.value.preedit.isNotEmpty(),
                 oldSelStart = oldSelStart,
                 oldSelEnd = oldSelEnd,
                 newSelStart = newSelStart,
                 newSelEnd = newSelEnd
             )
         ) {
-            engine.clearComposing()
+            session.dispatch(ImeCommand.Reset)
         }
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
         super.onFinishInputView(finishingInput)
-        engine.clearComposing()
+        session.dispatch(ImeCommand.Reset)
         lifecycleOwner.onStop()
+    }
+
+    override fun onFinishInput() {
+        session.dispatch(ImeCommand.Reset)
+        super.onFinishInput()
     }
 
     override fun onDestroy() {
