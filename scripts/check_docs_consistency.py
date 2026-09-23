@@ -28,6 +28,10 @@ def main():
 
     m = re.search(r"gradle-(\d+\.\d+\.\d+)-bin", wrapper)
     check("dev-doc gradle wrapper version", m and m.group(1) in dev, "wrapper has " + (m.group(1) if m else "?"))
+    def endswith_match(build_text, dev_text):
+        m = re.search(r'applicationId\s*=\s*"([^"]+)"', build_text)
+        return bool(m and m.group(1) in dev_text)
+
     pairs = [
         ("AGP", r'agp\s*=\s*"([^"]+)"', catalog, r"(?m)^\|\s*AGP\s*\|[^|\n]*\|\s*([\d.]+)", dev),
         ("Kotlin", r'kotlin\s*=\s*"([^"]+)"', catalog, r"Kotlin[^\d]*([\d.]+)", dev),
@@ -43,6 +47,7 @@ def main():
         ok = bool(sm and dm and sm.group(1) == dm.group(1))
         hint = f"src={sm.group(1) if sm else '?'} doc={dm.group(1) if dm else '?'}"
         check(f"dev-doc {label} version", ok, hint)
+    check("dev-doc applicationId", endswith_match(build, dev))
     check("ARCHITECTURE is Compose-normative", "ComposeDecoderSession" in arch)
     check("ARCHITECTURE not View-production", "ChewingInputMethodService" not in arch)
     check("ROADMAP keeps done items done", "## DONE" in roadmap
