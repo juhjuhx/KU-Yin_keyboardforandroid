@@ -56,7 +56,8 @@ class ContinuousSentenceTest {
             )
             val committed = engine.commitUpdate()
             assertTrue(
-                "final complete must commit once; committed='${committed.committedText}'",
+                "final complete must commit once; selectCommitted='${selected.committedText}' " +
+                    "committed='${committed.committedText}' preedit='${committed.preedit}'",
                 committed.committedText.isNotEmpty(),
             )
         } finally {
