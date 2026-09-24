@@ -66,10 +66,27 @@
   the remaining editor-effect surface (post-action state, native paging + Enter interaction)
   needs a defined behavior list before test-first. Do NOT guess-implement; define D3e
   behaviors next, then RED→GREEN per slice.
+- D3e DONE (2026-09-24, spec-bound): orderedCommits centralized projection (commitText first,
+  then additionalCommits, each once) + all 7 UI application sites rewired (dropped direct
+  commitText?.let paths that silently ignored additionalCommits); contract pin updated to new
+  centralized shape (orderedCommits present, no direct let, single applyPunctuation);
+  new focused tests: DispatchResultEffects(4), ChewingSpace(1), ChewingComplete(2),
+  ChewingBackspace(2), ChewingPagingEnter(2). One genuine RED caught mid-flight (paging fake
+  claimed pages after commit — fake fixed, production untouched). One static RED caught
+  (contract pinned old inline shape — pin updated, same intent). Evidence: full JVM 125/125
+  (34 files, 0 fail); verify.py --static exit 0 verify OK; assembleDebug PASS (~29MB).
+  Commit cec2e08. KDoc kept: centralized-path ordering contract (prevents ghost/double-commit
+  class bugs, unenforceable by types). Next: push c4 (gate green), then TRACK-B B1.
 - Toolchain self-provision (2026-09-23 ~22:48+): Temurin 21.0.12.1 OK,
   cmdline-tools OK, platform-tools/platform-36/build-tools-36/cmake OK,
   NDK 28.2 downloading (~14% at 22:5x, PID 54487, log /tmp/ndk-install.log)
 - Next: finish toolchain provision → bootstrap → `verify --static` → `clean testDebugUnitTest` → `assembleDebug`
 - Push: NOT PERFORMED until local gate green + human approval (prepared cmd on record)
 - Forbidden: main merge/push, force-push, tags, releases, signing, Rime, INTERNET permission, telemetry
+- Ruling (autonomous long-run harness): normal non-force pushes to
+  c4-compose-libchewing-switch are authorized after a fresh local gate is green.
+  Previous per-push human approval rule is superseded by the autonomous long-run
+  execution contract. Cost if wrong: feature-branch remote could contain locally
+  verified but not yet device-verified engineering state; main/release untouched.
+  MAY NOT: push main, force-push, merge main, tag, release, publish.
 - Ruling (2026-09-24 emergency correction): old backup clone @34a758b was incorrectly selected after context recovery. Authoritative state is remote/local c4-compose-libchewing-switch @cc94325. Legacy local Waves/MERGE_SPEC (/Users/huang/KU-Yin-C4-D2.5-repo, /Users/huang/KU-Yin_keyboardforandroid@old-main, Desktop/KU-Yin-v0.2-FINAL/local research/design/WAVE*) are donor-only and cannot replace the C4/D3 plan. Resume point is D3a native lifetime owner. Cost if wrong: regress verified D2.5 work, reintroduce stale View-era architecture, divert into unapproved donor Waves. NOTE: docs/CURRENT_STATE.md stale (says 34a758b local-only/99 pending) — do not let it override Git/test evidence; refresh in isolated docs commit after D3a.
