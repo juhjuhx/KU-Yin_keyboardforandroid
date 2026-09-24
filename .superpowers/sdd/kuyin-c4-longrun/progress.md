@@ -108,6 +108,13 @@
   final commitUpdate → ''. Two stories: (a) select auto-committed already (commit arrived
   at select, com empty at final), (b) commit path empty. Test now records
   selectCommitted to discriminate. Pushed f2798c5; awaiting run.
+- D3f LAYER 2 (2026-09-24): discriminated — selectCommitted='' with live preedit ⇒
+  snapshot()'s display-open left editor Selecting ⇒ commit_preedit_buf ERROR (fails when
+  selecting). FIX: pair every open with close (display snapshots, page bounds), explicit
+  open before select/page, cached totals for canPage flags (no live-native reads outside
+  selection), new chewing_cand_close JNI bridge (symbol verified in pinned chewing.h).
+  JVM 129/129 + androidTest compile + assembleDebug + static exit 0. Pushed dc3c48d;
+  awaiting emulator verdict on select-then-commit.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
