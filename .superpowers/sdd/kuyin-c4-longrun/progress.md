@@ -92,6 +92,15 @@
   Compiles (compileDebugAndroidTestKotlin PASS); execution pending emulator (local: zero
   devices). Commit + push with this ledger;   CI smoke will execute it (continue-on-error,
   recorded separately). Runs 35943130618/35943149161 in progress at commit time.
+- D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
+  preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
+  Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
+  Editor::start_selecting→EnteringSyllable::start_selecting clears shared.syl FIRST,
+  then finds com empty and ignores — per-keystroke snapshot destroyed the in-progress
+  syllable. FIX: buildCandidates early-returns (resetting page/size) while
+  chewing_buffer_check==0; open only after a syllable commits. Comment kept: FFI
+  side-effect trap, prevents future removal. JVM 125/125 + static exit 0 + build green;
+  committed + pushed 6df449e. Awaiting emulator GREEN for CASE-4 select-continue.
 - D3f EVIDENCE (2026-09-24): run 35943351185 build SUCCESS, smoke FAILED only on the new
   test: selectCandidateUpdate(0) after s/u/3 → committed='' preedit='' (line 48). Sibling
   smoke tests green → env/dictionaries fine. Hypotheses: (a) s/u/3 yielded no candidates,
