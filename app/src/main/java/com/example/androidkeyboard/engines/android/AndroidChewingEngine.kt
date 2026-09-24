@@ -18,6 +18,7 @@ class AndroidChewingEngine(
     private var ready = false
     private var candidatePage = 0
     private var candidatePageSize = 0
+    private var lastTotalChoices = 0
 
     override val isReady: Boolean get() = ready
 
@@ -98,6 +99,9 @@ class AndroidChewingEngine(
 
     override fun selectCandidateUpdate(index: Int): EngineUpdate {
         if (!isReady || nativeCtx == 0L || index < 0) return emptyUpdate(false)
+        // choose_by_index requires the selection window: open it explicitly.
+        // Display snapshots always close it again, so open here or fail.
+        if (chewing_cand_open(nativeCtx) != 0) return emptyUpdate(false)
         val pageSize = candidatePageSize.takeIf { it > 0 }
             ?: chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
         val globalIndex = (candidatePage * pageSize) + index
@@ -107,25 +111,35 @@ class AndroidChewingEngine(
 
     override fun nextPageUpdate(): EngineUpdate? {
         if (!isReady || nativeCtx == 0L) return null
-        val totalPages = chewing_cand_total_page(nativeCtx)
-        if (candidatePage >= totalPages - 1) return null
-        candidatePage++
-        return snapshot(consumed = true)
+        if (chewing_cand_open(nativeCtx) != 0) return null
+        try {
+            val totalPages = chewing_cand_total_page(nativeCtx)
+            if (candidatePage >= totalPages - 1) return null
+            candidatePage++
+            return snapshot(consumed = true)
+        } finally {
+            closeCandidates()
+        }
     }
 
     override fun prevPageUpdate(): EngineUpdate? {
         if (!isReady || nativeCtx == 0L || candidatePage <= 0) return null
-        candidatePage--
-        return snapshot(consumed = true)
+        if (chewing_cand_open(nativeCtx) != 0) return null
+        try {
+            candidatePage--
+            return snapshot(consumed = true)
+        } finally {
+            closeCandidates()
+        }
     }
 
     override fun canPageCandidatesBackward(): Boolean =
-        isReady && nativeCtx != 0L && candidatePage > 0
+        isReady && nativeCtx != 0L && candidatePage > 0 && lastTotalChoices > 0
 
     override fun canPageCandidatesForward(): Boolean {
         if (!isReady || nativeCtx == 0L) return false
-        val totalPages = chewing_cand_total_page(nativeCtx)
-        return candidatePage < totalPages - 1
+        val pageSize = candidatePageSize.coerceAtLeast(1)
+        return lastTotalChoices > 0 && (candidatePage + 1) * pageSize < lastTotalChoices
     }
 
     override fun commitUpdate(): EngineUpdate {
@@ -184,24 +198,34 @@ class AndroidChewingEngine(
         if (chewing_buffer_check(nativeCtx) == 0) {
             candidatePage = 0
             candidatePageSize = 0
+            lastTotalChoices = 0
             return emptyList()
         }
-        if (chewing_cand_open(nativeCtx) != 0) return emptyList()
-
-        val total = chewing_cand_total_choice(nativeCtx)
-        if (total <= 0) {
-            candidatePageSize = 0
+        if (chewing_cand_open(nativeCtx) != 0) {
+            lastTotalChoices = 0
             return emptyList()
         }
-
-        candidatePageSize = chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
-        val start = candidatePage * candidatePageSize
-        if (start >= total) return emptyList()
-        val end = minOf(start + candidatePageSize, total)
-        return (start until end)
-            .mapNotNull { index ->
-                chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty)
+        try {
+            val total = chewing_cand_total_choice(nativeCtx)
+            lastTotalChoices = total.coerceAtLeast(0)
+            if (total <= 0) {
+                candidatePageSize = 0
+                return emptyList()
             }
+
+            candidatePageSize = chewing_cand_choice_per_page(nativeCtx).coerceAtLeast(1)
+            val start = candidatePage * candidatePageSize
+            if (start >= total) return emptyList()
+            val end = minOf(start + candidatePageSize, total)
+            return (start until end)
+                .mapNotNull { index ->
+                    chewing_cand_string_by_index_static(nativeCtx, index)?.takeIf(String::isNotEmpty)
+                }
+        } finally {
+            // Display snapshots must never leave the editor selecting: a stale
+            // selection state blocks commit_preedit_buf and destroys syllables.
+            closeCandidates()
+        }
     }
 
     private fun clearCachedState() {
@@ -209,6 +233,11 @@ class AndroidChewingEngine(
         candidates = emptyList()
         candidatePage = 0
         candidatePageSize = 0
+        lastTotalChoices = 0
+    }
+
+    private fun closeCandidates() {
+        runCatching { chewing_cand_close(nativeCtx) }
     }
 
     private fun emptyUpdate(consumed: Boolean) = EngineUpdate(
@@ -242,6 +271,7 @@ class AndroidChewingEngine(
     private external fun chewing_bopomofo_check(ctx: Long): Int
     private external fun chewing_cursor_current(ctx: Long): Int
     private external fun chewing_cand_open(ctx: Long): Int
+    private external fun chewing_cand_close(ctx: Long): Int
     private external fun chewing_cand_total_choice(ctx: Long): Int
     private external fun chewing_cand_total_page(ctx: Long): Int
     private external fun chewing_cand_choice_per_page(ctx: Long): Int

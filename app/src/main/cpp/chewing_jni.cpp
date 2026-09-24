@@ -114,6 +114,13 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1c
 }
 
 JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1close(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_cand_close(ctx)) : -1;
+}
+
+JNIEXPORT jint JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1total_1choice(
     JNIEnv *, jobject, jlong handle) {
     auto *ctx = contextFrom(handle);
