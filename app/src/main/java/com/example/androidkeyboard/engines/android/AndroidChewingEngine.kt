@@ -176,6 +176,16 @@ class AndroidChewingEngine(
 
     private fun buildCandidates(): List<String> {
         if (!isReady || nativeCtx == 0L) return emptyList()
+        // D3f: never open the candidate list while no syllable has committed.
+        // chewing_cand_open routes through the editor selection flow, which
+        // clears the in-progress syllable as a side effect; opening it from
+        // the per-keystroke snapshot destroyed accumulation (s/u/3 showed only
+        // the latest phonetic and select committed nothing on-device).
+        if (chewing_buffer_check(nativeCtx) == 0) {
+            candidatePage = 0
+            candidatePageSize = 0
+            return emptyList()
+        }
         if (chewing_cand_open(nativeCtx) != 0) return emptyList()
 
         val total = chewing_cand_total_choice(nativeCtx)
