@@ -90,8 +90,20 @@
 - D3f STARTED (2026-09-24): NativeCase4Test instrumentation (real AndroidChewingEngine:
   s/u/3 → select 0 commits segment → next key consumed, reset count unchanged, learning off).
   Compiles (compileDebugAndroidTestKotlin PASS); execution pending emulator (local: zero
-  devices). Commit + push with this ledger;   CI smoke will execute it (continue-on-error,
+  devices). Commit + push with this ledger; CI smoke will execute it (continue-on-error,
   recorded separately). Runs 35943130618/35943149161 in progress at commit time.
+- D3f DONE with real native evidence (2026-09-24, run 35947105814: build SUCCESS +
+  runtime-smoke SUCCESS): guard fix verified (s/u/3 accumulates, candidates listed);
+  pinned truth corrected — choose_by_index selects/replaces WITHOUT immediate commit
+  (commit via Enter/Space/auto-commit; Editor::select→Entering, commit_buffer only via
+  commit paths), test asserts select-consumed + live preedit + next-key-continues + zero
+  resets, all green on emulator. Next: D3g native paging/index integrity.
+- D3g DONE JVM (2026-09-24): ChewingPagingIntegrityTest 4 pins (boundary unconsumed both
+  ends, second-page global index = page*size+local, round-trip flags; limit noted: global
+  formula lives in engine, session pins local passthrough). JVM 129/129. Pushed 45298fe.
+- D3h STARTED: ContinuousSentenceTest instrumentation (你好 s/u/3/c/l/3 structural:
+  coexist, CJK conversion, correction preserves context, one final commit). Awaiting
+  emulator evidence; exact ranking NOT claimed.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
