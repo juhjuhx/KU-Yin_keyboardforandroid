@@ -129,6 +129,10 @@
 - D3 MAJOR GATE local (2026-09-24): clean testDebugUnitTest 129/129 (35 files, fresh
   timestamps), assembleDebug PASS (APK ~29MB fresh), verify.py --static verify OK.
   Pushed dfb48e1; awaiting blocking CI green for D3 ENGINEERING = PASS.
+- D3 ENGINEERING = PASS (2026-09-24, run 35951506131): blocking build SUCCESS.
+  Smoke: only imeBindsAndSurvivesEditorRecreate failed (known headless-window limit,
+  documented non-blocking, flaky across runs); NativeCase4 + ContinuousSentence green.
+  Runtime/device graded separately per contract. Next: M4 worktree from verified HEAD.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
