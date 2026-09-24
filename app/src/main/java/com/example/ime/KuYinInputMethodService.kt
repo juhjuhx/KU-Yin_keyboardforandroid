@@ -9,13 +9,20 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.example.MainActivity
+import com.example.androidkeyboard.engines.android.AndroidChewingEngine
+import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
+import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.input.EditorPolicy
 import com.example.ime.engine.KeyboardMode
 import com.example.ime.engine.KuYinEngine
 import com.example.ime.service.CompositionResetPolicy
 import com.example.ime.service.EffectiveModePolicy
+import com.example.ime.service.NativeChewingEngineOwner
+import com.example.ime.service.NativeLearningPolicy
+import com.example.ime.service.NativeStartupGate
 import com.example.ime.session.ComposeDecoderSession
 import com.example.ime.session.ImeCommand
+import com.example.ime.session.ProductionDecoderResolver
 import com.example.ime.session.ZhuyinDictionarySession
 import com.example.ime.service.EditorDeletion
 import com.example.ime.service.ImeLifecycleOwner
@@ -31,6 +38,8 @@ class KuYinInputMethodService : InputMethodService() {
     private lateinit var settings: KeyboardSettings
     private lateinit var feedbackHelper: FeedbackHelper
     private var userPreferredMode: KeyboardMode = KeyboardMode.ZHUYIN
+    private var nativeOwner: NativeChewingEngineOwner? = null
+    private var nativeEngine: ChewingEngine? = null
 
     private val currentActionLabel = mutableStateOf("換行")
     private var composeView: ComposeView? = null
@@ -42,7 +51,22 @@ class KuYinInputMethodService : InputMethodService() {
 
         settings = KeyboardSettings(this)
         engine = KuYinEngine(this)
-        session = ZhuyinDictionarySession(engine)
+        var nativePaths: LibChewingDataInstaller.Paths? = null
+        nativeEngine = NativeStartupGate.start(
+            install = { nativePaths = LibChewingDataInstaller.ensureInstalled(this) },
+            openEngine = {
+                val owner = NativeChewingEngineOwner {
+                    val paths = nativePaths ?: error("libchewing paths missing")
+                    AndroidChewingEngine(
+                        paths.systemDir.absolutePath,
+                        paths.userFile.absolutePath,
+                    )
+                }
+                nativeOwner = owner
+                owner.ensureStarted()
+            },
+        )
+        session = ProductionDecoderResolver.resolve(nativeEngine, engine)
         feedbackHelper = FeedbackHelper(this, settings)
     }
 
@@ -113,6 +137,9 @@ class KuYinInputMethodService : InputMethodService() {
             attribute?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED
         )
         engine.applyPolicy(policy)
+        nativeEngine?.setPersonalizedLearningEnabled(
+            NativeLearningPolicy.shouldEnableLearning(policy),
+        )
         session.dispatch(ImeCommand.Reset)
         engine.setMode(EffectiveModePolicy.effectiveMode(userPreferredMode, policy))
     }
@@ -173,6 +200,9 @@ class KuYinInputMethodService : InputMethodService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        nativeOwner?.close()
+        nativeOwner = null
+        nativeEngine = null
         lifecycleOwner.onDestroy()
     }
 
