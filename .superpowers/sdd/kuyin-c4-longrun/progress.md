@@ -120,6 +120,12 @@
   ContinuousSentenceTest (你好 coexist/CJK/correction/final-commit-once) green on
   emulator. D3f PASS with real native evidence; D3h structural gate PASS (exact ranking
   NOT claimed; wider corpus → device QA follow-up). Next: D3 doc sync + security gate.
+- D3 DOC SYNC + SECURITY (2026-09-24): CURRENT_STATE refreshed (production
+  ChewingEngineSession, owner/fallback/learning, 129 JVM + 2 instrumentation, CI green;
+  device + wide corpus pending). Native-path review: owner init/close-once tested,
+  reset never recreates, invalid indices guarded (session + engine), learning single-source,
+  3 generic Log.e with zero input content, manifest zero permissions + allowBackup=false,
+  JNI Get/Release paired. Commit e5c2608. Next: D3 major gate (clean test + CI).
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
