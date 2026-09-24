@@ -41,9 +41,17 @@ class NativeCase4Test {
             assertTrue("native engine must be ready on an Android runtime", engine.isReady)
             engine.setPersonalizedLearningEnabled(false)
 
-            for (key in listOf('s'.code, 'u'.code, '3'.code)) {
-                engine.handleKeyUpdate(key)
+            val stepUpdates = listOf('s'.code, 'u'.code, '3'.code).map { key ->
+                key to engine.handleKeyUpdate(key)
             }
+            val last = stepUpdates.last().second
+            assertTrue(
+                "s/u/3 must build an active native composition; " +
+                    stepUpdates.joinToString { (k, u) ->
+                        "$k consumed=${u.consumed} preedit='${u.preedit}' cands=${u.candidates}"
+                    },
+                last.preedit.isNotEmpty() && last.candidates.isNotEmpty(),
+            )
             val selected = engine.selectCandidateUpdate(0)
             assertTrue(
                 "selecting candidate 0 must commit a segment; " +
