@@ -126,6 +126,9 @@
   reset never recreates, invalid indices guarded (session + engine), learning single-source,
   3 generic Log.e with zero input content, manifest zero permissions + allowBackup=false,
   JNI Get/Release paired. Commit e5c2608. Next: D3 major gate (clean test + CI).
+- D3 MAJOR GATE local (2026-09-24): clean testDebugUnitTest 129/129 (35 files, fresh
+  timestamps), assembleDebug PASS (APK ~29MB fresh), verify.py --static verify OK.
+  Pushed dfb48e1; awaiting blocking CI green for D3 ENGINEERING = PASS.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
