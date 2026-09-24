@@ -77,6 +77,16 @@
   (34 files, 0 fail); verify.py --static exit 0 verify OK; assembleDebug PASS (~29MB).
   Commit cec2e08. KDoc kept: centralized-path ordering contract (prevents ghost/double-commit
   class bugs, unenforceable by types). Next: push c4 (gate green), then TRACK-B B1.
+- Push authorized + executed (2026-09-24): autonomous-harness ruling supersedes per-push
+  approval. cc94325..218f09e (D3a–D3e + ledger) normal-pushed; local == remote.
+- TRACK-B B1 DONE: blocking Build now triggers on c4 push (contract RED exit 1 → workflow
+  branches [main, c4-compose-libchewing-switch] → contract GREEN; wired into verify.py).
+  Commit + push f6250ea. First C4 CI run 35942304073 in_progress (trigger proven).
+- B1 CI result (2026-09-24): run 35942304073 completed SUCCESS (8m37s) — first blocking
+  CI evidence on c4-compose-libchewing-switch. Next: TRACK-B B2 NDK drift.
+- TRACK-B B2 DONE: app ndkVersion 28.2.13676358 is single source; checker RED (smoke pinned
+  27.3) → smoke aligned to 28.2 + wired into verify.py → static exit 0. Commit + push 908801d.
+  Runtime-smoke job recorded separately from blocking build PASS. Next: D3f real native CASE-4.
 - Toolchain self-provision (2026-09-23 ~22:48+): Temurin 21.0.12.1 OK,
   cmdline-tools OK, platform-tools/platform-36/build-tools-36/cmake OK,
   NDK 28.2 downloading (~14% at 22:5x, PID 54487, log /tmp/ndk-install.log)
