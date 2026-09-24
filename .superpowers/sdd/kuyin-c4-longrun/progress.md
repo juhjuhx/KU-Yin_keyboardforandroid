@@ -104,6 +104,10 @@
 - D3h STARTED: ContinuousSentenceTest instrumentation (你好 s/u/3/c/l/3 structural:
   coexist, CJK conversion, correction preserves context, one final commit). Awaiting
   emulator evidence; exact ranking NOT claimed.
+- D3h EVIDENCE 1 (run 35948142842): coexist/CJK/candidates/correction-context all PASS;
+  final commitUpdate → ''. Two stories: (a) select auto-committed already (commit arrived
+  at select, com empty at final), (b) commit path empty. Test now records
+  selectCommitted to discriminate. Pushed f2798c5; awaiting run.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→
