@@ -90,8 +90,14 @@
 - D3f STARTED (2026-09-24): NativeCase4Test instrumentation (real AndroidChewingEngine:
   s/u/3 → select 0 commits segment → next key consumed, reset count unchanged, learning off).
   Compiles (compileDebugAndroidTestKotlin PASS); execution pending emulator (local: zero
-  devices). Commit + push with this ledger; CI smoke will execute it (continue-on-error,
+  devices). Commit + push with this ledger;   CI smoke will execute it (continue-on-error,
   recorded separately). Runs 35943130618/35943149161 in progress at commit time.
+- D3f EVIDENCE (2026-09-24): run 35943351185 build SUCCESS, smoke FAILED only on the new
+  test: selectCandidateUpdate(0) after s/u/3 → committed='' preedit='' (line 48). Sibling
+  smoke tests green → env/dictionaries fine. Hypotheses: (a) s/u/3 yielded no candidates,
+  (b) choose_by_index needs prior cand_open. No production change on hypothesis; test now
+  captures per-key preedit/candidates/consumed before select. Pushed 546dbbd; awaiting
+  emulator output for root-cause fix.
 - Toolchain self-provision (2026-09-23 ~22:48+): Temurin 21.0.12.1 OK,
   cmdline-tools OK, platform-tools/platform-36/build-tools-36/cmake OK,
   NDK 28.2 downloading (~14% at 22:5x, PID 54487, log /tmp/ndk-install.log)
