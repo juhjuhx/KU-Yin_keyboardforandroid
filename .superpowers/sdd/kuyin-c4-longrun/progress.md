@@ -115,6 +115,11 @@
   selection), new chewing_cand_close JNI bridge (symbol verified in pinned chewing.h).
   JVM 129/129 + androidTest compile + assembleDebug + static exit 0. Pushed dc3c48d;
   awaiting emulator verdict on select-then-commit.
+- NATIVE GREEN (2026-09-24, run 35950501851): build SUCCESS + runtime-smoke SUCCESS,
+  zero failed-test lines — NativeCase4Test (select→same-context→no-reset) and
+  ContinuousSentenceTest (你好 coexist/CJK/correction/final-commit-once) green on
+  emulator. D3f PASS with real native evidence; D3h structural gate PASS (exact ranking
+  NOT claimed; wider corpus → device QA follow-up). Next: D3 doc sync + security gate.
 - D3f ROOT CAUSE (2026-09-24, pinned-source evidence): emulator showed s/u/3 →
   preedit 'ㄋ' then 'ㄧ' then 'ˇ' (replace, never accumulate), cands always [].
   Pinned libchewing a6a8fa4: snapshot()→buildCandidates()→chewing_cand_open→

@@ -2,13 +2,17 @@
 
 - Release: `v0.2.0-alpha.1` = old commit `278bcc2` (pre-C3.5; NOT this branch).
 - main: `73e810f` = old Android main + unrelated `taui-workspace/` web files.
-- C4 branch: `c4-compose-libchewing-switch`; D2.5 candidate `34a758b`
-  (local-only until SDK GREEN + human push approval).
-- Production decoder: `ZhuyinDictionarySession`. Native decoder: built into APK,
-  exercised by tests/harness only — NOT production until D3.
-- Tests: 24 classes / 99 @Test (JVM run pending SDK box). Contracts: 7/7 exit 0.
-- Runtime/device: NOT TESTED this round. QR donation art: decorative until scanned.
-- Open gates: SDK JVM + assembleDebug + runtime smoke; D3 authorization.
+- C4 branch: `c4-compose-libchewing-switch` (D3a–D3h landed, pushed; see ledger).
+- Production decoder: `ChewingEngineSession` (native, D3d cutover).
+  Native owner: service-owned `NativeChewingEngineOwner` (init-once/close-once).
+  Fallback: `ZhuyinDictionarySession`, startup-only via `NativeStartupGate`.
+  Learning: `NativeLearningPolicy` maps EditorPolicy to native (single source).
+- Tests: 35 JVM classes / 129 @Test, all green; +2 emulator instrumentation
+  (native CASE-4, continuous-sentence structural). Contracts: exit 0 (incl. CI-trigger + NDK pins).
+- Build: assembleDebug green (~29MB); blocking CI runs on C4 push and is green.
+- Runtime: emulator smoke green incl. native CASE-4/continuous-sentence (experimental
+  job, continue-on-error). Physical device: NOT TESTED. QR donation art: decorative
+  until scanned.
+- Open gates: D3 major gate (clean test + CI); device QA incl. wider D3h corpus.
 - Known debt: main contains TAUI files (recorded, revert separately, no rewrite);
-  dual learning (Zhuyin prefs + libchewing flag) pending B8; `ROW_*` vs canonical
-  Dachen duplication pending M4; PR #4 = donor, PR #6 = docs-only.
+  `ROW_*` vs canonical Dachen duplication pending M4; PR #4 = donor, PR #6 = docs-only.
