@@ -87,6 +87,11 @@
 - TRACK-B B2 DONE: app ndkVersion 28.2.13676358 is single source; checker RED (smoke pinned
   27.3) → smoke aligned to 28.2 + wired into verify.py → static exit 0. Commit + push 908801d.
   Runtime-smoke job recorded separately from blocking build PASS. Next: D3f real native CASE-4.
+- D3f STARTED (2026-09-24): NativeCase4Test instrumentation (real AndroidChewingEngine:
+  s/u/3 → select 0 commits segment → next key consumed, reset count unchanged, learning off).
+  Compiles (compileDebugAndroidTestKotlin PASS); execution pending emulator (local: zero
+  devices). Commit + push with this ledger; CI smoke will execute it (continue-on-error,
+  recorded separately). Runs 35943130618/35943149161 in progress at commit time.
 - Toolchain self-provision (2026-09-23 ~22:48+): Temurin 21.0.12.1 OK,
   cmdline-tools OK, platform-tools/platform-36/build-tools-36/cmake OK,
   NDK 28.2 downloading (~14% at 22:5x, PID 54487, log /tmp/ndk-install.log)
