@@ -19,6 +19,7 @@ CONTRACTS = [
     "check_p3_architecture_security_contract.py",
     "check_production_compose_contract.py",
     "check_ci_c4_trigger.py",
+    "check_ndk_pin_consistency.py",
     "check_docs_consistency.py",
 ]
 

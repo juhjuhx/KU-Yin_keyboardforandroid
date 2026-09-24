@@ -100,7 +100,7 @@ jobs:
           target: default
           arch: x86_64
           profile: pixel_7
-          ndk: 27.3.13750724
+          ndk: 28.2.13676358
           cmake: 3.22.1
           disable-animations: true
           disable-spellchecker: true
