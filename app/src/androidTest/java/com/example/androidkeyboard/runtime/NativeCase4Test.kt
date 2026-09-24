@@ -20,9 +20,12 @@ private class ResetCountingEngine(private val delegate: ChewingEngine) : Chewing
 }
 
 /**
- * D3f: real native CASE-4. Candidate selection commits a segment while the
- * remaining context continues in the SAME native context: the next key is
- * consumed without any reset.
+ * D3f: real native CASE-4 on pinned libchewing a6a8fa4.
+ *
+ * Pinned-version truth (verified on-device): choose_by_index selects/replaces
+ * the interval but does NOT immediately commit (commit lands via Enter/Space/
+ * auto-commit). CASE-4 therefore proves: select applies the replacement into
+ * the SAME native context (no reset), and the next key keeps composing there.
  */
 @RunWith(AndroidJUnit4::class)
 class NativeCase4Test {
@@ -54,9 +57,9 @@ class NativeCase4Test {
             )
             val selected = engine.selectCandidateUpdate(0)
             assertTrue(
-                "selecting candidate 0 must commit a segment; " +
-                    "committed='${selected.committedText}' preedit='${selected.preedit}'",
-                selected.committedText.isNotEmpty(),
+                "select must apply into the live composition without resetting it; " +
+                    "consumed=${selected.consumed} preedit='${selected.preedit}'",
+                selected.consumed && selected.preedit.isNotEmpty(),
             )
             val resetsBeforeNextKey = engine.resetCalls
             val continued = engine.handleKeyUpdate('1'.code)
