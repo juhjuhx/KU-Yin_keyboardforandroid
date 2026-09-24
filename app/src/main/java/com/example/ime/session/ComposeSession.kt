@@ -31,6 +31,19 @@ data class DispatchResult(
     val additionalCommits: List<String> = emptyList()
 )
 
+/**
+ * D3e: the single centralized editor-effect projection. Callers apply the
+ * returned texts in list order, each exactly once: commitText first, then
+ * additionalCommits. No command-specific application path may reorder,
+ * merge, or duplicate these effects.
+ */
+fun orderedCommits(result: DispatchResult): List<String> =
+    if (result.commitText != null) {
+        listOf(result.commitText) + result.additionalCommits
+    } else {
+        result.additionalCommits
+    }
+
 interface ComposeDecoderSession {
     val state: StateFlow<ComposeImeState>
     fun dispatch(command: ImeCommand): DispatchResult

@@ -31,7 +31,9 @@ checks = {
     and "engine.commitPunctuation" not in ui
     and "ImeCommand.Punctuation" in zhuyin_session
     and "ImeCommand.Punctuation" in chewing_session
-    and ui.count("additionalCommits.forEach(onCommitText)") == 1,
+    and "orderedCommits" in ui
+    and "commitText?.let(onCommitText)" not in ui
+    and ui.count("val applyPunctuation") == 1,
     "mode switch completes via session": "ImeCommand.Complete" in ui
     and "engine.switchMode(" not in ui,
     "production state reads session, not engine": "engine.composingZhuyin" not in service

@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ime.engine.*
 import com.example.ime.session.ComposeDecoderSession
 import com.example.ime.session.ImeCommand
+import com.example.ime.session.orderedCommits
 import com.example.ime.settings.KeyboardSettings
 
 data class KeyboardThemeColors(
@@ -143,15 +144,14 @@ fun KuYinKeyboardUi(
 
     val switchPresentationMode: (KeyboardMode) -> Unit = { mode ->
         val result = session.dispatch(ImeCommand.Complete)
-        result.commitText?.let(onCommitText)
+        orderedCommits(result).forEach(onCommitText)
         onUserModeSelected(mode)
         engine.setMode(mode)
     }
 
     val applyPunctuation: (String) -> Unit = { p ->
         val result = session.dispatch(ImeCommand.Punctuation(p))
-        result.commitText?.let(onCommitText)
-        result.additionalCommits.forEach(onCommitText)
+        orderedCommits(result).forEach(onCommitText)
     }
 
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
@@ -185,7 +185,8 @@ fun KuYinKeyboardUi(
                     onFeedback()
                     val index = session.state.value.candidates.indexOf(candidate)
                     if (index >= 0) {
-                        session.dispatch(ImeCommand.SelectCandidate(index)).commitText?.let(onCommitText)
+                        orderedCommits(session.dispatch(ImeCommand.SelectCandidate(index)))
+                            .forEach(onCommitText)
                     }
                 },
                 onClearComposing = {
@@ -223,22 +224,24 @@ fun KuYinKeyboardUi(
                         actionLabel = actionLabel,
                         onZhuyinPress = { key ->
                             onFeedback()
-                            session.dispatch(ImeCommand.TapZhuyinKey(key)).commitText?.let(onCommitText)
+                            orderedCommits(session.dispatch(ImeCommand.TapZhuyinKey(key)))
+                                .forEach(onCommitText)
                         },
                         onSpacePress = {
                             onFeedback()
-                            session.dispatch(ImeCommand.Space).commitText?.let(onCommitText)
+                            orderedCommits(session.dispatch(ImeCommand.Space))
+                                .forEach(onCommitText)
                         },
                         onBackspacePress = {
                             onFeedback()
                             val result = session.dispatch(ImeCommand.Backspace)
-                            result.commitText?.let(onCommitText)
+                            orderedCommits(result).forEach(onCommitText)
                             if (!result.consumed) onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
                             val result = session.dispatch(ImeCommand.Enter)
-                            result.commitText?.let(onCommitText)
+                            orderedCommits(result).forEach(onCommitText)
                             if (!result.consumed) onPerformEditorAction()
                         },
                         onSwitchToEnglish = {
