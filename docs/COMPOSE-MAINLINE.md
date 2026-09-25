@@ -51,3 +51,11 @@
 2. C4 生產切換 libchewing（CASE-4 回歸先行；`dispatch` 可能升級 Result 形）。
 3. 英文第二排 16dp stagger 死區（等 visual baseline `rowInsetWeight` 決策）。
 4. Release key／AAB／F-Droid source lane／`docs/ARCHITECTURE.md` 重寫（C12）。
+
+## 合併後記（2026-09-22，PR #5 MERGED）
+
+- `feat/compose-mainline-v0.3`（`696c9e8`＋C1–C3＋P1 hotfix＋CI 對齊＋docs）已合併至 `main`（merge `278bcc2`）；舊 `main`（`653b4a3`）僅留 View 基線歷史。
+- CI 對齊：wrapper Gradle 9.3.1（jar 納版控）、JDK 21、NDK 28.2＋CMake 3.22.1；P1 合約改認 wrapper；smoke 改真 applicationId；release 相關步驟暫出（等簽章決策）。
+- 全新審查（2026-09-22）：OCR CLI 可用但 LLM 憑證 401，`ocr review` 未跑；改以 high-signal 手動審查三适配器＋CI＋smoke——無新增 critical（已知缺口：C2 空預edit Backspace 吞 surrounding-delete 待 C4 補；`dispatch` 表達力待升級；`KeyboardLayout.Dachen` 數據暫借舊包）。
+- PR #4 維持 DRAFT OPEN 作 donor；`feat/keyboard-shell-v0.2` 等舊分支未刪（需逐個授權）。
+- `APK/README.md` 版本號已跟進 `0.2.0-alpha.1`（release 列改為待簽章）；`metadata.json` 已刪；`.DS_Store`＋生成物已忽略。

@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.2.0-alpha.1] - 2026-09-22 (Compose mainline, PR #5)
+
+### Product direction
+
+- Compose (Google AI Studio) is now the authoritative product UI; the View-based keyboard-shell-v0.2 branch is donor/reference only.
+- Zero-network baseline: INTERNET/VIBRATE permissions removed, allowBackup=false, Firebase/OkHttp/Retrofit/Moshi dropped, UpstreamSyncManager replaced by offline cards, clipboard reading removed.
+
+### Decoder and native
+
+- libchewing wired at the native layer: NDK 28.2 / CMake 3.22.1, four ABIs plus dictionaries in the APK (pinned prebuilt 3587ba33), 16 KB ELF alignment PASS.
+- Staged migration scaffolding (no behavior switch yet): ComposeDecoderSession contract plus ZhuyinDictionary and ChewingEngine adapters with RED-first tests.
+- Production decoder is still ZhuyinDictionary; the libchewing switch (C4) requires physical-device validation.
+
+### Input quality (P1 hotfix, device-reproduced)
+
+- Tiered candidate ranking: exact match > valid continuation > tone fallback; learning reorders only within a tier.
+- Key hitboxes cover full touch cells (visual keycaps unchanged); edge keys reach screen edges.
+
+### Verification
+
+- 61 JVM/Robolectric tests green, 6 contract scripts green, CI build green on JDK 21.
+- Release remains unsigned (no keystore); device retest still required.
+
 ## [0.1.2-alpha] - 2026-09-13
 
 ### P0 real-device fixes
