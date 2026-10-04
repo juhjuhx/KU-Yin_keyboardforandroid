@@ -52,4 +52,12 @@ class NativeLearningPolicyTest {
     fun `force ascii disables native learning`() {
         assertFalse(NativeLearningPolicy.shouldEnableLearning(forceAscii()))
     }
+
+    @Test
+    fun `non text editors disable native learning`() {
+        listOf(InputType.TYPE_NULL, InputType.TYPE_CLASS_NUMBER, InputType.TYPE_CLASS_PHONE, InputType.TYPE_CLASS_DATETIME)
+            .forEach { type ->
+                assertFalse(NativeLearningPolicy.shouldEnableLearning(EditorPolicy.from(type, EditorInfo.IME_ACTION_DONE)))
+            }
+    }
 }

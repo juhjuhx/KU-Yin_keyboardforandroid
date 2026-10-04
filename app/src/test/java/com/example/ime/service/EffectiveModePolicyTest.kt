@@ -67,4 +67,33 @@ class EffectiveModePolicyTest {
             EffectiveModePolicy.effectiveMode(preferred, normalPolicy())
         )
     }
+
+    @Test
+    fun `non text editors force English for every preferred mode`() {
+        listOf(
+            InputType.TYPE_NULL,
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
+            InputType.TYPE_CLASS_PHONE,
+            InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE,
+            InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_TIME,
+        ).forEach { inputType ->
+            val policy = EditorPolicy.from(inputType, EditorInfo.IME_ACTION_NEXT)
+            KeyboardMode.entries.forEach { preferred ->
+                assertEquals(
+                    "inputType=$inputType preferred=$preferred",
+                    KeyboardMode.ENGLISH,
+                    EffectiveModePolicy.effectiveMode(preferred, policy),
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `non text detour restores every preferred mode on normal text`() {
+        val restricted = EditorPolicy.from(InputType.TYPE_CLASS_NUMBER, EditorInfo.IME_ACTION_DONE)
+        KeyboardMode.entries.forEach { preferred ->
+            assertEquals(KeyboardMode.ENGLISH, EffectiveModePolicy.effectiveMode(preferred, restricted))
+            assertEquals(preferred, EffectiveModePolicy.effectiveMode(preferred, normalPolicy()))
+        }
+    }
 }

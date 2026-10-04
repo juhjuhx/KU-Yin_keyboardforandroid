@@ -50,7 +50,7 @@ data class EditorPolicy(
 
             return EditorPolicy(
                 isSensitive = isSensitive,
-                allowPersonalizedLearning = !isSensitive && !noPersonalizedLearning,
+                allowPersonalizedLearning = supportsChewing && !noPersonalizedLearning,
                 allowCandidates = supportsChewing,
                 allowComposition = supportsChewing,
                 forceAscii = forceAscii,

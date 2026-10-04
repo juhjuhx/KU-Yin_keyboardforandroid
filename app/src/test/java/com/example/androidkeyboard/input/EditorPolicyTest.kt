@@ -101,6 +101,45 @@ class EditorPolicyTest {
     }
 
     @Test
+    fun nonTextEditorsDisableCompositionCandidatesAndLearning() {
+        val nonTextTypes = listOf(
+            InputType.TYPE_NULL,
+            InputType.TYPE_CLASS_NUMBER,
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED,
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL,
+            InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED or InputType.TYPE_NUMBER_FLAG_DECIMAL,
+            InputType.TYPE_CLASS_PHONE,
+            InputType.TYPE_CLASS_DATETIME,
+            InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE,
+            InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_TIME,
+        )
+        nonTextTypes.forEach { type ->
+            val policy = EditorPolicy.from(type, EditorInfo.IME_ACTION_NEXT)
+            assertFalse("composition for inputType=$type", policy.allowComposition)
+            assertFalse("candidates for inputType=$type", policy.allowCandidates)
+            assertFalse("learning for inputType=$type", policy.allowPersonalizedLearning)
+            assertFalse(policy.isSensitive)
+            assertFalse(policy.forceAscii)
+            assertEquals(EditorAction.NEXT, policy.action)
+        }
+    }
+
+    @Test
+    fun ordinaryTextVariationsKeepCompositionAndLearning() {
+        listOf(
+            InputType.TYPE_TEXT_VARIATION_NORMAL,
+            InputType.TYPE_TEXT_VARIATION_URI,
+            InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+            InputType.TYPE_TEXT_VARIATION_WEB_EDIT_TEXT,
+        ).forEach { variation ->
+            val policy = EditorPolicy.from(InputType.TYPE_CLASS_TEXT or variation, EditorInfo.IME_ACTION_DONE)
+            assertTrue(policy.allowComposition)
+            assertTrue(policy.allowCandidates)
+            assertTrue(policy.allowPersonalizedLearning)
+        }
+    }
+
+    @Test
     fun editorActionsAreNormalizedIntoDomainEnum() {
         val inputType = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_NORMAL
 
