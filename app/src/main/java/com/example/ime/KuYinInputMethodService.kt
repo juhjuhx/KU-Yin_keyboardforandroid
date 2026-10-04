@@ -12,6 +12,7 @@ import com.example.MainActivity
 import com.example.androidkeyboard.engines.android.AndroidChewingEngine
 import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
 import com.example.androidkeyboard.engines.core.ChewingEngine
+import com.example.androidkeyboard.input.EditorEnterPolicy
 import com.example.androidkeyboard.input.EditorPolicy
 import com.example.ime.engine.KeyboardMode
 import com.example.ime.engine.KuYinEngine
@@ -41,7 +42,7 @@ class KuYinInputMethodService : InputMethodService() {
     private var nativeOwner: NativeChewingEngineOwner? = null
     private var nativeEngine: ChewingEngine? = null
 
-    private val currentActionLabel = mutableStateOf("換行")
+    private val currentEnterPolicy = mutableStateOf(EditorEnterPolicy.from(EditorInfo.IME_ACTION_UNSPECIFIED))
     private var composeView: ComposeView? = null
 
     override fun onCreate() {
@@ -98,7 +99,8 @@ class KuYinInputMethodService : InputMethodService() {
                     engine = engine,
                     session = session,
                     settings = settings,
-                    actionLabel = currentActionLabel.value,
+                    actionLabel = currentEnterPolicy.value.label,
+                    isActionPresentation = currentEnterPolicy.value.isActionPresentation,
                     onCommitText = { text ->
                         currentInputConnection?.commitText(text, 1)
                     },
@@ -132,6 +134,7 @@ class KuYinInputMethodService : InputMethodService() {
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
+        updateEnterPolicy(attribute)
         val policy = EditorPolicy.from(
             attribute?.inputType ?: InputType.TYPE_CLASS_TEXT,
             attribute?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED
@@ -151,15 +154,7 @@ class KuYinInputMethodService : InputMethodService() {
         }
         lifecycleOwner.onStart()
 
-        // 判定 Enter 鍵動作文字
-        currentActionLabel.value = when (info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)) {
-            EditorInfo.IME_ACTION_GO -> "前往"
-            EditorInfo.IME_ACTION_SEARCH -> "搜尋"
-            EditorInfo.IME_ACTION_SEND -> "傳送"
-            EditorInfo.IME_ACTION_NEXT -> "下一步"
-            EditorInfo.IME_ACTION_DONE -> "完成"
-            else -> "換行"
-        }
+        updateEnterPolicy(info)
 
         session.dispatch(ImeCommand.Reset)
     }
@@ -216,15 +211,20 @@ class KuYinInputMethodService : InputMethodService() {
         }
     }
 
+    private fun updateEnterPolicy(info: EditorInfo?) {
+        currentEnterPolicy.value = EditorEnterPolicy.from(
+            imeOptions = info?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED,
+            actionLabel = info?.actionLabel?.toString(),
+            actionId = info?.actionId ?: 0,
+        )
+    }
+
     private fun handleEditorAction() {
         val ic = currentInputConnection ?: return
-        val currentInfo = currentInputEditorInfo
-        val action = currentInfo?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)
-        if (action != null && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
-            ic.performEditorAction(action)
-        } else {
-            // 預設換行
-            ic.commitText("\n", 1)
+        when (val behavior = currentEnterPolicy.value.behavior) {
+            EditorEnterPolicy.Behavior.InsertNewline -> ic.commitText("\n", 1)
+            is EditorEnterPolicy.Behavior.PerformStandardAction -> ic.performEditorAction(behavior.actionCode)
+            is EditorEnterPolicy.Behavior.PerformCustomAction -> ic.performEditorAction(behavior.actionId)
         }
     }
 }

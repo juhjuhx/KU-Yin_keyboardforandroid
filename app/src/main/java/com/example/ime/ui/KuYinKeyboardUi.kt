@@ -134,7 +134,8 @@ fun KuYinKeyboardUi(
     onHideKeyboard: () -> Unit,
     onFeedback: () -> Unit,
     onOpenFeedback: () -> Unit = {},
-    onUserModeSelected: (KeyboardMode) -> Unit = {}
+    onUserModeSelected: (KeyboardMode) -> Unit = {},
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     val mode by engine.mode.collectAsState()
     val shiftState by engine.shiftState.collectAsState()
@@ -222,6 +223,7 @@ fun KuYinKeyboardUi(
                         keyTextPrimary = keyTextPrimary,
                         keyTextSub = keyTextSub,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onZhuyinPress = { key ->
                             onFeedback()
                             orderedCommits(session.dispatch(ImeCommand.TapZhuyinKey(key)))
@@ -270,6 +272,7 @@ fun KuYinKeyboardUi(
                         keyBgAccent = keyBgAccent,
                         keyTextPrimary = keyTextPrimary,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onKeyPress = { char ->
                             onFeedback()
                             engine.onEnglishKey(char, onCommitText)
@@ -311,6 +314,7 @@ fun KuYinKeyboardUi(
                         keyBgAccent = keyBgAccent,
                         keyTextPrimary = keyTextPrimary,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onSymbolPress = { symbol ->
                             onFeedback()
                             onCommitText(symbol)
@@ -525,7 +529,8 @@ fun ZhuyinKeyboardLayout(
     onSwitchToEnglish: () -> Unit,
     onSwitchToSymbols: () -> Unit,
     onSwitchToEmoji: () -> Unit,
-    onPunctuation: (String) -> Unit
+    onPunctuation: (String) -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     Column(
         modifier = Modifier
@@ -679,7 +684,7 @@ fun ZhuyinKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }
@@ -701,7 +706,8 @@ fun EnglishKeyboardLayout(
     onEnterPress: () -> Unit,
     onSwitchToZhuyin: () -> Unit,
     onSwitchToSymbols: () -> Unit,
-    onPunctuation: (String) -> Unit
+    onPunctuation: (String) -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     val row1 = listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p")
     val row2 = listOf("a", "s", "d", "f", "g", "h", "j", "k", "l")
@@ -837,7 +843,7 @@ fun EnglishKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }
@@ -856,7 +862,8 @@ fun SymbolsKeyboardLayout(
     onEnterPress: () -> Unit,
     onSwitchToZhuyin: () -> Unit,
     onSwitchToEnglish: () -> Unit,
-    onSpacePress: () -> Unit
+    onSpacePress: () -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     val row1 = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
     val row2 = listOf("，", "。", "！", "？", "：", "；", "「", "」", "『", "』")
@@ -977,7 +984,7 @@ fun SymbolsKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }

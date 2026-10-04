@@ -1,6 +1,7 @@
 package com.example.ime
 
 import android.text.InputType
+import android.os.Looper
 import android.view.inputmethod.EditorInfo
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -17,10 +18,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
+import org.robolectric.Shadows.shadowOf
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -33,6 +36,13 @@ class NonTextEditorServiceTest {
     private lateinit var engine: KuYinEngine
     private lateinit var native: RecordingEngine
     private lateinit var session: ChewingEngineSession
+
+    @After
+    fun drainEditorPresentationUpdates() {
+        // onStartInput現在同步Enter presentation；無UI案例也須送出snapshot通知，
+        // 再讓Robolectric清除looper，避免影響下一個Compose測試。
+        shadowOf(Looper.getMainLooper()).idle()
+    }
 
     @Before
     fun setUp() {
