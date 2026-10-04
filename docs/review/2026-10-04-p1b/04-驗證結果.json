@@ -1,0 +1,287 @@
+{
+  "command": "JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew :app:testDebugUnitTest :app:assembleDebug --console=plain",
+  "exit": 0,
+  "jvm": {
+    "classes": 36,
+    "tests": 139,
+    "failures": 0,
+    "errors": 0
+  },
+  "suites": [
+    {
+      "name": "com.example.ExampleRobolectricTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ExampleUnitTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.GreetingScreenshotTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.android.VisiblePreeditTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.core.ChewingEnginePagingContractTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.opencc.OpenCCConverterTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.EditorPolicyTest",
+      "tests": "8",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.ImeSessionControllerTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardHitboxContractTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardLayoutTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardModeContractTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.ProductionEditorPolicyTest",
+      "tests": "7",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.ProductionSeamIntegrationTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.engine.PunctuationTransitionTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.engine.ZhuyinDictionaryRankingTest",
+      "tests": "10",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.CompositionResetPolicyTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.EditorDeletionTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.EffectiveModePolicyTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.NativeChewingEngineOwnerTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.NativeLearningPolicyTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.service.NativeStartupGateTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingBackspaceContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingCompleteContractTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingEngineCase4Test",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingEngineSessionTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingPagingEnterTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingPagingIntegrityTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ChewingSpaceContractTest",
+      "tests": "1",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ComposeDecoderSessionContractTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.DispatchResultEffectsTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.EnterCommandContractTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ModeSwitchContractTest",
+      "tests": "3",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ProductionDecoderResolverTest",
+      "tests": "2",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.PunctuationCommandContractTest",
+      "tests": "5",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.session.ZhuyinDictionarySessionTest",
+      "tests": "4",
+      "failures": "0",
+      "errors": "0"
+    },
+    {
+      "name": "com.example.ime.ui.DachenKeyboardLayoutTest",
+      "tests": "6",
+      "failures": "0",
+      "errors": "0"
+    }
+  ],
+  "apk": {
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 29379410,
+    "sha256": "3c173c99ed53efbb041ff8cf0c5d09fb2959baead624331bae80ebc802fec2be"
+  },
+  "contracts": [
+    {
+      "script": "scripts/check_ci_c4_trigger.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_dachen_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_docs_consistency.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_editor_sync_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_ndk_pin_consistency.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_p0_keyboard_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_p1_build_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_p2_ui_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_p3_architecture_security_contract.py",
+      "exit": 0
+    },
+    {
+      "script": "scripts/check_production_compose_contract.py",
+      "exit": 0
+    }
+  ],
+  "bootstrap": {
+    "command": "bash scripts/bootstrap_native_deps.sh",
+    "exit": 0
+  },
+  "runtime": "NOT_TESTED — adb devices 無裝置",
+  "release": {
+    "command": "JAVA_HOME=/opt/homebrew/opt/openjdk@21 ./gradlew :app:assembleRelease --console=plain",
+    "exit": 1,
+    "failed_task": ":app:packageRelease",
+    "reason": "既有 my-upload-key.jks 不存在；compileReleaseKotlin 與 lintVitalRelease 通過"
+  },
+  "lsp_diagnostics": "UNAVAILABLE — 無 callable tool 或 CLI；Debug/Release Kotlin compiler 與 Release lint 通過，仍有既有 deprecated 警告"
+}
