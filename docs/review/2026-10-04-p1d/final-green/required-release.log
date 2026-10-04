@@ -1,0 +1,100 @@
+Calculating task graph as no cached configuration is available for tasks: :app:assembleRelease
+> Task :app:preBuild UP-TO-DATE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:extractProguardFiles
+> Task :app:configureCMakeRelWithDebInfo[x86]
+> Task :app:configureCMakeRelWithDebInfo[armeabi-v7a]
+> Task :app:configureCMakeRelWithDebInfo[arm64-v8a]
+> Task :app:configureCMakeRelWithDebInfo[x86_64]
+> Task :app:buildCMakeRelWithDebInfo[x86]
+> Task :app:buildCMakeRelWithDebInfo[x86_64]
+> Task :app:buildCMakeRelWithDebInfo[armeabi-v7a]
+> Task :app:buildCMakeRelWithDebInfo[arm64-v8a]
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:generateReleaseResources
+> Task :app:generateReleaseBuildConfig
+> Task :app:processReleaseNavigationResources
+> Task :app:mergeReleaseNativeLibs
+> Task :app:packageReleaseResources
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:javaPreCompileRelease
+> Task :app:stripReleaseDebugSymbols
+> Task :app:parseReleaseLocalResources
+> Task :app:generateReleaseRFile
+> Task :app:checkReleaseAarMetadata
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:compileReleaseNavigationResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:desugarReleaseFileDependencies
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseNativeDebugMetadata
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:mergeReleaseResources
+> Task :app:kspReleaseKotlin
+> Task :app:processReleaseResources
+> Task :app:optimizeReleaseResources
+> Task :app:mergeExtDexRelease
+
+> Task :app:compileReleaseKotlin
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:326:86 'static field SHOW_FORCED: Int' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:656:50 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/KeyboardView.kt:58:60 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt:32:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt:38:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/feedback/ui/FeedbackDialogs.kt:454:48 'val Icons.Filled.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Send.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/engine/KuYinEngine.kt:67:52 The corresponding parameter in the supertype 'IKuYinEngine' is named 'onCommit'. This may cause problems when calling this function with named arguments.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:612:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:687:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:789:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:846:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:945:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:987:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:1047:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/util/FeedbackHelper.kt:34:49 'static field FLAG_IGNORE_GLOBAL_SETTING: Int' is deprecated. Deprecated in Java.
+
+> Task :app:processReleaseJavaRes
+> Task :app:mergeReleaseJavaResource
+> Task :app:compileReleaseJavaWithJavac
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:dexBuilderRelease
+> Task :app:mergeReleaseGlobalSynthetics
+> Task :app:mergeDexRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:packageRelease FAILED
+
+[Incubating] Problems report is available at: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/build/reports/problems/problems-report.html
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+A problem was found with the configuration of task ':app:packageRelease' (type 'PackageApplication').
+  - Type 'com.android.build.gradle.tasks.PackageApplication' property 'signingConfigData$gradle_core.signingConfigData.storeFile' specifies file '/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/my-upload-key.jks' which doesn't exist.
+    
+    Reason: An input file was expected to be present but it doesn't exist.
+    
+    Possible solutions:
+      1. Make sure the file exists before the task is called.
+      2. Make sure that the task which produces the file is declared as an input.
+    
+    For more information, please refer to https://docs.gradle.org/9.3.1/userguide/validation_problems.html#input_file_does_not_exist in the Gradle documentation.
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 47s
+56 actionable tasks: 56 executed
+Configuration cache entry stored.

@@ -1,0 +1,42 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs_consistency.py"
+    ],
+    "exit": 0,
+    "log": "final-docs-consistency.log"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check",
+      "--",
+      "app/",
+      "docs/ARCHITECTURE.md",
+      "docs/CURRENT_STATE.md",
+      "docs/review/2026-10-04-p1d/*.md"
+    ],
+    "exit": 0,
+    "log": "final-authored-whitespace.log"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--cached",
+      "--check"
+    ],
+    "exit": 2,
+    "status": "EXPECTED_RAW_ARTIFACT_WHITESPACE",
+    "reason": "原始 patch／thread dumps 的空白保留，authored Markdown 與 source whitespace check 為 PASS",
+    "paths": [
+      "docs/review/2026-10-04-p1d/final-green/review.patch",
+      "docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt",
+      "docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt"
+    ],
+    "log": "raw-artifact-whitespace.log"
+  }
+]

@@ -1,0 +1,125 @@
+{
+  "status_command": [
+    "git",
+    "status",
+    "--porcelain=v1",
+    "--untracked-files=all",
+    "-z"
+  ],
+  "worktrees": [
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid",
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "unchanged": true
+        },
+        {
+          "path": "docs/HANDOFF-2026-09-22-compact.md",
+          "unchanged": true
+        }
+      ]
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline",
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "files": [
+        {
+          "path": "AGENTS.md",
+          "unchanged": true
+        },
+        {
+          "path": "docs/ARCHITECTURE.md",
+          "unchanged": true
+        },
+        {
+          "path": "docs/CURRENT_STATE.md",
+          "unchanged": true
+        },
+        {
+          "path": "KU_YIN_C4_CLEAN_BASELINE.md",
+          "unchanged": true
+        },
+        {
+          "path": "KU_YIN_DOC_RECONCILIATION.md",
+          "unchanged": true
+        }
+      ]
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch",
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "files": [
+        {
+          "path": "app/src/main/java/com/example/ime/KuYinInputMethodService.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/main/java/com/example/ime/engine/KuYinEngine.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/main/java/com/example/ime/session/ChewingEngineSession.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/main/java/com/example/ime/session/ZhuyinDictionarySession.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt",
+          "unchanged": true
+        },
+        {
+          "path": "KU_YIN_DIRTY_FORENSICS_FINAL.md",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/test/java/com/example/ime/engine/EditorForcedModeRestorationTest.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/test/java/com/example/ime/session/EnterSessionTest.kt",
+          "unchanged": true
+        }
+      ]
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/fix-pre-c4-production-hardening",
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "files": []
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline",
+      "head_unchanged": true,
+      "status_unchanged": true,
+      "files": [
+        {
+          "path": "app/build.gradle.kts",
+          "unchanged": true
+        },
+        {
+          "path": "KU_YIN_M4A1A_FINAL.md",
+          "unchanged": true
+        },
+        {
+          "path": "KU_YIN_M4A1B_FINAL.md",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/androidTest/java/com/example/ime/benchmark/FrameQualityBenchmark.kt",
+          "unchanged": true
+        },
+        {
+          "path": "app/src/androidTest/java/com/example/ime/benchmark/SessionLatencyBenchmark.kt",
+          "unchanged": true
+        }
+      ]
+    }
+  ]
+}

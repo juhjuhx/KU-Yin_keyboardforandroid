@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.EnterPolicyServiceTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:34:57.298Z" hostname="MacBook-Air.local" time="0.168">
+  <properties/>
+  <testcase name="dispatch uses the same snapshot as presentation until next callback" classname="com.example.ime.EnterPolicyServiceTest" time="0.047"/>
+  <testcase name="explicit multiline NO_ENTER_ACTION retains newline" classname="com.example.ime.EnterPolicyServiceTest" time="0.009"/>
+  <testcase name="NO_ENTER_ACTION suppresses GO dispatch" classname="com.example.ime.EnterPolicyServiceTest" time="0.01"/>
+  <testcase name="six standard actions dispatch their advertised code exactly once" classname="com.example.ime.EnterPolicyServiceTest" time="0.01"/>
+  <testcase name="non text Enter plumbing preserves English and learning restriction" classname="com.example.ime.EnterPolicyServiceTest" time="0.009"/>
+  <testcase name="NONE inserts one newline" classname="com.example.ime.EnterPolicyServiceTest" time="0.008"/>
+  <testcase name="UNSPECIFIED inserts one newline" classname="com.example.ime.EnterPolicyServiceTest" time="0.015"/>
+  <testcase name="NO_ENTER_ACTION suppresses SEND dispatch" classname="com.example.ime.EnterPolicyServiceTest" time="0.009"/>
+  <testcase name="custom action with NO_ENTER_ACTION inserts newline" classname="com.example.ime.EnterPolicyServiceTest" time="0.011"/>
+  <testcase name="custom label with NONE still dispatches custom id zero" classname="com.example.ime.EnterPolicyServiceTest" time="0.01"/>
+  <testcase name="false action return does not inject a second newline effect" classname="com.example.ime.EnterPolicyServiceTest" time="0.012"/>
+  <testcase name="custom action dispatches custom id instead of masked standard action" classname="com.example.ime.EnterPolicyServiceTest" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

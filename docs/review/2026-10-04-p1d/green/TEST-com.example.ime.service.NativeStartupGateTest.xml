@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.service.NativeStartupGateTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:28:36.692Z" hostname="MacBook-Air.local" time="0.001">
+  <properties/>
+  <testcase name="failed creation retains no engine and next start can succeed" classname="com.example.ime.service.NativeStartupGateTest" time="0.001"/>
+  <testcase name="installer success plus ready engine returns engine with single init" classname="com.example.ime.service.NativeStartupGateTest" time="0.0"/>
+  <testcase name="installer failure returns null and never opens engine" classname="com.example.ime.service.NativeStartupGateTest" time="0.0"/>
+  <testcase name="unready engine is closed and returns null fallback" classname="com.example.ime.service.NativeStartupGateTest" time="0.0"/>
+  <testcase name="factory failure falls back to null without crash" classname="com.example.ime.service.NativeStartupGateTest" time="0.0"/>
+  <testcase name="first init failure closes engine once and falls back" classname="com.example.ime.service.NativeStartupGateTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

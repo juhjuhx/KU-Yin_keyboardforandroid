@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.EnterUiWiringTest" tests="11" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:34:57.478Z" hostname="MacBook-Air.local" time="1.099">
+  <properties/>
+  <testcase name="active composition consumes first SEND Enter and second press sends once" classname="com.example.ime.EnterUiWiringTest" time="0.322"/>
+  <testcase name="consumed Enter applies ordered session outputs without external editor action" classname="com.example.ime.EnterUiWiringTest" time="0.099"/>
+  <testcase name="PREVIOUS has matching Traditional Chinese presentation" classname="com.example.ime.EnterUiWiringTest" time="0.083"/>
+  <testcase name="custom newline label remains text rather than newline icon" classname="com.example.ime.EnterUiWiringTest" time="0.073"/>
+  <testcase name="empty composition delegates exactly once after session Enter" classname="com.example.ime.EnterUiWiringTest" time="0.071"/>
+  <testcase name="English and symbols receive the same normalized custom presentation" classname="com.example.ime.EnterUiWiringTest" time="0.082"/>
+  <testcase name="custom label cannot bypass NO_ENTER_ACTION presentation" classname="com.example.ime.EnterUiWiringTest" time="0.072"/>
+  <testcase name="NO_ENTER_ACTION suppresses SEND presentation and dispatch" classname="com.example.ime.EnterUiWiringTest" time="0.061"/>
+  <testcase name="active composition consumes Enter without also inserting newline" classname="com.example.ime.EnterUiWiringTest" time="0.09"/>
+  <testcase name="NO_ENTER_ACTION suppresses GO presentation and dispatch" classname="com.example.ime.EnterUiWiringTest" time="0.061"/>
+  <testcase name="custom label is shown and dispatches its own id" classname="com.example.ime.EnterUiWiringTest" time="0.079"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

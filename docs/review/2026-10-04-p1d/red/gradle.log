@@ -1,0 +1,122 @@
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest --tests com.example.ime.EnterPolicyServiceTest --tests com.example.ime.EnterUiWiringTest
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugBuildConfig
+> Task :app:generateDebugResources
+> Task :app:javaPreCompileDebug
+> Task :app:processDebugNavigationResources
+> Task :app:mapDebugSourceSetPaths
+> Task :app:compileDebugNavigationResources
+> Task :app:checkDebugAarMetadata
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:packageDebugResources
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:generateDebugRFile
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:mergeDebugAssets
+> Task :app:processDebugUnitTestManifest
+> Task :app:mergeDebugResources
+> Task :app:processDebugResources
+> Task :app:packageDebugUnitTestForUnitTest
+> Task :app:generateDebugUnitTestConfig
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:326:86 'static field SHOW_FORCED: Int' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:656:50 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/KeyboardView.kt:58:60 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt:32:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt:38:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/feedback/ui/FeedbackDialogs.kt:454:48 'val Icons.Filled.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Send.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/engine/KuYinEngine.kt:67:52 The corresponding parameter in the supertype 'IKuYinEngine' is named 'onCommit'. This may cause problems when calling this function with named arguments.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:607:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:682:63 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:783:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:840:63 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:938:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:980:63 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:1040:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/util/FeedbackHelper.kt:34:49 'static field FLAG_IGNORE_GLOBAL_SETTING: Int' is deprecated. Deprecated in Java.
+
+> Task :app:processDebugJavaRes
+> Task :app:compileDebugJavaWithJavac
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+
+> Task :app:testDebugUnitTest
+
+EnterPolicyServiceTest > dispatch uses the same snapshot as presentation until next callback FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:94
+
+EnterPolicyServiceTest > explicit multiline NO_ENTER_ACTION retains newline FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:85
+
+EnterPolicyServiceTest > NO_ENTER_ACTION suppresses GO dispatch FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:53
+
+EnterPolicyServiceTest > non text Enter plumbing preserves English and learning restriction FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:107
+
+EnterPolicyServiceTest > NO_ENTER_ACTION suppresses SEND dispatch FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:47
+
+EnterPolicyServiceTest > custom action with NO_ENTER_ACTION inserts newline FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:65
+
+EnterPolicyServiceTest > custom label with NONE still dispatches custom id zero FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:71
+
+EnterPolicyServiceTest > custom action dispatches custom id instead of masked standard action FAILED
+    java.lang.AssertionError at EnterPolicyServiceTest.kt:59
+
+EnterUiWiringTest > PREVIOUS has matching Traditional Chinese presentation FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:73
+
+EnterUiWiringTest > custom newline label remains text rather than newline icon FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:80
+
+EnterUiWiringTest > English and symbols receive the same normalized custom presentation FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:128
+
+EnterUiWiringTest > custom label cannot bypass NO_ENTER_ACTION presentation FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:66
+
+EnterUiWiringTest > NO_ENTER_ACTION suppresses SEND presentation and dispatch FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:42
+
+EnterUiWiringTest > active composition consumes Enter without also inserting newline FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:107
+
+EnterUiWiringTest > NO_ENTER_ACTION suppresses GO presentation and dispatch FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:50
+
+EnterUiWiringTest > custom label is shown and dispatches its own id FAILED
+    java.lang.AssertionError at EnterUiWiringTest.kt:58
+
+23 tests completed, 16 failed
+
+> Task :app:testDebugUnitTest FAILED
+> Task :app:finalizeTestRoborazziDebug SKIPPED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 36s
+32 actionable tasks: 32 executed
+Configuration cache entry stored.

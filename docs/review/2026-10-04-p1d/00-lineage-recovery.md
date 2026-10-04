@@ -83,15 +83,15 @@ LSP diagnostics tool／CLI 不存在；以 compiler／必要 lint 提供替代�
 |---|---|---|
 | 0 lineage | using-superpowers, deep-understanding, open-code-review, code-review-excellence, official-code-review, addyosmani-context-engineering, addyosmani-source-driven-development, addyosmani-git-workflow-and-versioning, addyosmani-planning-and-task-breakdown, verification-before-completion | 完整歸屬、唯讀獨立審查、本機 checkpoint fresh gates |
 | 1 Enter | deep-understanding, systematic-debugging, writing-plans, test-driven-development, addyosmani-source-driven-development, addyosmani-api-and-interface-design, addyosmani-spec-driven-development, addyosmani-test-driven-development, addyosmani-incremental-implementation, addyosmani-code-simplification | 深讀、official contract、決策表、RED、最小修正 |
-| 2 review | verification-before-completion, code-review-excellence, receiving-code-review, requesting-code-review, official-code-review, addyosmani-code-review-and-quality, addyosmani-doubt-driven-development, addyosmani-documentation-and-adrs, addyosmani-git-workflow-and-versioning, addyosmani-context-engineering | 新鮮 GREEN、獨立審查、local commits、handoff、STOP |
+| 2 review | verification-before-completion, code-review-excellence, receiving-code-review, requesting-code-review, official-code-review, addyosmani-code-review-and-quality, addyosmani-api-and-interface-design, addyosmani-documentation-and-adrs, addyosmani-git-workflow-and-versioning, addyosmani-context-engineering | 新鮮 GREEN、獨立審查、local commits、handoff、STOP |
 
 - [x] 實際 dirty tree、三個目錄深讀、逐檔分類（UNKNOWN=0）。
-- [ ] independent Stage0 review、A/B/C/local docs commits。
-- [ ] consolidated fresh gates、checkpoint SHA。
-- [ ] 隔離 P1-D worktree；Enter trace、official Android contract。
-- [ ] 決策表、TDD RED、minimal fix。
-- [ ] focused/full/contracts/bootstrap/build GREEN。
-- [ ] independent final review、local commits、handoff、STOP。
+- [x] independent Stage0 review、A/B/C/local docs commits。
+- [x] consolidated fresh gates、checkpoint SHA。
+- [x] 隔離 P1-D worktree；Enter trace、official Android contract。
+- [x] 決策表、TDD RED、minimal fix。
+- [x] focused/full/contracts/bootstrap/Debug/instrumentation GREEN；Release既有keystore受阻。
+- [x] independent final review APPROVE、local code commit；文件提交與handoff完成後STOP。
 
 ## 獨立初審補註
 
@@ -108,3 +108,31 @@ P1B_COMMIT: `6af9476337c911557530e02f10a2d21fc6ca3a3b`
 P1C_COMMIT: `b63fddc821ebb8dd28af309711d5da6dbb8a76c6`
 
 獨立初審 p1abc_audit = APPROVE；0 未歸屬產品/測試，P1-C 與交接一致。保留其他 worktrees。
+
+## Fresh consolidated checkpoint
+
+P1_SERIES_BASE_SHA: `3d86f7538c47dc929e25cdb0bd0755f8cc3bad60`
+
+P1_SERIES_FINAL_SHA / P1D_BASE_SHA: `870fc03cbfe8e5107b8ff8dc13478ac7754eec9f`
+
+DOC_COMMIT: `870fc03cbfe8e5107b8ff8dc13478ac7754eec9f`
+
+LOCAL_BRANCH: `fix/p1-series-correctness`
+
+A/B/C 產品/測試 bytes 與提交前清冊完全相同；git status 空。focused41/41；禁用cache完整37類149測0failures/errors；contracts10/10；bootstrap exit0（sandbox DNS exit128不算產品失敗，核准網路執行成功）；assembleDebug exit0。詳見 checkpoint-evidence.json。
+
+P1-D 工作區：`/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy`；branch `fix/p1d-enter-policy`；初始 HEAD等於checkpoint，status乾淨。common repo指向主庫.git。local.properties與已驗證的ignored native inputs複製至隔離區，沒有複製build/test結果。
+
+## 前次停止點（2026-10-04，PARTIAL；已於2026-10-05接續）
+
+Stage0已完成；P1-D focused各gate通過，但第二輪 full40類190測中B UI5fail，尚未完成驗收或local code/docs commits。HEAD/branch ref仍870fc03cbfe8e5107b8ff8dc13478ac7754eec9f，pending3產品+4測試及review資料。命令工具EMFILE使後續診斷/Gradle/contracts/bootstrap/build/git status無法執行，不聲稱clean。
+
+P1-D新增.kotlin/sessions/*.salive為BUILD_OUTPUT，不提交；待命令工具恢復後只清理本worktree生成檔。p1d-pending-source-inventory.json記錄7個待提交程式/測試bytes與SHA256。preserved-worktrees-content-check.json核對其餘5工作區既有dirty的20檔SHA均未變；未宣稱已重跑git status。所有其他worktree與donor未被本輪修改。
+
+## 最終接續結果
+
+命令工具恢復，重新git status/HEAD/branch並核對原7檔SHA相同。最小Robolectric snapshot案例RED/control後，只增測試fixture main-looper drain（newHarness與既有C test）。A–H全部fresh PASS，full40/190/0fail；Python10/10、bootstrap、Debug、instrumentationcompilePASS。Release缺既有keystore，runtime NOT_TESTED。兩個fresh-context獨立reviewer APPROVE。
+
+P1D_CODE_COMMIT: 75b93a3b68867fd6ec4c6adadd3e279d71e98104
+
+P1-D final-green review-manifest記錄8檔（3產品／4新增test-helper／1既有test cleanup）；initial lineage清冊仍是Stage0原時點41檔，不以P1-D bytes覆寫。沒有改A/B/C product semantics、decoder/native pins/ABI/appidentity/geometry。ARCHITECTURE只修正已證實的production/fallback描述、加入Enter seam與移除過時test數；CURRENT_STATE更新fresh結果及runtime分界。

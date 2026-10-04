@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/opt/homebrew/share/android-commandlinetools/platform-tools/adb",
+    "devices",
+    "-l"
+  ],
+  "exit": 0,
+  "output": "List of devices attached\n\n",
+  "device_count": 0,
+  "status": "NOT_TESTED",
+  "API": null,
+  "ABI": null
+}

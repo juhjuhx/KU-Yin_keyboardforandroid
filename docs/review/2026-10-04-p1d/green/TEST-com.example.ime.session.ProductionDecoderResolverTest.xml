@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ProductionDecoderResolverTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:28:36.788Z" hostname="MacBook-Air.local" time="0.019">
+  <properties/>
+  <testcase name="missing native engine falls back to dictionary session" classname="com.example.ime.session.ProductionDecoderResolverTest" time="0.009"/>
+  <testcase name="ready native engine resolves chewing session" classname="com.example.ime.session.ProductionDecoderResolverTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

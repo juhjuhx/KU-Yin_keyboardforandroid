@@ -1,0 +1,46 @@
+[
+  {
+    "path": "app/src/main/java/com/example/ime/service/NativeStartupGate.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/service/NativeChewingEngineOwner.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/service/EffectiveModePolicy.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/androidkeyboard/input/EditorPolicy.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/ui/DachenKeyboardRows.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/engine/ZhuyinConstants.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/session/ChewingEngineSession.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/session/ZhuyinDictionarySession.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/ui/DachenKeyboardLayoutTest.kt",
+    "unchanged": true
+  },
+  {
+    "path": "app/build.gradle.kts",
+    "unchanged": true
+  },
+  {
+    "path": "scripts/bootstrap_native_deps.sh",
+    "unchanged": true
+  }
+]

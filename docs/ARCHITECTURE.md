@@ -8,21 +8,22 @@ Android editor
     │  EditorInfo / InputConnection
     ▼
 KuYinInputMethodService
-    ├── EditorPolicy.from() ............ sensitive/ASCII/learning/action normalizer
+    ├── EditorPolicy.from() ............ sensitive/ASCII/composition/learning normalizer
+    ├── EditorEnterPolicy.from() ....... inline Enter label/presentation/behavior
     ├── userPreferredMode/effectiveMode . forced editors override temporarily
     ├── KuYinEngine .................... presentation only: KeyboardMode,
     │                                     ShiftState, editor policy
     └── ComposeDecoderSession .......... ALL Chinese state: preedit,
             │                             candidates, paging, selection,
             │                             space/enter/backspace/punct/reset
-            ├── ZhuyinDictionarySession (ACTIVE PRODUCTION decoder)
-            └── ChewingEngineSession (FUTURE C4 production via AndroidChewingEngine)
-                        │  (today: tests/harness only)
-                AndroidChewingEngine .. sole JNI caller (D3: service-owned, init
-                        │               once in onCreate, close once in onDestroy)
-                        JNI chewing_jni.cpp (24 exports, C++17)
-                        │  libchewing pinned: prebuilt 3587ba33 / src a6a8fa4
-                        libchewing C API (system .dat + userdict.dat, app-private)
+            ├── ChewingEngineSession (PRODUCTION when native startup succeeds)
+            │       └── AndroidChewingEngine .. sole JNI caller; service-owned
+            │               │                   successful startup initializes once
+            │               └── JNI chewing_jni.cpp (C++17)
+            │                       │  pinned: prebuilt 3587ba33 / src a6a8fa4
+            │                       └── libchewing C API (system .dat + userdict.dat,
+            │                                            app-private)
+            └── ZhuyinDictionarySession (startup-failure fallback)
 ```
 
 ## Boundaries (normative)
@@ -35,6 +36,11 @@ KuYinInputMethodService
 - Decoder: `ComposeDecoderSession` + `DispatchResult(commitText, consumed,
   additionalCommits=[])`. Apply order is always commitText then
   additionalCommits (single shared UI path per action).
+- Enter: service snapshots `EditorInfo` primitives into one immutable
+  `EditorEnterPolicy`; UI receives only label/presentation. Zhuyin Enter applies
+  ordered session commits first and consults the editor policy only when unconsumed.
+  `NO_ENTER_ACTION` suppresses standard/custom inline actions; custom labels dispatch
+  `actionId`. `performEditorAction(false)` does not trigger a second newline effect.
 - Native: only `AndroidChewingEngine` touches JNI symbols. UI never does.
 - Storage: system dicts + `userdict.dat` under `noBackupFilesDir/libchewing`;
   `allowBackup=false`. No network, no telemetry, no cloud candidates.
@@ -47,7 +53,8 @@ KuYinInputMethodService
 
 ## Test boundaries
 
-Python contracts pin static invariants; JVM tests (99 @Test) pin behavior;
+Python contracts pin static invariants; JVM tests pin behavior (fresh counts in
+`docs/CURRENT_STATE.md`);
 instrumentation/runtime smoke covers lifecycle+JNI on device. Runtime-only
 gates (touch geometry, rotation, OEM matrix, QR scan art) are never claimed
 from static evidence.

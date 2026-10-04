@@ -1,0 +1,166 @@
+[
+  {
+    "step": "A-pure",
+    "classes": 1,
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "exit": 0,
+    "log": "p1d-policy-green.log"
+  },
+  {
+    "step": "B-enter-contract",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.session.EnterCommandContractTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-B-enter-contract.log"
+  },
+  {
+    "step": "C-service-editor",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.EnterPolicyServiceTest",
+      "--tests",
+      "com.example.ime.ProductionEditorPolicyTest",
+      "--tests",
+      "com.example.ime.ProductionSeamIntegrationTest",
+      "--tests",
+      "com.example.androidkeyboard.input.EditorPolicyTest",
+      "--tests",
+      "com.example.androidkeyboard.input.ImeSessionControllerTest",
+      "--tests",
+      "com.example.ime.service.EditorDeletionTest"
+    ],
+    "exit": 0,
+    "classes": 6,
+    "tests": 41,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-C-service-editor.log"
+  },
+  {
+    "step": "D-compose-enter",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.EnterUiWiringTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-D-compose-enter.log"
+  },
+  {
+    "step": "E-p1c",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.androidkeyboard.input.EditorPolicyTest",
+      "--tests",
+      "com.example.ime.NonTextEditorServiceTest",
+      "--tests",
+      "com.example.ime.service.EffectiveModePolicyTest",
+      "--tests",
+      "com.example.ime.service.NativeLearningPolicyTest"
+    ],
+    "exit": 0,
+    "classes": 4,
+    "tests": 25,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-E-p1c.log"
+  },
+  {
+    "step": "F-p1b",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.ui.DachenKeyboardLayoutTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-F-p1b.log"
+  },
+  {
+    "step": "G-p1a",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.service.NativeStartupGateTest",
+      "--tests",
+      "com.example.ime.service.NativeChewingEngineOwnerTest",
+      "--tests",
+      "com.example.ime.session.ProductionDecoderResolverTest"
+    ],
+    "exit": 0,
+    "classes": 3,
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-G-p1a.log"
+  },
+  {
+    "step": "H-full",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--rerun-tasks"
+    ],
+    "exit": 1,
+    "classes": 40,
+    "tests": 190,
+    "failures": 4,
+    "errors": 0,
+    "log": "/private/tmp/kuyin-p1d-lineage/p1d-H-full.log"
+  },
+  {
+    "step": "H-full-second",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 1,
+    "classes": 40,
+    "tests": 190,
+    "failures": 5,
+    "errors": 0,
+    "skipped": 0,
+    "log": "full-idle-failure-second/gradle.log",
+    "status": "FAIL"
+  }
+]

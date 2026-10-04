@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.engine.ZhuyinDictionaryRankingTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:34:58.899Z" hostname="MacBook-Air.local" time="0.078">
+  <properties/>
+  <testcase name="exact match beats prefix prediction" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.007"/>
+  <testcase name="tone-incompatible continuation is excluded" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.007"/>
+  <testcase name="selecting candidate commits once and clears composing" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.009"/>
+  <testcase name="tie order is deterministic" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.009"/>
+  <testcase name="learned continuation cannot beat exact match" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.008"/>
+  <testcase name="learning moves word up within its tier" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.008"/>
+  <testcase name="candidates contain no duplicates" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.007"/>
+  <testcase name="tone-only query returns empty" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.007"/>
+  <testcase name="valid continuation still appears" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.006"/>
+  <testcase name="short key does not leak into longer unrelated input" classname="com.example.ime.engine.ZhuyinDictionaryRankingTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

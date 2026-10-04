@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.androidkeyboard.input.EditorEnterPolicyTest" tests="18" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:28:34.212Z" hostname="MacBook-Air.local" time="0.002">
+  <properties/>
+  <testcase name="SEARCH pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.001"/>
+  <testcase name="NO_ENTER_ACTION suppresses GO label and behavior" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="DONE pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="NONE is newline" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="NEXT pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="NO_ENTER_ACTION wins over every masked action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="unknown action falls back like unspecified metadata" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="PREVIOUS pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="SEND pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="NO_ENTER_ACTION suppresses SEND label and behavior" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="NO_ENTER_ACTION overrides custom label and id" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="GO pairs label and action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.001"/>
+  <testcase name="supplied empty custom label remains custom rather than silently choosing SEND" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="custom id zero remains eligible even with NONE" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="custom label pairs with custom id instead of standard SEND" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="unrelated high flags do not change standard action" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="custom newline label remains action presentation" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <testcase name="UNSPECIFIED is newline" classname="com.example.androidkeyboard.input.EditorEnterPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,761 @@
+diff --git a/app/src/main/java/com/example/androidkeyboard/input/EditorEnterPolicy.kt b/app/src/main/java/com/example/androidkeyboard/input/EditorEnterPolicy.kt
+new file mode 100644
+index 0000000..546dff0
+--- /dev/null
++++ b/app/src/main/java/com/example/androidkeyboard/input/EditorEnterPolicy.kt
+@@ -0,0 +1,43 @@
++package com.example.androidkeyboard.input
++
++import android.view.inputmethod.EditorInfo
++
++/**
++ * Inline Enter 的唯一決策；presentation 與 dispatch 使用同一個 immutable snapshot。
++ * NO_ENTER_ACTION 優先於 standard/custom action，session consumed 的 Enter 不委派至此。
++ * https://developer.android.com/reference/android/view/inputmethod/EditorInfo#IME_FLAG_NO_ENTER_ACTION
++ */
++class EditorEnterPolicy private constructor(
++    val label: String,
++    val behavior: Behavior,
++) {
++    val isActionPresentation: Boolean get() = behavior != Behavior.InsertNewline
++
++    sealed interface Behavior {
++        data object InsertNewline : Behavior
++        data class PerformStandardAction(val actionCode: Int) : Behavior
++        data class PerformCustomAction(val actionId: Int) : Behavior
++    }
++
++    companion object {
++        private val newline = EditorEnterPolicy("換行", Behavior.InsertNewline)
++
++        fun from(imeOptions: Int, actionLabel: String? = null, actionId: Int = 0): EditorEnterPolicy {
++            if (imeOptions and EditorInfo.IME_FLAG_NO_ENTER_ACTION != 0) return newline
++            if (actionLabel != null) {
++                return EditorEnterPolicy(actionLabel, Behavior.PerformCustomAction(actionId))
++            }
++            val action = imeOptions and EditorInfo.IME_MASK_ACTION
++            val label = when (action) {
++                EditorInfo.IME_ACTION_GO -> "前往"
++                EditorInfo.IME_ACTION_SEARCH -> "搜尋"
++                EditorInfo.IME_ACTION_SEND -> "傳送"
++                EditorInfo.IME_ACTION_NEXT -> "下一步"
++                EditorInfo.IME_ACTION_DONE -> "完成"
++                EditorInfo.IME_ACTION_PREVIOUS -> "上一步"
++                else -> return newline
++            }
++            return EditorEnterPolicy(label, Behavior.PerformStandardAction(action))
++        }
++    }
++}
+diff --git a/app/src/main/java/com/example/ime/KuYinInputMethodService.kt b/app/src/main/java/com/example/ime/KuYinInputMethodService.kt
+index c317ea0..baaa4aa 100644
+--- a/app/src/main/java/com/example/ime/KuYinInputMethodService.kt
++++ b/app/src/main/java/com/example/ime/KuYinInputMethodService.kt
+@@ -12,6 +12,7 @@ import com.example.MainActivity
+ import com.example.androidkeyboard.engines.android.AndroidChewingEngine
+ import com.example.androidkeyboard.engines.android.LibChewingDataInstaller
+ import com.example.androidkeyboard.engines.core.ChewingEngine
++import com.example.androidkeyboard.input.EditorEnterPolicy
+ import com.example.androidkeyboard.input.EditorPolicy
+ import com.example.ime.engine.KeyboardMode
+ import com.example.ime.engine.KuYinEngine
+@@ -41,7 +42,7 @@ class KuYinInputMethodService : InputMethodService() {
+     private var nativeOwner: NativeChewingEngineOwner? = null
+     private var nativeEngine: ChewingEngine? = null
+ 
+-    private val currentActionLabel = mutableStateOf("換行")
++    private val currentEnterPolicy = mutableStateOf(EditorEnterPolicy.from(EditorInfo.IME_ACTION_UNSPECIFIED))
+     private var composeView: ComposeView? = null
+ 
+     override fun onCreate() {
+@@ -98,7 +99,8 @@ class KuYinInputMethodService : InputMethodService() {
+                     engine = engine,
+                     session = session,
+                     settings = settings,
+-                    actionLabel = currentActionLabel.value,
++                    actionLabel = currentEnterPolicy.value.label,
++                    isActionPresentation = currentEnterPolicy.value.isActionPresentation,
+                     onCommitText = { text ->
+                         currentInputConnection?.commitText(text, 1)
+                     },
+@@ -132,6 +134,7 @@ class KuYinInputMethodService : InputMethodService() {
+ 
+     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
+         super.onStartInput(attribute, restarting)
++        updateEnterPolicy(attribute)
+         val policy = EditorPolicy.from(
+             attribute?.inputType ?: InputType.TYPE_CLASS_TEXT,
+             attribute?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED
+@@ -151,15 +154,7 @@ class KuYinInputMethodService : InputMethodService() {
+         }
+         lifecycleOwner.onStart()
+ 
+-        // 判定 Enter 鍵動作文字
+-        currentActionLabel.value = when (info?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)) {
+-            EditorInfo.IME_ACTION_GO -> "前往"
+-            EditorInfo.IME_ACTION_SEARCH -> "搜尋"
+-            EditorInfo.IME_ACTION_SEND -> "傳送"
+-            EditorInfo.IME_ACTION_NEXT -> "下一步"
+-            EditorInfo.IME_ACTION_DONE -> "完成"
+-            else -> "換行"
+-        }
++        updateEnterPolicy(info)
+ 
+         session.dispatch(ImeCommand.Reset)
+     }
+@@ -216,15 +211,20 @@ class KuYinInputMethodService : InputMethodService() {
+         }
+     }
+ 
++    private fun updateEnterPolicy(info: EditorInfo?) {
++        currentEnterPolicy.value = EditorEnterPolicy.from(
++            imeOptions = info?.imeOptions ?: EditorInfo.IME_ACTION_UNSPECIFIED,
++            actionLabel = info?.actionLabel?.toString(),
++            actionId = info?.actionId ?: 0,
++        )
++    }
++
+     private fun handleEditorAction() {
+         val ic = currentInputConnection ?: return
+-        val currentInfo = currentInputEditorInfo
+-        val action = currentInfo?.imeOptions?.and(EditorInfo.IME_MASK_ACTION)
+-        if (action != null && action != EditorInfo.IME_ACTION_NONE && action != EditorInfo.IME_ACTION_UNSPECIFIED) {
+-            ic.performEditorAction(action)
+-        } else {
+-            // 預設換行
+-            ic.commitText("\n", 1)
++        when (val behavior = currentEnterPolicy.value.behavior) {
++            EditorEnterPolicy.Behavior.InsertNewline -> ic.commitText("\n", 1)
++            is EditorEnterPolicy.Behavior.PerformStandardAction -> ic.performEditorAction(behavior.actionCode)
++            is EditorEnterPolicy.Behavior.PerformCustomAction -> ic.performEditorAction(behavior.actionId)
+         }
+     }
+ }
+diff --git a/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt b/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt
+index d16d46e..7d321ac 100644
+--- a/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt
++++ b/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt
+@@ -134,7 +134,8 @@ fun KuYinKeyboardUi(
+     onHideKeyboard: () -> Unit,
+     onFeedback: () -> Unit,
+     onOpenFeedback: () -> Unit = {},
+-    onUserModeSelected: (KeyboardMode) -> Unit = {}
++    onUserModeSelected: (KeyboardMode) -> Unit = {},
++    isActionPresentation: Boolean = actionLabel != "換行",
+ ) {
+     val mode by engine.mode.collectAsState()
+     val shiftState by engine.shiftState.collectAsState()
+@@ -222,6 +223,7 @@ fun KuYinKeyboardUi(
+                         keyTextPrimary = keyTextPrimary,
+                         keyTextSub = keyTextSub,
+                         actionLabel = actionLabel,
++                        isActionPresentation = isActionPresentation,
+                         onZhuyinPress = { key ->
+                             onFeedback()
+                             orderedCommits(session.dispatch(ImeCommand.TapZhuyinKey(key)))
+@@ -270,6 +272,7 @@ fun KuYinKeyboardUi(
+                         keyBgAccent = keyBgAccent,
+                         keyTextPrimary = keyTextPrimary,
+                         actionLabel = actionLabel,
++                        isActionPresentation = isActionPresentation,
+                         onKeyPress = { char ->
+                             onFeedback()
+                             engine.onEnglishKey(char, onCommitText)
+@@ -311,6 +314,7 @@ fun KuYinKeyboardUi(
+                         keyBgAccent = keyBgAccent,
+                         keyTextPrimary = keyTextPrimary,
+                         actionLabel = actionLabel,
++                        isActionPresentation = isActionPresentation,
+                         onSymbolPress = { symbol ->
+                             onFeedback()
+                             onCommitText(symbol)
+@@ -525,7 +529,8 @@ fun ZhuyinKeyboardLayout(
+     onSwitchToEnglish: () -> Unit,
+     onSwitchToSymbols: () -> Unit,
+     onSwitchToEmoji: () -> Unit,
+-    onPunctuation: (String) -> Unit
++    onPunctuation: (String) -> Unit,
++    isActionPresentation: Boolean = actionLabel != "換行",
+ ) {
+     Column(
+         modifier = Modifier
+@@ -679,7 +684,7 @@ fun ZhuyinKeyboardLayout(
+                 modifier = Modifier.weight(1.5f),
+                 bg = keyBgAccent,
+                 text = actionLabel,
+-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
++                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
+                 onClick = onEnterPress
+             )
+         }
+@@ -701,7 +706,8 @@ fun EnglishKeyboardLayout(
+     onEnterPress: () -> Unit,
+     onSwitchToZhuyin: () -> Unit,
+     onSwitchToSymbols: () -> Unit,
+-    onPunctuation: (String) -> Unit
++    onPunctuation: (String) -> Unit,
++    isActionPresentation: Boolean = actionLabel != "換行",
+ ) {
+     val row1 = listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p")
+     val row2 = listOf("a", "s", "d", "f", "g", "h", "j", "k", "l")
+@@ -837,7 +843,7 @@ fun EnglishKeyboardLayout(
+                 modifier = Modifier.weight(1.5f),
+                 bg = keyBgAccent,
+                 text = actionLabel,
+-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
++                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
+                 onClick = onEnterPress
+             )
+         }
+@@ -856,7 +862,8 @@ fun SymbolsKeyboardLayout(
+     onEnterPress: () -> Unit,
+     onSwitchToZhuyin: () -> Unit,
+     onSwitchToEnglish: () -> Unit,
+-    onSpacePress: () -> Unit
++    onSpacePress: () -> Unit,
++    isActionPresentation: Boolean = actionLabel != "換行",
+ ) {
+     val row1 = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
+     val row2 = listOf("，", "。", "！", "？", "：", "；", "「", "」", "『", "』")
+@@ -977,7 +984,7 @@ fun SymbolsKeyboardLayout(
+                 modifier = Modifier.weight(1.5f),
+                 bg = keyBgAccent,
+                 text = actionLabel,
+-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
++                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
+                 onClick = onEnterPress
+             )
+         }
+diff --git a/app/src/test/java/com/example/androidkeyboard/input/EditorEnterPolicyTest.kt b/app/src/test/java/com/example/androidkeyboard/input/EditorEnterPolicyTest.kt
+new file mode 100644
+index 0000000..0532a8a
+--- /dev/null
++++ b/app/src/test/java/com/example/androidkeyboard/input/EditorEnterPolicyTest.kt
+@@ -0,0 +1,83 @@
++package com.example.androidkeyboard.input
++
++import android.view.inputmethod.EditorInfo
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertFalse
++import org.junit.Assert.assertTrue
++import org.junit.Test
++
++/** 純JVM決策表；Android常數為編譯期int，不建立framework物件。 */
++class EditorEnterPolicyTest {
++    private fun assertNewline(policy: EditorEnterPolicy) {
++        assertEquals("換行", policy.label)
++        assertFalse(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.InsertNewline, policy.behavior)
++    }
++
++    private fun assertStandard(code: Int, label: String) {
++        val policy = EditorEnterPolicy.from(code)
++        assertEquals(label, policy.label)
++        assertTrue(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.PerformStandardAction(code), policy.behavior)
++    }
++
++    @Test fun `NONE is newline`() = assertNewline(EditorEnterPolicy.from(EditorInfo.IME_ACTION_NONE))
++    @Test fun `UNSPECIFIED is newline`() = assertNewline(EditorEnterPolicy.from(EditorInfo.IME_ACTION_UNSPECIFIED))
++    @Test fun `GO pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_GO, "前往")
++    @Test fun `SEARCH pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_SEARCH, "搜尋")
++    @Test fun `SEND pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_SEND, "傳送")
++    @Test fun `NEXT pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_NEXT, "下一步")
++    @Test fun `DONE pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_DONE, "完成")
++    @Test fun `PREVIOUS pairs label and action`() = assertStandard(EditorInfo.IME_ACTION_PREVIOUS, "上一步")
++
++    @Test fun `NO_ENTER_ACTION suppresses SEND label and behavior`() =
++        assertNewline(EditorEnterPolicy.from(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION))
++
++    @Test fun `NO_ENTER_ACTION suppresses GO label and behavior`() =
++        assertNewline(EditorEnterPolicy.from(EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION))
++
++    @Test fun `NO_ENTER_ACTION wins over every masked action`() {
++        (0..255).forEach {
++            assertNewline(EditorEnterPolicy.from(it or EditorInfo.IME_FLAG_NO_ENTER_ACTION))
++        }
++    }
++
++    @Test fun `custom label pairs with custom id instead of standard SEND`() {
++        val policy = EditorEnterPolicy.from(EditorInfo.IME_ACTION_SEND, "確認", 73)
++        assertEquals("確認", policy.label)
++        assertTrue(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.PerformCustomAction(73), policy.behavior)
++    }
++
++    @Test fun `NO_ENTER_ACTION overrides custom label and id`() = assertNewline(
++        EditorEnterPolicy.from(EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION, "確認", 73),
++    )
++
++    @Test fun `custom id zero remains eligible even with NONE`() {
++        val policy = EditorEnterPolicy.from(EditorInfo.IME_ACTION_NONE, "確認", 0)
++        assertTrue(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.PerformCustomAction(0), policy.behavior)
++    }
++
++    @Test fun `custom newline label remains action presentation`() {
++        val policy = EditorEnterPolicy.from(EditorInfo.IME_ACTION_SEND, "換行", 73)
++        assertEquals("換行", policy.label)
++        assertTrue(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.PerformCustomAction(73), policy.behavior)
++    }
++
++    @Test fun `supplied empty custom label remains custom rather than silently choosing SEND`() {
++        val policy = EditorEnterPolicy.from(EditorInfo.IME_ACTION_SEND, "", 73)
++        assertEquals("", policy.label)
++        assertTrue(policy.isActionPresentation)
++        assertEquals(EditorEnterPolicy.Behavior.PerformCustomAction(73), policy.behavior)
++    }
++
++    @Test fun `unrelated high flags do not change standard action`() {
++        val policy = EditorEnterPolicy.from(EditorInfo.IME_ACTION_SEARCH or EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING)
++        assertEquals("搜尋", policy.label)
++        assertEquals(EditorEnterPolicy.Behavior.PerformStandardAction(EditorInfo.IME_ACTION_SEARCH), policy.behavior)
++    }
++
++    @Test fun `unknown action falls back like unspecified metadata`() = assertNewline(EditorEnterPolicy.from(255))
++}
+diff --git a/app/src/test/java/com/example/ime/EnterServiceHarness.kt b/app/src/test/java/com/example/ime/EnterServiceHarness.kt
+new file mode 100644
+index 0000000..3e365a1
+--- /dev/null
++++ b/app/src/test/java/com/example/ime/EnterServiceHarness.kt
+@@ -0,0 +1,124 @@
++package com.example.ime
++
++import android.text.InputType
++import android.os.Looper
++import android.view.View
++import android.view.inputmethod.BaseInputConnection
++import android.view.inputmethod.EditorInfo
++import androidx.compose.ui.platform.ComposeView
++import com.example.androidkeyboard.engines.core.ChewingEngine
++import com.example.androidkeyboard.engines.core.EngineUpdate
++import com.example.ime.engine.KuYinEngine
++import com.example.ime.service.ImeLifecycleOwner
++import com.example.ime.session.ChewingEngineSession
++import com.example.ime.session.ComposeDecoderSession
++import com.example.ime.session.ImeCommand
++import com.example.ime.settings.KeyboardSettings
++import com.example.ime.util.FeedbackHelper
++import org.robolectric.Robolectric
++import org.robolectric.Shadows.shadowOf
++import org.robolectric.util.ReflectionHelpers
++
++/** 真實 service callbacks/UI，只有 Android connection 與 JNI seam 使用 recording fake。 */
++internal class EnterServiceHarness {
++    val service = Robolectric.buildService(KuYinInputMethodService::class.java).get()
++    val engine = KuYinEngine(service)
++    val native = RecordingNativeEngine()
++    val commands = mutableListOf<ImeCommand>()
++    private val decoder = ChewingEngineSession(native)
++    val session = object : ComposeDecoderSession {
++        override val state = decoder.state
++        override fun dispatch(command: ImeCommand) = decoder.dispatch(command).also { commands.add(command) }
++    }
++    val connection = RecordingConnection(View(service))
++    private val lifecycle = ImeLifecycleOwner().apply { onCreate() }
++
++    init {
++        val settings = KeyboardSettings(service)
++        setField("lifecycleOwner", lifecycle)
++        setField("engine", engine)
++        setField("nativeEngine", native)
++        setField("session", session)
++        setField("settings", settings)
++        setField("feedbackHelper", FeedbackHelper(service, settings))
++        // API36 InputMethodService.getCurrentInputConnection 讀取此欄位。
++        ReflectionHelpers.setField(service, "mStartedInputConnection", connection)
++    }
++
++    fun setField(name: String, value: Any) = ReflectionHelpers.setField(service, name, value)
++
++    fun close() {
++        // 內層ComposeView使用service-owned lifecycle；外層ComposeRule結束不足以銷毀它。
++        ReflectionHelpers.getField<ComposeView?>(service, "composeView")?.disposeComposition()
++        lifecycle.onStop()
++        lifecycle.onDestroy()
++        // 真實service callback寫入Compose state；先送出通知，避免Robolectric reset
++        // 清掉Handler callback卻保留GlobalSnapshotManager/dispatcher的已排程旗標。
++        shadowOf(Looper.getMainLooper()).idle()
++    }
++
++    fun start(
++        options: Int,
++        label: CharSequence? = null,
++        id: Int = 0,
++        type: Int = InputType.TYPE_CLASS_TEXT,
++    ): EditorInfo = EditorInfo().apply {
++        inputType = type
++        imeOptions = options
++        actionLabel = label
++        actionId = id
++        ReflectionHelpers.setField(service, "mInputEditorInfo", this)
++        service.onStartInput(this, false)
++        service.onStartInputView(this, false)
++        commands.clear()
++        connection.effects.clear()
++    }
++
++    fun enterEditor() {
++        KuYinInputMethodService::class.java.getDeclaredMethod("handleEditorAction").apply {
++            isAccessible = true
++            invoke(service)
++        }
++    }
++
++    sealed interface Effect {
++        data class Commit(val text: String, val cursor: Int = 1) : Effect
++        data class Action(val id: Int) : Effect
++    }
++
++    class RecordingConnection(view: View) : BaseInputConnection(view, true) {
++        val effects = mutableListOf<Effect>()
++        var actionResult = true
++        override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
++            effects.add(Effect.Commit(text.toString(), newCursorPosition))
++            return true
++        }
++        override fun performEditorAction(actionCode: Int): Boolean {
++            effects.add(Effect.Action(actionCode))
++            return actionResult
++        }
++    }
++
++    class RecordingNativeEngine : ChewingEngine {
++        override val isReady = true
++        override var personalizedLearningEnabled = false
++            private set
++        var commitCalls = 0
++        private val idle = EngineUpdate(true, "", emptyList(), "")
++        override fun init(layout: ChewingEngine.Layout) {}
++        override fun setPersonalizedLearningEnabled(enabled: Boolean) { personalizedLearningEnabled = enabled }
++        override fun reset() {}
++        override fun handleKeyUpdate(keyCode: Int) = EngineUpdate(true, "ㄋ", listOf("你"), "")
++        override fun commitUpdate(): EngineUpdate {
++            commitCalls++
++            return idle.copy(committedText = "你")
++        }
++        override fun backspaceUpdate() = idle
++        override fun selectCandidateUpdate(index: Int) = idle
++        override fun nextPageUpdate(): EngineUpdate? = null
++        override fun prevPageUpdate(): EngineUpdate? = null
++        override fun canPageCandidatesBackward() = false
++        override fun canPageCandidatesForward() = false
++        override fun close() {}
++    }
++}
+diff --git a/app/src/test/java/com/example/ime/EnterPolicyServiceTest.kt b/app/src/test/java/com/example/ime/EnterPolicyServiceTest.kt
+new file mode 100644
+index 0000000..f4fac78
+--- /dev/null
++++ b/app/src/test/java/com/example/ime/EnterPolicyServiceTest.kt
+@@ -0,0 +1,112 @@
++package com.example.ime
++
++import android.text.InputType
++import android.view.inputmethod.EditorInfo
++import com.example.ime.EnterServiceHarness.Effect.Action
++import com.example.ime.EnterServiceHarness.Effect.Commit
++import com.example.ime.engine.KeyboardMode
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertFalse
++import org.junit.After
++import org.junit.Before
++import org.junit.Test
++import org.junit.runner.RunWith
++import org.robolectric.RobolectricTestRunner
++import org.robolectric.annotation.Config
++
++@RunWith(RobolectricTestRunner::class)
++@Config(sdk = [36])
++class EnterPolicyServiceTest {
++    private lateinit var harness: EnterServiceHarness
++    @Before fun setUp() { harness = EnterServiceHarness() }
++    @After fun tearDown() { harness.close() }
++
++    @Test fun `NONE inserts one newline`() {
++        harness.start(EditorInfo.IME_ACTION_NONE)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `UNSPECIFIED inserts one newline`() {
++        harness.start(EditorInfo.IME_ACTION_UNSPECIFIED)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `six standard actions dispatch their advertised code exactly once`() {
++        listOf(EditorInfo.IME_ACTION_GO, EditorInfo.IME_ACTION_SEARCH, EditorInfo.IME_ACTION_SEND,
++            EditorInfo.IME_ACTION_NEXT, EditorInfo.IME_ACTION_DONE, EditorInfo.IME_ACTION_PREVIOUS)
++            .forEach { action ->
++                harness.start(action)
++                harness.enterEditor()
++                assertEquals(listOf(Action(action)), harness.connection.effects)
++            }
++    }
++
++    @Test fun `NO_ENTER_ACTION suppresses SEND dispatch`() {
++        harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `NO_ENTER_ACTION suppresses GO dispatch`() {
++        harness.start(EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `custom action dispatches custom id instead of masked standard action`() {
++        harness.start(EditorInfo.IME_ACTION_SEND, "確認", 73)
++        harness.enterEditor()
++        assertEquals(listOf(Action(73)), harness.connection.effects)
++    }
++
++    @Test fun `custom action with NO_ENTER_ACTION inserts newline`() {
++        harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION, "確認", 73)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `custom label with NONE still dispatches custom id zero`() {
++        harness.start(EditorInfo.IME_ACTION_NONE, "確認", 0)
++        harness.enterEditor()
++        assertEquals(listOf(Action(0)), harness.connection.effects)
++    }
++
++    @Test fun `false action return does not inject a second newline effect`() {
++        harness.start(EditorInfo.IME_ACTION_SEND)
++        harness.connection.actionResult = false
++        harness.enterEditor()
++        assertEquals(listOf(Action(EditorInfo.IME_ACTION_SEND)), harness.connection.effects)
++    }
++
++    @Test fun `explicit multiline NO_ENTER_ACTION retains newline`() {
++        harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION,
++            type = InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_FLAG_MULTI_LINE)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `dispatch uses the same snapshot as presentation until next callback`() {
++        val info = harness.start(EditorInfo.IME_ACTION_SEND)
++        info.imeOptions = EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION
++        info.actionLabel = "新動作"
++        info.actionId = 99
++        harness.enterEditor()
++        assertEquals(listOf(Action(EditorInfo.IME_ACTION_SEND)), harness.connection.effects)
++        harness.start(info.imeOptions, info.actionLabel, info.actionId)
++        harness.enterEditor()
++        assertEquals(listOf(Commit("\n")), harness.connection.effects)
++    }
++
++    @Test fun `non text Enter plumbing preserves English and learning restriction`() {
++        listOf(InputType.TYPE_NULL, InputType.TYPE_CLASS_NUMBER, InputType.TYPE_CLASS_PHONE,
++            InputType.TYPE_CLASS_DATETIME).forEach { type ->
++            harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION, type = type)
++            assertEquals(KeyboardMode.ENGLISH, harness.engine.mode.value)
++            assertFalse(harness.native.personalizedLearningEnabled)
++            harness.enterEditor()
++            assertEquals(listOf(Commit("\n")), harness.connection.effects)
++        }
++    }
++}
+diff --git a/app/src/test/java/com/example/ime/EnterUiWiringTest.kt b/app/src/test/java/com/example/ime/EnterUiWiringTest.kt
+new file mode 100644
+index 0000000..15ad3e1
+--- /dev/null
++++ b/app/src/test/java/com/example/ime/EnterUiWiringTest.kt
+@@ -0,0 +1,151 @@
++package com.example.ime
++
++import android.view.inputmethod.EditorInfo
++import androidx.compose.ui.test.assertIsDisplayed
++import androidx.compose.ui.test.junit4.createComposeRule
++import androidx.compose.ui.test.onNodeWithContentDescription
++import androidx.compose.ui.test.onNodeWithText
++import androidx.compose.ui.test.performClick
++import androidx.compose.ui.viewinterop.AndroidView
++import com.example.ime.EnterServiceHarness.Effect.Action
++import com.example.ime.EnterServiceHarness.Effect.Commit
++import com.example.ime.engine.KeyboardMode
++import com.example.ime.session.ComposeDecoderSession
++import com.example.ime.session.ComposeImeState
++import com.example.ime.session.DispatchResult
++import com.example.ime.session.ImeCommand
++import kotlinx.coroutines.flow.MutableStateFlow
++import org.junit.Assert.assertEquals
++import org.junit.Assert.assertTrue
++import org.junit.After
++import org.junit.Before
++import org.junit.Rule
++import org.junit.Test
++import org.junit.runner.RunWith
++import org.robolectric.RobolectricTestRunner
++import org.robolectric.annotation.Config
++
++@RunWith(RobolectricTestRunner::class)
++@Config(sdk = [36], qualifiers = "w360dp-h800dp")
++class EnterUiWiringTest {
++    @get:Rule val composeRule = createComposeRule()
++    private lateinit var harness: EnterServiceHarness
++    @Before fun setUp() { harness = EnterServiceHarness() }
++    @After fun tearDown() { harness.close() }
++
++    private fun show() {
++        // 掛載service實際的ComposeView，驗證onCreateInputView的label與callback接線。
++        composeRule.setContent { AndroidView(factory = { harness.service.onCreateInputView() }) }
++    }
++
++    @Test fun `NO_ENTER_ACTION suppresses SEND presentation and dispatch`() {
++        harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION)
++        show()
++        composeRule.onNodeWithText("傳送").assertDoesNotExist()
++        composeRule.onNodeWithContentDescription("換行").assertIsDisplayed().performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("\n")), harness.connection.effects) }
++    }
++
++    @Test fun `NO_ENTER_ACTION suppresses GO presentation and dispatch`() {
++        harness.start(EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION)
++        show()
++        composeRule.onNodeWithText("前往").assertDoesNotExist()
++        composeRule.onNodeWithContentDescription("換行").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("\n")), harness.connection.effects) }
++    }
++
++    @Test fun `custom label is shown and dispatches its own id`() {
++        harness.start(EditorInfo.IME_ACTION_SEND, "確認", 73)
++        show()
++        composeRule.onNodeWithText("確認").assertIsDisplayed().performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Action(73)), harness.connection.effects) }
++    }
++
++    @Test fun `custom label cannot bypass NO_ENTER_ACTION presentation`() {
++        harness.start(EditorInfo.IME_ACTION_GO or EditorInfo.IME_FLAG_NO_ENTER_ACTION, "確認", 73)
++        show()
++        composeRule.onNodeWithText("確認").assertDoesNotExist()
++        composeRule.onNodeWithContentDescription("換行").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("\n")), harness.connection.effects) }
++    }
++
++    @Test fun `PREVIOUS has matching Traditional Chinese presentation`() {
++        harness.start(EditorInfo.IME_ACTION_PREVIOUS)
++        show()
++        composeRule.onNodeWithText("上一步").assertIsDisplayed().performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Action(EditorInfo.IME_ACTION_PREVIOUS)), harness.connection.effects) }
++    }
++
++    @Test fun `custom newline label remains text rather than newline icon`() {
++        harness.start(EditorInfo.IME_ACTION_SEND, "換行", 73)
++        show()
++        composeRule.onNodeWithText("換行").assertIsDisplayed().performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Action(73)), harness.connection.effects) }
++    }
++
++    @Test fun `active composition consumes first SEND Enter and second press sends once`() {
++        harness.start(EditorInfo.IME_ACTION_SEND)
++        show()
++        composeRule.onNodeWithText("ㄋ").performClick()
++        composeRule.runOnIdle { assertEquals("ㄋ", harness.session.state.value.preedit) }
++        composeRule.onNodeWithText("傳送").performClick()
++        composeRule.runOnIdle {
++            assertEquals(listOf(Commit("你")), harness.connection.effects)
++            assertEquals(1, harness.native.commitCalls)
++            assertEquals("", harness.session.state.value.preedit)
++        }
++        composeRule.onNodeWithText("傳送").performClick()
++        composeRule.runOnIdle {
++            assertEquals(listOf(Commit("你"), Action(EditorInfo.IME_ACTION_SEND)), harness.connection.effects)
++            assertEquals(1, harness.native.commitCalls)
++        }
++    }
++
++    @Test fun `active composition consumes Enter without also inserting newline`() {
++        harness.start(EditorInfo.IME_ACTION_SEND or EditorInfo.IME_FLAG_NO_ENTER_ACTION)
++        show()
++        composeRule.onNodeWithText("ㄋ").performClick()
++        composeRule.runOnIdle { assertTrue(harness.session.state.value.preedit.isNotEmpty()) }
++        composeRule.onNodeWithContentDescription("換行").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("你")), harness.connection.effects) }
++        composeRule.onNodeWithContentDescription("換行").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("你"), Commit("\n")), harness.connection.effects) }
++    }
++
++    @Test fun `empty composition delegates exactly once after session Enter`() {
++        harness.start(EditorInfo.IME_ACTION_SEND)
++        show()
++        composeRule.onNodeWithText("傳送").performClick()
++        composeRule.runOnIdle {
++            assertEquals(listOf(ImeCommand.Enter), harness.commands)
++            assertEquals(listOf(Action(EditorInfo.IME_ACTION_SEND)), harness.connection.effects)
++            assertEquals(0, harness.native.commitCalls)
++        }
++    }
++
++    @Test fun `English and symbols receive the same normalized custom presentation`() {
++        harness.start(EditorInfo.IME_ACTION_SEND, "確認", 73)
++        harness.engine.setMode(KeyboardMode.ENGLISH)
++        show()
++        composeRule.onNodeWithText("確認").performClick()
++        composeRule.onNodeWithText("?123").performClick()
++        composeRule.onNodeWithText("確認").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Action(73), Action(73)), harness.connection.effects) }
++    }
++
++    @Test fun `consumed Enter applies ordered session outputs without external editor action`() {
++        harness.start(EditorInfo.IME_ACTION_SEND)
++        val session = object : ComposeDecoderSession {
++            override val state = MutableStateFlow(ComposeImeState(preedit = "組字"))
++            override fun dispatch(command: ImeCommand): DispatchResult {
++                assertEquals(ImeCommand.Enter, command)
++                state.value = ComposeImeState()
++                return DispatchResult("先", true, listOf("後"))
++            }
++        }
++        harness.setField("session", session)
++        show()
++        composeRule.onNodeWithText("傳送").performClick()
++        composeRule.runOnIdle { assertEquals(listOf(Commit("先"), Commit("後")), harness.connection.effects) }
++    }
++}
+diff --git a/app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt b/app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt
+index 964a2c7..bda7c5f 100644
+--- a/app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt
++++ b/app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt
+@@ -1,6 +1,7 @@
+ package com.example.ime
+ 
+ import android.text.InputType
++import android.os.Looper
+ import android.view.inputmethod.EditorInfo
+ import androidx.compose.ui.test.junit4.createComposeRule
+ import androidx.compose.ui.test.onNodeWithText
+@@ -17,10 +18,12 @@ import org.junit.Assert.assertEquals
+ import org.junit.Assert.assertFalse
+ import org.junit.Assert.assertTrue
+ import org.junit.Before
++import org.junit.After
+ import org.junit.Rule
+ import org.junit.Test
+ import org.junit.runner.RunWith
+ import org.robolectric.Robolectric
++import org.robolectric.Shadows.shadowOf
+ import org.robolectric.RobolectricTestRunner
+ import org.robolectric.annotation.Config
+ 
+@@ -34,6 +37,13 @@ class NonTextEditorServiceTest {
+     private lateinit var native: RecordingEngine
+     private lateinit var session: ChewingEngineSession
+ 
++    @After
++    fun drainEditorPresentationUpdates() {
++        // onStartInput現在同步Enter presentation；無UI案例也須送出snapshot通知，
++        // 再讓Robolectric清除looper，避免影響下一個Compose測試。
++        shadowOf(Looper.getMainLooper()).idle()
++    }
++
+     @Before
+     fun setUp() {
+         // 只驗證真正的 onStartInput 與 UI；注入 native seam，避免啟動 JNI／安裝詞庫。

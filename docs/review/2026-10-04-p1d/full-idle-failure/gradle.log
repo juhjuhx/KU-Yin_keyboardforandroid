@@ -1,0 +1,90 @@
+Calculating task graph as no cached configuration is available for tasks: :app:testDebugUnitTest
+> Task :app:preBuild UP-TO-DATE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:generateDebugResources
+> Task :app:generateDebugBuildConfig
+> Task :app:processDebugNavigationResources
+> Task :app:javaPreCompileDebug
+> Task :app:mapDebugSourceSetPaths
+> Task :app:compileDebugNavigationResources
+> Task :app:checkDebugAarMetadata
+> Task :app:packageDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:generateDebugRFile
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:mergeDebugAssets
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:processDebugManifestForPackage
+> Task :app:processDebugUnitTestManifest
+> Task :app:mergeDebugResources
+> Task :app:processDebugResources
+> Task :app:packageDebugUnitTestForUnitTest
+> Task :app:generateDebugUnitTestConfig
+> Task :app:kspDebugKotlin
+
+> Task :app:compileDebugKotlin
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:326:86 'static field SHOW_FORCED: Int' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/MainActivity.kt:656:50 'val Icons.Filled.VolumeUp: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.VolumeUp.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/KeyboardView.kt:58:60 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt:32:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt:38:61 'field scaledDensity: Float' is deprecated. Deprecated in Java.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/feedback/ui/FeedbackDialogs.kt:454:48 'val Icons.Filled.Send: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Send.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/engine/KuYinEngine.kt:67:52 The corresponding parameter in the supertype 'IKuYinEngine' is named 'onCommit'. This may cause problems when calling this function with named arguments.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:612:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:687:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:789:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:846:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:945:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:987:65 'val Icons.Filled.KeyboardReturn: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.KeyboardReturn.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt:1047:38 'val Icons.Filled.Backspace: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Filled.Backspace.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/src/main/java/com/example/ime/util/FeedbackHelper.kt:34:49 'static field FLAG_IGNORE_GLOBAL_SETTING: Int' is deprecated. Deprecated in Java.
+
+> Task :app:processDebugJavaRes
+> Task :app:compileDebugJavaWithJavac
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:kspDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:testDebugUnitTest
+
+DachenKeyboardLayoutTest > function keys use dedicated callbacks without phonetic dispatch FAILED
+    androidx.test.espresso.AppNotIdleException at DachenKeyboardLayoutTest.kt:46
+
+DachenKeyboardLayoutTest > narrow phone keeps every phonetic key and backspace visible FAILED
+    androidx.test.espresso.AppNotIdleException at DachenKeyboardLayoutTest.kt:46
+
+DachenKeyboardLayoutTest > each visible phonetic tap dispatches its standard code to native session once FAILED
+    androidx.test.espresso.AppNotIdleException at DachenKeyboardLayoutTest.kt:46
+
+DachenKeyboardLayoutTest > all 37 phonetic symbols and four tones are visible exactly once FAILED
+    androidx.test.espresso.AppNotIdleException at DachenKeyboardLayoutTest.kt:46
+
+190 tests completed, 4 failed, 1 skipped
+
+> Task :app:testDebugUnitTest FAILED
+> Task :app:finalizeTestRoborazziDebug SKIPPED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:testDebugUnitTest'.
+> Test process encountered an unexpected problem.
+   > Process 'Gradle Test Executor 16' finished with non-zero exit value 143 (this value may indicate that the process was terminated with the SIGTERM signal)
+
+* Try:
+> Check common problems https://docs.gradle.org/9.3.1/userguide/java_testing.html#sec:java_testing_troubleshooting.
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 4m 50s
+32 actionable tasks: 32 executed
+Configuration cache entry stored.

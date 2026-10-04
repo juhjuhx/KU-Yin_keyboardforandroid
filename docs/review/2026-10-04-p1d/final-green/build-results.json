@@ -1,0 +1,42 @@
+[
+  {
+    "step": "K-debug",
+    "command": [
+      "./gradlew",
+      ":app:assembleDebug",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/K-debug.log",
+    "apk": {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy/app/build/outputs/apk/debug/app-debug.apk",
+      "size": 29158832,
+      "sha256": "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9"
+    }
+  },
+  {
+    "step": "L-instrumentation-compile",
+    "command": [
+      "./gradlew",
+      ":app:compileDebugAndroidTestKotlin",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/L-instrumentation-compile.log"
+  },
+  {
+    "step": "required-release",
+    "command": [
+      "./gradlew",
+      ":app:assembleRelease",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 1,
+    "log": "docs/review/2026-10-04-p1d/final-green/required-release.log",
+    "status": "BLOCKED_BY_EXISTING_MISSING_KEYSTORE",
+    "reason": "packageRelease storeFile my-upload-key.jks does not exist"
+  }
+]

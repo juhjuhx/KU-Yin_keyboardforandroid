@@ -1,0 +1,16 @@
+PASS dev-doc gradle wrapper version
+PASS dev-doc AGP version
+PASS dev-doc Kotlin version
+PASS dev-doc compileSdk version
+PASS dev-doc targetSdk version
+PASS dev-doc minSdk version
+PASS dev-doc NDK version
+PASS dev-doc CMake version
+PASS dev-doc applicationId
+PASS ARCHITECTURE is Compose-normative
+PASS ARCHITECTURE not View-production
+PASS ROADMAP keeps done items done
+PASS SECURITY_AUDIT not API-33-current
+PASS SECURITY_AUDIT current platform
+
+docs consistency OK
