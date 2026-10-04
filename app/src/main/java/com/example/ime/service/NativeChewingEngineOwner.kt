@@ -20,7 +20,12 @@ class NativeChewingEngineOwner(
         val existing = engine
         if (existing != null) return existing
         val created = factory()
-        created.init(ChewingEngine.Layout.DACHEN)
+        try {
+            created.init(ChewingEngine.Layout.DACHEN)
+        } catch (error: Exception) {
+            runCatching { created.close() }
+            throw error
+        }
         engine = created
         return created
     }

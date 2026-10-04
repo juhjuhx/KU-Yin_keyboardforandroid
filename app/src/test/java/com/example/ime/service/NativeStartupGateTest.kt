@@ -36,15 +36,18 @@ private class StartupFakeEngine(var ready: Boolean = true) : ChewingEngine {
 /**
  * D3b RED: safe native startup falls back to DictionarySession on failure.
  * Fails now because NativeStartupGate does not exist yet.
+ *
+ * P1-A: factory/init failures must fall back to null (single init ownership).
  */
 class NativeStartupGateTest {
 
     @Test
-    fun `installer success plus ready engine returns engine`() {
+    fun `installer success plus ready engine returns engine with single init`() {
         val engine = StartupFakeEngine(ready = true)
+        val owner = NativeChewingEngineOwner { engine }
         val result = NativeStartupGate.start(
             install = { },
-            openEngine = { engine },
+            openEngine = { owner.ensureStarted() },
         )
         assertEquals(engine, result)
         assertEquals(1, engine.initCalls)
@@ -64,11 +67,81 @@ class NativeStartupGateTest {
     @Test
     fun `unready engine is closed and returns null fallback`() {
         val engine = StartupFakeEngine(ready = false)
+        val owner = NativeChewingEngineOwner { engine }
         val result = NativeStartupGate.start(
             install = { },
-            openEngine = { engine },
+            openEngine = { owner.ensureStarted() },
         )
         assertNull(result)
         assertEquals(1, engine.closeCalls)
     }
+
+    @Test
+    fun `factory failure falls back to null without crash`() {
+        var attempts = 0
+        val result = NativeStartupGate.start(
+            install = { },
+            openEngine = { attempts++; throw IllegalStateException("libchewing paths missing") },
+        )
+        assertNull(result)
+        assertEquals(1, attempts)
+    }
+
+    @Test
+    fun `first init failure closes engine once and falls back`() {
+        val engine = ThrowingInitFakeEngine()
+        val owner = NativeChewingEngineOwner { engine }
+        val result = NativeStartupGate.start(
+            install = { },
+            openEngine = { owner.ensureStarted() },
+        )
+        assertNull(result)
+        assertEquals(1, engine.closeCalls)
+    }
+
+    @Test
+    fun `failed creation retains no engine and next start can succeed`() {
+        var attempts = 0
+        val first = NativeStartupGate.start(
+            install = { },
+            openEngine = { attempts++; throw IllegalStateException("boom") },
+        )
+        assertNull(first)
+        val good = StartupFakeEngine(ready = true)
+        val goodOwner = NativeChewingEngineOwner { good }
+        val second = NativeStartupGate.start(
+            install = { },
+            openEngine = { attempts++; goodOwner.ensureStarted() },
+        )
+        assertEquals(good, second)
+        assertEquals(1, good.initCalls)
+        assertEquals(2, attempts)
+    }
+}
+
+private class ThrowingInitFakeEngine : ChewingEngine {
+    override val isReady: Boolean = true
+    override val personalizedLearningEnabled: Boolean = false
+    var closeCalls = 0
+
+    private fun empty(consumed: Boolean) = EngineUpdate(
+        consumed = consumed,
+        preedit = "",
+        candidates = emptyList(),
+        committedText = "",
+    )
+
+    override fun init(layout: ChewingEngine.Layout): Unit =
+        throw IllegalStateException("native init blew up")
+    override fun setPersonalizedLearningEnabled(enabled: Boolean) {}
+    override fun reset() {}
+    override fun handleKeyUpdate(keyCode: Int): EngineUpdate = empty(true)
+    override fun backspaceUpdate(): EngineUpdate = empty(false)
+    override fun selectCandidateUpdate(index: Int): EngineUpdate = empty(false)
+    override fun commitUpdate(): EngineUpdate = empty(false)
+    override fun nextPageUpdate(): EngineUpdate? = null
+    override fun prevPageUpdate(): EngineUpdate? = null
+    override fun canPageCandidatesBackward(): Boolean = false
+    override fun canPageCandidatesForward(): Boolean = false
+    override fun close() { closeCalls++ }
 }

@@ -74,4 +74,47 @@ class NativeChewingEngineOwnerTest {
         owner.close()
         assertEquals(1, engine.closeCalls)
     }
+
+    @Test
+    fun `init failure propagates and retains no engine for retry`() {
+        var creations = 0
+        val bad = object : ChewingEngine {
+            override val isReady: Boolean = true
+            override val personalizedLearningEnabled: Boolean = false
+            private fun empty(consumed: Boolean) = EngineUpdate(
+                consumed = consumed, preedit = "", candidates = emptyList(), committedText = "",
+            )
+            override fun init(layout: ChewingEngine.Layout): Unit =
+                throw IllegalStateException("init blew up")
+            override fun setPersonalizedLearningEnabled(enabled: Boolean) {}
+            override fun reset() {}
+            override fun handleKeyUpdate(keyCode: Int): EngineUpdate = empty(true)
+            override fun backspaceUpdate(): EngineUpdate = empty(false)
+            override fun selectCandidateUpdate(index: Int): EngineUpdate = empty(false)
+            override fun commitUpdate(): EngineUpdate = empty(false)
+            override fun nextPageUpdate(): EngineUpdate? = null
+            override fun prevPageUpdate(): EngineUpdate? = null
+            override fun canPageCandidatesBackward(): Boolean = false
+            override fun canPageCandidatesForward(): Boolean = false
+            override fun close() {}
+        }
+        val good = CountingFakeEngine()
+        var fail = true
+        val owner = NativeChewingEngineOwner {
+            creations++
+            if (fail) bad else good
+        }
+        var thrown = 0
+        try {
+            owner.ensureStarted()
+        } catch (_: IllegalStateException) {
+            thrown++
+        }
+        assertEquals(1, thrown)
+        fail = false
+        val started = owner.ensureStarted()
+        assertEquals(good, started)
+        assertEquals(2, creations)
+        assertEquals(1, good.initCalls)
+    }
 }
