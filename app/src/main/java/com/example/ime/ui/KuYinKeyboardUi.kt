@@ -537,7 +537,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_1.forEach { keyDef ->
+            DachenKeyboardRows.rows[0].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -554,7 +554,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_2.forEach { keyDef ->
+            DachenKeyboardRows.rows[1].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -571,7 +571,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_3.forEach { keyDef ->
+            DachenKeyboardRows.rows[2].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -583,13 +583,13 @@ fun ZhuyinKeyboardLayout(
             }
         }
 
-        // 第四排 (8 個注音鍵 + Backspace)
+        // 第四排 (10 個注音鍵 + Backspace)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ZhuyinConstants.ROW_4.forEach { keyDef ->
+            DachenKeyboardRows.rows[3].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,

@@ -32,62 +32,6 @@ object ZhuyinConstants {
     fun isRhyme(s: String): Boolean = RHYMES.contains(s)
     fun isTone(s: String): Boolean = s in listOf("ˊ", "ˇ", "ˋ", "˙")
 
-    // 標準大千式鍵盤配列 (DaQian Layout)
-    // 第一排 (對應 1 2 3 4 5 6 7 8 9 0 -)
-    val ROW_1 = listOf(
-        KeyDef("ㄅ", "1"),
-        KeyDef("ㄉ", "2"),
-        KeyDef("ˇ", "3"),
-        KeyDef("ˋ", "4"),
-        KeyDef("ㄓ", "5"),
-        KeyDef("ˊ", "6"),
-        KeyDef("˙", "7"),
-        KeyDef("ㄚ", "8"),
-        KeyDef("ㄞ", "9"),
-        KeyDef("ㄢ", "0"),
-        KeyDef("ㄦ", "-")
-    )
-
-    // 第二排 (對應 q w e r t y u i o p)
-    val ROW_2 = listOf(
-        KeyDef("ㄆ", "q"),
-        KeyDef("ㄊ", "w"),
-        KeyDef("ㄍ", "e"),
-        KeyDef("ㄐ", "r"),
-        KeyDef("ㄔ", "t"),
-        KeyDef("ㄗ", "y"),
-        KeyDef("ㄧ", "u"),
-        KeyDef("ㄛ", "i"),
-        KeyDef("ㄟ", "o"),
-        KeyDef("ㄣ", "p")
-    )
-
-    // 第三排 (對應 a s d f g h j k l ;)
-    val ROW_3 = listOf(
-        KeyDef("ㄇ", "a"),
-        KeyDef("ㄋ", "s"),
-        KeyDef("ㄎ", "d"),
-        KeyDef("ㄑ", "f"),
-        KeyDef("ㄒ", "g"),
-        KeyDef("ㄘ", "h"),
-        KeyDef("ㄨ", "j"),
-        KeyDef("ㄜ", "k"),
-        KeyDef("ㄠ", "l"),
-        KeyDef("ㄤ", ";")
-    )
-
-    // 第四排 (對應 z x c v b n m ,)
-    val ROW_4 = listOf(
-        KeyDef("ㄈ", "z"),
-        KeyDef("ㄌ", "x"),
-        KeyDef("ㄏ", "c"),
-        KeyDef("ㄙ", "v"),
-        KeyDef("ㄩ", "b"),
-        KeyDef("ㄝ", "n"),
-        KeyDef("ㄡ", "m"),
-        KeyDef("ㄥ", ",")
-    )
-
     // 常用中文標點符號
     val CHINESE_PUNCTUATION_1 = listOf(
         "，", "。", "！", "？", "：", "；", "、", "～"
