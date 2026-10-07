@@ -1,0 +1,36 @@
+Dachen contract OK
+P0 keyboard contract OK
+Editor sync contract OK
+P1 build contract OK
+P2 UI contract OK
+P3 architecture/security contract OK
+Production Compose contract OK
+CI C4 trigger contract OK
+NDK pin contract OK
+PASS dev-doc gradle wrapper version
+PASS dev-doc AGP version
+PASS dev-doc Kotlin version
+PASS dev-doc compileSdk version
+PASS dev-doc targetSdk version
+PASS dev-doc minSdk version
+PASS dev-doc NDK version
+PASS dev-doc CMake version
+PASS dev-doc applicationId
+PASS ARCHITECTURE is Compose-normative
+PASS ARCHITECTURE not View-production
+PASS ROADMAP keeps done items done
+PASS SECURITY_AUDIT not API-33-current
+PASS SECURITY_AUDIT current platform
+
+docs consistency OK
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_dachen_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p0_keyboard_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_editor_sync_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p1_build_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p2_ui_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p3_architecture_security_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_production_compose_contract.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_ci_c4_trigger.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_ndk_pin_consistency.py
+$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_docs_consistency.py
+verify OK

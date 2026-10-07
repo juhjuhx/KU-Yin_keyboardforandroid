@@ -1,0 +1,102 @@
+{
+  "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/KU-Yin-P1-Alpha驗收包.zip",
+  "bytes": 30148078,
+  "sha256": "556e16317f716e8dfd04ec32f8190465fb4f7393952fcf98b4aaad0fd6fbc268",
+  "entry_count": 18,
+  "crc_check": "PASS",
+  "all_entries_byte_identical_to_sources": true,
+  "entries": [
+    {
+      "path": "app-debug.apk",
+      "bytes": 29158832,
+      "sha256": "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9"
+    },
+    {
+      "path": "app-debug-androidTest.apk",
+      "bytes": 965496,
+      "sha256": "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd"
+    },
+    {
+      "path": "檔案清單.json",
+      "bytes": 851,
+      "sha256": "3b4175798fd24367a95bcf5a54e7b1836eba48f7da7fd9310ae3ef12494cce63"
+    },
+    {
+      "path": "開始驗收.md",
+      "bytes": 1031,
+      "sha256": "568b1dcc8d3f91a2812ccfabd014ba7be31a93002804aceb59125a7f01b8e833"
+    },
+    {
+      "path": "文件/00-基線與範圍.md",
+      "bytes": 4550,
+      "sha256": "c44b1221514bb464857746bac60f0fad8d38f4d14d4d59a54f02053c1a7c250a"
+    },
+    {
+      "path": "文件/01-實機驗收深讀.md",
+      "bytes": 4993,
+      "sha256": "5aa37237239e73ddbc39cc39d88df9956fb961195e885be5aa6294c4ae6766f8"
+    },
+    {
+      "path": "文件/02-驗收矩陣.md",
+      "bytes": 7217,
+      "sha256": "0e136b06650596315a3b6a50ed6b33ff75e17c8aae15b21d52f287b91b30ccbb"
+    },
+    {
+      "path": "文件/03-裝置操作手冊.md",
+      "bytes": 6174,
+      "sha256": "0efb12143eacf48e2a724b6734540e5976fdd90eb9dbbfc60db3812df13fa6e1"
+    },
+    {
+      "path": "文件/04-證據與裁定.md",
+      "bytes": 4409,
+      "sha256": "2d147597f8133b1792379752b384a4ea5eeef7909d2fcea06932a8d5e57d8863"
+    },
+    {
+      "path": "文件/05-交接.md",
+      "bytes": 3870,
+      "sha256": "24a3579deec3c08ff010b30bfded1bbfa3f4a61e5908f96bab98335b7bafed2e"
+    },
+    {
+      "path": "文件/06-獨立審查.md",
+      "bytes": 2488,
+      "sha256": "66f10f0d80ad5f2324c1ae06f720ed205cfcbb0d9784c882e2344ef63ccceea8"
+    },
+    {
+      "path": "證據/產品APK核對.json",
+      "bytes": 1551,
+      "sha256": "6cd665120b599311b230b727e289831a7a45679ebd62b0ee8812ccc5d4d87f28"
+    },
+    {
+      "path": "證據/測試APK核對.json",
+      "bytes": 612,
+      "sha256": "6aade0d649a035fda9137f3a425e945b4da1df557abe872586d5504759049231"
+    },
+    {
+      "path": "證據/來源保護核對.json",
+      "bytes": 182,
+      "sha256": "1b9c7ac33110244320ea38cba1489fd7f175b7ad8622e686f37a78dc3cb64b9f"
+    },
+    {
+      "path": "證據/裝置清單.json",
+      "bytes": 298,
+      "sha256": "8311ae2e88a3d71dc8189bcf6c9c24870d274940db9ae3a4079320720e5b9253"
+    },
+    {
+      "path": "證據/instrumentation-build.json",
+      "bytes": 248,
+      "sha256": "8a3b6ee0e79d09e171c2c18c93093d993651c7a2d55df088301f44a1b0441e8f"
+    },
+    {
+      "path": "證據/原生依賴準備.json",
+      "bytes": 270,
+      "sha256": "1a355830d41fe24935c936fe5729c2c09210d548941dffa7d202169c89c006a1"
+    },
+    {
+      "path": "證據/static-contracts.json",
+      "bytes": 139,
+      "sha256": "f27435ac4635139632cd380e3dbdf176716a357bbef4c761f4603f7e779c96ba"
+    }
+  ],
+  "runtime": "NOT_TESTED",
+  "independent_review_scope": "preparation documents and APK evidence; ZIP validated by root"
+}

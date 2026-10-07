@@ -1,0 +1,22 @@
+[
+  {
+    "name": "final-static-contracts",
+    "command": [
+      "python3",
+      "scripts/verify.py",
+      "--static"
+    ],
+    "exit": 0,
+    "log": "final-static-contracts.log"
+  },
+  {
+    "name": "final-authored-whitespace",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit": 0,
+    "log": "final-authored-whitespace.log"
+  }
+]
