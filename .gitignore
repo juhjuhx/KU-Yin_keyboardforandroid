@@ -8,6 +8,7 @@ app/.cxx/
 
 # Gradle
 .gradle/
+.kotlin/
 
 # Android Studio
 .idea/

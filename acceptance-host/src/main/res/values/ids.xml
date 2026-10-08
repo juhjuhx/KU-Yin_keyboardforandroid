@@ -1,0 +1,24 @@
+<resources>
+    <item name="editor" type="id" />
+    <item name="case_id" type="id" />
+    <item name="actual_input_type" type="id" />
+    <item name="actual_ime_options" type="id" />
+    <item name="actual_action_label" type="id" />
+    <item name="actual_action_id" type="id" />
+    <item name="input_connection_present" type="id" />
+    <item name="editor_action_count" type="id" />
+    <item name="last_editor_action_id" type="id" />
+    <item name="last_action_return_value" type="id" />
+    <item name="newline_count" type="id" />
+    <item name="current_text" type="id" />
+    <item name="commit_count" type="id" />
+    <item name="last_commit_text" type="id" />
+    <item name="snapshot_revision" type="id" />
+    <item name="platform_input_type" type="id" />
+    <item name="platform_ime_options" type="id" />
+    <item name="platform_action_label" type="id" />
+    <item name="platform_action_id" type="id" />
+    <item name="ime_visibility" type="id" />
+    <item name="host_orientation" type="id" />
+    <item name="display_rotation" type="id" />
+</resources>
