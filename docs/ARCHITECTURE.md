@@ -58,3 +58,10 @@ Python contracts pin static invariants; JVM tests pin behavior (fresh counts in
 instrumentation/runtime smoke covers lifecycle+JNI on device. Runtime-only
 gates (touch geometry, rotation, OEM matrix, QR scan art) are never claimed
 from static evidence.
+
+P1-E 新增獨立 test-only `:acceptance-host`，使用 platform Views。
+RecordingEditText 保留真實 editor InputConnection、消費並記錄 editor action，
+文字操作仍 delegate；平台 EditorInfo 與最終受控宣告分別保存。Host instrumentation
+以可見 UIAutomator 軟鍵 selector 控制外部 KU-Yin IME 視窗；host 不依賴產品、
+decoder、Compose 或 native。裝置 IME 狀態由固定 serial 的操作手冊／執行器管理，
+instrumentation 不自行接管預設輸入法。

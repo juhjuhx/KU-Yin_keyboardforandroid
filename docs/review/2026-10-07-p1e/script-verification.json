@@ -1,0 +1,7 @@
+{
+  "python_compile": "PASS",
+  "help_exit": 0,
+  "real_adb_executed": false,
+  "device_serial_supplied": false,
+  "runtime": "NOT_TESTED"
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.engine.PunctuationTransitionTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-07T14:56:20.762Z" hostname="MacBook-Air.local" time="0.051">
+  <properties/>
+  <testcase name="punctuation without composition commits once" classname="com.example.ime.engine.PunctuationTransitionTest" time="0.022"/>
+  <testcase name="punctuation during composition flushes then commits punctuation" classname="com.example.ime.engine.PunctuationTransitionTest" time="0.024"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

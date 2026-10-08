@@ -1,0 +1,155 @@
+[
+  {
+    "suite": {
+      "name": "io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest",
+      "tests": "6",
+      "skipped": "0",
+      "failures": "6",
+      "errors": "0",
+      "timestamp": "2026-10-07T11:08:05.862Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.022"
+    },
+    "failed": [
+      {
+        "name": "noEnterCasesActuallyDeclareTheFlag",
+        "type": "java.util.NoSuchElementException",
+        "message": "java.util.NoSuchElementException: Key D09 is missing in the map."
+      },
+      {
+        "name": "customCasesCarryRealIdAndAmbiguousLabel",
+        "type": "java.util.NoSuchElementException",
+        "message": "java.util.NoSuchElementException: Key D11 is missing in the map."
+      },
+      {
+        "name": "standardActionIdsAndLabelsAreDeclaredTogether",
+        "type": "java.util.NoSuchElementException",
+        "message": "java.util.NoSuchElementException: Key D03 is missing in the map."
+      },
+      {
+        "name": "falseReturnAndCompositionCasesAreExplicit",
+        "type": "java.util.NoSuchElementException",
+        "message": "java.util.NoSuchElementException: Key D17 is missing in the map."
+      },
+      {
+        "name": "allEnterCasesAreUniqueAndOrdered",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<[D01, D02, D03, D04, D05, D06, D07, D08, D09, D10, D11, D12, D13, D14, D15, D16, D17, D18]> but was:<[]>"
+      },
+      {
+        "name": "nonTextFixturesIncludeRealTypeNull",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<[C01, C02, C03, C04]> but was:<[]>"
+      }
+    ]
+  },
+  {
+    "suite": {
+      "name": "io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest",
+      "tests": "22",
+      "skipped": "0",
+      "failures": "19",
+      "errors": "0",
+      "timestamp": "2026-10-07T11:08:05.828Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.029"
+    },
+    "failed": [
+      {
+        "name": "wrongLabelTypeIsRejected",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown"
+      },
+      {
+        "name": "customIdZeroIsValid",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<確認> but was:<null>"
+      },
+      {
+        "name": "customZeroActionCounts",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<0> but was:<null>"
+      },
+      {
+        "name": "preservesTypeNull",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<0> but was:<1>"
+      },
+      {
+        "name": "emptyCustomLabelIsNotMissing",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<> but was:<null>"
+      },
+      {
+        "name": "wrongIntTypeIsRejected",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown"
+      },
+      {
+        "name": "wrongBooleanTypeIsRejected",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown"
+      },
+      {
+        "name": "snapshotsRemainImmutableAndAdvanceRevision",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<2> but was:<0>"
+      },
+      {
+        "name": "falseActionStillCountsAndDoesNotInsertText",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<1> but was:<0>"
+      },
+      {
+        "name": "commitObservationDoesNotFakeEditableText",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<1> but was:<0>"
+      },
+      {
+        "name": "nullConnectionIsRepresentedHonestly",
+        "type": "java.lang.NullPointerException",
+        "message": "java.lang.NullPointerException"
+      },
+      {
+        "name": "carriageReturnIsNotInventedAsNewline",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<1> but was:<0>"
+      },
+      {
+        "name": "newlineCountComesFromActualText",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<3> but was:<0>"
+      },
+      {
+        "name": "initialTextIsObserved",
+        "type": "org.junit.ComparisonFailure",
+        "message": "org.junit.ComparisonFailure: expected:<[seed\n]> but was:<[]>"
+      },
+      {
+        "name": "connectionRecordsActualPlatformAndFinalSeparately",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<EditorInfoSnapshot(inputType=1, imeOptions=6, actionLabel=null, actionId=0, inputConnectionPresent=true)> but was:<null>"
+      },
+      {
+        "name": "nonPositiveMinLinesIsRejected",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown"
+      },
+      {
+        "name": "parsesAllPrimitiveExtras",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<CaseConfig(caseId=D11, inputType=1, imeOptions=4, customActionLabel=確認, customActionId=73, performEditorActionReturnValue=false, initialText=seed, minLines=3)> but was:<CaseConfig(caseId=DEFAULT, inputType=1, imeOptions=0, customActionLabel=null, customActionId=0, performEditorActionReturnValue=true, initialText=, minLines=1)>"
+      },
+      {
+        "name": "trueActionCountsExactIds",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected:<2> but was:<0>"
+      },
+      {
+        "name": "explicitNullIntIsRejected",
+        "type": "java.lang.AssertionError",
+        "message": "java.lang.AssertionError: expected java.lang.IllegalArgumentException to be thrown, but nothing was thrown"
+      }
+    ]
+  }
+]

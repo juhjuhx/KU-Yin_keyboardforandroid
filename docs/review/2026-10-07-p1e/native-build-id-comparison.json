@@ -1,0 +1,26 @@
+[
+  {
+    "entry": "lib/arm64-v8a/libchewing-jni.so",
+    "size_equal": true,
+    "byte_difference_count": 20,
+    "equal_after_removing_build_id": true
+  },
+  {
+    "entry": "lib/armeabi-v7a/libchewing-jni.so",
+    "size_equal": true,
+    "byte_difference_count": 20,
+    "equal_after_removing_build_id": true
+  },
+  {
+    "entry": "lib/x86/libchewing-jni.so",
+    "size_equal": true,
+    "byte_difference_count": 19,
+    "equal_after_removing_build_id": true
+  },
+  {
+    "entry": "lib/x86_64/libchewing-jni.so",
+    "size_equal": true,
+    "byte_difference_count": 20,
+    "equal_after_removing_build_id": true
+  }
+]

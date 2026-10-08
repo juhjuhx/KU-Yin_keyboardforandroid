@@ -1,0 +1,27 @@
+usage: p1_acceptance_device.py [-h] --serial SERIAL
+                               --evidence-dir EVIDENCE_DIR
+                               [--package-dir PACKAGE_DIR]
+                               [--adb-timeout ADB_TIMEOUT]
+                               [--install-timeout INSTALL_TIMEOUT]
+                               [--instrumentation-timeout INSTRUMENTATION_TIMEOUT]
+                               {prepare,install,select,run,restore} ...
+
+固定 serial 的 P1 驗收 runner；只改選取／啟用狀態，不清除 app 資料。
+
+positional arguments:
+  {prepare,install,select,run,restore}
+    prepare             先驗四 APK 並只讀封存原裝置／IME 狀態
+    install             安裝四 APK（-r -t）；signature mismatch STOP
+    select              顯式 enable／select KU-Yin，失敗時嘗試安全還原
+    run                 既有 5 tests → host suite；finally 還原、逐 case 留證據
+    restore             只還原 captured default／新增 KU-Yin enable 狀態並核對 raw
+
+options:
+  -h, --help            show this help message and exit
+  --serial SERIAL       明示且唯一的 ADB serial；不採第一台裝置
+  --evidence-dir EVIDENCE_DIR
+                        工作 repo 外的證據目錄；captured state 不覆寫
+  --package-dir PACKAGE_DIR
+  --adb-timeout ADB_TIMEOUT
+  --install-timeout INSTALL_TIMEOUT
+  --instrumentation-timeout INSTRUMENTATION_TIMEOUT

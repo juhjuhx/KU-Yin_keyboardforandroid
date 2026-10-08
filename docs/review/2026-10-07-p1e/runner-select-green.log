@@ -1,0 +1,18 @@
+........................
+----------------------------------------------------------------------
+Ran 24 tests in 0.025s
+
+OK
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmptj9t6_z1/evidence/prepare-20261007T231601-b49f35de
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpf851gmap/run-20261007T231601-20e99f6c
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpf851gmap/run-20261007T231601-20e99f6c/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpu9ohcic7/run-20261007T231601-68927c38
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpu9ohcic7/run-20261007T231601-68927c38/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpdu2o29fc/install-20261007T231601-0ef21be6
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE

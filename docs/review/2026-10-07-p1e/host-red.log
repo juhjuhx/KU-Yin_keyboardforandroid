@@ -1,0 +1,126 @@
+Calculating task graph as configuration cache cannot be reused because file 'acceptance-host/build.gradle.kts' has changed.
+
+> Configure project :acceptance-host
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/acceptance-host/build.gradle.kts:19:30: 'fun srcDir(srcDir: Any): Any' is deprecated. Use `directories` mutable set instead.
+w: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/acceptance-host/build.gradle.kts:20:37: 'fun srcDir(srcDir: Any): Any' is deprecated. Use `directories` mutable set instead.
+
+> Task :acceptance-host:preBuild UP-TO-DATE
+> Task :acceptance-host:preDebugBuild UP-TO-DATE
+> Task :acceptance-host:preDebugUnitTestBuild UP-TO-DATE
+> Task :acceptance-host:checkDebugAarMetadata UP-TO-DATE
+> Task :acceptance-host:processDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebug UP-TO-DATE
+> Task :acceptance-host:generateDebugResources UP-TO-DATE
+> Task :acceptance-host:mapDebugSourceSetPaths UP-TO-DATE
+> Task :acceptance-host:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :acceptance-host:extractDeepLinksDebug UP-TO-DATE
+> Task :acceptance-host:processDebugMainManifest UP-TO-DATE
+> Task :acceptance-host:processDebugManifest UP-TO-DATE
+> Task :acceptance-host:processDebugManifestForPackage UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :acceptance-host:compileDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:packageDebugResources UP-TO-DATE
+> Task :acceptance-host:mergeDebugResources UP-TO-DATE
+> Task :acceptance-host:parseDebugLocalResources UP-TO-DATE
+> Task :acceptance-host:generateDebugRFile UP-TO-DATE
+> Task :acceptance-host:compileDebugKotlin UP-TO-DATE
+> Task :acceptance-host:processDebugResources UP-TO-DATE
+> Task :acceptance-host:compileDebugJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugJavaRes UP-TO-DATE
+> Task :acceptance-host:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :acceptance-host:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :acceptance-host:compileDebugUnitTestKotlin
+> Task :acceptance-host:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugUnitTestJavaRes
+
+> Task :acceptance-host:testDebugUnitTest FAILED
+
+FixtureLogicTest > wrongLabelTypeIsRejected FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:42
+
+FixtureLogicTest > customIdZeroIsValid FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:26
+
+FixtureLogicTest > customZeroActionCounts FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:87
+
+FixtureLogicTest > preservesTypeNull FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:19
+
+FixtureLogicTest > emptyCustomLabelIsNotMissing FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:22
+
+FixtureLogicTest > wrongIntTypeIsRejected FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:36
+
+FixtureLogicTest > wrongBooleanTypeIsRejected FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:39
+
+FixtureLogicTest > snapshotsRemainImmutableAndAdvanceRevision FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:113
+
+FixtureLogicTest > falseActionStillCountsAndDoesNotInsertText FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:78
+
+FixtureLogicTest > commitObservationDoesNotFakeEditableText FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:102
+
+FixtureLogicTest > nullConnectionIsRepresentedHonestly FAILED
+    java.lang.NullPointerException at FixtureLogicTest.kt:65
+
+FixtureLogicTest > carriageReturnIsNotInventedAsNewline FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:97
+
+FixtureLogicTest > newlineCountComesFromActualText FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:92
+
+FixtureLogicTest > initialTextIsObserved FAILED
+    org.junit.ComparisonFailure at FixtureLogicTest.kt:51
+
+FixtureLogicTest > connectionRecordsActualPlatformAndFinalSeparately FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:58
+
+FixtureLogicTest > nonPositiveMinLinesIsRejected FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:45
+
+FixtureLogicTest > parsesAllPrimitiveExtras FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:13
+
+FixtureLogicTest > trueActionCountsExactIds FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:71
+
+FixtureLogicTest > explicitNullIntIsRejected FAILED
+    java.lang.AssertionError at FixtureLogicTest.kt:48
+
+MatrixDefinitionTest > noEnterCasesActuallyDeclareTheFlag FAILED
+    java.util.NoSuchElementException at MatrixDefinitionTest.kt:23
+
+MatrixDefinitionTest > customCasesCarryRealIdAndAmbiguousLabel FAILED
+    java.util.NoSuchElementException at MatrixDefinitionTest.kt:31
+
+MatrixDefinitionTest > standardActionIdsAndLabelsAreDeclaredTogether FAILED
+    java.util.NoSuchElementException at MatrixDefinitionTest.kt:14
+
+MatrixDefinitionTest > falseReturnAndCompositionCasesAreExplicit FAILED
+    java.util.NoSuchElementException at MatrixDefinitionTest.kt:39
+
+MatrixDefinitionTest > allEnterCasesAreUniqueAndOrdered FAILED
+    java.lang.AssertionError at MatrixDefinitionTest.kt:8
+
+MatrixDefinitionTest > nonTextFixturesIncludeRealTypeNull FAILED
+    java.lang.AssertionError at MatrixDefinitionTest.kt:44
+
+28 tests completed, 25 failed
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':acceptance-host:testDebugUnitTest'.
+> There were failing tests. See the report at: file:///Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/acceptance-host/build/reports/tests/testDebugUnitTest/index.html
+
+* Try:
+> Run with --scan to get full insights from a Build Scan (powered by Develocity).
+
+BUILD FAILED in 6s
+24 actionable tasks: 3 executed, 21 up-to-date
+Configuration cache entry stored.

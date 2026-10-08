@@ -1,0 +1,77 @@
+{
+  "source_sha": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "files": [
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/RecordingEditText.kt",
+      "sha256": "5b398165f9422427a925dfe7749c72446a5d0ff0e6f11a0f1d7d7d57fd589618"
+    },
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceEditorActivity.kt",
+      "sha256": "d2416e2d347d9f4fd2f9d8882a3a4b820ed2f3e375a51380b89a2953b1c5c024"
+    },
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/IntentCaseConfig.kt",
+      "sha256": "781b412eb0cb5381d2ada79c623ab374569168f6c137207aed22c7c5db8831c2"
+    },
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/EditorSnapshot.kt",
+      "sha256": "fde3ea832c39a3f477f7a9070febaddd41fd78e5c3a8ce65789f2a4ccb8aff3a"
+    },
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/CaseConfig.kt",
+      "sha256": "f497f784bb41ea8329f7a86566087414251a90aac531d8846b0e04f582a6b52f"
+    },
+    {
+      "file": "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/EditorRecorder.kt",
+      "sha256": "30a28a8141a46c596f7ecd3f19999aa6ae562c089735294cb8c08dd417080897"
+    },
+    {
+      "file": "acceptance-host/src/sharedTest/java/io/github/juhjuhx/kuyin/acceptancehost/CaseFailurePolicy.kt",
+      "sha256": "e29ce80fd7f7cad041dfdb98418913e6249d24026a819bba7cbaa0ededbaa3e8"
+    },
+    {
+      "file": "acceptance-host/src/sharedTest/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceMatrix.kt",
+      "sha256": "a45224632b02db46a866345f9dcbfff69e4d88839e52841d7eb69e6f42c2caed"
+    },
+    {
+      "file": "acceptance-host/src/test/java/io/github/juhjuhx/kuyin/acceptancehost/MatrixDefinitionTest.kt",
+      "sha256": "5c44c7ce251018f8fdff68636556b07a838cb10bf62c81e1a9784136ba7a5f94"
+    },
+    {
+      "file": "acceptance-host/src/test/java/io/github/juhjuhx/kuyin/acceptancehost/FixtureLogicTest.kt",
+      "sha256": "9e6e191c1314134d39410d4d4b34864ecd308608471731a7b1d2e46235c1c57d"
+    },
+    {
+      "file": "acceptance-host/src/test/java/io/github/juhjuhx/kuyin/acceptancehost/CaseFailurePolicyTest.kt",
+      "sha256": "7d68fc66f0c174efbed6fd0c10429a2a976c48db124110d9f54c14e13147bc35"
+    },
+    {
+      "file": "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/EditorActionAcceptanceTest.kt",
+      "sha256": "290275b9cc757cd59b7dae4f602ae64b885a9cbcc10f1153717bb2c0f91c473e"
+    },
+    {
+      "file": "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/NonTextEditorAcceptanceTest.kt",
+      "sha256": "8f0bb92c386c741c408d4f7577e253edf16fd8843d717425f22b246d348ef303"
+    },
+    {
+      "file": "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/DachenAcceptanceTest.kt",
+      "sha256": "9b5528f76bee247a444d11da043d61b956ce98490bf20fe0287ea7a82308f2c0"
+    },
+    {
+      "file": "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceDriver.kt",
+      "sha256": "29e55f50702f352f95f083e58cb7e71fbc79b4e10297a07e1b0a821cbc7516a4"
+    },
+    {
+      "file": "acceptance-host/build.gradle.kts",
+      "sha256": "ec9a1ac8f4652906236e82fff53c17beb0fb70bda3eec66f049948fb8b5a234e"
+    },
+    {
+      "file": "scripts/p1_acceptance_device.py",
+      "sha256": "8a57d30c9b0b275a2bd57eb94fef47c9ab6c763e59f70432a9b0ce09c2810a1c"
+    },
+    {
+      "file": "scripts/tests/test_p1_acceptance_device.py",
+      "sha256": "f4f429a74137456f659abdf55e51b9cc53a4c628897c103d2f4ba0841577d41d"
+    }
+  ]
+}

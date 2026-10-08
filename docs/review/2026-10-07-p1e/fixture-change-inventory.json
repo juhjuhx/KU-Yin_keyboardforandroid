@@ -1,0 +1,572 @@
+{
+  "source_sha": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "unknown_files": 0,
+  "documentation_and_evidence": [
+    {
+      "file": "docs/ARCHITECTURE.md",
+      "classification": "FIXTURE_DOC"
+    },
+    {
+      "file": "docs/CURRENT_STATE.md",
+      "classification": "FIXTURE_DOC"
+    },
+    {
+      "file": "docs/DEVELOPMENT.md",
+      "classification": "FIXTURE_DOC"
+    },
+    {
+      "file": "docs/UPSTREAM.md",
+      "classification": "FIXTURE_DOC"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/00-source-and-gap.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "ba9e1175f6e8b07582599a444ef5a8ec187f9dcc2d9e2bed89778df478b62d6c"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/01-fixture-deep-understanding.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "0b89320b3904cf6461224a356414245e10e141c560f8fde571621733a229e0c4"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/02-upstream-research.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "df6f1c579bb19f0fd13d1b896dd1967dfa08dc49336f8e74abc927d0dc7a4969"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/03-fixture-design.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "e2c3e87f0bc0d9760a57acf5eb753179251da83ee63f556acdf4a9f5cbf33dec"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/04-test-plan.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "9f710a6f86b729f6c68fba0b37992a2872ab8f4fa924cca0c67d75fdf5d58671"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/05-build-evidence.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "c94cad56dbeff62e7cbf52f17c22e1da9c39ffcbe08d229fb829853cd68b4903"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/06-independent-review.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "118ba1b40d4851b86a7649d2cd4a9d4099c01348d62b71c37d7a0286d1525b83"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/07-handoff.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "7b185dcc861ef83c0b5a1e8929c5336c6851ff561393495e72ffaca1cbd210cb"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/08-device-runbook.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "18bf223d5b527ae965b93f19019dc27ae096ad350cb61571342a19d6b241fcf5"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/09-device-matrix.md",
+      "classification": "FIXTURE_DOC",
+      "sha256": "9636e1567aca1d0a7b536efa211b5e4b3a6291f00b4b57312ceb75bbf1fd8c99"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/acceptance-host-debug-androidTest.apk.manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "db19c3715f9a79dcd64751d336269afb5b73b6206823cc41b2f2ca919bc169fb"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/acceptance-host-debug-androidTest.apk.signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/acceptance-host-debug.apk.manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "bc585eecd4fd00d2d6832dda1f4a070604863ad562ad2d41eb5ee985cbd77c59"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/acceptance-host-debug.apk.signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-debug-androidTest.apk.manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3e50633456673cabef8efb9294c048253bea97368e8e61c8231d3be4505531e7"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-debug-androidTest.apk.signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-debug.apk.manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "16bffb44c29a83a4f6b09fde8099dfca2bd6b5ccef218745b897fb8a459e8307"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-debug.apk.signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ExampleRobolectricTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "96102364aff21d4f8f937f957f9a5eb5f0f0d53277b72aaf74ace6589f434454"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ExampleUnitTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "15cb06702972d98dbe00ece7cddfd34a58f30aeb70af31fe48715475324f6f15"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.GreetingScreenshotTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "fbf07b62701f35d2e5916adc73e2095b6f94d81b9637d5549ae79e14f61ec53e"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.engines.android.VisiblePreeditTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3a66a9a5f3d6be52923f050fdb956f08a58abd2c45ac8fda90ad6378d76af0f6"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.engines.core.ChewingEnginePagingContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "b39e5e98f4be9243f0668204a9f3bea812e3aaed564ef4a4136c224d856df814"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.engines.opencc.OpenCCConverterTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "af5ca7fad874409173b6cc97807afe343c0dfdb40ef74b45641e6e50b986c3b9"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.EditorEnterPolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "68231758c514b5eec9eff37a83dc49da3a87638e27118d5f7c04ca8374c4bb56"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.EditorPolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "01948488062f80ad10589c07b1ec38c03bcd970dc670db35461448c7304c579c"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.ImeSessionControllerTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "e23aced761e9f6597e9f5d93623da122f1ddec4dca5f428981c39897aeef0232"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.KeyboardHitboxContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "05d5564fe7c71fdc0f63bb9968f50b0bc446ed86bfeb70c4867d9225016783a8"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.KeyboardLayoutTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d502dc3091d56c3138e5fb0cb5e8a3f3a78925eca1f50db33c02b4fdedf226be"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.androidkeyboard.input.KeyboardModeContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "b0484b6b7835e2b95b2c1ac0122faaee902a98949b19b1c74d3951c76fa266b3"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.EnterPolicyServiceTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "22d40f16d669f897b2a09a2b4d24a58c9b162d15680481a7d88b06c7f7527a0a"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.EnterUiWiringTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "413ca3633f1229f4bbffacb79a2e15d06c7518cbaba0af6ba623d003e427affc"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.NonTextEditorServiceTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "393944b916afe91b86f21b7e4aadb1c643b9dc1bf58902b3bdc24ef9091060de"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.ProductionEditorPolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d05bab4b61a95708e6f0021c7e1ba574225915ab978895d288fa57b7e186616b"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.ProductionSeamIntegrationTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "58c38b209a80d8b0b4f88ecbe9da0ab95a83ed0bba88b9090566a834b1516d8f"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.engine.PunctuationTransitionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3bab2e22adef3f152615385c68a46f1dd9373becfdd9e0d427df06c45a7e5214"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.engine.ZhuyinDictionaryRankingTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "9687edfc7c66582f77c276769a74ce78aefaf1ccbe43164bcc65dc938dcfb696"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.CompositionResetPolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ca1a8ee762274074b6e70c3e9ac3f883be2a91c0290761d8dc06dfe5f3ec0f4c"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.EditorDeletionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0a4fa2a1420d33e220815e199acf9fe79c252f01809abd6ce26ddba685c91e9b"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.EffectiveModePolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "cc35f37e5382a2f2918eabdd3f7f3a7cc36567c82dfd5d370c3ac2225b7b6897"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.NativeChewingEngineOwnerTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3d3784144d114ad89487fcfbcda605490eab61d1a44ba150699fae40b7ed3b0a"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.NativeLearningPolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "7a001621b49454425c68a89b1abb49037cb1559428b48eb7d87e1912cd01c747"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.service.NativeStartupGateTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "38c7970ccdccf7d20e3c308c343ab94cfc84a03db72151d6edbc0a0abf3582f6"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingBackspaceContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "70ae53a3883816ec54ede46ec92b7c558a20de179275219b99a5b99b6c427a90"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingCompleteContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "96f8c7b0080fd2d5c143d43ecbec6777ee3e740b03fb93b879be744ce39d00cc"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingEngineCase4Test.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "f31d152ab37798610b86804d1d5ea6aba599878d383fb930842857bad08daba1"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingEngineSessionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "9c6df398f07d506612c62c424f76ada6be533931894fcaa90a7f31bd11a5b5e0"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingPagingEnterTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "6bdeafe7dfa36069368ac1afa8dd3dd9e65182ce8c4eca5bae1b72656ec0e059"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingPagingIntegrityTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d0fdfa2a3b8ce96e8f49a07a11477ffee90fcf0a288971298be6296c9dc170cb"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ChewingSpaceContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d31ba781fbac9524f0810436903f79d2186525ec4f653c75917d57a47737a749"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ComposeDecoderSessionContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "7a6260aa3d078350d7e9dfcbf417a2179c9b18adb1de620d3e4969b63405eb15"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.DispatchResultEffectsTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "cb555674fa427de6369769734a2dfdf74e5ae168504724bd35b1e0dcbbb14051"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.EnterCommandContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "f275824e61cb781847f26dad7e73d09d566640f49bdd9820eed39a266ea0e6f5"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ModeSwitchContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "6930a7f88582656c34181152a67dd884612b0a16d029905333a457109a646148"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ProductionDecoderResolverTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "8f0c5e4f2c535041ed03394d0bccb012004015e1d2ced7e7342135e0679b3113"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.PunctuationCommandContractTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "62bdc679816f3844d5aa83dcd5a4b0950ac92de18588fb37d40121150a41c344"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.session.ZhuyinDictionarySessionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "4e21a35ffcc5510a8413350c492592136179675b2959a87f859839fda1028ca4"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green-xml/TEST-com.example.ime.ui.DachenKeyboardLayoutTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "db4d3c91095a17b976f28cb2420b3ac2c0c2629270cf076d6d071d564b47b8c4"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-green.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ea64f7f725e0610bff9b97faa1d73e47cb85cbd2defe6d3f807ecf7062c161ae"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-release.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "de0fc97e8f869fb0586c6774f1fe36f14a546fb1e1bc9473d14c38279ac26d4d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/app-verification.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0fd00e297744f58da860d0c94fc9047975c93d2553c5ee184cc07e0bb92c7ca8"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/artifact-manifest.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "49d6fac58da9f4a3c7ca6c0d90d4b1792ad95c355cc0cc3561c4cea7645c67ef"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/artifact-verification.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "e1e107773753aa858da466dc7a4d99681686cb06e8d432e890008c3903b27aec"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/bootstrap.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3a9706bf59a6cbac25be973806853e71989edfcc8e0c432921fd77b346c32826"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/cleanup-policy-red-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3c62f31e1def89ec1d78a68811f14f382c205c3a07b076c6bfeab05f85baee14"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/cleanup-policy-red.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d4b5f944f227a125022d047f651d94fd1295172aba85a2c48222bb501cfd59fe"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/contracts-final.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ee60fb0741fb489011cba5fc3fb39dc973143a3dd91fe7337f7ea0ce92102d46"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/contracts.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ee60fb0741fb489011cba5fc3fb39dc973143a3dd91fe7337f7ea0ce92102d46"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/fresh-app-manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "16bffb44c29a83a4f6b09fde8099dfca2bd6b5ccef218745b897fb8a459e8307"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/fresh-app-signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/fresh-app-test-manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "3e50633456673cabef8efb9294c048253bea97368e8e61c8231d3be4505531e7"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/fresh-app-test-signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/fresh-vs-frozen-apk.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "c865fbee4995a4dba749634859f529ed11a65b63f9dde8e38ee67b878ce45b5c"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-androidtest-build.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "b3dd7fa5f8ad73f7d2434bf401e0a900cd02256c429f6803d23c27875bff4dec"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-build.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ad5b0d4d2019b3c6a8abb38f6823d15cfd6ea281ac99f7800450c07ba73d8dda"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-androidtest.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "8193cd670aae9341ec785ff6dc14e0506e60667ac072d5eeb27732f6a2f38a1b"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-green-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "6f9a68c1da702ffb0fd1ca9f8a2a8cc95ec932053729df6c0f406cf0200d6db8"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-green-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0552f3a71038d00c698d8760f149601ac68b97c3ac217200344c950c1c6eea2b"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-green-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "eb4c1fd24c3be9f8f9f7e8ccb0d2ba36cb6df4ca3f919bedee57d6e6edb2de73"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-green.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "1ce835562797fc0de82a6ef03a3d1aa9c6a3ac0e4e67ffa61ae3170b98f4248d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-final-green.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d8c9ed76425bf44ca63bcf9bf8e88e1cee1906c2b3ae2d1abdb8c03ce2f659a6"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-green-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "a3bf628310355275ad09d71b7ae3b4cd49e3f6d9c2d9dcfce18dad76ddd8412a"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-green-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "6263e5d05d05ca9ccc3f790d439c028ecaa6f775cf9435fdf03fb9711ecc38c6"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-green.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "521ed3f220efc71d0798fb39a67d17c4f99b9cb7a77f7e8b99a4aa5aec206d08"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-green.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "22d6661ad810482cafdda8bb29e15acb152e69915624d801bd6646751972e41a"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-initial-compile.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "79b3aaaddb34fb1dced1ecef9843ed30fb54ca37bb9bc4724cf3fa083ea35aff"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-manifest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "bc585eecd4fd00d2d6832dda1f4a070604863ad562ad2d41eb5ee985cbd77c59"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-red-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "82840df416a3ecfe4381cdec74f82a0f3a9331b8e766f67642d52f0d644d17d3"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-red-xml/TEST-io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest.xml",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0c50ad913e84a573e5cbcb4965f5385c39d18b25b0be5de349a7df520885d6a0"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-red.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "df9c31091ef0c9c9248607e3dabf24f665b364659cd829576fdd951720d3de58"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-red.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "d61fe890b197bc96db5d1c9231a8053995d4942adce4d9e8f573e628a5eeaa62"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/host-signer.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "040e1f24634fdfb822eba329b50d34680fd8966c5c18e44b71eb184a1c09c24d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/initial-artifacts.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "55584278a00eedf13f0ac6233de2ce239343dc1c32e122a399aa910a93276ff5"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/lineage.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "9e441dde86e5c5e1ba7b4e383dc5e7254e39e4ff3d202461939663bbfe143ba8"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/local-code-commits.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "1d4b8fdac23ec490fdfb8820409ba535d10f0d3ea7962d22c16392011e31c8d5"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/native-build-id-comparison.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "f0faf97030eb2cff7474b635717ab1e28ceb693305f352b4258c2a29fecea4d5"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/ocr-health.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "60370c1cf91bbc5629f6bf13a297e06240f5c2fff4c22117836366b98e99f15f"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/ocr-health.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "1bb80f60839cdc4b491221858c45655504ad417c1c93c76f816dcc5e66ec090f"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/package-v2-evidence.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "7607d2e3829b10ea34786a431361fd0f27379b3d7968bb7848dd01c44573bdf7"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/preservation-final.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "7df9fd3aec84e725724e59bf739d1469bab1f27274ebe279922aff526023b745"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/product-source-protection.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "312487736cc08b0fc93cbc95fc18e9ff43fc72c39d042b7e552dcf60ed2a3b03"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/reviewed-source-hashes.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "18a9c2ae71cb531acf0e0a5c77309399c1753d867062c4e19abc28c18951c827"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-help.txt",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0856e9af04713e1b0c8983061940b361770faed2379b21c2582c8c18390b78e8"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-scope-green.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "7719d62a7a4a510b97df8d0a8b73363a965256fef4db77a110b1d4a505b631f0"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-scope-red.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "0d4f95fb1601184c04edb8ba627cd0447ef028be09105880ec2360bbe8514cde"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-select-green.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "903739abbdfa0679d0314c18b4557d0a0e1de8e7fe2caaf7a4d6f54b1bb753a6"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-select-red.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "e36b77838740937aee540ebfa01347c2a61891f2532ac42f119d11475d42e925"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/runner-unit.log",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "9fc61e7177d4a63030c7e3a8cdb6bbd3d6acf9ebb2ae0da6d0e39ffe1987d03d"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/script-verification.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "ea905dce043ba4e7caedda997771cbff4b1437a0ef7bbdf5798d387ca99ed229"
+    },
+    {
+      "file": "docs/review/2026-10-07-p1e/style-verification.json",
+      "classification": "TEST_EVIDENCE",
+      "sha256": "c90d8014cba3958273fda619d620172b4a8fd10d21f09474b44cbeb300404fbf"
+    }
+  ]
+}

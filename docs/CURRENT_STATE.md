@@ -41,3 +41,11 @@
   matrix has 30 unexecuted cases and requires a controlled debug host/action recorder.
   Review/runbook: `docs/review/2026-10-07-p1-alpha/05-交接.md`. No product source change,
   no release signing, no push, no M4 work.
+
+- P1-E 驗收工具（2026-10-07）：隔離分支 `test/p1-alpha-acceptance-fixture`，
+  基於精確 Alpha 準備 commit `5c6bcad34c4048e40ce4e871e70e176c10195bcf`。
+  獨立 test-only `:acceptance-host` Views app 記錄最終受控 EditorInfo、editor
+  action ID／次數及實際文字／換行差量；UIAutomator 點擊可見 KU-Yin 軟鍵。
+  產品來源與凍結 v1 artifacts 保留；建置證據與限制見
+  `review/2026-10-07-p1e/07-handoff.md`。裝置案例仍 NOT_TESTED，native learning
+  observer 與安全 startup-fault 裝置工具仍 OPEN；未簽 Release、push 或開始 M4。

@@ -1,0 +1,10 @@
+{
+  "base_sha": "5c6bcad34c4048e40ce4e871e70e176c10195bcf",
+  "verified_source_sha": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "commits": [
+    "6595b68403232187eba4d9ec10c7f0689c2b5b61 test: preserve device IME state during acceptance",
+    "33170bfa42194b3774774dc0914e3d3b9ace3443 test: add P1 editor action acceptance matrix",
+    "ee325fe7ffaeb9894162b02484212f746208e605 test: add controlled IME acceptance host"
+  ],
+  "pushed": false
+}

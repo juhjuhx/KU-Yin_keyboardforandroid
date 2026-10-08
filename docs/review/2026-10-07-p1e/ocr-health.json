@@ -1,0 +1,12 @@
+{
+  "version": "v1.12.12 (182898c)",
+  "command": [
+    "/opt/homebrew/bin/ocr",
+    "llm",
+    "test"
+  ],
+  "exit": 1,
+  "status": "BLOCKED_BY_PROVIDER",
+  "session": null,
+  "log": "ocr-health.log"
+}

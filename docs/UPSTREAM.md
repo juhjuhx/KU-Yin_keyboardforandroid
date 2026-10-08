@@ -50,3 +50,10 @@ No automated watcher may update `main` directly. A dependency update PR must pas
 ## Licensing
 
 KU-Yin repository license is LGPL-2.1. Each upstream keeps its own license and notices. `NOTICE` records provenance; it does not replace upstream license texts or legal review.
+
+### P1-E 測試基礎設施
+
+AndroidX UIAutomator `2.3.0`（Apache-2.0）僅供 acceptance-host instrumentation。
+未複製外部鍵盤或 CTS 實作；依官方 platform API 與 CTS helper／polling 模式獨立撰寫。
+精確上游 revision、逐檔授權與引用分類記錄於
+`docs/review/2026-10-07-p1e/02-upstream-research.md`。

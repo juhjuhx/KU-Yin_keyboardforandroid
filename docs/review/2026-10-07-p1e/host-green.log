@@ -1,0 +1,35 @@
+Starting a Gradle Daemon, 1 busy Daemon could not be reused, use --status for details
+Reusing configuration cache.
+> Task :acceptance-host:preBuild UP-TO-DATE
+> Task :acceptance-host:preDebugBuild UP-TO-DATE
+> Task :acceptance-host:preDebugUnitTestBuild UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebug UP-TO-DATE
+> Task :acceptance-host:checkDebugAarMetadata UP-TO-DATE
+> Task :acceptance-host:generateDebugResources UP-TO-DATE
+> Task :acceptance-host:processDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:mapDebugSourceSetPaths UP-TO-DATE
+> Task :acceptance-host:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :acceptance-host:compileDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:extractDeepLinksDebug UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :acceptance-host:packageDebugResources UP-TO-DATE
+> Task :acceptance-host:mergeDebugResources UP-TO-DATE
+> Task :acceptance-host:processDebugMainManifest UP-TO-DATE
+> Task :acceptance-host:processDebugManifest UP-TO-DATE
+> Task :acceptance-host:processDebugManifestForPackage UP-TO-DATE
+> Task :acceptance-host:parseDebugLocalResources UP-TO-DATE
+> Task :acceptance-host:generateDebugRFile UP-TO-DATE
+> Task :acceptance-host:processDebugResources UP-TO-DATE
+> Task :acceptance-host:compileDebugKotlin
+> Task :acceptance-host:processDebugJavaRes UP-TO-DATE
+> Task :acceptance-host:compileDebugJavaWithJavac NO-SOURCE
+> Task :acceptance-host:bundleDebugClassesToCompileJar
+> Task :acceptance-host:bundleDebugClassesToRuntimeJar
+> Task :acceptance-host:compileDebugUnitTestKotlin
+> Task :acceptance-host:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :acceptance-host:testDebugUnitTest
+
+BUILD SUCCESSFUL in 10s
+24 actionable tasks: 5 executed, 19 up-to-date
+Configuration cache entry reused.

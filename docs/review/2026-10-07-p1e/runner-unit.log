@@ -1,0 +1,19 @@
+OFFLINE_FAKE_SUBPROCESS_ONLY: no real ADB, installation or device execution.
+......................
+----------------------------------------------------------------------
+Ran 22 tests in 0.021s
+
+OK
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmphi9jl3jt/evidence/prepare-20261007T230711-69b57865
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp52k9d2ia/run-20261007T230711-d5daf220
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp52k9d2ia/run-20261007T230711-d5daf220/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpysumezd6/run-20261007T230711-23b4d702
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpysumezd6/run-20261007T230711-23b4d702/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpqrb2aov1/install-20261007T230711-60b467f5
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE

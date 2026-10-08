@@ -1,0 +1,54 @@
+Calculating task graph as no cached configuration is available for tasks: :acceptance-host:testDebugUnitTest :acceptance-host:assembleDebug
+> Task :acceptance-host:generateDebugAssets UP-TO-DATE
+> Task :acceptance-host:preBuild UP-TO-DATE
+> Task :acceptance-host:preDebugBuild UP-TO-DATE
+> Task :acceptance-host:preDebugUnitTestBuild UP-TO-DATE
+> Task :acceptance-host:checkDebugAarMetadata UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebug UP-TO-DATE
+> Task :acceptance-host:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :acceptance-host:extractDeepLinksDebug UP-TO-DATE
+> Task :acceptance-host:processDebugNavigationResources
+> Task :acceptance-host:generateDebugResources
+> Task :acceptance-host:processDebugMainManifest UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :acceptance-host:processDebugManifest UP-TO-DATE
+> Task :acceptance-host:processDebugManifestForPackage UP-TO-DATE
+> Task :acceptance-host:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :acceptance-host:mapDebugSourceSetPaths
+> Task :acceptance-host:compileDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:checkDebugDuplicateClasses
+> Task :acceptance-host:mergeDebugAssets
+> Task :acceptance-host:desugarDebugFileDependencies
+> Task :acceptance-host:compressDebugAssets
+> Task :acceptance-host:packageDebugResources
+> Task :acceptance-host:parseDebugLocalResources
+> Task :acceptance-host:mergeLibDexDebug
+> Task :acceptance-host:generateDebugRFile
+> Task :acceptance-host:mergeDebugJniLibFolders
+> Task :acceptance-host:mergeDebugResources
+> Task :acceptance-host:mergeDebugNativeLibs NO-SOURCE
+> Task :acceptance-host:stripDebugDebugSymbols NO-SOURCE
+> Task :acceptance-host:validateSigningDebug
+> Task :acceptance-host:writeDebugAppMetadata
+> Task :acceptance-host:writeDebugSigningConfigVersions
+> Task :acceptance-host:processDebugResources
+> Task :acceptance-host:compileDebugKotlin
+> Task :acceptance-host:compileDebugJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugJavaRes UP-TO-DATE
+> Task :acceptance-host:bundleDebugClassesToCompileJar
+> Task :acceptance-host:bundleDebugClassesToRuntimeJar
+> Task :acceptance-host:mergeDebugJavaResource
+> Task :acceptance-host:dexBuilderDebug
+> Task :acceptance-host:mergeProjectDexDebug
+> Task :acceptance-host:mergeExtDexDebug
+> Task :acceptance-host:packageDebug
+> Task :acceptance-host:assembleDebug
+> Task :acceptance-host:createDebugApkListingFileRedirect
+> Task :acceptance-host:compileDebugUnitTestKotlin
+> Task :acceptance-host:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :acceptance-host:testDebugUnitTest
+
+BUILD SUCCESSFUL in 14s
+39 actionable tasks: 28 executed, 11 up-to-date
+Configuration cache entry stored.

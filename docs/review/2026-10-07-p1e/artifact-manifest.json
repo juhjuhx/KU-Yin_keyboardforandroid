@@ -1,0 +1,214 @@
+{
+  "schema": 2,
+  "package_id": "KU-Yin-P1-Alpha-v2-fixture",
+  "prepared_at_utc": "2026-10-08T12:09:47.312407+00:00",
+  "fixture_base_sha": "5c6bcad34c4048e40ce4e871e70e176c10195bcf",
+  "fixture_source_sha": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "branch": "test/p1-alpha-acceptance-fixture",
+  "product_source_sha": "75b93a3b68867fd6ec4c6adadd3e279d71e98104",
+  "pushed": false,
+  "runtime": "NOT_TESTED",
+  "physical_acceptance": "OPEN",
+  "production_release": "NOT_READY",
+  "m4": "NOT_VALIDATED",
+  "native_learning_observer": "OPEN",
+  "existing_instrumentation": {
+    "classes": 4,
+    "tests": 5,
+    "status": "PACKAGED_NOT_RUN"
+  },
+  "host_instrumentation": {
+    "classes": 3,
+    "tests": 26,
+    "status": "COMPILE_READY_NOT_RUN"
+  },
+  "app_jvm": {
+    "classes": 40,
+    "tests": 190,
+    "failures": 0
+  },
+  "host_jvm": {
+    "classes": 3,
+    "tests": 37,
+    "failures": 0
+  },
+  "runner_unit": {
+    "tests": 24,
+    "failures": 0,
+    "execution": "OFFLINE_FAKE_SUBPROCESS_ONLY"
+  },
+  "artifacts": [
+    {
+      "file": "app-debug.apk",
+      "application_id": "io.github.juhjuhx.kuyin",
+      "target_package": null,
+      "bytes": 29158832,
+      "sha256": "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9",
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "signer_exit": 0,
+      "manifest_exit": 0,
+      "permissions": [
+        "io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+      ]
+    },
+    {
+      "file": "app-debug-androidTest.apk",
+      "application_id": "io.github.juhjuhx.kuyin.test",
+      "target_package": "io.github.juhjuhx.kuyin",
+      "bytes": 965496,
+      "sha256": "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd",
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "signer_exit": 0,
+      "manifest_exit": 0,
+      "permissions": [
+        "android.permission.REORDER_TASKS"
+      ]
+    },
+    {
+      "file": "acceptance-host-debug.apk",
+      "application_id": "io.github.juhjuhx.kuyin.acceptancehost",
+      "target_package": null,
+      "bytes": 861628,
+      "sha256": "8e53e8933e1b436b3192dab4319a7da1fe58e98afba038447924f51e1481d829",
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "signer_exit": 0,
+      "manifest_exit": 0,
+      "permissions": []
+    },
+    {
+      "file": "acceptance-host-debug-androidTest.apk",
+      "application_id": "io.github.juhjuhx.kuyin.acceptancehost.test",
+      "target_package": "io.github.juhjuhx.kuyin.acceptancehost",
+      "bytes": 1028719,
+      "sha256": "5db907bd2e131742ce817139785d2f4a9a5cb7254ccd13839bfcbe6eb6277bd2",
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "signer_exit": 0,
+      "manifest_exit": 0,
+      "permissions": [
+        "android.permission.REORDER_TASKS"
+      ]
+    }
+  ],
+  "case_results": [
+    {
+      "case_id": "A01",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "A02",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "A03",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "A04",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "B01",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "B02",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "B03",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "C01",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "C02",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "C03",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "C04",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "C05",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D01",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D02",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D03",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D04",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D05",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D06",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D07",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D08",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D09",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D10",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D11",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D12",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D13",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D14",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D15",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D16",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D17",
+      "result": "NOT_TESTED"
+    },
+    {
+      "case_id": "D18",
+      "result": "NOT_TESTED"
+    }
+  ]
+}

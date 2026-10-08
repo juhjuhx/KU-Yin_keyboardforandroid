@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ComposeDecoderSessionContractTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-07T14:56:21.047Z" hostname="MacBook-Air.local" time="0.004">
+  <properties/>
+  <testcase name="selecting from empty candidates commits nothing" classname="com.example.ime.session.ComposeDecoderSessionContractTest" time="0.004"/>
+  <testcase name="fresh session exposes empty preedit with no pages and collapsed panel" classname="com.example.ime.session.ComposeDecoderSessionContractTest" time="0.0"/>
+  <testcase name="toggle flips expanded flag without touching content" classname="com.example.ime.session.ComposeDecoderSessionContractTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

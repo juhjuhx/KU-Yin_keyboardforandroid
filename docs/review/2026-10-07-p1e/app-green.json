@@ -1,0 +1,411 @@
+{
+  "totals": {
+    "tests": 190,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "classes": 40
+  },
+  "suites": [
+    {
+      "name": "com.example.ime.service.NativeChewingEngineOwnerTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.971Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.003"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.EditorEnterPolicyTest",
+      "tests": "18",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.206Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.01"
+    },
+    {
+      "name": "com.example.ime.service.NativeLearningPolicyTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.976Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.001"
+    },
+    {
+      "name": "com.example.ExampleRobolectricTest",
+      "tests": "7",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:01.597Z",
+      "hostname": "MacBook-Air.local",
+      "time": "5.12"
+    },
+    {
+      "name": "com.example.ime.ProductionEditorPolicyTest",
+      "tests": "7",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.533Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.161"
+    },
+    {
+      "name": "com.example.ime.session.DispatchResultEffectsTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.055Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.001"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.android.VisiblePreeditTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.189Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.002"
+    },
+    {
+      "name": "com.example.ime.session.ChewingSpaceContractTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.039Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.ime.session.ChewingEngineCase4Test",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.013Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.003"
+    },
+    {
+      "name": "com.example.ime.NonTextEditorServiceTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:19.862Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.645"
+    },
+    {
+      "name": "com.example.ime.session.EnterCommandContractTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.061Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.071"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.opencc.OpenCCConverterTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.197Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardHitboxContractTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.247Z",
+      "hostname": "MacBook-Air.local",
+      "time": "2.028"
+    },
+    {
+      "name": "com.example.ime.session.ChewingEngineSessionTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.020Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.ime.ProductionSeamIntegrationTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.703Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.054"
+    },
+    {
+      "name": "com.example.ime.session.ChewingCompleteContractTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.009Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.002"
+    },
+    {
+      "name": "com.example.ime.session.ChewingPagingEnterTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.026Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.002"
+    },
+    {
+      "name": "com.example.androidkeyboard.engines.core.ChewingEnginePagingContractTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.194Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.001"
+    },
+    {
+      "name": "com.example.ime.session.ComposeDecoderSessionContractTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.047Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.ime.session.ChewingBackspaceContractTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.992Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.016"
+    },
+    {
+      "name": "com.example.GreetingScreenshotTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:06.730Z",
+      "hostname": "MacBook-Air.local",
+      "time": "8.456"
+    },
+    {
+      "name": "com.example.ime.engine.PunctuationTransitionTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.762Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.051"
+    },
+    {
+      "name": "com.example.ime.session.ProductionDecoderResolverTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.179Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.028"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.EditorPolicyTest",
+      "tests": "10",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.219Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.005"
+    },
+    {
+      "name": "com.example.ime.service.NativeStartupGateTest",
+      "tests": "6",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.985Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.003"
+    },
+    {
+      "name": "com.example.ime.session.PunctuationCommandContractTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.210Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.058"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.ImeSessionControllerTest",
+      "tests": "6",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:15.227Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardModeContractTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:17.285Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.003"
+    },
+    {
+      "name": "com.example.ime.session.ModeSwitchContractTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.135Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.039"
+    },
+    {
+      "name": "com.example.androidkeyboard.input.KeyboardLayoutTest",
+      "tests": "2",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:17.280Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.ime.service.EditorDeletionTest",
+      "tests": "3",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.951Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.004"
+    },
+    {
+      "name": "com.example.ime.engine.ZhuyinDictionaryRankingTest",
+      "tests": "10",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.824Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.12"
+    },
+    {
+      "name": "com.example.ExampleUnitTest",
+      "tests": "1",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:06.721Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.001"
+    },
+    {
+      "name": "com.example.ime.EnterUiWiringTest",
+      "tests": "11",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:17.680Z",
+      "hostname": "MacBook-Air.local",
+      "time": "2.141"
+    },
+    {
+      "name": "com.example.ime.ui.DachenKeyboardLayoutTest",
+      "tests": "6",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.355Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.925"
+    },
+    {
+      "name": "com.example.ime.service.EffectiveModePolicyTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.960Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.003"
+    },
+    {
+      "name": "com.example.ime.EnterPolicyServiceTest",
+      "tests": "12",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:17.298Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.363"
+    },
+    {
+      "name": "com.example.ime.session.ChewingPagingIntegrityTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.031Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.005"
+    },
+    {
+      "name": "com.example.ime.service.CompositionResetPolicyTest",
+      "tests": "5",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:20.948Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.001"
+    },
+    {
+      "name": "com.example.ime.session.ZhuyinDictionarySessionTest",
+      "tests": "4",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T14:56:21.275Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.068"
+    }
+  ]
+}

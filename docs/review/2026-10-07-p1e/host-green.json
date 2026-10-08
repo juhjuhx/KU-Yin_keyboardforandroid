@@ -1,0 +1,22 @@
+[
+  {
+    "name": "io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest",
+    "tests": "6",
+    "skipped": "0",
+    "failures": "0",
+    "errors": "0",
+    "timestamp": "2026-10-07T14:51:36.615Z",
+    "hostname": "MacBook-Air.local",
+    "time": "0.009"
+  },
+  {
+    "name": "io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest",
+    "tests": "22",
+    "skipped": "0",
+    "failures": "0",
+    "errors": "0",
+    "timestamp": "2026-10-07T14:51:36.600Z",
+    "hostname": "MacBook-Air.local",
+    "time": "0.014"
+  }
+]
