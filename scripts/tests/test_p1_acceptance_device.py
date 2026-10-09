@@ -39,7 +39,7 @@ def instrumentation(codes=(0,), *, events=(), final=-1):
 
 
 def captured(default="original.ime/.Service\n", enabled="original.ime/.Service;123;-45\n"):
-    return {"original_default_ime_raw": default, "original_enabled_imes_raw": enabled}
+    return {"original_default_ime_raw": default, "original_enabled_imes_raw": enabled, "android_user_id": 0}
 
 
 def fake_package(directory):
@@ -123,13 +123,13 @@ class RestorationTest(unittest.TestCase):
     def test_newly_enabled_kuyin_only_disables_that_component(self):
         state = captured()
         current = state["original_enabled_imes_raw"].strip() + ":" + device.IME + "\n"
-        self.assertEqual([["shell", "ime", "set", "original.ime/.Service"],
-                          ["shell", "ime", "disable", device.IME]],
+        self.assertEqual([["shell", "ime", "set", "--user", "0", "original.ime/.Service"],
+                          ["shell", "ime", "disable", "--user", "0", device.IME]],
                          device.restore_commands(state, device.IME, current))
 
     def test_original_enabled_subtypes_not_disabled_or_rewritten(self):
         original = "original.ime/.Service;123;-45:" + device.IME + ";42\n"
-        self.assertEqual([["shell", "ime", "set", "original.ime/.Service"]],
+        self.assertEqual([["shell", "ime", "set", "--user", "0", "original.ime/.Service"]],
                          device.restore_commands(captured(enabled=original), device.IME, original))
 
     def test_already_restored_is_idempotent(self):
@@ -154,24 +154,10 @@ class RestorationTest(unittest.TestCase):
 
 class FakeAdbTest(unittest.TestCase):
     def test_prepare_verifies_all_apks_then_captures_raw_without_ime_mutation(self):
-        calls = []
-        properties = {"ro.product.model": "Synthetic", "ro.product.manufacturer": "Fixture",
-                      "ro.build.version.sdk": "36", "ro.product.cpu.abilist": "arm64-v8a",
-                      "ro.product.cpu.abi": "arm64-v8a", "ro.build.fingerprint": "fake/fingerprint",
-                      "ro.kernel.qemu": "0"}
-        def fake(argv, **kwargs):
-            calls.append(argv)
-            if argv[3:] == ["get-state"]:
-                output = "device\n"
-            elif argv[3:5] == ["shell", "getprop"]:
-                output = properties[argv[5]] + "\n"
-            elif argv[-1] == "default_input_method":
-                output = "original.ime/.Service\r\n"
-            elif argv[-1] == "enabled_input_methods":
-                output = "original.ime/.Service;123;-45\r\n"
-            else:
-                self.fail(f"prepare 不得送 mutation command：{argv!r}")
-            return subprocess.CompletedProcess(argv, 0, output, "")
+        from p1g_fakes import FakeAndroid
+        fake = FakeAndroid()
+        fake.states[0] = ["original.ime/.Service\r\n", "original.ime/.Service;123;-45\r\n", "-1\n"]
+        calls = fake.calls
         with tempfile.TemporaryDirectory() as directory:
             package, pins = fake_package(directory)
             evidence = Path(directory) / "evidence"
@@ -214,11 +200,14 @@ class FakeAdbTest(unittest.TestCase):
 
     def test_timeout_is_failure_and_keeps_partial_evidence(self):
         def fake(argv, **kwargs):
+            if argv[3:] == ["shell", "am", "get-current-user"]:
+                return subprocess.CompletedProcess(argv, 0, "0\n", "")
             raise subprocess.TimeoutExpired(argv, kwargs["timeout"], output=b"partial protocol")
         with tempfile.TemporaryDirectory() as directory:
             log = Path(directory) / "commands.jsonl"
             adb = device.Adb("EXACT-SERIAL", log, executor=fake)
-            outcome = adb.run(["shell", "am", "instrument"], check=False)
+            adb.android_user_id = 0
+            outcome = adb.run(["shell", "am", "instrument", "--user", "0"], check=False)
             self.assertTrue(outcome.timed_out)
             self.assertEqual(124, outcome.returncode)
             self.assertIn("partial protocol", log.read_text())
@@ -284,6 +273,8 @@ class FakeAdbTest(unittest.TestCase):
     def test_signature_failure_stops_without_uninstall_or_second_install(self):
         calls = []
         def fake(argv, **kwargs):
+            if argv[3:] == ["shell", "am", "get-current-user"]:
+                return subprocess.CompletedProcess(argv, 0, "0\n", "")
             calls.append(argv)
             return subprocess.CompletedProcess(argv, 1, "Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE]", "")
         with tempfile.TemporaryDirectory() as directory:
@@ -299,7 +290,7 @@ class FakeAdbTest(unittest.TestCase):
                 with self.assertRaises(device.RunnerError):
                     device.execute(args)
             self.assertEqual(1, len(calls))
-            self.assertEqual(["adb", "-s", "FAKE", "install", "-r", "-t"], calls[0][:6])
+            self.assertEqual(["adb", "-s", "FAKE", "install", "--user", "0", "-r", "-t"], calls[0][:8])
 
 
 if __name__ == "__main__":

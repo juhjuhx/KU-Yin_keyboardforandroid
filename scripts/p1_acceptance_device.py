@@ -140,9 +140,9 @@ def restore_commands(state: dict[str, Any], current_default: str,
         raise RunnerError("原 KU-Yin enabled/subtypes 改變；STOP，需要人工核對")
     commands = []
     if current_default.strip() != original:
-        commands.append(["shell", "ime", "set", original])
+        commands.append(["shell", "ime", "set", "--user", str(state["android_user_id"]), original])
     if IME not in before and IME in current:
-        commands.append(["shell", "ime", "disable", IME])
+        commands.append(["shell", "ime", "disable", "--user", str(state["android_user_id"]), IME])
     return commands
 
 
@@ -159,9 +159,18 @@ class Adb:
                  executor: Callable[..., Any] = subprocess.run):
         self.serial, self.log_path, self.timeout = serial, log_path, timeout
         self.executor = executor
+        self.android_user_id: int | None = None
 
     def run(self, args: list[str], *, timeout: float | None = None,
             check: bool = True) -> CommandResult:
+        mutation = args[0] == "install" or args[:3] in (
+            ["shell", "ime", "enable"], ["shell", "ime", "disable"], ["shell", "ime", "set"],
+            ["shell", "am", "instrument"],
+        )
+        if mutation:
+            check_current_user(self)
+            if "--user" not in args or args[args.index("--user") + 1] != str(self.android_user_id):
+                raise RunnerError("ANDROID_USER_SCOPE_REQUIRED：mutation 必須明示 captured numeric user")
         argv = ["adb", "-s", self.serial, *args]
         limit = self.timeout if timeout is None else timeout
         started = utc_now()
@@ -181,10 +190,48 @@ class Adb:
             stream.write(json.dumps(record, ensure_ascii=False) + "\n")
         if check and (result.returncode or result.timed_out):
             raise RunnerError(f"ADB 命令失敗／timeout：{argv!r}；{result.stderr or result.stdout}")
+        if mutation:
+            check_current_user(self)
         return result
 
 
+def read_current_user(adb: Adb) -> int:
+    raw = adb.run(["shell", "am", "get-current-user"]).stdout.strip()
+    if not re.fullmatch(r"0|[1-9][0-9]*", raw) or int(raw) > 2147483647:
+        raise RunnerError("ANDROID_USER_UNREADABLE：current user 必須是明確非負整數")
+    return int(raw)
+
+
+def check_current_user(adb: Adb) -> None:
+    if type(adb.android_user_id) is not int or read_current_user(adb) != adb.android_user_id:
+        raise RunnerError("ANDROID_USER_CHANGED：停止 mutation；不得還原別人的 user")
+
+
+def user_capabilities(adb: Adb) -> dict[str, Any]:
+    """Exact command synopsis, not a global occurrence of --user elsewhere."""
+    helps = {name: adb.run(["shell", name, "help"]).stdout for name in ("settings", "am", "ime", "pm")}
+    def supported(name: str, command: str) -> bool:
+        lines = helps[name].splitlines()
+        for index, line in enumerate(lines):
+            if re.match(r"\s*" + re.escape(command) + r"\b", line):
+                continuation = [line]
+                for following in lines[index + 1:index + 4]:
+                    if not following.lstrip().startswith("["):
+                        break
+                    continuation.append(following)
+                if "--user" in " ".join(continuation):
+                    return True
+        return False
+    flags = {"settings": supported("settings", "settings"), "instrument": supported("am", "instrument"),
+             "install": supported("pm", "install"),
+             **{command: supported("ime", command) for command in ("enable", "disable", "set")}}
+    if not all(flags.values()):
+        raise RunnerError(f"BLOCKED_USER_SCOPING_UNSUPPORTED：{flags!r}；不採 implicit user fallback")
+    return {"flags": flags, "help_sha256": {name: hashlib.sha256(raw.encode()).hexdigest() for name, raw in helps.items()}}
+
+
 def read_identity(adb: Adb) -> dict[str, str]:
+    user = read_current_user(adb)
     if adb.run(["get-state"]).stdout.strip() != "device":
         raise RunnerError("指定 serial 不是已授權 device 狀態；STOP")
     fields = {
@@ -199,17 +246,24 @@ def read_identity(adb: Adb) -> dict[str, str]:
         raise RunnerError("API 必須 ≥24 且可明確讀取")
     if not identity["model"] or not identity["primary_abi"] or not identity["fingerprint"]:
         raise RunnerError("device model／ABI／fingerprint 缺失，無法固定裝置身分")
+    if read_current_user(adb) != user:
+        raise RunnerError("ANDROID_USER_CHANGED：capture 過程中 user 改變")
+    identity["android_user_id"] = user
     return identity
 
 
 def check_identity(adb: Adb, state: dict[str, Any]) -> None:
     if read_identity(adb) != state["device_identity"]:
         raise RunnerError("serial 相同但裝置 identity／API／ABI 已改變；STOP")
+    check_current_user(adb)
+    user_capabilities(adb)
 
 
 def read_ime_state(adb: Adb) -> tuple[str, str]:
-    default = adb.run(["shell", "settings", "get", "secure", "default_input_method"]).stdout
-    enabled = adb.run(["shell", "settings", "get", "secure", "enabled_input_methods"]).stdout
+    check_current_user(adb)
+    default = adb.run(["shell", "settings", "--user", str(adb.android_user_id), "get", "secure", "default_input_method"]).stdout
+    enabled = adb.run(["shell", "settings", "--user", str(adb.android_user_id), "get", "secure", "enabled_input_methods"]).stdout
+    check_current_user(adb)
     return default, enabled
 
 
@@ -243,15 +297,17 @@ def select(adb: Adb, state: dict[str, Any]) -> None:
     default, enabled = read_ime_state(adb)
     restore_commands(state, default, enabled)  # 在修改前排除其他人的狀態變更。
     def registered() -> bool:
-        installed = adb.run(["shell", "ime", "list", "-s", "-a"]).stdout.splitlines()
+        check_current_user(adb)
+        installed = adb.run(["shell", "ime", "list", "--user", str(adb.android_user_id), "-s", "-a"]).stdout.splitlines()
+        check_current_user(adb)
         candidates = [line.strip() for line in installed if line.strip().startswith(APP + "/")]
         if candidates and candidates != [IME]:
             raise RunnerError(f"產品 canonical IME 不唯一／不是核定 service：{candidates!r}")
         return candidates == [IME]
     wait_for(adb, registered, "核定 canonical IME registered")
-    adb.run(["shell", "ime", "enable", IME])
+    adb.run(["shell", "ime", "enable", "--user", str(adb.android_user_id), IME])
     wait_for(adb, lambda: IME in enabled_entries(read_ime_state(adb)[1]), "KU-Yin enabled")
-    adb.run(["shell", "ime", "set", IME])
+    adb.run(["shell", "ime", "set", "--user", str(adb.android_user_id), IME])
     wait_for(adb, lambda: read_ime_state(adb)[0].strip() == IME, "KU-Yin selected")
 
 
@@ -412,6 +468,8 @@ def execute(args: argparse.Namespace) -> int:
             raise RunnerError("captured-state.json 已存在；不覆寫，請使用新 evidence-dir")
         verified = verify_artifacts(args.package_dir)
         identity = read_identity(adb)
+        adb.android_user_id = identity["android_user_id"]
+        capabilities = user_capabilities(adb)
         if (identity["qemu"] == "1") != (args.device_kind == "EMULATOR"):
             raise RunnerError("device-kind 與 ro.kernel.qemu 不符；STOP，核對裝置種類")
         default, enabled = read_ime_state(adb)
@@ -420,6 +478,7 @@ def execute(args: argparse.Namespace) -> int:
             raise RunnerError("原 default IME 是 null／未啟用；STOP，不能猜測還原")
         state = {"schema": 1, "captured_at": utc_now(), "serial": args.serial,
                  "device_kind": args.device_kind, "device_identity": identity, "target_ime": IME,
+                 "android_user_id": adb.android_user_id, "user_capabilities": capabilities,
                  "original_default_ime_raw": default, "original_enabled_imes_raw": enabled,
                  "artifact_verification": verified, "sequence_status": "NOT_EXECUTED"}
         write_json_new(evidence_dir / STATE_NAME, state)
@@ -428,6 +487,9 @@ def execute(args: argparse.Namespace) -> int:
         print("PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED")
         return 0
     state = load_state(args)
+    if type(state.get("android_user_id")) is not int or state["android_user_id"] < 0:
+        raise RunnerError("captured state 缺 numeric android_user_id；舊 session 不可用新 runner mutation")
+    adb.android_user_id = state["android_user_id"]
     if args.command == "restore":
         outcome = restore(adb, state)
         write_json_new(operation_dir / "restore-result.json", outcome)
@@ -437,7 +499,7 @@ def execute(args: argparse.Namespace) -> int:
         check_artifact_state(args, state)
         check_identity(adb, state)
         for name in EXPECTED_PACKAGES:
-            outcome = adb.run(["install", "-r", "-t", str(args.package_dir / name)],
+            outcome = adb.run(["install", "--user", str(adb.android_user_id), "-r", "-t", str(args.package_dir / name)],
                               timeout=args.install_timeout, check=False)
             combined = outcome.stdout + outcome.stderr
             if outcome.returncode or outcome.timed_out or "Success" not in outcome.stdout or re.search(r"Failure|INSTALL_FAILED|INSTALL_PARSE_FAILED", combined):
@@ -479,7 +541,7 @@ def execute(args: argparse.Namespace) -> int:
         layers = [("existing-app-5-tests", APP_RUNNER, ["-e", "class", EXISTING_CLASSES], 5),
                   ("acceptance-host-suite", HOST_RUNNER, [], None)]
         for label, runner, extras, expected in layers:
-            outcome = adb.run(["shell", "am", "instrument", "-w", "-r", *extras, runner],
+            outcome = adb.run(["shell", "am", "instrument", "--user", str(adb.android_user_id), "-w", "-r", *extras, runner],
                               timeout=args.instrumentation_timeout, check=False)
             output = outcome.stdout + "\n" + outcome.stderr
             (operation_dir / (label + ".txt")).write_text(output, encoding="utf-8")
