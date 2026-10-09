@@ -29,11 +29,11 @@ P1-E 驗收工具建置 gates（不需要裝置）：
 ```bash
 ./gradlew :acceptance-host:testDebugUnitTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest
 ./gradlew :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:assembleDebug
-python3 -m unittest discover -s scripts/tests -p 'test_p1_acceptance_device.py'
+python3 -m unittest discover -s scripts/tests -p 'test_p*.py'
 ```
 
 Host APK 是 test-only helper；編譯成功不能代替實機驗收。依
-`docs/review/2026-10-07-p1e/08-device-runbook.md` 與
+`docs/review/2026-10-09-p1g/09-device-runbook.md` 與
 `scripts/p1_acceptance_device.py` 核對凍結檔案、固定 serial、保存與還原原 IME 狀態。
 舊 runtime_smoke.sh 不作為凍結驗收包的執行入口。
 

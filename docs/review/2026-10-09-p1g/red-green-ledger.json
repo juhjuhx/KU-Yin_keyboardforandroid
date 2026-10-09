@@ -1,0 +1,795 @@
+[
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.UserIdentityTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:39:48.720769+08:00",
+    "summary": [
+      "Ran 10 tests in 0.047s",
+      "FAILED (failures=10)"
+    ],
+    "failures": [
+      "FAIL: test_USER_01_prepare_captures_user_zero (test_p1g_safety.UserIdentityTests.test_USER_01_prepare_captures_user_zero)",
+      "FAIL: test_USER_02_prepare_captures_secondary_user (test_p1g_safety.UserIdentityTests.test_USER_02_prepare_captures_secondary_user)",
+      "FAIL: test_USER_03_change_before_install (test_p1g_safety.UserIdentityTests.test_USER_03_change_before_install)",
+      "FAIL: test_USER_04_change_before_select (test_p1g_safety.UserIdentityTests.test_USER_04_change_before_select)",
+      "FAIL: test_USER_05_change_before_run (test_p1g_safety.UserIdentityTests.test_USER_05_change_before_run)",
+      "FAIL: test_USER_06_change_during_install_stops_remaining (test_p1g_safety.UserIdentityTests.test_USER_06_change_during_install_stops_remaining)",
+      "FAIL: test_USER_07_change_before_restore (test_p1g_safety.UserIdentityTests.test_USER_07_change_before_restore)",
+      "FAIL: test_USER_08_same_properties_different_user_is_different_identity (test_p1g_safety.UserIdentityTests.test_USER_08_same_properties_different_user_is_different_identity)",
+      "FAIL: test_USER_09_unsupported_secondary_user_commands_fail_closed (test_p1g_safety.UserIdentityTests.test_USER_09_unsupported_secondary_user_commands_fail_closed)",
+      "FAIL: test_USER_10_supported_user_zero_scopes_install (test_p1g_safety.UserIdentityTests.test_USER_10_supported_user_zero_scopes_install)"
+    ],
+    "label": "f01-red",
+    "assertion_evidence": [
+      "AssertionError: 0 != None",
+      "AssertionError: 10 != None",
+      "AssertionError: Lists differ: [] != [['adb', '-s', 'FAKE', 'install', '-r', '-[561 chars]pk']]",
+      "AssertionError: Lists differ: [] != [['adb', '-s', 'FAKE', 'shell', 'ime', 'en[182 chars]ce']]",
+      "- []",
+      "+ [['adb',",
+      "AssertionError: Lists differ: [] != [['adb', '-s', 'FAKE', 'shell', 'am', 'ins[498 chars]ce']]",
+      "- []",
+      "+ [['adb',",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: {'model': 'Synthetic', 'manufacturer': 'Fixture', 'api': '36', 'abis': 'arm64-v8a', 'primary_abi': 'arm64-v8a', 'fingerprint': 'fake/fingerprint', 'qemu': '0'} == {'model': 'Synthetic', 'manufacturer': 'Fixture', 'api': '36', 'abis': 'arm64-v8a', 'primary_abi': 'arm64-v8a', 'fingerprint': 'fake/fingerprint', 'qemu': '0'}",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: '--user' not found in ['adb', '-s', 'FAKE', 'install', '-r', '-t', '/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp8fstfxdk/package/app-debug.apk']"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.UserIdentityTests",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T09:40:38.363104+08:00",
+    "summary": [
+      "Ran 10 tests in 0.052s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "f01-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.SubtypeTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:42:16.606101+08:00",
+    "summary": [
+      "Ran 10 tests in 0.050s",
+      "FAILED (failures=12)"
+    ],
+    "failures": [
+      "FAIL: test_SUBTYPE_01_original_selected_value_is_captured (test_p1g_safety.SubtypeTests.test_SUBTYPE_01_original_selected_value_is_captured)",
+      "FAIL: test_SUBTYPE_02_unset_with_zero_declared_subtypes_is_supported (test_p1g_safety.SubtypeTests.test_SUBTYPE_02_unset_with_zero_declared_subtypes_is_supported)",
+      "FAIL: test_SUBTYPE_03_specific_subtype_is_captured_but_blocked (test_p1g_safety.SubtypeTests.test_SUBTYPE_03_specific_subtype_is_captured_but_blocked)",
+      "FAIL: test_SUBTYPE_04_matching_default_with_changed_subtype_is_not_restore_pass (test_p1g_safety.SubtypeTests.test_SUBTYPE_04_matching_default_with_changed_subtype_is_not_restore_pass)",
+      "FAIL: test_SUBTYPE_05_all_three_states_match_restore_pass (test_p1g_safety.SubtypeTests.test_SUBTYPE_05_all_three_states_match_restore_pass)",
+      "FAIL: test_SUBTYPE_06_unreadable_subtype_blocks_mutation (test_p1g_safety.SubtypeTests.test_SUBTYPE_06_unreadable_subtype_blocks_mutation)",
+      "FAIL: test_SUBTYPE_07_implicit_or_single_subtype_cannot_be_restored (test_p1g_safety.SubtypeTests.test_SUBTYPE_07_implicit_or_single_subtype_cannot_be_restored)",
+      "FAIL: test_SUBTYPE_08_secondary_user_subtype_never_reads_user_zero (test_p1g_safety.SubtypeTests.test_SUBTYPE_08_secondary_user_subtype_never_reads_user_zero)",
+      "FAIL: test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block (test_p1g_safety.SubtypeTests.test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block) (listing='original.ime/.Service:\\n  mSubtypeCount=0\\n')",
+      "FAIL: test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block (test_p1g_safety.SubtypeTests.test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block) (listing='original.ime/.Service:\\n  mId=original.ime/.Service\\n  InputMethodSubtype array: count=0\\n  InputMethodSubtype array: count=1\\n')",
+      "FAIL: test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block (test_p1g_safety.SubtypeTests.test_SUBTYPE_09_unknown_oem_format_and_ambiguous_counts_block) (listing='original.ime/.Service:\\n  mId=wrong.ime/.Service\\n  InputMethodSubtype array: count=0\\n')",
+      "FAIL: test_SUBTYPE_10_restore_failure_does_not_overwrite_original_evidence (test_p1g_safety.SubtypeTests.test_SUBTYPE_10_restore_failure_does_not_overwrite_original_evidence)"
+    ],
+    "label": "f02-red",
+    "assertion_evidence": [
+      "AssertionError: '-1\\n' != None",
+      "AssertionError: 'SENTINEL_WITH_ZERO_SUBTYPES' != None",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: None is not true",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: '-1\\n' != None",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.SubtypeTests",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T09:43:14.189388+08:00",
+    "summary": [
+      "Ran 10 tests in 0.052s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "f02-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.IoRecoveryTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:45:00.839466+08:00",
+    "summary": [
+      "Ran 10 tests in 0.083s",
+      "FAILED (failures=5)"
+    ],
+    "failures": [
+      "FAIL: test_IO_02_post_selection_log_failure_attempts_restore (test_p1g_safety.IoRecoveryTests.test_IO_02_post_selection_log_failure_attempts_restore)",
+      "FAIL: test_IO_03_test_execution_log_failure_attempts_restore (test_p1g_safety.IoRecoveryTests.test_IO_03_test_execution_log_failure_attempts_restore)",
+      "FAIL: test_IO_04_successful_restore_does_not_hide_primary (test_p1g_safety.IoRecoveryTests.test_IO_04_successful_restore_does_not_hide_primary)",
+      "FAIL: test_IO_05_primary_and_restore_failure_remain_distinct (test_p1g_safety.IoRecoveryTests.test_IO_05_primary_and_restore_failure_remain_distinct)",
+      "FAIL: test_IO_06_result_directory_failure_uses_private_fallback_and_no_pass (test_p1g_safety.IoRecoveryTests.test_IO_06_result_directory_failure_uses_private_fallback_and_no_pass)"
+    ],
+    "label": "f03-red",
+    "assertion_evidence": [
+      "AssertionError: False is not true : cleanup must attempt original IME after log failure",
+      "AssertionError: False is not true : cleanup must attempt original IME after log failure",
+      "AssertionError: 'PRIMARY_DISK_FULL' not found in ''",
+      "AssertionError: 'PRIMARY_DISK_FULL' not found in ''",
+      "AssertionError: False is not true : cleanup must attempt original IME after log failure"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.IoRecoveryTests",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T09:50:25.088478+08:00",
+    "summary": [
+      "Ran 10 tests in 0.153s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "f03-green-corrected",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.UserCapabilityTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:50:39.014046+08:00",
+    "summary": [
+      "Ran 2 tests in 0.004s",
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_install_existing_help_does_not_prove_install_scoping (test_p1g_safety.UserCapabilityTests.test_install_existing_help_does_not_prove_install_scoping)"
+    ],
+    "label": "help-prefix-red",
+    "assertion_evidence": [
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.InstallRecoveryTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:50:46.973495+08:00",
+    "summary": [
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_post_install_logging_failure_retains_partial_install_and_cleanup (test_p1g_safety.InstallRecoveryTests.test_post_install_logging_failure_retains_partial_install_and_cleanup)"
+    ],
+    "label": "install-io-red",
+    "assertion_evidence": [
+      "AssertionError: 1 != 0 : partial install must preserve primary + restoration evidence"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.FailClosedParsingTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:52:37.964267+08:00",
+    "summary": [
+      "Ran 2 tests in 0.018s",
+      "FAILED (failures=4)"
+    ],
+    "failures": [
+      "FAIL: test_duplicate_malformed_subtype_count_is_never_ready (test_p1g_safety.FailClosedParsingTests.test_duplicate_malformed_subtype_count_is_never_ready) (bad='01')",
+      "FAIL: test_duplicate_malformed_subtype_count_is_never_ready (test_p1g_safety.FailClosedParsingTests.test_duplicate_malformed_subtype_count_is_never_ready) (bad='unknown')",
+      "FAIL: test_duplicate_malformed_subtype_count_is_never_ready (test_p1g_safety.FailClosedParsingTests.test_duplicate_malformed_subtype_count_is_never_ready) (bad='-1')",
+      "FAIL: test_user_profile_flag_is_not_user_scope (test_p1g_safety.FailClosedParsingTests.test_user_profile_flag_is_not_user_scope)"
+    ],
+    "label": "safety-review-red",
+    "assertion_evidence": [
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised",
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.SubtypeIdentityFieldTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:53:09.554866+08:00",
+    "summary": [
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_duplicate_empty_ime_id_cannot_hide_behind_valid_id (test_p1g_safety.SubtypeIdentityFieldTests.test_duplicate_empty_ime_id_cannot_hide_behind_valid_id)"
+    ],
+    "label": "subtype-id-red",
+    "assertion_evidence": [
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.ConsoleFailureTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:53:32.671899+08:00",
+    "summary": [
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_broken_stderr_never_blocks_restore_or_primary_evidence (test_p1g_safety.ConsoleFailureTests.test_broken_stderr_never_blocks_restore_or_primary_evidence)"
+    ],
+    "label": "stderr-io-red",
+    "assertion_evidence": [
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.OperationDirectoryFailureTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:54:44.982322+08:00",
+    "summary": [
+      "FAILED (failures=2)"
+    ],
+    "failures": [
+      "FAIL: test_run_and_restore_recover_when_operation_directory_cannot_be_created (test_p1g_safety.OperationDirectoryFailureTests.test_run_and_restore_recover_when_operation_directory_cannot_be_created) (command='run')",
+      "FAIL: test_run_and_restore_recover_when_operation_directory_cannot_be_created (test_p1g_safety.OperationDirectoryFailureTests.test_run_and_restore_recover_when_operation_directory_cannot_be_created) (command='restore')"
+    ],
+    "label": "mkdir-io-red",
+    "assertion_evidence": [
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'",
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.ConsoleFailureTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:55:15.940753+08:00",
+    "summary": [
+      "Ran 2 tests in 0.023s",
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_closed_stderr_value_error_does_not_block_cleanup (test_p1g_safety.ConsoleFailureTests.test_closed_stderr_value_error_does_not_block_cleanup)"
+    ],
+    "label": "closed-stderr-red",
+    "assertion_evidence": [
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.ProgressConsoleFailureTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:56:24.581302+08:00",
+    "summary": [
+      "FAILED (failures=2)"
+    ],
+    "failures": [
+      "FAIL: test_broken_stdout_cannot_block_run_or_explicit_restore (test_p1g_safety.ProgressConsoleFailureTests.test_broken_stdout_cannot_block_run_or_explicit_restore) (command='run')",
+      "FAIL: test_broken_stdout_cannot_block_run_or_explicit_restore (test_p1g_safety.ProgressConsoleFailureTests.test_broken_stdout_cannot_block_run_or_explicit_restore) (command='restore')"
+    ],
+    "label": "stdout-io-red",
+    "assertion_evidence": [
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'",
+      "AssertionError: 'original.ime/.Service' != 'io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_p*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T09:56:31.846873+08:00",
+    "summary": [
+      "FAILED_UPDATE_INCOMPATIBLE]; RESTORE_ERROR=BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：未核對的 Android API subtype profile; RESTORE_RESULT=FAIL",
+      "Ran 64 tests in 0.436s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "safety-approved-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.CountTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:58:25.032284+08:00",
+    "summary": [
+      "Ran 8 tests in 0.009s",
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_COUNT_04_substitution_cannot_hide_missing_identity (test_p1g_protocol.CountTests.test_COUNT_04_substitution_cannot_hide_missing_identity)"
+    ],
+    "label": "p01-red",
+    "assertion_evidence": [
+      "AssertionError: 'FAIL' != 'PASS'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.CountTests",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T09:58:51.688370+08:00",
+    "summary": [
+      "Ran 8 tests in 0.009s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "p01-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.ProtocolTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T09:59:28.574849+08:00",
+    "summary": [
+      "Ran 14 tests in 0.015s",
+      "FAILED (failures=8)"
+    ],
+    "failures": [
+      "FAIL: test_PROTO_02_finish_without_start (test_p1g_protocol.ProtocolTests.test_PROTO_02_finish_without_start)",
+      "FAIL: test_PROTO_03_start_without_finish (test_p1g_protocol.ProtocolTests.test_PROTO_03_start_without_finish)",
+      "FAIL: test_PROTO_04_case_wrong_owner (test_p1g_protocol.ProtocolTests.test_PROTO_04_case_wrong_owner)",
+      "FAIL: test_PROTO_05_duplicate_case_or_subcase (test_p1g_protocol.ProtocolTests.test_PROTO_05_duplicate_case_or_subcase)",
+      "FAIL: test_PROTO_06_missing_required_case_is_not_tested (test_p1g_protocol.ProtocolTests.test_PROTO_06_missing_required_case_is_not_tested)",
+      "FAIL: test_PROTO_07_unknown_case (test_p1g_protocol.ProtocolTests.test_PROTO_07_unknown_case)",
+      "FAIL: test_PROTO_10_multiple_declared_subcases_only (test_p1g_protocol.ProtocolTests.test_PROTO_10_multiple_declared_subcases_only)",
+      "FAIL: test_emit_outside_active_test_is_rejected (test_p1g_protocol.ProtocolTests.test_emit_outside_active_test_is_rejected)"
+    ],
+    "label": "p02-red",
+    "assertion_evidence": [
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'PASS' == 'PASS'",
+      "AssertionError: 'FAIL' != 'INCONCLUSIVE'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.ProtocolTests",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:00:42.931122+08:00",
+    "summary": [
+      "Ran 14 tests in 0.012s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "p02-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_safety.FrozenHostArtifactTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T10:01:33.772652+08:00",
+    "summary": [
+      "FAILED (failures=1)"
+    ],
+    "failures": [
+      "FAIL: test_host_bytes_cannot_be_replaced_by_rewriting_local_manifest (test_p1g_safety.FrozenHostArtifactTests.test_host_bytes_cannot_be_replaced_by_rewriting_local_manifest)"
+    ],
+    "label": "frozen-host-red",
+    "assertion_evidence": [
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.ManifestIntegrityTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T10:02:26.146949+08:00",
+    "summary": [
+      "Ran 3 tests in 0.014s",
+      "FAILED (failures=2)"
+    ],
+    "failures": [
+      "FAIL: test_manifest_change_after_prepare_blocks_install (test_p1g_protocol.ManifestIntegrityTests.test_manifest_change_after_prepare_blocks_install)",
+      "FAIL: test_native_case4_owner_is_test_class_not_private_delegate (test_p1g_protocol.ManifestIntegrityTests.test_native_case4_owner_is_test_class_not_private_delegate)"
+    ],
+    "label": "manifest-integrity-red",
+    "assertion_evidence": [
+      "AssertionError: RunnerError not raised",
+      "AssertionError: 'com.example.androidkeyboard.runtime.NativeCase4Test#selectionCommitsSegmentAndNextKeyContinuesSameContext' not found in {'com.example.androidkeyboard.runtime.ContinuousSentenceTest#nihaoCoexistsConvertsCorrectsAndCommitsOnce', 'com.example.androidkeyboard.runtime.ResetCountingEngine#selectionCommitsSegmentAndNextKeyContinuesSameContext', 'com.example.ExampleInstrumentedTest#useAppContext', 'com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#imeBindsAndSurvivesEditorRecreate', 'com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#nativeEngineSurfacesVisibleDachenPhoneticPreedit'}"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.MalformedWireTests",
+      "test_p1g_protocol.CaseBundleTests",
+      "test_p1g_protocol.CanonicalManifestTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T10:04:35.013909+08:00",
+    "summary": [
+      "Ran 5 tests in 0.008s",
+      "FAILED (failures=7)"
+    ],
+    "failures": [
+      "FAIL: test_duplicate_identity_field_is_not_overwritten (test_p1g_protocol.MalformedWireTests.test_duplicate_identity_field_is_not_overwritten)",
+      "FAIL: test_malformed_control_lines_are_not_ignored (test_p1g_protocol.MalformedWireTests.test_malformed_control_lines_are_not_ignored) (line='INSTRUMENTATION_STATUS_CODE: START')",
+      "FAIL: test_malformed_control_lines_are_not_ignored (test_p1g_protocol.MalformedWireTests.test_malformed_control_lines_are_not_ignored) (line='INSTRUMENTATION_STATUS_CODE: -2garbage')",
+      "FAIL: test_malformed_control_lines_are_not_ignored (test_p1g_protocol.MalformedWireTests.test_malformed_control_lines_are_not_ignored) (line='INSTRUMENTATION_CODE: broken')",
+      "FAIL: test_arbitrary_stdout_is_not_case_protocol (test_p1g_protocol.CaseBundleTests.test_arbitrary_stdout_is_not_case_protocol)",
+      "FAIL: test_case_requires_send_status_two_bundle (test_p1g_protocol.CaseBundleTests.test_case_requires_send_status_two_bundle)",
+      "FAIL: test_pre_prepare_manifest_substitution_is_rejected (test_p1g_protocol.CanonicalManifestTests.test_pre_prepare_manifest_substitution_is_rejected)"
+    ],
+    "label": "protocol-review-red",
+    "assertion_evidence": [
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: RunnerError not raised"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_p*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:04:55.368312+08:00",
+    "summary": [
+      "FAILED_UPDATE_INCOMPATIBLE]; RESTORE_ERROR=BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：未核對的 Android API subtype profile; RESTORE_RESULT=FAIL",
+      "Ran 97 tests in 0.542s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "protocol-review-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/verify.py",
+      "--static"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:02:59.463773+08:00",
+    "summary": [],
+    "failures": [],
+    "label": "contracts",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/bootstrap_native_deps.sh"
+    ],
+    "exit": 128,
+    "time": "2026-10-09T10:02:59.574419+08:00",
+    "summary": [],
+    "failures": [],
+    "label": "bootstrap",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "bash",
+      "scripts/bootstrap_native_deps.sh"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:03:46.742279+08:00",
+    "summary": [],
+    "failures": [],
+    "label": "bootstrap-network",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.MalformedWireTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T10:06:25.382981+08:00",
+    "summary": [
+      "Ran 3 tests in 0.008s",
+      "FAILED (failures=3)"
+    ],
+    "failures": [
+      "FAIL: test_missing_colon_and_empty_key_are_rejected (test_p1g_protocol.MalformedWireTests.test_missing_colon_and_empty_key_are_rejected) (line='INSTRUMENTATION_STATUS_CODE -2')",
+      "FAIL: test_missing_colon_and_empty_key_are_rejected (test_p1g_protocol.MalformedWireTests.test_missing_colon_and_empty_key_are_rejected) (line='INSTRUMENTATION_CODE broken')",
+      "FAIL: test_missing_colon_and_empty_key_are_rejected (test_p1g_protocol.MalformedWireTests.test_missing_colon_and_empty_key_are_rejected) (line='INSTRUMENTATION_STATUS: =emptykey')"
+    ],
+    "label": "protocol-wire-boundary-red",
+    "assertion_evidence": [
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_p*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:06:46.159701+08:00",
+    "summary": [
+      "FAILED_UPDATE_INCOMPATIBLE]; RESTORE_ERROR=BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：未核對的 Android API subtype profile; RESTORE_RESULT=FAIL",
+      "Ran 98 tests in 0.547s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "protocol-wire-boundary-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "test_p1g_protocol.PayloadSchemaTests",
+      "-v"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T22:20:37.711409+08:00",
+    "summary": [
+      "Ran 3 tests in 0.006s",
+      "FAILED (failures=4)"
+    ],
+    "failures": [
+      "FAIL: test_duplicate_json_cannot_hide_fail_or_wrong_owner (test_p1g_protocol.PayloadSchemaTests.test_duplicate_json_cannot_hide_fail_or_wrong_owner) (replacement='\"result\":\"FAIL\",\"result\":\"PASS\"')",
+      "FAIL: test_duplicate_json_cannot_hide_fail_or_wrong_owner (test_p1g_protocol.PayloadSchemaTests.test_duplicate_json_cannot_hide_fail_or_wrong_owner) (replacement='\"case_id\":\"D01\",\"case_id\":\"B01\"')",
+      "FAIL: test_empty_terminal_result_key_is_rejected (test_p1g_protocol.PayloadSchemaTests.test_empty_terminal_result_key_is_rejected)",
+      "FAIL: test_wrong_status_bundle_identity_cannot_leave_case_pass (test_p1g_protocol.PayloadSchemaTests.test_wrong_status_bundle_identity_cannot_leave_case_pass)"
+    ],
+    "label": "payload-schema-red",
+    "assertion_evidence": [
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'",
+      "AssertionError: 'FAIL' != 'PASS'"
+    ]
+  },
+  {
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_p*.py",
+      "-v"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T22:21:10.435779+08:00",
+    "summary": [
+      "FAILED_UPDATE_INCOMPATIBLE]; RESTORE_ERROR=BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：未核對的 Android API subtype profile; RESTORE_RESULT=FAIL",
+      "Ran 101 tests in 0.556s",
+      "OK"
+    ],
+    "failures": [],
+    "label": "payload-schema-green",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "./gradlew",
+      ":acceptance-host:testDebugUnitTest",
+      ":acceptance-host:assembleDebug",
+      ":acceptance-host:assembleDebugAndroidTest",
+      ":app:assembleDebugAndroidTest",
+      ":app:testDebugUnitTest",
+      ":app:assembleDebug",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T10:05:14.409970+08:00",
+    "summary": [],
+    "failures": [],
+    "label": "gradle-debug",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "./gradlew",
+      ":acceptance-host:testDebugUnitTest",
+      ":acceptance-host:assembleDebug",
+      ":acceptance-host:assembleDebugAndroidTest",
+      ":app:assembleDebugAndroidTest",
+      ":app:testDebugUnitTest",
+      ":app:assembleDebug",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 0,
+    "time": "2026-10-09T10:08:14.596992+08:00",
+    "summary": [],
+    "failures": [],
+    "label": "gradle-debug-permitted",
+    "assertion_evidence": []
+  },
+  {
+    "command": [
+      "./gradlew",
+      ":app:assembleRelease",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 1,
+    "time": "2026-10-09T22:22:53.724710+08:00",
+    "summary": [
+      "FAILED",
+      "FAILED in 59s"
+    ],
+    "failures": [],
+    "label": "gradle-release",
+    "assertion_evidence": []
+  }
+]
