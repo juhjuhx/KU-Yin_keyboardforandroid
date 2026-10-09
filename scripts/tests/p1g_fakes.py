@@ -36,13 +36,13 @@ class FakeAndroid:
         elif args == ["shell", "am", "get-current-user"]:
             output = str(self.user) + "\n"
         elif args == ["shell", "settings", "help"]:
-            output = "settings [--user USER_ID] get namespace key\n"
+            output = "Settings provider (settings) commands:\n  get [--user <USER_ID> | current] NAMESPACE KEY\n"
         elif args == ["shell", "am", "help"]:
-            output = "instrument [--user USER_ID] [-w] [-r] COMPONENT\n"
+            output = "  instrument [-r] [-e <NAME> <VALUE>] [-p <FILE>] [-w]\n          [--user <USER_ID> | current]\n          COMPONENT\n"
         elif args == ["shell", "pm", "help"]:
-            output = "install [-r] [-t] [--user USER_ID] PATH\n"
+            output = "  install [-rtfdg] [-i PACKAGE] [--user USER_ID|all|current]\n          [--dont-kill] PATH\n"
         elif args == ["shell", "ime", "help"]:
-            output = "enable [--user USER_ID] ID\ndisable [--user USER_ID] ID\nset [--user USER_ID] ID\nlist [-a] [-s]\n"
+            output = "ime <command>:\n  enable [--user <USER_ID>] <ID>\n  disable [--user <USER_ID>] <ID>\n  set [--user <USER_ID>] <ID>\n  list [-a] [-s]\n"
         else:
             target = int(args[args.index("--user") + 1]) if "--user" in args else self.user
             state = self.states.setdefault(target, ["original.ime/.Service\n", "original.ime/.Service\n", "-1\n"])

@@ -39,7 +39,7 @@ def instrumentation(codes=(0,), *, events=(), final=-1):
 
 
 def captured(default="original.ime/.Service\n", enabled="original.ime/.Service;123;-45\n"):
-    return {"original_default_ime_raw": default, "original_enabled_imes_raw": enabled, "android_user_id": 0}
+    return {"original_default_ime_raw": default, "original_enabled_imes_raw": enabled, "android_user_id": 0, "original_selected_input_method_subtype_raw": "-1\n", "preflight_status": "READY"}
 
 
 def fake_package(directory):
@@ -223,7 +223,7 @@ class FakeAdbTest(unittest.TestCase):
     def test_run_failure_still_tries_restore_and_preserves_not_tested_cases(self):
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory)
-            state = {"schema": 1, "serial": "FAKE", "target_ime": device.IME,
+            state = {"schema": 2, "serial": "FAKE", "target_ime": device.IME,
                      **captured(), "device_identity": {}, "device_kind": "EMULATOR",
                      "artifact_verification": {}}
             device.write_json_new(evidence / device.STATE_NAME, state)
@@ -241,7 +241,7 @@ class FakeAdbTest(unittest.TestCase):
     def test_run_artifact_error_still_enters_finally_restore(self):
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory)
-            state = {"schema": 1, "serial": "FAKE", "target_ime": device.IME,
+            state = {"schema": 2, "serial": "FAKE", "target_ime": device.IME,
                      **captured(), "device_identity": {}, "device_kind": "EMULATOR",
                      "artifact_verification": {}}
             device.write_json_new(evidence / device.STATE_NAME, state)
@@ -254,7 +254,7 @@ class FakeAdbTest(unittest.TestCase):
     def test_select_keeps_primary_and_restore_errors_in_console_and_evidence(self):
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory)
-            state = {"schema": 1, "serial": "FAKE", "target_ime": device.IME,
+            state = {"schema": 2, "serial": "FAKE", "target_ime": device.IME,
                      **captured(), "device_identity": {}, "device_kind": "EMULATOR",
                      "artifact_verification": {}}
             device.write_json_new(evidence / device.STATE_NAME, state)
@@ -265,7 +265,7 @@ class FakeAdbTest(unittest.TestCase):
                 self.assertEqual(1, device.main(["--serial", "FAKE", "--evidence-dir", directory, "select"]))
             self.assertIn("PRIMARY_ARTIFACT_CHANGED", errors.getvalue())
             self.assertIn("SECONDARY_EXTERNAL_IME_CHANGED", errors.getvalue())
-            result = json.loads(next(evidence.glob("select-*/select-result.json")).read_text())
+            result = json.loads(next(evidence.glob("select-*/select-failure.json")).read_text())
             self.assertEqual("PRIMARY_ARTIFACT_CHANGED", result["failure"])
             self.assertEqual("SECONDARY_EXTERNAL_IME_CHANGED", result["restore"]["error"])
             self.assertTrue(result["restore"]["manual_action_required"])
@@ -279,7 +279,7 @@ class FakeAdbTest(unittest.TestCase):
             return subprocess.CompletedProcess(argv, 1, "Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE]", "")
         with tempfile.TemporaryDirectory() as directory:
             evidence = Path(directory)
-            state = {"schema": 1, "serial": "FAKE", "target_ime": device.IME,
+            state = {"schema": 2, "serial": "FAKE", "target_ime": device.IME,
                      **captured(), "device_identity": {}, "device_kind": "EMULATOR",
                      "artifact_verification": {}}
             device.write_json_new(evidence / device.STATE_NAME, state)

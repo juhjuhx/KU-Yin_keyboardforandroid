@@ -8,9 +8,11 @@ import datetime as dt
 import hashlib
 import json
 import math
+import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 import uuid
 from dataclasses import dataclass
@@ -55,6 +57,21 @@ class RunnerError(Exception):
     """必須停止、保留證據，不能自動移除 app 或改寫其他設定。"""
 
 
+def diagnostic(message: str) -> None:
+    """Console I/O is advisory; it must not interrupt restoration/evidence."""
+    try:
+        print(message, file=sys.stderr)
+    except (OSError, ValueError):
+        pass
+
+
+def progress(message: str) -> None:
+    try:
+        print(message)
+    except (OSError, ValueError):
+        pass
+
+
 def utc_now() -> str:
     return dt.datetime.now(dt.timezone.utc).isoformat()
 
@@ -71,6 +88,8 @@ def write_json_new(path: Path, value: Any) -> None:
     with path.open("x", encoding="utf-8") as stream:
         json.dump(value, stream, ensure_ascii=False, indent=2)
         stream.write("\n")
+        stream.flush()
+        os.fsync(stream.fileno())
 
 
 def verify_artifacts(package_dir: Path) -> dict[str, Any]:
@@ -160,6 +179,23 @@ class Adb:
         self.serial, self.log_path, self.timeout = serial, log_path, timeout
         self.executor = executor
         self.android_user_id: int | None = None
+        self.android_api: int | None = None
+        self.recovery_mode = False
+        self.log_errors: list[str] = []
+        self.recovery_records: list[dict[str, Any]] = []
+
+    def log_record(self, record: dict[str, Any]) -> None:
+        try:
+            with self.log_path.open("a", encoding="utf-8") as stream:
+                stream.write(json.dumps(record, ensure_ascii=False) + "\n")
+                stream.flush()
+                os.fsync(stream.fileno())
+        except OSError as exc:
+            self.log_errors.append(str(exc))
+            self.recovery_records.append(record)
+            if not self.recovery_mode:
+                raise
+            diagnostic(f"RECOVERY_LOG_ERROR={exc}")
 
     def run(self, args: list[str], *, timeout: float | None = None,
             check: bool = True) -> CommandResult:
@@ -174,6 +210,8 @@ class Adb:
         argv = ["adb", "-s", self.serial, *args]
         limit = self.timeout if timeout is None else timeout
         started = utc_now()
+        # Durable write-ahead evidence: normal execution cannot outrun a broken sink.
+        self.log_record({"phase": "intent", "started_at": started, "argv": argv, "timeout_seconds": limit})
         try:
             process = self.executor(argv, capture_output=True, text=True,
                                     timeout=limit, check=False)
@@ -186,8 +224,7 @@ class Adb:
             result = CommandResult(127, "", str(exc))
         record = {"started_at": started, "finished_at": utc_now(), "argv": argv,
                   "timeout_seconds": limit, **result.__dict__}
-        with self.log_path.open("a", encoding="utf-8") as stream:
-            stream.write(json.dumps(record, ensure_ascii=False) + "\n")
+        self.log_record({"phase": "completed", **record})
         if check and (result.returncode or result.timed_out):
             raise RunnerError(f"ADB 命令失敗／timeout：{argv!r}；{result.stderr or result.stdout}")
         if mutation:
@@ -213,16 +250,16 @@ def user_capabilities(adb: Adb) -> dict[str, Any]:
     def supported(name: str, command: str) -> bool:
         lines = helps[name].splitlines()
         for index, line in enumerate(lines):
-            if re.match(r"\s*" + re.escape(command) + r"\b", line):
+            if re.match(r"\s*" + re.escape(command) + r"(?=\s|\[|$)", line):
                 continuation = [line]
                 for following in lines[index + 1:index + 4]:
                     if not following.lstrip().startswith("["):
                         break
                     continuation.append(following)
-                if "--user" in " ".join(continuation):
+                if re.search(r"(?<![\w-])--user\s+(?:<USER_ID>|USER_ID)(?=[\s|\]])", " ".join(continuation)):
                     return True
         return False
-    flags = {"settings": supported("settings", "settings"), "instrument": supported("am", "instrument"),
+    flags = {"settings": supported("settings", "get"), "instrument": supported("am", "instrument"),
              "install": supported("pm", "install"),
              **{command: supported("ime", command) for command in ("enable", "disable", "set")}}
     if not all(flags.values()):
@@ -230,7 +267,7 @@ def user_capabilities(adb: Adb) -> dict[str, Any]:
     return {"flags": flags, "help_sha256": {name: hashlib.sha256(raw.encode()).hexdigest() for name, raw in helps.items()}}
 
 
-def read_identity(adb: Adb) -> dict[str, str]:
+def read_identity(adb: Adb) -> dict[str, Any]:
     user = read_current_user(adb)
     if adb.run(["get-state"]).stdout.strip() != "device":
         raise RunnerError("指定 serial 不是已授權 device 狀態；STOP")
@@ -257,6 +294,7 @@ def check_identity(adb: Adb, state: dict[str, Any]) -> None:
         raise RunnerError("serial 相同但裝置 identity／API／ABI 已改變；STOP")
     check_current_user(adb)
     user_capabilities(adb)
+    check_subtype_boundary(adb, state)
 
 
 def read_ime_state(adb: Adb) -> tuple[str, str]:
@@ -265,6 +303,50 @@ def read_ime_state(adb: Adb) -> tuple[str, str]:
     enabled = adb.run(["shell", "settings", "--user", str(adb.android_user_id), "get", "secure", "enabled_input_methods"]).stdout
     check_current_user(adb)
     return default, enabled
+
+
+def read_selected_subtype(adb: Adb) -> str:
+    check_current_user(adb)
+    raw = adb.run(["shell", "settings", "--user", str(adb.android_user_id),
+                   "get", "secure", "selected_input_method_subtype"]).stdout
+    value = raw.strip()
+    if not re.fullmatch(r"-?(0|[1-9][0-9]*)", value) or not -2147483648 <= int(value) <= 2147483647:
+        raise RunnerError("BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：selected subtype 不可明確讀取")
+    check_current_user(adb)
+    return raw
+
+
+def subtype_restore_plan(adb: Adb, original: str, selected_raw: str) -> dict[str, Any]:
+    """No generic shell subtype setter exists: only the provable no-subtype case."""
+    check_current_user(adb)
+    if adb.android_api not in (35, 36):
+        return {"ready": False, "method": None, "reason": "未核對的 Android API subtype profile"}
+    listing = adb.run(["shell", "ime", "list", "--user", str(adb.android_user_id), "-a"]).stdout
+    check_current_user(adb)
+    lines = listing.splitlines()
+    starts = [i for i, line in enumerate(lines) if line == original + ":"]
+    counts, ids = [], []
+    if len(starts) == 1:
+        block = []
+        for line in lines[starts[0] + 1:]:
+            if re.fullmatch(r"\S+/\S+:", line):
+                break
+            block.append(line)
+        text = "\n".join(block)
+        counts = re.findall(r"^\s*InputMethodSubtype array: count=(.*)$", text, re.M)
+        ids = re.findall(r"^\s*mId=([^\s]*)", text, re.M)
+    ready = selected_raw.strip() == "-1" and counts == ["0"] and ids == [original]
+    return {"ready": ready, "method": "SENTINEL_WITH_ZERO_SUBTYPES" if ready else None,
+            "reason": None if ready else "原 subtype 非-1／非零／缺失／重複／OEM格式不明",
+            "original_ime": original, "selected_raw": selected_raw, "counts": counts,
+            "ime_listing_sha256": hashlib.sha256(listing.encode()).hexdigest()}
+
+
+def check_subtype_boundary(adb: Adb, state: dict[str, Any]) -> None:
+    plan = subtype_restore_plan(adb, state["original_default_ime_raw"].strip(),
+                                state["original_selected_input_method_subtype_raw"])
+    if not plan["ready"]:
+        raise RunnerError(f"BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：{plan['reason']}")
 
 
 def wait_for(adb: Adb, predicate: Callable[[], bool], description: str,
@@ -280,21 +362,34 @@ def wait_for(adb: Adb, predicate: Callable[[], bool], description: str,
 
 def restore(adb: Adb, state: dict[str, Any]) -> dict[str, Any]:
     check_identity(adb, state)
+    check_subtype_boundary(adb, state)
     default, enabled = read_ime_state(adb)
+    selected = read_selected_subtype(adb)
+    if default.strip() == state["original_default_ime_raw"].strip() and selected.strip() != state["original_selected_input_method_subtype_raw"].strip():
+        raise RunnerError("RESTORE_SUBTYPE_MISMATCH：不以相同 default 假稱 subtype 還原")
     for command in restore_commands(state, default, enabled):
         adb.run(command)
     expected = (state["original_default_ime_raw"].strip(),
-                state["original_enabled_imes_raw"].strip())
+                state["original_enabled_imes_raw"].strip(),
+                state["original_selected_input_method_subtype_raw"].strip())
     def matches() -> bool:
-        return tuple(value.strip() for value in read_ime_state(adb)) == expected
-    wait_for(adb, matches, "原 default／enabled IME（含 subtype 原字串）還原")
+        return tuple(value.strip() for value in (*read_ime_state(adb), read_selected_subtype(adb))) == expected
+    wait_for(adb, matches, "原 default／enabled／selected subtype 三欄還原")
+    check_subtype_boundary(adb, state)
+    check_identity(adb, state)
     return {"result": "PASS", "restored_at": utc_now(),
-            "default_ime": expected[0], "enabled_raw_matched": True}
+            "default_ime": expected[0], "enabled_raw_matched": True, "selected_subtype_matched": True,
+            "selected_subtype_raw": state["original_selected_input_method_subtype_raw"],
+            "android_user_id": adb.android_user_id}
 
 
 def select(adb: Adb, state: dict[str, Any]) -> None:
     check_identity(adb, state)
+    check_subtype_boundary(adb, state)
     default, enabled = read_ime_state(adb)
+    selected = read_selected_subtype(adb)
+    if default.strip() == state["original_default_ime_raw"].strip() and selected.strip() != state["original_selected_input_method_subtype_raw"].strip():
+        raise RunnerError("原 selected subtype 已由外部變更；STOP")
     restore_commands(state, default, enabled)  # 在修改前排除其他人的狀態變更。
     def registered() -> bool:
         check_current_user(adb)
@@ -437,11 +532,13 @@ def load_state(args: argparse.Namespace) -> dict[str, Any]:
         state = json.loads((args.evidence_dir / STATE_NAME).read_text(encoding="utf-8"))
     except (OSError, ValueError) as exc:
         raise RunnerError(f"先 prepare；captured state 無法讀取：{exc}") from exc
-    if not isinstance(state, dict) or state.get("schema") != 1 or state.get("serial") != args.serial or state.get("target_ime") != IME:
+    if not isinstance(state, dict) or state.get("schema") != 2 or state.get("serial") != args.serial or state.get("target_ime") != IME:
         raise RunnerError("captured state schema／serial／IME 不符；STOP")
     if not all(isinstance(state.get(key), str) for key in
-               ("original_default_ime_raw", "original_enabled_imes_raw")) or not isinstance(state.get("device_identity"), dict):
+               ("original_default_ime_raw", "original_enabled_imes_raw", "original_selected_input_method_subtype_raw")) or not isinstance(state.get("device_identity"), dict):
         raise RunnerError("captured state IME raw／identity 格式不符；STOP")
+    if state.get("preflight_status") != "READY" or state.get("original_selected_input_method_subtype_raw", "").strip() != "-1":
+        raise RunnerError("BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：此 capture 未通過安全預檢")
     return state
 
 
@@ -452,83 +549,158 @@ def check_artifact_state(args: argparse.Namespace, state: dict[str, Any]) -> dic
     return verified
 
 
+def recover_state(adb: Adb, state: dict[str, Any]) -> dict[str, Any]:
+    """Bounded restoration may survive a broken log; identity checks never relax."""
+    previous = adb.recovery_mode
+    adb.recovery_mode = True
+    try:
+        outcome = restore(adb, state)
+        if adb.log_errors:
+            outcome = {**outcome, "result": "FAIL", "state_restored": True,
+                       "error": "COMMAND_EVIDENCE_IO_FAILURE", "logging_errors": list(adb.log_errors)}
+    except (Exception, KeyboardInterrupt) as exc:
+        outcome = {"result": "FAIL", "error": str(exc) or "還原被中斷",
+                   "exception_type": type(exc).__name__, "manual_action_required": True}
+    finally:
+        adb.recovery_mode = previous
+    if adb.recovery_records:
+        outcome["recovery_command_records"] = list(adb.recovery_records)
+    return outcome
+
+
+def persist_outcome(path: Path, outcome: dict[str, Any]) -> None:
+    """Never call a non-durable result clean PASS. Private fallback is evidence only."""
+    try:
+        write_json_new(path, outcome)
+    except OSError as exc:
+        failed = {**outcome, "result": "FAIL", "evidence_write_error": str(exc),
+                  "intended_path": str(path)}
+        diagnostic("EVIDENCE_WRITE_ERROR=" + str(exc))
+        try:
+            fd, name = tempfile.mkstemp(prefix="KUYin-p1g-recovery-", suffix=".json")
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                json.dump(failed, stream, ensure_ascii=False, indent=2)
+                stream.flush()
+                os.fsync(stream.fileno())
+            diagnostic("FALLBACK_EVIDENCE=" + name)
+        except OSError as secondary:
+            diagnostic(f"FALLBACK_EVIDENCE_FAILED={secondary}; OUTCOME={json.dumps(failed, ensure_ascii=False)}")
+        raise RunnerError(f"EVIDENCE_WRITE_FAILED：{exc}；沒有完整 durable proof，不可 PASS") from exc
+
+
+def bind_state(adb: Adb, state: dict[str, Any]) -> None:
+    if type(state.get("android_user_id")) is not int or state["android_user_id"] < 0:
+        raise RunnerError("captured state 缺 numeric android_user_id；舊 session 不可用新 runner mutation")
+    adb.android_user_id = state["android_user_id"]
+    adb.android_api = int(state["device_identity"].get("api", 0))
+
+
 def execute(args: argparse.Namespace) -> int:
     evidence_dir = args.evidence_dir.resolve()
     if evidence_dir == REPO_ROOT or REPO_ROOT in evidence_dir.parents:
         raise RunnerError("evidence-dir 必須在工作 repo 外；不提交 user/device state")
     args.evidence_dir, args.package_dir = evidence_dir, args.package_dir.resolve()
-    evidence_dir.mkdir(parents=True, exist_ok=True)
     operation_dir = evidence_dir / (args.command + "-" + dt.datetime.now().strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:8])
-    operation_dir.mkdir()
     adb = Adb(args.serial, operation_dir / "commands.jsonl", args.adb_timeout)
-    print(f"evidence={operation_dir}")
-    print("native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE")
+    try:
+        evidence_dir.mkdir(parents=True, exist_ok=True)
+        operation_dir.mkdir()
+    except OSError as primary:
+        if args.command == "prepare":
+            raise
+        # Previous select may have changed state; an unusable evidence sink cannot
+        # prevent explicit or finally restoration. Missing logs remain a FAIL.
+        try:
+            state = load_state(args)
+            bind_state(adb, state)
+            restored = recover_state(adb, state)
+        except (Exception, KeyboardInterrupt) as secondary:
+            restored = {"result": "FAIL", "error": str(secondary) or "還原中斷", "manual_action_required": True}
+        report = {"result": "FAIL", "failure": str(primary), "exception_type": type(primary).__name__, "restore": restored}
+        diagnostic(f"PRIMARY_ERROR={primary}; RESTORE_ERROR={restored.get('error')}; RESTORE_RESULT={restored['result']}")
+        persist_outcome(operation_dir / "io-preflight-failure.json", report)
+        raise RunnerError(f"operation evidence 失敗：{primary}") from primary
+    progress(f"evidence={operation_dir}")
+    progress("native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE")
     if args.command == "prepare":
         if (evidence_dir / STATE_NAME).exists():
             raise RunnerError("captured-state.json 已存在；不覆寫，請使用新 evidence-dir")
         verified = verify_artifacts(args.package_dir)
         identity = read_identity(adb)
         adb.android_user_id = identity["android_user_id"]
+        adb.android_api = int(identity["api"])
         capabilities = user_capabilities(adb)
         if (identity["qemu"] == "1") != (args.device_kind == "EMULATOR"):
             raise RunnerError("device-kind 與 ro.kernel.qemu 不符；STOP，核對裝置種類")
         default, enabled = read_ime_state(adb)
+        selected_raw = read_selected_subtype(adb)
         entries = enabled_entries(enabled)
         if not default.strip() or default.strip() == "null" or default.strip() not in entries:
             raise RunnerError("原 default IME 是 null／未啟用；STOP，不能猜測還原")
-        state = {"schema": 1, "captured_at": utc_now(), "serial": args.serial,
+        subtype_plan = subtype_restore_plan(adb, default.strip(), selected_raw)
+        state = {"schema": 2, "captured_at": utc_now(), "serial": args.serial,
                  "device_kind": args.device_kind, "device_identity": identity, "target_ime": IME,
                  "android_user_id": adb.android_user_id, "user_capabilities": capabilities,
                  "original_default_ime_raw": default, "original_enabled_imes_raw": enabled,
+                 "original_selected_input_method_subtype_raw": selected_raw,
+                 "subtype_restore": subtype_plan, "preflight_status": "READY" if subtype_plan["ready"] else "BLOCKED",
                  "artifact_verification": verified, "sequence_status": "NOT_EXECUTED"}
         write_json_new(evidence_dir / STATE_NAME, state)
+        if not subtype_plan["ready"]:
+            write_json_new(operation_dir / "prepare-result.json", {"result": "BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED", "subtype_restore": subtype_plan})
+            raise RunnerError(f"BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：{subtype_plan['reason']}；已保留原狀態，不可 mutation")
         write_json_new(operation_dir / "prepare-result.json", {"result": "PASS", "state_captured": True,
                                                                "device_sequence": "NOT_EXECUTED"})
-        print("PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED")
+        progress("PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED")
         return 0
     state = load_state(args)
-    if type(state.get("android_user_id")) is not int or state["android_user_id"] < 0:
-        raise RunnerError("captured state 缺 numeric android_user_id；舊 session 不可用新 runner mutation")
-    adb.android_user_id = state["android_user_id"]
+    bind_state(adb, state)
     if args.command == "restore":
-        outcome = restore(adb, state)
-        write_json_new(operation_dir / "restore-result.json", outcome)
-        print("RESTORED：原 default 與 enabled/subtypes raw 字串核對一致")
+        outcome = recover_state(adb, state)
+        persist_outcome(operation_dir / "restore-result.json", outcome)
+        if outcome["result"] != "PASS":
+            raise RunnerError(f"restore 未完整通過：{outcome.get('error')}")
+        progress("RESTORED：原 default 與 enabled/subtypes raw 字串核對一致")
         return 0
     if args.command == "install":
-        check_artifact_state(args, state)
-        check_identity(adb, state)
-        for name in EXPECTED_PACKAGES:
-            outcome = adb.run(["install", "--user", str(adb.android_user_id), "-r", "-t", str(args.package_dir / name)],
-                              timeout=args.install_timeout, check=False)
-            combined = outcome.stdout + outcome.stderr
-            if outcome.returncode or outcome.timed_out or "Success" not in outcome.stdout or re.search(r"Failure|INSTALL_FAILED|INSTALL_PARSE_FAILED", combined):
-                raise RunnerError(f"安裝 {name} 失敗（signature mismatch 也 STOP）；不 uninstall／clear：{combined}")
-        write_json_new(operation_dir / "install-result.json", {"result": "PASS", "installed": list(EXPECTED_PACKAGES)})
-        print("INSTALLED：-r -t 保留資料；尚未 select／run")
+        attempted, installed = [], []
+        try:
+            check_artifact_state(args, state)
+            check_identity(adb, state)
+            for name in EXPECTED_PACKAGES:
+                attempted.append(name)
+                outcome = adb.run(["install", "--user", str(adb.android_user_id), "-r", "-t", str(args.package_dir / name)],
+                                  timeout=args.install_timeout, check=False)
+                combined = outcome.stdout + outcome.stderr
+                if outcome.returncode or outcome.timed_out or "Success" not in outcome.stdout or re.search(r"Failure|INSTALL_FAILED|INSTALL_PARSE_FAILED", combined):
+                    raise RunnerError(f"安裝 {name} 失敗（signature mismatch 也 STOP）；不 uninstall／clear：{combined}")
+                installed.append(name)
+            write_json_new(operation_dir / "install-result.json", {"result": "PASS", "installed": installed})
+        except (Exception, KeyboardInterrupt) as primary:
+            primary_message = str(primary) or "使用者中斷"
+            restored = recover_state(adb, state)
+            report = {"result": "FAIL", "failure": primary_message, "exception_type": type(primary).__name__,
+                      "attempted": attempted, "confirmed_installed": installed, "restore": restored,
+                      "partial_installation_possible": bool(attempted)}
+            diagnostic(f"PRIMARY_ERROR={primary_message}; RESTORE_ERROR={restored.get('error')}; RESTORE_RESULT={restored['result']}")
+            persist_outcome(operation_dir / "install-failure.json", report)
+            raise RunnerError(f"install 失敗：{primary_message}；restore={restored['result']}") from primary
+        progress("INSTALLED：-r -t 保留資料；尚未 select／run")
         return 0
     if args.command == "select":
         try:
             check_artifact_state(args, state)
             select(adb, state)
-        except (RunnerError, KeyboardInterrupt) as primary:
+            write_json_new(operation_dir / "select-result.json", {"result": "PASS", "selected_ime": IME})
+        except (Exception, KeyboardInterrupt) as primary:
             primary_message = str(primary) or "使用者中斷"
-            try:
-                restore_outcome = restore(adb, state)
-            except (RunnerError, KeyboardInterrupt) as secondary:
-                secondary_message = str(secondary) or "還原被中斷"
-                write_json_new(operation_dir / "select-result.json", {
-                    "result": "FAIL", "failure": primary_message,
-                    "restore": {"result": "FAIL", "error": secondary_message,
-                                "manual_action_required": True},
-                })
-                raise RunnerError(f"select 失敗：{primary_message}；restore 失敗：{secondary_message}") from primary
-            write_json_new(operation_dir / "select-result.json", {
-                "result": "FAIL", "failure": primary_message, "restore": restore_outcome,
-            })
-            raise
-        write_json_new(operation_dir / "select-result.json", {"result": "PASS", "selected_ime": IME})
-        print("SELECTED：測試 app 不負責修改系統 IME；手動操作後必須 restore")
+            restored = recover_state(adb, state)
+            report = {"result": "FAIL", "failure": primary_message, "exception_type": type(primary).__name__,
+                      "restore": restored, "original_selected_subtype_raw": state["original_selected_input_method_subtype_raw"]}
+            diagnostic(f"PRIMARY_ERROR={primary_message}; RESTORE_ERROR={restored.get('error')}; RESTORE_RESULT={restored['result']}")
+            persist_outcome(operation_dir / "select-failure.json", report)
+            raise RunnerError(f"select 失敗：{primary_message}；restore={restored['result']}：{restored.get('error')}") from primary
+        progress("SELECTED：測試 app 不負責修改系統 IME；手動操作後必須 restore")
         return 0
     suites, emissions, failure, restored = [], [], None, {"result": "NOT_TESTED"}
     try:
@@ -548,20 +720,16 @@ def execute(args: argparse.Namespace) -> int:
             parsed = parse_instrumentation(output, returncode=outcome.returncode, expected_tests=expected)
             suites.append({"layer": label, **parsed})
             emissions.extend(parsed["case_emissions"])
-            print(f"{label}: {parsed['result']}; completed={parsed['completed_tests']}; skipped={parsed['skipped_tests']}")
+            progress(f"{label}: {parsed['result']}; completed={parsed['completed_tests']}; skipped={parsed['skipped_tests']}")
             if parsed["result"] == "FAIL":
                 raise RunnerError(f"{label} protocol／tests 失敗；不繼續後續 suite")
-    except (RunnerError, KeyboardInterrupt) as exc:
+    except (Exception, KeyboardInterrupt) as exc:
         failure = str(exc) or "使用者中斷"
+        diagnostic(f"PRIMARY_ERROR={failure}")
     finally:
-        try:
-            restored = restore(adb, state)
-        except (RunnerError, KeyboardInterrupt) as exc:
-            restored = {"result": "FAIL", "error": str(exc) or "還原被中斷",
-                        "manual_action_required": True}
+        restored = recover_state(adb, state)
+        diagnostic(f"RESTORE_ERROR={restored.get('error')}; RESTORE_RESULT={restored['result']}")
     cases = summarize_cases(emissions)
-    for case_id, record in cases.items():
-        write_json_new(operation_dir / (case_id + ".json"), record)
     full_results = [record["full_acceptance_result"] for record in cases.values()]
     result = "FAIL" if failure or restored["result"] != "PASS" or "FAIL" in full_results else (
         "PASS" if full_results == ["PASS"] * len(CASE_IDS) and all(suite["result"] == "PASS" for suite in suites)
@@ -572,9 +740,12 @@ def execute(args: argparse.Namespace) -> int:
                "native_learning_observer": "OPEN", "D17_IME_false_IPC_scope": "INCONCLUSIVE",
                "suites": suites, "cases": cases, "restore": restored,
                "artifact_verification": state["artifact_verification"], "finished_at": utc_now()}
-    write_json_new(operation_dir / "run-summary.json", summary)
-    print(f"sequence={summary['sequence_status']}; result={result}; full_acceptance_complete={summary['full_acceptance_complete']}")
-    print(f"restore={restored['result']}; summary={operation_dir / 'run-summary.json'}")
+    summary["original_selected_subtype_raw"] = state["original_selected_input_method_subtype_raw"]
+    persist_outcome(operation_dir / "run-summary.json", summary)
+    for case_id, record in cases.items():
+        persist_outcome(operation_dir / (case_id + ".json"), record)
+    progress(f"sequence={summary['sequence_status']}; result={result}; full_acceptance_complete={summary['full_acceptance_complete']}")
+    progress(f"restore={restored['result']}; summary={operation_dir / 'run-summary.json'}")
     return 2 if result == "FAIL" else 3 if result == "INCONCLUSIVE" else 0
 
 
@@ -606,8 +777,8 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return execute(args)
     except (RunnerError, OSError, ValueError, KeyError) as exc:
-        print(f"STOP：{exc}", file=sys.stderr)
-        print("保留 evidence；不自動 uninstall／pm clear／覆寫其他 IME 設定。", file=sys.stderr)
+        diagnostic(f"STOP：{exc}")
+        diagnostic("保留 evidence；不自動 uninstall／pm clear／覆寫其他 IME 設定。")
         return 1
 
 
