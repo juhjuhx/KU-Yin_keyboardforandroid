@@ -426,3 +426,17 @@ class ProgressConsoleFailureTests(unittest.TestCase):
                     except (OSError, device.RunnerError):
                         pass
                 self.assertEqual("original.ime/.Service", s.fake.states[0][0].strip())
+
+class FrozenHostArtifactTests(unittest.TestCase):
+    def test_host_bytes_cannot_be_replaced_by_rewriting_local_manifest(self):
+        with Session() as s:
+            name='acceptance-host-debug.apk'
+            path=s.package/name;path.write_bytes(b'changed host')
+            manifest_path=s.package/'artifact-manifest.json'; manifest=json.loads(manifest_path.read_text())
+            for item in manifest['artifacts']:
+                if item['file']==name:
+                    item['bytes']=path.stat().st_size;item['sha256']=device.sha256(path)
+            manifest_path.write_text(json.dumps(manifest))
+            with self.assertRaises(device.RunnerError):
+                s.execute('prepare')
+            self.assertEqual([],s.fake.mutations)

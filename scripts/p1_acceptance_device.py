@@ -41,6 +41,8 @@ EXPECTED_PACKAGES = {
 FROZEN = {
     "app-debug.apk": (29158832, "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9"),
     "app-debug-androidTest.apk": (965496, "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd"),
+    "acceptance-host-debug.apk": (861628, "8e53e8933e1b436b3192dab4319a7da1fe58e98afba038447924f51e1481d829"),
+    "acceptance-host-debug-androidTest.apk": (1028719, "5db907bd2e131742ce817139785d2f4a9a5cb7254ccd13839bfcbe6eb6277bd2"),
 }
 CASE_IDS = tuple(
     [f"A{i:02}" for i in range(1, 5)]
@@ -51,6 +53,11 @@ CASE_IDS = tuple(
 RESULTS = {"PASS", "FAIL", "INCONCLUSIVE", "NOT_TESTED"}
 STATE_NAME = "captured-state.json"
 CASE_PREFIX = "P1_ACCEPTANCE_CASE="
+EXPECTED_APP_TESTS = 5
+EXPECTED_HOST_TESTS = 26
+PROTOCOL_MANIFEST = Path(__file__).with_name("p1_instrumentation_manifest.json")
+# Versioned source contract for the frozen 6595b684 fixture; updates require review.
+CANONICAL_MANIFEST_SHA256 = "ccb2d32d62dd1aea5d84db2b7d53853c108b0f4dff99727dbe9d6c916fc9e8de"
 
 
 class RunnerError(Exception):
@@ -121,10 +128,12 @@ def verify_artifacts(package_dir: Path) -> dict[str, Any]:
         if entry.get("application_id") != EXPECTED_PACKAGES[name]:
             raise RunnerError(f"APK application_id 不符：{name}")
         if name in FROZEN and (size, digest) != FROZEN[name]:
-            raise RunnerError(f"frozen 產品／既有 test APK 不是核定 bytes：{name}")
+            raise RunnerError(f"frozen 四個 APK 不是核定 bytes：{name}")
         verified.append({"file": name, "bytes": size, "sha256": digest,
                          "application_id": entry["application_id"]})
+    instrumentation_manifest()
     return {"package_dir": str(package_dir), "manifest_sha256": sha256(manifest_path),
+            "instrumentation_manifest_sha256": sha256(PROTOCOL_MANIFEST),
             "artifacts": sorted(verified, key=lambda item: item["file"])}
 
 
@@ -406,94 +415,211 @@ def select(adb: Adb, state: dict[str, Any]) -> None:
     wait_for(adb, lambda: read_ime_state(adb)[0].strip() == IME, "KU-Yin selected")
 
 
+def instrumentation_manifest() -> dict[str, Any]:
+    try:
+        raw = PROTOCOL_MANIFEST.read_bytes()
+        if hashlib.sha256(raw).hexdigest() != CANONICAL_MANIFEST_SHA256:
+            raise ValueError("canonical frozen source contract digest mismatch")
+        value = json.loads(raw)
+        if value["schema"] != 1:
+            raise ValueError("schema")
+        for layer, count in (("app", EXPECTED_APP_TESTS), ("host", EXPECTED_HOST_TESTS)):
+            entries = value[layer]["tests"]
+            identities = [item["identity"] for item in entries]
+            if value[layer]["allow_skips"] is not (layer == "host"):
+                raise ValueError("skip policy")
+            if value[layer]["expected_count"] != count or len(entries) != count or len(set(identities)) != count:
+                raise ValueError("count／duplicate identity")
+            if any(not re.fullmatch(r"[A-Za-z0-9_.]+#[A-Za-z0-9_]+", name) for name in identities):
+                raise ValueError("test identity")
+            for item in entries:
+                cases = item["cases"]
+                if not isinstance(cases, list) or (layer == "host" and not cases) or (layer == "app" and cases) or any(case.get("case_id") not in CASE_IDS for case in cases):
+                    raise ValueError("case contract")
+        return value
+    except (OSError, ValueError, TypeError, KeyError) as exc:
+        raise RunnerError(f"instrumentation manifest 不可用：{exc}") from exc
+
+
 def parse_instrumentation(output: str, *, returncode: int = 0,
-                          expected_tests: int | None = None) -> dict[str, Any]:
-    """解析 AndroidJUnitRunner protocol；final -1 是正常成功，status -1 是 test error。"""
-    codes = [int(value) for value in re.findall(r"^INSTRUMENTATION_CODE:\s*(-?\d+)\s*$", output, re.M)]
-    blocks, fields, event_owners, active_test = [], {}, {}, None
-    for index, line in enumerate(output.splitlines()):
-        if CASE_PREFIX in line:
-            event_owners[index] = active_test
-        match = re.match(r"^INSTRUMENTATION_STATUS:\s*([^=]+)=(.*)$", line)
+                          expected_tests: int | None = None,
+                          expected_identities: list[str] | None = None,
+                          allow_skips: bool = False,
+                          case_contract: dict[str, list[dict[str, str]]] | None = None) -> dict[str, Any]:
+    """JUnit lifecycle + source-owned sendStatus(2) observations; final -1 succeeds."""
+    errors, case_errors, emissions = [], [], []
+    fields, completed, reported_counts, codes = {}, [], [], []
+    active, started, ended, observed = None, set(), set(), {}
+    terminal_seen = False
+    result_fields = {}
+
+    def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+        value = {}
+        for key, item in pairs:
+            if key in value:
+                raise ValueError("duplicate JSON key: " + key)
+            value[key] = item
+        return value
+
+    def case_key(value: dict[str, Any]) -> tuple[str, Any]:
+        return value['case_id'], value.get('subcase_id')
+
+    def record_case(payload: str) -> None:
+        try:
+            emission = json.loads(payload, object_pairs_hook=unique_object)
+            if not isinstance(emission, dict) or emission.get('case_id') not in CASE_IDS:
+                raise ValueError('未知／缺少 case_id')
+            if emission.get('result') not in RESULTS or not emission.get('scope') or not emission.get('evidence'):
+                raise ValueError('缺少合法 result／scope／evidence')
+            if 'subcase_id' in emission and not isinstance(emission['subcase_id'], str):
+                raise ValueError('subcase_id 必須是字串')
+            emission['junit_test'] = active
+            bundle_has_identity = 'class' in fields or 'test' in fields
+            bundle_matches = not bundle_has_identity or (bool(fields.get('class') and fields.get('test')) and fields['class'] + '#' + fields['test'] == active)
+            valid = active is not None and not terminal_seen and bundle_matches
+            if not valid:
+                errors.append('case emitted outside active test')
+            if case_contract is not None:
+                allowed = {case_key(item) for item in case_contract.get(active, [])}
+                if case_key(emission) not in allowed:
+                    valid = False
+                    errors.append(f'case owner／subcase contract mismatch: {active!r} {case_key(emission)!r}')
+            key = (active, *case_key(emission))
+            if key in observed:
+                valid = False
+                observed[key]['protocol_invalid'] = True
+                errors.append(f'duplicate case/subcase emission: {key!r}')
+            else:
+                observed[key] = emission
+            emission['protocol_invalid'] = not valid
+            emissions.append(emission)
+            if emission['result'] == 'FAIL':
+                errors.append('case reported FAIL')
+        except (ValueError, TypeError, KeyError) as exc:
+            case_errors.append(str(exc))
+
+    for line in output.splitlines():
+        if terminal_seen and (line.startswith('INSTRUMENTATION_') or CASE_PREFIX in line):
+            errors.append('protocol event after terminal result')
+        if CASE_PREFIX in line and not line.startswith('INSTRUMENTATION_STATUS: stream=' + CASE_PREFIX):
+            errors.append('case emitted outside sendStatus(2) stream bundle')
+        wire_patterns = (
+            r'INSTRUMENTATION_STATUS:\s*([^=]+)=(.*)',
+            r'INSTRUMENTATION_STATUS_CODE:\s*(-?\d+)\s*',
+            r'INSTRUMENTATION_RESULT:\s*([^=]+)=(.*)',
+            r'INSTRUMENTATION_CODE:\s*(-?\d+)\s*',
+        )
+        if line.startswith('INSTRUMENTATION_') and not any(re.fullmatch(pattern, line) for pattern in wire_patterns):
+            errors.append('malformed protocol control line: ' + line)
+        match = re.fullmatch(r'INSTRUMENTATION_STATUS:\s*([^=]+)=(.*)', line)
         if match:
-            fields[match.group(1).strip()] = match.group(2)
-        match = re.match(r"^INSTRUMENTATION_STATUS_CODE:\s*(-?\d+)\s*$", line)
+            name, value = match.group(1).strip(), match.group(2)
+            if not name:
+                errors.append('empty instrumentation bundle key')
+            if name in fields:
+                errors.append('duplicate instrumentation bundle key: ' + name)
+            fields[name] = value
+            if name == 'numtests':
+                if not re.fullmatch(r'[0-9]+', value):
+                    errors.append('invalid numtests')
+                else:
+                    reported_counts.append(int(value))
+        match = re.fullmatch(r'INSTRUMENTATION_RESULT:\s*([^=]+)=(.*)', line)
         if match:
-            block = {**fields, "status_code": int(match.group(1))}
-            blocks.append(block)
-            if block.get("class") and block.get("test"):
-                if block["status_code"] == 1:
-                    active_test = (block["class"], block["test"])
-                elif block["status_code"] in (0, -1, -2, -3, -4):
-                    active_test = None
+            name, value = match.group(1).strip(), match.group(2)
+            if not name or name in result_fields:
+                errors.append('empty／duplicate instrumentation result key')
+            result_fields[name] = value
+        match = re.fullmatch(r'INSTRUMENTATION_STATUS_CODE:\s*(-?\d+)\s*', line)
+        if match:
+            code = int(match.group(1))
+            stream = fields.get('stream', '')
+            if CASE_PREFIX in stream:
+                if code != 2 or not stream.startswith(CASE_PREFIX):
+                    errors.append('case observation requires status code 2 stream bundle')
+                else:
+                    record_case(stream[len(CASE_PREFIX):].strip())
+            identity = fields.get('class', '') + '#' + fields.get('test', '')
+            identified = bool(fields.get('class') and fields.get('test'))
+            if code == 1:
+                if not identified or active is not None or identity in started:
+                    errors.append('invalid／duplicate start or previous test unfinished')
+                if identified:
+                    started.add(identity)
+                    active = identity
+            elif code in (0, -1, -2, -3, -4):
+                if not identified or active != identity or identity in ended:
+                    errors.append('finish without matching unique start')
+                if identified:
+                    completed.append({'identity': identity, 'status_code': code})
+                    ended.add(identity)
+                if active == identity:
+                    active = None
+            elif code == 2:
+                if identified and active != identity:
+                    errors.append('status observation identity mismatch')
+            else:
+                errors.append('未知 instrumentation status code')
             fields = {}
-    reported_counts = [int(value) for value in re.findall(
-        r"^INSTRUMENTATION_STATUS:\s*numtests=(\d+)\s*$", output, re.M)]
-    banners = [int(value) for value in re.findall(r"\bOK \((\d+) tests?\)", output)]
-    failures = bool(re.search(
-        r"FAILURES!!!|INSTRUMENTATION_FAILED|INSTRUMENTATION_ABORTED|^Error:|"
-        r"^INSTRUMENTATION_RESULT:\s*(?:shortMsg|Error)=|Process crashed",
-        output, re.M))
-    completed = [block for block in blocks if block.get("class") and block.get("test")
-                 and block["status_code"] in (0, -1, -2, -3, -4)]
-    terminal = [block["status_code"] for block in completed]
+        match = re.fullmatch(r'INSTRUMENTATION_CODE:\s*(-?\d+)\s*', line)
+        if match:
+            codes.append(int(match.group(1)))
+            terminal_seen = True
+    if active is not None or started != ended or fields:
+        errors.append('premature EOF／unfinished JUnit lifecycle')
+    terminal = [item['status_code'] for item in completed]
     skipped = sum(code in (-3, -4) for code in terminal)
     failed = sum(code in (-1, -2) for code in terminal)
-    errors = []
-    if returncode != 0:
-        errors.append(f"adb_exit={returncode}")
+    banners = [int(value) for value in re.findall(
+        r'^(?:INSTRUMENTATION_RESULT:\s*stream=)?\s*OK \((\d+) tests?\)\s*$', output, re.M)]
+    if returncode:
+        errors.append(f'adb_exit={returncode}')
     if codes != [-1]:
-        errors.append(f"final_instrumentation_codes={codes!r}")
-    if failures or failed:
-        errors.append("instrumentation failure/error/crash")
-    if any(block["status_code"] not in (0, 1, 2, -1, -2, -3, -4) for block in blocks):
-        errors.append("未知 instrumentation status code")
-    if not terminal or not reported_counts or not banners:
-        errors.append("缺少 completed status／numtests／OK test summary")
-    if len({(block["class"], block["test"]) for block in completed}) != len(completed):
-        errors.append("重複的 JUnit terminal test identity")
-    if terminal and set(reported_counts) != {len(terminal)}:
-        errors.append("reported numtests 與實際 terminal test 數不符")
-    if len(banners) != 1 or banners[0] != len(terminal) - terminal.count(-3):
-        errors.append("OK summary 與實際 terminal／ignored 數不符")
+        errors.append(f'final_instrumentation_codes={codes!r}')
+    if failed or re.search(r'FAILURES!!!|INSTRUMENTATION_FAILED|INSTRUMENTATION_ABORTED|^Error:|'
+                           r'^INSTRUMENTATION_RESULT:\s*(?:shortMsg|Error)=|Process crashed', output, re.M):
+        errors.append('instrumentation failure/error/crash')
+    if not terminal or not reported_counts or set(reported_counts) != {len(terminal)}:
+        errors.append('reported numtests 與 completed tests 不符／缺失')
+    if len(ended) != len(completed):
+        errors.append('重複 JUnit terminal identity')
+    if banners != [len(terminal) - terminal.count(-3)]:
+        errors.append('OK summary 與 terminal／ignored count 不符')
     if expected_tests is not None:
-        if len(terminal) != expected_tests or set(reported_counts) != {expected_tests} or banners != [expected_tests]:
-            errors.append(f"必須實際完成 {expected_tests} tests")
-        if skipped:
-            errors.append("既有 5 tests 不得 skip／assumption")
-    result = "FAIL" if errors else "INCONCLUSIVE" if skipped else "PASS"
-    emissions, case_errors = [], []
-    test_status = {(block["class"], block["test"]): block["status_code"] for block in completed}
-    for index, line in enumerate(output.splitlines()):
-        if CASE_PREFIX not in line:
-            continue
-        payload = line.split(CASE_PREFIX, 1)[1].strip()
-        try:
-            emission = json.loads(payload)
-            if not isinstance(emission, dict) or emission.get("case_id") not in CASE_IDS:
-                raise ValueError("未知／缺少 case_id")
-            if emission.get("result") not in RESULTS:
-                raise ValueError("result 不是四種合法模型")
-            if not emission.get("scope") or not emission.get("evidence"):
-                raise ValueError("缺少 scope／evidence")
-            owner = event_owners.get(index)
-            emission["junit_test"] = "#".join(owner) if owner else None
-            emission["junit_terminal_status"] = test_status.get(owner)
-            emissions.append(emission)
-        except (ValueError, TypeError) as exc:
-            case_errors.append(str(exc))
-    if case_errors and result != "FAIL":
-        result = "INCONCLUSIVE"
-    return {"result": result, "completed_tests": len(terminal), "passed_tests": terminal.count(0),
-            "skipped_tests": skipped, "failed_tests": failed, "reported_counts": reported_counts,
-            "final_codes": codes, "errors": errors, "case_parse_errors": case_errors,
-            "case_emissions": emissions}
+        if len(terminal) != expected_tests or set(reported_counts) != {expected_tests}:
+            errors.append(f'必須實際完成 {expected_tests} tests')
+        if skipped and not allow_skips:
+            errors.append('此 layer 不得 skip／assumption')
+    if expected_identities is not None:
+        expected = set(expected_identities)
+        if ended != expected or len(completed) != len(expected_identities):
+            errors.append(f'JUnit identities 不符：missing={sorted(expected - ended)!r}; unexpected={sorted(ended - expected)!r}')
+    statuses = {item['identity']: item['status_code'] for item in completed}
+    for emission in emissions:
+        emission['junit_terminal_status'] = statuses.get(emission['junit_test'])
+    missing = []
+    if case_contract is not None:
+        for owner, requirements in case_contract.items():
+            for requirement in requirements:
+                observation = observed.get((owner, *case_key(requirement)))
+                if observation is None or observation.get('protocol_invalid'):
+                    missing.append({'junit_test': owner, **requirement})
+    if case_errors:
+        errors.extend('case parse: '+message for message in case_errors)
+    incomplete = bool(skipped or missing or any(item['result'] in ('INCONCLUSIVE', 'NOT_TESTED') for item in emissions))
+    result = 'FAIL' if errors else 'INCONCLUSIVE' if incomplete else 'PASS'
+    return {'result': result, 'completed_tests': len(terminal), 'passed_tests': terminal.count(0),
+            'skipped_tests': skipped, 'failed_tests': failed, 'reported_counts': reported_counts,
+            'final_codes': codes, 'errors': errors, 'case_parse_errors': case_errors,
+            'missing_required_cases': missing, 'case_emissions': emissions}
 
 
 def summarize_cases(emissions: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     rank = {"PASS": 0, "NOT_TESTED": 1, "INCONCLUSIVE": 2, "FAIL": 3}
     def observed_result(event: dict[str, Any]) -> str:
         result = event["result"]
+        if event.get("protocol_invalid"):
+            return "FAIL"
         if event.get("junit_terminal_status") in (-1, -2):
             return "FAIL"
         if result == "PASS" and "junit_terminal_status" in event and event["junit_terminal_status"] != 0:
@@ -710,14 +836,18 @@ def execute(args: argparse.Namespace) -> int:
         restore_commands(state, default, enabled)
         if default.strip() != IME or IME not in enabled_entries(enabled):
             raise RunnerError("run prerequisite：先明示 select KU-Yin；test 不自行 enable／set")
-        layers = [("existing-app-5-tests", APP_RUNNER, ["-e", "class", EXISTING_CLASSES], 5),
-                  ("acceptance-host-suite", HOST_RUNNER, [], None)]
-        for label, runner, extras, expected in layers:
+        manifest = instrumentation_manifest()
+        layers = [("existing-app-5-tests", APP_RUNNER, ["-e", "class", EXISTING_CLASSES], "app", EXPECTED_APP_TESTS),
+                  ("acceptance-host-suite", HOST_RUNNER, [], "host", EXPECTED_HOST_TESTS)]
+        for label, runner, extras, layer, expected in layers:
             outcome = adb.run(["shell", "am", "instrument", "--user", str(adb.android_user_id), "-w", "-r", *extras, runner],
                               timeout=args.instrumentation_timeout, check=False)
             output = outcome.stdout + "\n" + outcome.stderr
             (operation_dir / (label + ".txt")).write_text(output, encoding="utf-8")
-            parsed = parse_instrumentation(output, returncode=outcome.returncode, expected_tests=expected)
+            parsed = parse_instrumentation(output, returncode=outcome.returncode, expected_tests=expected,
+                                           expected_identities=[item["identity"] for item in manifest[layer]["tests"]],
+                                           allow_skips=manifest[layer]["allow_skips"],
+                                           case_contract={item["identity"]: item["cases"] for item in manifest[layer]["tests"]})
             suites.append({"layer": label, **parsed})
             emissions.extend(parsed["case_emissions"])
             progress(f"{label}: {parsed['result']}; completed={parsed['completed_tests']}; skipped={parsed['skipped_tests']}")

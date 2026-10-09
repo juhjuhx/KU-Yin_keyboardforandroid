@@ -18,6 +18,7 @@ class FakeAndroid:
         self.subtype_count = 0
         self.list_override = None
         self.unsupported = None
+        self.instrumentation_outputs = {}
         self.states = {user: ["original.ime/.Service\n", "original.ime/.Service\n", "-1\n"]}
         self.properties = {"ro.product.model": "Synthetic", "ro.product.manufacturer": "Fixture",
                            "ro.build.version.sdk": "36", "ro.product.cpu.abilist": "arm64-v8a",
@@ -70,7 +71,7 @@ class FakeAndroid:
                 output = "Input method operation successful\n"
             elif args[:3] == ["shell", "am", "instrument"]:
                 self.mutations.append(argv)
-                output = "INSTRUMENTATION_RESULT: shortMsg=synthetic failure\nINSTRUMENTATION_CODE: 0\n"
+                output = self.instrumentation_outputs.get(args[-1], "INSTRUMENTATION_RESULT: shortMsg=synthetic failure\nINSTRUMENTATION_CODE: 0\n")
             else:
                 raise AssertionError(f"Unknown fake command: {argv!r}")
         if self.unsupported and args[-1:] == ["help"] and args[1] == self.unsupported:

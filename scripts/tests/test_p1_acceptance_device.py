@@ -28,7 +28,7 @@ def instrumentation(codes=(0,), *, events=(), final=-1):
                   "INSTRUMENTATION_STATUS_CODE: 1"]
         if index < len(events):
             lines += ["INSTRUMENTATION_STATUS: stream=" + device.CASE_PREFIX + json.dumps(events[index]),
-                      "INSTRUMENTATION_STATUS_CODE: 0"]
+                      "INSTRUMENTATION_STATUS_CODE: 2"]
         lines += ["INSTRUMENTATION_STATUS: class=example.Tests",
                   f"INSTRUMENTATION_STATUS: test=test{index}",
                   f"INSTRUMENTATION_STATUS: numtests={len(codes)}",
@@ -95,7 +95,7 @@ class InstrumentationParserTest(unittest.TestCase):
 
     def test_malformed_case_never_counts_as_pass(self):
         output = instrumentation() + "\nP1_ACCEPTANCE_CASE={broken"
-        self.assertEqual("INCONCLUSIVE", device.parse_instrumentation(output)["result"])
+        self.assertEqual("FAIL", device.parse_instrumentation(output)["result"])
 
     def test_missing_emit_is_not_tested_and_scope_is_separate(self):
         events = [{"case_id": case, "result": "PASS", "scope": "observed UI", "evidence": "snapshot"}
