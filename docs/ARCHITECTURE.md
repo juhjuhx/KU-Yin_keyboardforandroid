@@ -13,6 +13,8 @@ KuYinInputMethodService
     ├── userPreferredMode/effectiveMode . forced editors override temporarily
     ├── KuYinEngine .................... presentation only: KeyboardMode,
     │                                     ShiftState, editor policy
+    ├── EditorEffectTracker ........... own composing offsets / acknowledged writes
+    ├── EnglishWordSession ............ bounded word buffer + offline EnglishLexicon
     └── ComposeDecoderSession .......... ALL Chinese state: preedit,
             │                             candidates, paging, selection,
             │                             space/enter/backspace/punct/reset
@@ -65,3 +67,16 @@ RecordingEditText 保留真實 editor InputConnection、消費並記錄 editor a
 以可見 UIAutomator 軟鍵 selector 控制外部 KU-Yin IME 視窗；host 不依賴產品、
 decoder、Compose 或 native。裝置 IME 狀態由固定 serial 的操作手冊／執行器管理，
 instrumentation 不自行接管預設輸入法。
+
+## P0-R 核心輸入（2026-10-10）
+
+- 原生pin維持3587ba33/a6a8fa4；conversion_engine=2啟用既有FuzzyPartialPrefix。production仍是libchewing，未接librime/Fcitx framework。完整研究與授權比較見 `review/p0-core-typing/03-decoder-comparison.md`。
+- live context擁有實際解碼；active replay history去除已auto-commit的prefix。候選查詢只操作不學習的derived preview context，讀出完整native buffer；scratch index不能盲用於live選字。已證實還原的pending key/Backspace逆操作可從active history消除，實際事件由synthetic test trace獨立保留。
+- EngineUpdate／ComposeImeState的unavailableReason使失敗可見；拒絕選字不能接著commit預設字。未完成的音節不能越過標點或模式切換。
+- candidate tap完成組字並依orderedCommits送出一次。Space/Enter先完成Chinese composition；English Space完成原typedword加一個separator，Enter先完成word。只有unconsumed Enter才呼叫normalized editor policy。
+- 服務擁有setComposingText/commitText/finishComposingText。EditorEffectTracker只保存offset/range，以connection+editor generation與bounded pendingtuple分辨自身通知；外部span失效或游標移動重置decoder。這不是通用OEM callback證明。
+- commit false/null connection保存未確認文字／ordered tail供手動核對，不automaticretry。普通欄位顯示錯誤；敏感欄位遮蔽，記憶體狀態不寫檔或log。AndroidIPC送入是否成功與實際editor文字是不同證據層。
+- EnglishLexicon是AOSP固定commit的10k frequency-score字表，獨立Kotlin prefix lookup，不含network/learning/autocorrect。資料及Apache2 notice隨asset分發，見 `assets/english/SOURCE.md` 及 `review/p0-core-typing/08-license-review.md`。
+- diagnostics僅synthetic test source/native host probe，記錄event、glyph/ASCII、provider、preedit/candidate identity、commit request/result及actualEditText delta；不編入產品／release，不記錄日常輸入。沒有雲端telemetry。
+
+English suggestions 額外尊重 `NO_SUGGESTIONS`／`AUTO_COMPLETE`；editor 自有完成與英文詞庫預測分開。這兩個旗標不禁用必要的中文 phonetic conversion；password／非文字／forceASCII composition policy 沿用 P1-C。

@@ -1,0 +1,48 @@
+{
+  "base_sha": "85711bc8c749d488923954e8f4c173a493bf27eb",
+  "product_sha": "75b93a3b68867fd6ec4c6adadd3e279d71e98104",
+  "product_diff_to_base": "EMPTY",
+  "results": [
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exit": 0,
+      "stdout": "85711bc8c749d488923954e8f4c173a493bf27eb\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "worktree",
+        "list",
+        "--porcelain"
+      ],
+      "exit": 0,
+      "stdout": "worktree /Users/huang/KU-Yin_keyboardforandroid\nHEAD fe1e96fb29ba2555b176b8889380a3ce9b2e9fb9\nbranch refs/heads/feat/mainline-docs-i18n\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline\nHEAD 3d86f7538c47dc929e25cdb0bd0755f8cc3bad60\ndetached\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch\nHEAD e72acb3d2ba1f58c25821d40dfb64bc54cee8c87\nbranch refs/heads/c4-compose-libchewing-switch\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/fix-pre-c4-production-hardening\nHEAD 3f0297652aa427666220885af976eeba53f95efe\nbranch refs/heads/fix/pre-c4-production-hardening\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline\nHEAD 3d86f7538c47dc929e25cdb0bd0755f8cc3bad60\ndetached\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p0-core-typing-recovery\nHEAD 85711bc8c749d488923954e8f4c173a493bf27eb\nbranch refs/heads/fix/p0-core-typing-recovery\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance\nHEAD 5c6bcad34c4048e40ce4e871e70e176c10195bcf\nbranch refs/heads/test/p1-alpha-acceptance\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture\nHEAD 4e70acdb2a7ee9751ee295171cc7ef6fc65b1f2f\nbranch refs/heads/test/p1-alpha-acceptance-fixture\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1a-native-startup-hardening\nHEAD 870fc03cbfe8e5107b8ff8dc13478ac7754eec9f\nbranch refs/heads/fix/p1-series-correctness\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy\nHEAD 94e91916d481959fb73e0adf37edb76764b26bed\nbranch refs/heads/fix/p1d-enter-policy\n\nworktree /Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1g-runner-safety\nHEAD 85711bc8c749d488923954e8f4c173a493bf27eb\nbranch refs/heads/fix/p1g-acceptance-runner-safety\n\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "-avv"
+      ],
+      "exit": 0,
+      "stdout": "+ c4-compose-libchewing-switch                         e72acb3 (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch) [origin/c4-compose-libchewing-switch: behind 37] C4-D2: decoder-agnostic UI wiring via DispatchResult sessions (Zhuyin wired, chewing ready)\n  feat/compose-mainline-v0.3                           696c9e8 [origin/feat/compose-mainline-v0.3] CI: run on JDK 21 to match verified local toolchain (Robolectric SDK 36 needs it)\n  feat/keyboard-shell-v0.2                             94dc7b6 [origin/feat/keyboard-shell-v0.2] fix(ci): use shipping application id in runtime smoke\n+ feat/mainline-docs-i18n                              fe1e96f (/Users/huang/KU-Yin_keyboardforandroid) [origin/feat/mainline-docs-i18n] Docs: detailed README plus JA/KO/RU/DE/FR/ES/PT translations, audit appendix, version follow-ups\n* fix/p0-core-typing-recovery                          85711bc docs: record P1-G safety review and package handoff\n+ fix/p1-series-correctness                            870fc03 (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1a-native-startup-hardening) docs: record P1-A through P1-C verification\n+ fix/p1d-enter-policy                                 94e9191 (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy) docs: record P1-D enter policy verification\n+ fix/p1g-acceptance-runner-safety                     85711bc (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1g-runner-safety) docs: record P1-G safety review and package handoff\n+ fix/pre-c4-production-hardening                      3f02976 (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/fix-pre-c4-production-hardening) [origin/fix/pre-c4-production-hardening] C3.5 tasks 5-9: tone-aware ranking, smoke identity, production contract, CI truthfulness\n  main                                                 653b4a3 [origin/main: behind 14] fix: restore real-device Dachen input and dark-mode Settings\n+ test/p1-alpha-acceptance                             5c6bcad (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance) docs: prepare P1 physical-device alpha acceptance\n+ test/p1-alpha-acceptance-fixture                     4e70acd (/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture) docs: update P1 Alpha acceptance fixture package\n  remotes/origin/HEAD                                  -> origin/main\n  remotes/origin/c4-compose-libchewing-switch          3d86f75 docs: ledger D3 engineering pass\n  remotes/origin/chore/repository-consolidation-v0.1.1 9e3ed35 chore: consolidate repository for v0.1.1-alpha\n  remotes/origin/design/keyboard-shell-v0.2            accf58e docs: tighten v0.2 state and release boundaries\n  remotes/origin/feat/compose-mainline-v0.3            696c9e8 CI: run on JDK 21 to match verified local toolchain (Robolectric SDK 36 needs it)\n  remotes/origin/feat/keyboard-shell-v0.2              94dc7b6 fix(ci): use shipping application id in runtime smoke\n  remotes/origin/feat/keyboard-shell-v0.2-red1         accf58e docs: tighten v0.2 state and release boundaries\n  remotes/origin/feat/mainline-docs-i18n               fe1e96f Docs: detailed README plus JA/KO/RU/DE/FR/ES/PT translations, audit appendix, version follow-ups\n  remotes/origin/fix/p0-real-device-input              f0f3e20 docs(release): record 0.1.2-alpha P0 fixes\n  remotes/origin/fix/pre-c4-production-hardening       3f02976 C3.5 tasks 5-9: tone-aware ranking, smoke identity, production contract, CI truthfulness\n  remotes/origin/main                                  73e810f Add TAUI workspace standalone handoff with redesign slices A-D\n",
+      "stderr": ""
+    }
+  ]
+}

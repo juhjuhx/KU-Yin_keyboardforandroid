@@ -1,4 +1,19 @@
-# CURRENT_STATE (what is true NOW — no future architecture here)
+# CURRENT_STATE（目前事實）
+
+## 2026-10-10：P0-R 優先於 P1-H／M4
+
+- 使用者回報正常中文輸入失敗，`PRODUCT_TYPING_ACCEPTANCE=FAIL_BY_USER_REPORT`；不得用歷史測試解除實機驗收。
+- 工作分支 `fix/p0-core-typing-recovery`，基於 `85711bc8c749d488923954e8f4c173a493bf27eb`；繼承產品來源 `75b93a3b68867fd6ec4c6adadd3e279d71e98104`。舊工區與凍結 v1/v2/v3 未修改。
+- 已找到 native live `cand_open` 清除未完成尾音、首次未完成音節隱藏候選、candidate tap只替換preedit未commit、重讀native commit、英文沒有wordbuffer等根因。
+- P0-R 使用同一 pin 的 libchewing FuzzyPartialPrefix；候選預覽在不學習的 disposable context，明確選字才操作live並核對native identity/完整buffer。UI按同snapshot index選取，不以label indexOf。
+- service以InputConnection投影組字、檢查commit acknowledgment、追蹤自身selection；寫入未確認時保存待核對文字並停止後續輸入，不盲目重送。敏感文字在錯誤區遮蔽。
+- EnglishWordSession＋AOSP固定來源10k離線詞頻提供prefix completion；沒有network suggestion／autocorrect／0.9B模型。敏感、forceASCII與非文字surface直接輸入，不做詞典查詢或學習。
+- 新Debug版本 `20002 / 0.2.0-p0r.1`；來源／APK hashes與最終實測以 `review/p0-core-typing/11-handoff.md` 為準。
+- 本輪 fresh App49類229測（真JNI editor五案0skip）、Host37測、Python104測、contracts10/10及Debug/build gates通過；獨立review以09為準。
+- 真pin host JNI與Robolectric真EditText分層驗證；fresh ADB無裝置，`RUNTIME=NOT_TESTED`、`PHYSICAL_ACCEPTANCE=OPEN`、`PRODUCTION_RELEASE=NOT_READY`、`M4=NOT_VALIDATED`。沒有push或Release簽章。
+- 新CoreTypingAcceptanceTest六案待實機；凍結P1-G runner僅適用原凍結APK，不能拿舊hash/舊B02/B03候選契約驗新P0 APK。
+
+## 下列為 P1 歷史基線證據（不代表目前 P0-R 已獲產品驗收）
 
 - Release: `v0.2.0-alpha.1` = old commit `278bcc2` (pre-C3.5; NOT this branch).
 - main: `73e810f` = old Android main + unrelated `taui-workspace/` web files.

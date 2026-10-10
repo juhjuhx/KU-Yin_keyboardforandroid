@@ -1,0 +1,1 @@
+{"version":"1.12.13 (fabbdb29)","command":"ocr llm test","exit":1,"provider":"anthropic","status":"BLOCKED_BY_PROVIDER","error":"HTTP 401 invalid x-api-key","request_id":"req_011CfskQf7f7gSGPApTUPDeT","session":null}
