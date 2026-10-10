@@ -16,8 +16,8 @@ android {
     applicationId = "io.github.juhjuhx.kuyin"
     minSdk = 24
     targetSdk = 36
-    versionCode = 20001
-    versionName = "0.2.0-alpha.1"
+    versionCode = 20002
+    versionName = "0.2.0-p0r.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     externalNativeBuild {
@@ -68,6 +68,14 @@ android {
   dependenciesInfo {
     includeInApk = false
     includeInBundle = true
+  }
+}
+
+// Explicit opt-in host-native gate; ordinary CI retains its JVM-only layer.
+tasks.withType<Test>().configureEach {
+  System.getenv("KUYIN_NATIVE_HOST_DIR")?.let {
+    jvmArgs("-Djava.library.path=$it")
+    systemProperty("kuyin.native.host.data", System.getenv("KUYIN_NATIVE_HOST_DATA") ?: "")
   }
 }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -31,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.example.ime.engine.*
 import com.example.ime.session.ComposeDecoderSession
 import com.example.ime.session.ImeCommand
+import com.example.ime.session.DispatchResult
+import com.example.ime.session.EnglishWordSession
 import com.example.ime.session.orderedCommits
 import com.example.ime.settings.KeyboardSettings
 
@@ -136,23 +139,54 @@ fun KuYinKeyboardUi(
     onOpenFeedback: () -> Unit = {},
     onUserModeSelected: (KeyboardMode) -> Unit = {},
     isActionPresentation: Boolean = actionLabel != "換行",
+    englishSession: EnglishWordSession? = null,
+    onComposingText: (String) -> Unit = {},
+    editorWriteFailure: String? = null,
+    onDismissEditorWriteFailure: () -> Unit = {},
+    shouldAcceptInput: () -> Boolean = { true },
 ) {
     val mode by engine.mode.collectAsState()
     val shiftState by engine.shiftState.collectAsState()
     val sessionState by session.state.collectAsState()
-    val composingZhuyin = sessionState.preedit
-    val candidates = sessionState.candidates
+    val englishState = englishSession?.state?.collectAsState()?.value
+    val composingZhuyin = if (mode == KeyboardMode.ENGLISH && englishState != null)
+        englishState.wordBuffer else sessionState.preedit
+    val candidates = if (mode == KeyboardMode.ENGLISH && englishState != null)
+        englishState.candidates else sessionState.candidates
 
-    val switchPresentationMode: (KeyboardMode) -> Unit = { mode ->
-        val result = session.dispatch(ImeCommand.Complete)
+    fun applyResult(result: DispatchResult, preedit: String) {
         orderedCommits(result).forEach(onCommitText)
-        onUserModeSelected(mode)
-        engine.setMode(mode)
+        onComposingText(preedit)
     }
-
-    val applyPunctuation: (String) -> Unit = { p ->
-        val result = session.dispatch(ImeCommand.Punctuation(p))
-        orderedCommits(result).forEach(onCommitText)
+    fun dispatchChinese(command: ImeCommand): DispatchResult {
+        if (!shouldAcceptInput()) return DispatchResult(null, true)
+        return session.dispatch(command).also { applyResult(it, session.state.value.preedit) }
+    }
+    fun dispatchEnglish(action: () -> DispatchResult): DispatchResult {
+        if (!shouldAcceptInput()) return DispatchResult(null, true)
+        return action().also { applyResult(it, englishSession?.state?.value?.wordBuffer.orEmpty()) }
+    }
+    fun commitLiteral(text: String) {
+        if (shouldAcceptInput()) onCommitText(text)
+    }
+    val switchPresentationMode: (KeyboardMode) -> Unit = switch@ { selectedMode ->
+        if (!shouldAcceptInput()) return@switch
+        if (mode == KeyboardMode.ENGLISH && englishSession != null)
+            dispatchEnglish { englishSession.complete() }
+        else {
+            dispatchChinese(ImeCommand.Complete)
+            if (session.state.value.preedit.isNotEmpty() || session.state.value.unavailableReason != null)
+                return@switch
+        }
+        if (shouldAcceptInput()) {
+            onUserModeSelected(selectedMode)
+            engine.setMode(selectedMode)
+        }
+    }
+    val applyPunctuation: (String) -> Unit = { punctuation ->
+        if (mode == KeyboardMode.ENGLISH && englishSession != null)
+            dispatchEnglish { englishSession.punctuation(punctuation) }
+        else dispatchChinese(ImeCommand.Punctuation(punctuation))
     }
 
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
@@ -174,6 +208,14 @@ fun KuYinKeyboardUi(
                 .fillMaxWidth()
                 .padding(bottom = 6.dp)
         ) {
+            if (editorWriteFailure != null) {
+                Text("編輯器未確認送出", color = keyTextPrimary)
+                Text(editorWriteFailure, color = keyTextPrimary, maxLines = 2)
+                TextButton(onClick = onDismissEditorWriteFailure) { Text("捨棄未確認文字") }
+            }
+            if (mode == KeyboardMode.ZHUYIN && sessionState.unavailableReason != null) {
+                Text(sessionState.unavailableReason.orEmpty(), color = keyTextPrimary)
+            }
             // 頂部候選字 / 狀態列
             CandidateBar(
                 composingZhuyin = composingZhuyin,
@@ -182,17 +224,23 @@ fun KuYinKeyboardUi(
                 isClipboardBarEnabled = settings.isClipboardBarEnabled,
                 theme = currentTheme,
                 mode = mode,
-                onCandidateClick = { candidate ->
+                onCandidateClick = { index ->
                     onFeedback()
-                    val index = session.state.value.candidates.indexOf(candidate)
-                    if (index >= 0) {
-                        orderedCommits(session.dispatch(ImeCommand.SelectCandidate(index)))
-                            .forEach(onCommitText)
+                    if (mode == KeyboardMode.ENGLISH && englishSession != null) {
+                        if (englishSession.state.value === englishState)
+                            dispatchEnglish { englishSession.select(index) }
+                    } else if (session.state.value === sessionState) {
+                        dispatchChinese(ImeCommand.SelectCandidate(index))
                     }
                 },
                 onClearComposing = {
                     onFeedback()
-                    session.dispatch(ImeCommand.ClearComposing)
+                    if (shouldAcceptInput()) {
+                        if (mode == KeyboardMode.ENGLISH && englishSession != null) {
+                            englishSession.reset()
+                            onComposingText("")
+                        } else dispatchChinese(ImeCommand.ClearComposing)
+                    }
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
@@ -200,7 +248,7 @@ fun KuYinKeyboardUi(
                 },
                 onPasteClipboard = { text ->
                     onFeedback()
-                    onCommitText(text)
+                    commitLiteral(text)
                 },
                 onHideKeyboard = onHideKeyboard,
                 onOpenFeedback = onOpenFeedback
@@ -226,24 +274,20 @@ fun KuYinKeyboardUi(
                         isActionPresentation = isActionPresentation,
                         onZhuyinPress = { key ->
                             onFeedback()
-                            orderedCommits(session.dispatch(ImeCommand.TapZhuyinKey(key)))
-                                .forEach(onCommitText)
+                            dispatchChinese(ImeCommand.TapZhuyinKey(key))
                         },
                         onSpacePress = {
                             onFeedback()
-                            orderedCommits(session.dispatch(ImeCommand.Space))
-                                .forEach(onCommitText)
+                            dispatchChinese(ImeCommand.Space)
                         },
                         onBackspacePress = {
                             onFeedback()
-                            val result = session.dispatch(ImeCommand.Backspace)
-                            orderedCommits(result).forEach(onCommitText)
+                            val result = dispatchChinese(ImeCommand.Backspace)
                             if (!result.consumed) onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
-                            val result = session.dispatch(ImeCommand.Enter)
-                            orderedCommits(result).forEach(onCommitText)
+                            val result = dispatchChinese(ImeCommand.Enter)
                             if (!result.consumed) onPerformEditorAction()
                         },
                         onSwitchToEnglish = {
@@ -275,7 +319,10 @@ fun KuYinKeyboardUi(
                         isActionPresentation = isActionPresentation,
                         onKeyPress = { char ->
                             onFeedback()
-                            engine.onEnglishKey(char, onCommitText)
+                            if (shouldAcceptInput()) engine.onEnglishKey(char) { typed ->
+                                if (englishSession == null) commitLiteral(typed)
+                                else dispatchEnglish { englishSession.typeText(typed) }
+                            }
                         },
                         onShiftPress = {
                             onFeedback()
@@ -283,15 +330,22 @@ fun KuYinKeyboardUi(
                         },
                         onSpacePress = {
                             onFeedback()
-                            onCommitText(" ")
+                            if (englishSession == null) commitLiteral(" ")
+                            else dispatchEnglish { englishSession.space() }
                         },
                         onBackspacePress = {
                             onFeedback()
-                            onDeleteSurroundingText()
+                            if (englishSession == null) {
+                                if (shouldAcceptInput()) onDeleteSurroundingText()
+                            } else if (!dispatchEnglish { englishSession.backspace() }.consumed)
+                                onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
-                            onPerformEditorAction()
+                            if (englishSession == null) {
+                                if (shouldAcceptInput()) onPerformEditorAction()
+                            } else if (!dispatchEnglish { englishSession.complete() }.consumed)
+                                onPerformEditorAction()
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
@@ -317,7 +371,7 @@ fun KuYinKeyboardUi(
                         isActionPresentation = isActionPresentation,
                         onSymbolPress = { symbol ->
                             onFeedback()
-                            onCommitText(symbol)
+                            commitLiteral(symbol)
                         },
                         onBackspacePress = {
                             onFeedback()
@@ -337,7 +391,7 @@ fun KuYinKeyboardUi(
                         },
                         onSpacePress = {
                             onFeedback()
-                            onCommitText(" ")
+                            commitLiteral(" ")
                         }
                     )
                 }
@@ -347,7 +401,7 @@ fun KuYinKeyboardUi(
                         keyTextPrimary = keyTextPrimary,
                         onEmojiPress = { emoji ->
                             onFeedback()
-                            onCommitText(emoji)
+                            commitLiteral(emoji)
                         },
                         onBackspacePress = {
                             onFeedback()
@@ -372,7 +426,7 @@ fun CandidateBar(
     isClipboardBarEnabled: Boolean = true,
     theme: KeyboardThemeColors? = null,
     mode: KeyboardMode,
-    onCandidateClick: (String) -> Unit,
+    onCandidateClick: (Int) -> Unit,
     onClearComposing: () -> Unit,
     onQuickPunctuation: (String) -> Unit,
     onPasteClipboard: (String) -> Unit = {},
@@ -441,11 +495,11 @@ fun CandidateBar(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items(candidates) { candidate ->
+                itemsIndexed(candidates) { index, candidate ->
                     Surface(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
-                            .clickable { onCandidateClick(candidate) },
+                            .clickable { onCandidateClick(index) },
                         color = candidateCardBg,
                         border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
                     ) {

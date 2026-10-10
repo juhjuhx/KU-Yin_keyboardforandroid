@@ -21,18 +21,23 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
             candidates = update.candidates,
             canPageBackward = engine.canPageCandidatesBackward(),
             canPageForward = engine.canPageCandidatesForward(),
-            candidatesExpanded = _state.value.candidatesExpanded
+            candidatesExpanded = _state.value.candidatesExpanded,
+            generation = _state.value.generation + 1,
+            unavailableReason = update.unavailableReason,
         )
         return DispatchResult(update.committedText.takeIf { it.isNotEmpty() }, update.consumed)
     }
 
     private fun resetState() {
-        _state.value = ComposeImeState(candidatesExpanded = _state.value.candidatesExpanded)
+        _state.value = ComposeImeState(candidatesExpanded = _state.value.candidatesExpanded,
+            generation = _state.value.generation + 1)
     }
 
     private fun completeComposition(): DispatchResult {
         if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
-        return project(engine.commitUpdate())
+        // Once composition exists, failed completion must never fall through
+        // to SEND/newline on the same press.
+        return project(engine.commitUpdate()).copy(consumed = true)
     }
 
     override fun dispatch(command: ImeCommand): DispatchResult {
@@ -45,7 +50,12 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
                 if (command.index !in _state.value.candidates.indices) {
                     return DispatchResult(null, false)
                 }
-                return project(engine.selectCandidateUpdate(command.index))
+                val selected = engine.selectCandidateUpdate(command.index)
+                // Native choice replaces the composing interval; it is not yet
+                // an Android editor write. A visible candidate tap completes it.
+                if (!selected.consumed || selected.unavailableReason != null || selected.committedText.isNotEmpty() ||
+                    selected.preedit.isEmpty()) return project(selected)
+                return project(engine.commitUpdate())
             }
             ImeCommand.Backspace -> return project(engine.backspaceUpdate())
             ImeCommand.Space -> {
@@ -55,6 +65,8 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
             is ImeCommand.Punctuation -> {
                 if (_state.value.preedit.isEmpty()) return DispatchResult(command.text, true)
                 val flushed = project(engine.commitUpdate())
+                if (_state.value.preedit.isNotEmpty() || _state.value.unavailableReason != null)
+                    return flushed.copy(consumed = true)
                 return DispatchResult(flushed.commitText, true, listOf(command.text))
             }
             ImeCommand.Enter, ImeCommand.Complete -> return completeComposition()

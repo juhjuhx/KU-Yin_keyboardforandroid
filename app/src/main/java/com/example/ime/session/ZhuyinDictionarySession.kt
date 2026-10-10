@@ -22,7 +22,8 @@ class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderS
             candidates = engine.candidates.value,
             canPageBackward = false,
             canPageForward = false,
-            candidatesExpanded = _state.value.candidatesExpanded
+            candidatesExpanded = _state.value.candidatesExpanded,
+            generation = _state.value.generation + 1,
         )
     }
 

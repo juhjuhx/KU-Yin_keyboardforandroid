@@ -7,7 +7,9 @@ data class ComposeImeState(
     val candidates: List<String> = emptyList(),
     val canPageBackward: Boolean = false,
     val canPageForward: Boolean = false,
-    val candidatesExpanded: Boolean = false
+    val candidatesExpanded: Boolean = false,
+    val generation: Long = 0L,
+    val unavailableReason: String? = null,
 )
 
 sealed interface ImeCommand {

@@ -6,6 +6,7 @@ data class EngineUpdate(
     val preedit: String,
     val candidates: List<String>,
     val committedText: String,
+    val unavailableReason: String? = null,
 )
 
 /**

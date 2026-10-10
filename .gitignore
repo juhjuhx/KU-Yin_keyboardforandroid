@@ -24,6 +24,9 @@ app/src/main/jniLibs/
 # Pinned native deps and downloaded dictionaries (regenerated via scripts/bootstrap_native_deps.sh)
 app/src/main/cpp/.deps/
 app/src/main/assets/
+!app/src/main/assets/
+app/src/main/assets/*
+!app/src/main/assets/english/
 
 # macOS metadata
 .DS_Store

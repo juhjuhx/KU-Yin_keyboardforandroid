@@ -1,5 +1,9 @@
 #include <jni.h>
 #include <cstdint>
+#include <cstring>
+#include <limits>
+#include <string>
+#include <vector>
 #include <chewing.h>
 
 namespace {
@@ -10,6 +14,46 @@ inline ChewingContext *contextFrom(jlong handle) {
 
 inline jlong handleFrom(ChewingContext *ctx) {
     return static_cast<jlong>(reinterpret_cast<intptr_t>(ctx));
+}
+
+// libchewing returns standard UTF-8. NewStringUTF expects JNI Modified UTF-8,
+// which cannot represent a four-byte supplementary-plane character directly.
+jstring utf8String(JNIEnv *env, const char *text) {
+    const size_t size = text ? std::strlen(text) : 0;
+    if (size > static_cast<size_t>(std::numeric_limits<jsize>::max())) {
+        jclass error = env->FindClass("java/lang/IllegalArgumentException");
+        if (error) {
+            env->ThrowNew(error, "libchewing UTF-8 output exceeds Java array size");
+            env->DeleteLocalRef(error);
+        }
+        return nullptr;
+    }
+    jclass string_class = env->FindClass("java/lang/String");
+    if (!string_class) return nullptr;
+    jmethodID constructor = env->GetMethodID(string_class, "<init>", "([BLjava/lang/String;)V");
+    if (!constructor) {
+        env->DeleteLocalRef(string_class);
+        return nullptr;
+    }
+    jbyteArray bytes = env->NewByteArray(static_cast<jsize>(size));
+    if (!bytes) {
+        env->DeleteLocalRef(string_class);
+        return nullptr;
+    }
+    if (size > 0) {
+        env->SetByteArrayRegion(bytes, 0, static_cast<jsize>(size), reinterpret_cast<const jbyte *>(text));
+    }
+    if (env->ExceptionCheck()) {
+        env->DeleteLocalRef(bytes);
+        env->DeleteLocalRef(string_class);
+        return nullptr;
+    }
+    jstring encoding = env->NewStringUTF("UTF-8"); // ASCII, valid Modified UTF-8.
+    jstring result = encoding ? static_cast<jstring>(env->NewObject(string_class, constructor, bytes, encoding)) : nullptr;
+    if (encoding) env->DeleteLocalRef(encoding);
+    env->DeleteLocalRef(bytes);
+    env->DeleteLocalRef(string_class);
+    return result;
 }
 
 }  // namespace
@@ -71,9 +115,9 @@ JNIEXPORT jstring JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1buffer_1string_1static(
     JNIEnv *env, jobject, jlong handle) {
     auto *ctx = contextFrom(handle);
-    if (!ctx) return env->NewStringUTF("");
+    if (!ctx) return utf8String(env, "");
     const char *text = chewing_buffer_String_static(ctx);
-    return env->NewStringUTF(text ? text : "");
+    return utf8String(env, text);
 }
 
 JNIEXPORT jint JNICALL
@@ -87,9 +131,9 @@ JNIEXPORT jstring JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1bopomofo_1string_1static(
     JNIEnv *env, jobject, jlong handle) {
     auto *ctx = contextFrom(handle);
-    if (!ctx) return env->NewStringUTF("");
+    if (!ctx) return utf8String(env, "");
     const char *text = chewing_bopomofo_String_static(ctx);
-    return env->NewStringUTF(text ? text : "");
+    return utf8String(env, text);
 }
 
 JNIEXPORT jint JNICALL
@@ -147,7 +191,7 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1c
     auto *ctx = contextFrom(handle);
     if (!ctx) return nullptr;
     const char *text = chewing_cand_string_by_index_static(ctx, index);
-    return text ? env->NewStringUTF(text) : nullptr;
+    return text ? utf8String(env, text) : nullptr;
 }
 
 JNIEXPORT jint JNICALL
@@ -168,9 +212,9 @@ JNIEXPORT jstring JNICALL
 Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1commit_1string_1static(
     JNIEnv *env, jobject, jlong handle) {
     auto *ctx = contextFrom(handle);
-    if (!ctx) return env->NewStringUTF("");
+    if (!ctx) return utf8String(env, "");
     const char *text = chewing_commit_String_static(ctx);
-    return env->NewStringUTF(text ? text : "");
+    return utf8String(env, text);
 }
 
 JNIEXPORT jint JNICALL
@@ -210,6 +254,67 @@ Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1g
     JNIEnv *, jobject, jlong handle) {
     auto *ctx = contextFrom(handle);
     return ctx ? static_cast<jint>(chewing_get_autoLearn(ctx)) : -1;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1config_1set_1int(
+    JNIEnv *env, jobject, jlong handle, jstring option, jint value) {
+    auto *ctx = contextFrom(handle);
+    if (!ctx || !option) return -1;
+    const char *name = env->GetStringUTFChars(option, nullptr);
+    if (!name) return -1;
+    const int result = chewing_config_set_int(ctx, name, value);
+    env->ReleaseStringUTFChars(option, name);
+    return static_cast<jint>(result);
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1clean_1bopomofo_1buf(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_clean_bopomofo_buf(ctx)) : -1;
+}
+
+JNIEXPORT jint JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1get_1phone_1seq_1len(
+    JNIEnv *, jobject, jlong handle) {
+    auto *ctx = contextFrom(handle);
+    return ctx ? static_cast<jint>(chewing_get_phoneSeqLen(ctx)) : 0;
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1ack(
+    JNIEnv *, jobject, jlong handle) {
+    if (auto *ctx = contextFrom(handle)) chewing_ack(ctx);
+}
+
+JNIEXPORT jobjectArray JNICALL
+Java_com_example_androidkeyboard_engines_android_AndroidChewingEngine_chewing_1cand_1strings(
+    JNIEnv *env, jobject, jlong handle) {
+    std::vector<std::string> candidates;
+    if (auto *ctx = contextFrom(handle)) {
+        // Enumerate once: by-index static recomputes the entire fuzzy lookup
+        // for every index, which becomes quadratic for incomplete syllables.
+        chewing_cand_Enumerate(ctx);
+        while (chewing_cand_hasNext(ctx) > 0) {
+            const char *text = chewing_cand_String_static(ctx);
+            candidates.emplace_back(text ? text : "");
+        }
+    }
+    jclass string_class = env->FindClass("java/lang/String");
+    if (!string_class) return nullptr;
+    jobjectArray result = env->NewObjectArray(
+        static_cast<jsize>(candidates.size()), string_class, nullptr);
+    env->DeleteLocalRef(string_class);
+    if (!result) return nullptr;
+    for (jsize i = 0; i < static_cast<jsize>(candidates.size()); ++i) {
+        jstring text = utf8String(env, candidates[i].c_str());
+        if (!text) return nullptr;
+        env->SetObjectArrayElement(result, i, text);
+        env->DeleteLocalRef(text);
+        if (env->ExceptionCheck()) return nullptr;
+    }
+    return result;
 }
 
 }  // extern "C"

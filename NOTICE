@@ -30,3 +30,11 @@ This file records production dependencies and major reference sources. It does n
 KU-Yin repository license: GNU LGPL 2.1 (`LICENSE`).
 
 Because the Android native flow currently consumes static libchewing archives when producing the JNI library, distributors should independently verify LGPL source-availability and relinking obligations for the way they distribute binaries. Exact source/prebuilt revisions and build scripts are provided to improve auditability.
+
+P0-R English lexical data
+-------------------------
+Includes a filtered 10,000-word derivative of AOSP LatinIME en_wordlist.combined.gz
+at commit 127336e9f29d69607eab55982324b210279ae8c5, under Apache License 2.0.
+Original copyright/NOTICE, complete license and reproducible filtering provenance
+are included in app/src/main/assets/english/{NOTICE,LICENSE-Apache-2.0.txt,SOURCE.md}.
+No LatinIME implementation code, HeliBoard GPL code, or Rime schemas were copied.

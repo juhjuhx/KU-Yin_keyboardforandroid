@@ -28,6 +28,7 @@ data class EditorPolicy(
     val allowComposition: Boolean,
     val forceAscii: Boolean,
     val action: EditorAction,
+    val allowEnglishSuggestions: Boolean = allowCandidates,
 ) {
     companion object {
         fun from(inputType: Int, imeOptions: Int): EditorPolicy {
@@ -47,6 +48,9 @@ data class EditorPolicy(
             val noPersonalizedLearning =
                 imeOptions and EditorInfo.IME_FLAG_NO_PERSONALIZED_LEARNING != 0
             val supportsChewing = inputClass == InputType.TYPE_CLASS_TEXT && !isSensitive && !forceAscii
+            val editorOwnsOrSuppressesSuggestions = inputType and (
+                InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS or InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE
+            ) != 0
 
             return EditorPolicy(
                 isSensitive = isSensitive,
@@ -55,6 +59,9 @@ data class EditorPolicy(
                 allowComposition = supportsChewing,
                 forceAscii = forceAscii,
                 action = normalizeAction(imeOptions),
+                // Chinese conversion remains necessary; English lexical
+                // suggestions are distinct from the editor's own completions.
+                allowEnglishSuggestions = supportsChewing && !editorOwnsOrSuppressesSuggestions,
             )
         }
 
