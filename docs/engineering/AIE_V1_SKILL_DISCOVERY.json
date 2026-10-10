@@ -1,0 +1,160 @@
+{
+  "roots": {
+    "/Users/huang/.agents/skills": 344,
+    "/Users/huang/.claude/skills": 285,
+    "/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills": 15,
+    "/Users/huang/.codex/skills": 255,
+    "/Users/huang/.config/opencode/skills": 312,
+    "/Users/huang/.opencode/skills": 30
+  },
+  "missing_roots": [
+    "/Users/huang/.opencode/skills"
+  ],
+  "catalog_sha256": "fbb90716e2de9eba69f443cc323020663c1d2f01f4f487c99da0c94e5d5be128",
+  "addy_entries": [
+    {
+      "name": "addyosmani-api-and-interface-design",
+      "path": "/Users/huang/.agents/skills/addyosmani-api-and-interface-design/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-api-and-interface-design/SKILL.md",
+      "sha256": "922c3d499252079f6f4f2ae9c932d8cd05993c9a72b465b892c59975e59b6c29"
+    },
+    {
+      "name": "addyosmani-browser-testing-with-devtools",
+      "path": "/Users/huang/.agents/skills/addyosmani-browser-testing-with-devtools/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-browser-testing-with-devtools/SKILL.md",
+      "sha256": "5c5a98ff9c509539f7de2ca7638587a48d4678c0396a45371dddf9c77a30a4e5"
+    },
+    {
+      "name": "addyosmani-ci-cd-and-automation",
+      "path": "/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md",
+      "sha256": "067d15958ad69341fe37600be810e7a19f884fa67045385e48fd41c25dbd8e7d"
+    },
+    {
+      "name": "addyosmani-code-review-and-quality",
+      "path": "/Users/huang/.agents/skills/addyosmani-code-review-and-quality/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-code-review-and-quality/SKILL.md",
+      "sha256": "93e60cde419b1e18bc9055e8a9fd76a5aeb3836806b3407e5a4802459c4314fb"
+    },
+    {
+      "name": "addyosmani-code-simplification",
+      "path": "/Users/huang/.agents/skills/addyosmani-code-simplification/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-code-simplification/SKILL.md",
+      "sha256": "5917c8224f345d2ba2c28ab7d084a738fcc29c628b9eaccf83c8ba85d02cf4fd"
+    },
+    {
+      "name": "addyosmani-context-engineering",
+      "path": "/Users/huang/.agents/skills/addyosmani-context-engineering/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-context-engineering/SKILL.md",
+      "sha256": "1ddb30d5ff1f07b2056e76754b302d5a67cb33423bc698343bac0ceb5df212c3"
+    },
+    {
+      "name": "addyosmani-debugging-and-error-recovery",
+      "path": "/Users/huang/.agents/skills/addyosmani-debugging-and-error-recovery/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-debugging-and-error-recovery/SKILL.md",
+      "sha256": "3908746ea39a4c23f3df27a7faa04540ad7834332e0f534922fbfffec630ec54"
+    },
+    {
+      "name": "addyosmani-deprecation-and-migration",
+      "path": "/Users/huang/.agents/skills/addyosmani-deprecation-and-migration/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-deprecation-and-migration/SKILL.md",
+      "sha256": "5467c9d11ec40603def930d2ade08cd2dd71e45ead9671b408ccfd94e230e3ea"
+    },
+    {
+      "name": "addyosmani-documentation-and-adrs",
+      "path": "/Users/huang/.agents/skills/addyosmani-documentation-and-adrs/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-documentation-and-adrs/SKILL.md",
+      "sha256": "3e161ec612a3f216ff3c5cfd498779ab23bb0d760150c8105f018c3ed63a4552"
+    },
+    {
+      "name": "addyosmani-doubt-driven-development",
+      "path": "/Users/huang/.agents/skills/addyosmani-doubt-driven-development/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-doubt-driven-development/SKILL.md",
+      "sha256": "6f123b34da32ea70321f0231cb642f958018b88a88bfdade2ab4b11351bc6179"
+    },
+    {
+      "name": "addyosmani-frontend-ui-engineering",
+      "path": "/Users/huang/.agents/skills/addyosmani-frontend-ui-engineering/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-frontend-ui-engineering/SKILL.md",
+      "sha256": "574a4cf8afce79e18cb5ee8a0a084cd44c49e7d23cd1266f9b8c10ac1f1ad92a"
+    },
+    {
+      "name": "addyosmani-git-workflow-and-versioning",
+      "path": "/Users/huang/.agents/skills/addyosmani-git-workflow-and-versioning/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-git-workflow-and-versioning/SKILL.md",
+      "sha256": "0631680069c5aa1a5ac327c01fc37b53013b23fd56b80bf30481097839d6444e"
+    },
+    {
+      "name": "addyosmani-idea-refine",
+      "path": "/Users/huang/.agents/skills/addyosmani-idea-refine/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-idea-refine/SKILL.md",
+      "sha256": "ac7aa49121d63d9dee6bbca73796b9fec1b9926c69f3c4e9b1b77392593318b4"
+    },
+    {
+      "name": "addyosmani-incremental-implementation",
+      "path": "/Users/huang/.agents/skills/addyosmani-incremental-implementation/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-incremental-implementation/SKILL.md",
+      "sha256": "f3287012314c8867908690a58c9a290083c5eea55aff74ff48c48b3fc5481dca"
+    },
+    {
+      "name": "addyosmani-interview-me",
+      "path": "/Users/huang/.agents/skills/addyosmani-interview-me/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-interview-me/SKILL.md",
+      "sha256": "0eea1dc3ddcb8f44c9f9f5036a0be1defed5a173bd2f8849512287cae0f584b2"
+    },
+    {
+      "name": "addyosmani-observability-and-instrumentation",
+      "path": "/Users/huang/.agents/skills/addyosmani-observability-and-instrumentation/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-observability-and-instrumentation/SKILL.md",
+      "sha256": "99e1024c67ce3c2410b356444ce5784301922ec044d9a022b2d121b729108c55"
+    },
+    {
+      "name": "addyosmani-performance-optimization",
+      "path": "/Users/huang/.agents/skills/addyosmani-performance-optimization/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-performance-optimization/SKILL.md",
+      "sha256": "ebdb3b9156f5704e8200e186aacc07f643875283368a1baddacb3ef5acf1ec59"
+    },
+    {
+      "name": "addyosmani-planning-and-task-breakdown",
+      "path": "/Users/huang/.agents/skills/addyosmani-planning-and-task-breakdown/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-planning-and-task-breakdown/SKILL.md",
+      "sha256": "019f5ea92c7195090d449d24bbec7d7156220b064e8e584f060932dc8bf19218"
+    },
+    {
+      "name": "addyosmani-security-and-hardening",
+      "path": "/Users/huang/.agents/skills/addyosmani-security-and-hardening/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-security-and-hardening/SKILL.md",
+      "sha256": "966cda61759b22683e57216a435baf4f586f4af48787db4e47cc66ee8830d164"
+    },
+    {
+      "name": "addyosmani-shipping-and-launch",
+      "path": "/Users/huang/.agents/skills/addyosmani-shipping-and-launch/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-shipping-and-launch/SKILL.md",
+      "sha256": "9ef215b2c69d03b29dd9c804af51f57a8d7294da0e9a1097980805300c76de34"
+    },
+    {
+      "name": "addyosmani-source-driven-development",
+      "path": "/Users/huang/.agents/skills/addyosmani-source-driven-development/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-source-driven-development/SKILL.md",
+      "sha256": "43721639846981b90bda48b13c9bebf55a6713bf3fb0b29e4893e5a3fad44807"
+    },
+    {
+      "name": "addyosmani-spec-driven-development",
+      "path": "/Users/huang/.agents/skills/addyosmani-spec-driven-development/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-spec-driven-development/SKILL.md",
+      "sha256": "8fe53e03f867dc4171e79409d7c2cc81a108675cb69e3e831ddb925f1df814be"
+    },
+    {
+      "name": "addyosmani-test-driven-development",
+      "path": "/Users/huang/.agents/skills/addyosmani-test-driven-development/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-test-driven-development/SKILL.md",
+      "sha256": "7ed60a671ac495ce3f38158f7b71576c0a41ef4393f14cbbae6e3c99cf73e432"
+    },
+    {
+      "name": "addyosmani-using-agent-skills",
+      "path": "/Users/huang/.agents/skills/addyosmani-using-agent-skills/SKILL.md",
+      "realpath": "/Users/huang/.agents/skills/addyosmani-using-agent-skills/SKILL.md",
+      "sha256": "a648821af4458eaec71ab2aa848ff29f33f82b2be6dbde5ec09fb6e8916eb2eb"
+    }
+  ]
+}

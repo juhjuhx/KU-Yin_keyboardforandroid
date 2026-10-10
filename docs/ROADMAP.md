@@ -1,12 +1,16 @@
 # Roadmap (FUTURE work only; done items live in HISTORY/CURRENT_STATE)
 
+## 目前 AIE V1（2026-10-11）
+
+P0-R user basic typing可用；先AIE審查與候選UX批准，再逐片瀏覽／取得排名／學習／touch／symbols／device與release。精確entry/exit/test/rollback見 `roadmap/AIE_V1_ROADMAP.md`。没有自動M4、decoder切換或公開發布授權。下列舊C4路線保留歷史；不是重做已经完成的P1/P0要求。
+
 ## DONE (do not re-plan)
 
 - applicationId migration → `io.github.juhjuhx.kuyin` (shipped in build file)
 - SDK modernization → JDK21/Gradle9/AGP9/Kotlin2.2/compile-target36/NDK28.2 (shipped)
 - C4-D2 decoder sessions + D2.5 state ownership (branch work, SDK verification pending)
 
-## CURRENT
+## Historical C4 CURRENT（以下保留當時狀態，非目前任務）
 
 - D2.5 SDK gate: JVM + assembleDebug + runtime smoke on exact candidate SHA
 - D3 production libchewing switch (needs D2.5 PASS + human authorization)

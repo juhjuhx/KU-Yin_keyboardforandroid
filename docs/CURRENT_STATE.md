@@ -1,5 +1,16 @@
 # CURRENT_STATE（目前事實）
 
+## 2026-10-11：AIE V1 審查／使用者 P0-R 復驗
+
+- 使用者已在Android手機測P0-R，回報基本中文正常：`BASIC_TYPING=WORKS_ON_USER_DEVICE`。這更新先前「待使用者復驗」狀態，但沒有完整30-case／已裝base.apk byte核對。
+- AIE審查工區 `docs/aie-v1-engineering-review`，base `3072affee95fa7fa8b0016ad85aac322272e4dea`，product `9f5db676a17b5770a738b5c20da937f9211e5a34`；本輪沒有產品修改或新APK。
+- 已確認候選UI未接native paging/expand、preedit佔寬、preview不讀personal字典；既有「重設學習」只清fallback是HIGH，未修復、未刪真userdict。
+- 深讀與issueledger：`research/AIE_V1_DEEP_UNDERSTANDING.md`、`research/AIE_V1_ISSUE_LEDGER.md`；roadmap：`roadmap/AIE_V1_ROADMAP.md`。
+- UX待批准，`FIRST_APPROVED_SLICE=NONE`；architecture/ranking/privacy/touch/symbol皆提案，現有Compose/donation/community/credits/Dachen與libchewing保持。
+- 三read-only獨立review回傳部分findings後usage-limit中斷，沒有finalapprove。OCR真health仍401；不聲稱完整獨立簽核或OCR PASS。
+- full physical acceptance仍OPEN，production release NOT_READY，M4 NOT_VALIDATED；沒有push/merge/publish。下列P0與P1數據為歷史時間點證據，不能取代本輪使用者回報或新的device matrix。
+
+
 ## 2026-10-10：P0-R 優先於 P1-H／M4
 
 - 使用者回報正常中文輸入失敗，`PRODUCT_TYPING_ACCEPTANCE=FAIL_BY_USER_REPORT`；不得用歷史測試解除實機驗收。

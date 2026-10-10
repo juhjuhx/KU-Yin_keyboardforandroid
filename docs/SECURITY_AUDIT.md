@@ -46,3 +46,9 @@ The normative current decoder is ChewingEngineSession with startup-only dictiona
 fallback (CURRENT_STATE/ARCHITECTURE); the data-flow sketch above is the historical
 D2.5 audit context. Physical P1 runtime/security coverage remains NOT_TESTED.
 Evidence: `review/2026-10-07-p1-alpha/產品APK核對.json` and `合併權限來源.txt`.
+
+## 2026-10-11 AIE source review（不是完整security certification）
+
+先前summary中dual-learning/B8是歷史描述：現行production是native，fallback只在startupfailure。AIE已確認MainActivity reset只清fallbackprefs、未nativeuserdict卻報成功（HIGH）；發布前須isolatedrepair與真實store測試。nativeauto-learn先於editorACK是當前时序，futureexternallearning要防doublecount，未宣稱這已導致重復commit。
+
+本輪未改privacydefaults/source/permissions。private mode、統一erase、touch consent、export/migrations未實作；具體按 `research/AIE_V1_PRIVACY_MATRIX.md` 與 `release/RELEASE_READINESS.md`。OCR401 blocked，獨立review僅部分findings没有final signoff。

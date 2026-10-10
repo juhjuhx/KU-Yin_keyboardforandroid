@@ -80,3 +80,9 @@ instrumentation 不自行接管預設輸入法。
 - diagnostics僅synthetic test source/native host probe，記錄event、glyph/ASCII、provider、preedit/candidate identity、commit request/result及actualEditText delta；不編入產品／release，不記錄日常輸入。沒有雲端telemetry。
 
 English suggestions 額外尊重 `NO_SUGGESTIONS`／`AUTO_COMPLETE`；editor 自有完成與英文詞庫預測分開。這兩個旗標不禁用必要的中文 phonetic conversion；password／非文字／forceASCII composition policy 沿用 P1-C。
+
+## AIE V1（2026-10-11，提案邊界）
+
+現有P0-R runtime架構保留。新的candidate presentation/retrieval/ranking、learning、touchresolver與symbolrepo圖是PROPOSED，見 `engineering/AIE_V1_ARCHITECTURE.md`，並非已存在runtime。ADR0006尚待UX答案，不能據舊M4視覺授權重設品牌。native live為persistent唯一owner，derived scratch只是查詢投影；舊ADR0003的per-key禁止不應誤解為移除安全preview。
+
+現行學習是productionnative或startupfallback各自store；設定頁reset未涵蓋native為已確認HIGH。任何futureexternallearning需避免對nativeauto-learn重複計次；見privacy matrix與issueledger。
