@@ -5,11 +5,11 @@
 [USER] basic Chinese typing works / full hardware matrix OPEN
    │
    ├─ [DONE] AIE source audit / evidence / provisional roadmap
-   ├─ [PARTIAL] independent reviews (usage-limit) / OCR401
-   └─ [WAIT USER A] candidate UX
+   ├─ [DONE S0] independent safety mitigation / [S1] fresh final review; OCR401
+   └─ [APPROVED A] single row + expanded grid
           │
-          ├─ [S1] paging → expanded-page → UI/native/editor/device gates
-          ├─ [R0] native learning reset defect → security gate
+          ├─ [LOCAL GREEN S1] paging / expanded grid / snapshot / host editor → [OPEN] device
+          ├─ [MITIGATED S0] disabled misleading reset → [OPEN] full erase
           └─ [WAIT B/C/D] privacy / correction / license
                  │
                  ├─ [P2] candidate retrieval + rank replay

@@ -1,3 +1,5 @@
+> 此檔保存 AIE 初始工程審查時間點；S0/S1 已批准並實作。當前交接見 [S1 handoff](../review/aie-s1-candidate-browser/06-handoff.md)。下列待批准／未修改產品等描述只適用原 review SHA。
+
 # KU-YIN AIE V1 ENGINEERING REVIEW HANDOFF
 
 ## Source of truth

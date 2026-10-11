@@ -12,9 +12,9 @@ visible Dachen glyph → canonical ASCII → session command → live decoder
                                                             ↓
                                                current page / full-buffer projection
                                                             ↓
-                                             CandidateSnapshot [generation]
+                                             CandidatePageSnapshot [composition + snapshot generation / provider / identity]
                                                             ↓
-                                              strip / expanded-page [PROPOSED]
+                                              strip / expanded-page [S1 implemented]
                                                             ↓ explicit current-snapshot tap
                                               live identity resolve + full-buffer check
                                                             ↓

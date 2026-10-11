@@ -3,7 +3,7 @@
 ```text
 IDLE --literal Zhuyin--> COMPOSING [live owner]
 COMPOSING --key/tone/backspace--> COMPOSING [new snapshot; reset page]
-COMPOSING --expand/collapse--> COMPOSING [UI only; no commit] (PROPOSED)
+COMPOSING --expand/collapse--> COMPOSING [S1 implemented; no decoder query or editor commit]
 COMPOSING --page--> COMPOSING [same phonetics; new candidate snapshot]
 COMPOSING --valid candidate/Space/Enter--> COMMIT_REQUESTED
 COMPOSING --unavailable selection--> COMPOSING_WITH_ERROR [preserve input]
@@ -16,3 +16,5 @@ RESTRICTED_LITERAL --ordinary text--> PREFERRED_MODE_RESTORED
 ```
 
 規則：active Enter只完成組字；第二次empty Enter才editor action。每press一個logicaleffect；scroll/expand不送出；stale candidate不派送。觸控adaptive尚未接線，raw resolvedevent未經批准不改。
+
+S1 page requests carry the current immutable snapshot; candidate refs bind provider/page/snapshot revision. Close invalidates refs; hidden/editor-start view gate rejects stale callbacks until onStartInputView. Physical behavior remains NOT_TESTED.

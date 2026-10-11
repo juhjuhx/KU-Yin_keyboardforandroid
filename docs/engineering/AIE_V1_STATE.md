@@ -1,20 +1,17 @@
 # AIE V1 任務狀態
 
-日期：2026-10-11。基線3072aff／產品9f5db67。工作分支docs/aie-v1-engineering-review。
+更新：2026-10-11。工作分支 `feat/aie-s1-candidate-browser`，基於 S0 `ea5f1853b3d4aba9f6c0deb1fbcd0e092b1cdac8`。P0-R product `9f5db676a17b5770a738b5c20da937f9211e5a34`、review `84dcf9a85d43b079a053b5b78e6fdcaa90a5bd2f` 均在 ancestry。
 
-- [x] 掃描installed catalogs／確認Addy24entries，記錄實際技能與deferred狀態。
-- [x] 11既有worktrees／P0-R SHA／Desktop APK hash盤點。
-- [x] 深讀native candidate/session/UI/editor/English/privacy/touch/symbol與歷史hand-off。
-- [x] 一次網路可用OCRhealth：401 BLOCKED_BY_PROVIDER。
-- [x] 三個read-only獨立review啟動並取得部分源碼findings；完整簽核未取得。
-- [x] 固定upstream revision／逐檔license與dependency研究。
-- [x] 寫persistent deep-read、issueledger、architecture options、phase/gate/test/performance/release文件。
-- [ ] 使用者決定第一個候選UX：single row+expanded grid / two row / configurable。
-- [ ] 依批准答案寫accepted ADR與可執行S1 spec/plan。
-- [ ] S1 RED→GREEN→真native nearbyregressions→獨立finalreview→新APK→實機。
+- [x] Option1：單列＋展開網格，使用者已批准，不重問。
+- [x] S0 reset 安全 mitigation：unsupported、disabled、零刪除／零假成功。
+- [x] S0 行為 RED、232測 GREEN、限定獨立安全 APPROVE、本地 commit。
+- [x] S1 snapshot/provider/page refs、typed pagination、stale tap rejection、expand/collapse、hide/editor lifecycle。
+- [x] S1 Compose pointer gestures、320/360/600dp、landscape、大字級；真 pinned JNI 分頁／不改 live history／真 host EditText 選字一次與繼續輸入。
+- [x] fresh App54類265測、Host3類37測（實際rerun）、Python104測、contracts10/10，failure/error/skip=0。
+- [x] native bootstrap/probe、Debug、兩層 instrumentation build 成功。
+- [x] 新 Debug20003/0.2.0-aie.1、完整hash/source/signer與桌面交付；S1兩獨立review APPROVE，source39acf96；本地交接commit。
+- [ ] 使用者真 Android editor 的瀏覽、選字、更新安裝、TalkBack/OEM 復驗。
 
-PRODUCTION_FILES_CHANGED=0。FIRST_APPROVED_SLICE=NONE。BASIC_TYPING=WORKS_ON_USER_DEVICE（使用者回報）；FULL_PHYSICAL_ACCEPTANCE=OPEN。RELEASE=NOT_READY。M4=NOT_VALIDATED。
+BASIC_TYPING=WORKS_ON_USER_DEVICE（P0使用者回報）；本輪 DEVICE=NONE、RUNTIME=NOT_TESTED、FULL_PHYSICAL_ACCEPTANCE=OPEN、RELEASE=NOT_READY、M4=NOT_VALIDATED。Release package 被既有缺 `my-upload-key.jks` 阻擋；沒有產新 keystore、push/merge/release。
 
-本輪fresh證據：APKidentity/hash、source/no-product-diff、staticcontracts；229/37/104是已核對P0歷史證據，不宣稱本輪重跑。没有Gradle/native/device/performance或新APK建置。
-
-下一個最小動作：提出一個候選瀏覽決策群組，保留既有品牌／大千／donation／credits。隱私default、touch校正、license/release/symbol各留後續決策，不一口氣詢問。
+S2 排名、S3 完整 learning/erase、adaptive touch、symbols 仍未批准。原 AIE engineering review 為審查時間點記錄；當前 handoff 為 `../review/aie-s1-candidate-browser/06-handoff.md`。舊 P0/frozen APK/其他工區保留。

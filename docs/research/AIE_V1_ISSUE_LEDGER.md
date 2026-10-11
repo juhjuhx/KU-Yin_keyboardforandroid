@@ -27,3 +27,13 @@
 
 三名GPT-6.1 SOL/max獨立代理只讀：候選、privacy/state、touch/symbol。收到定位發現後均usage-limit中斷，沒有FINAL_APPROVE。主代理直接核對以上source，完整fresh-context final audit待下一批准slice後補。
 OCR health：v1.12.13(fabbdb29)，Anthropic401 invalid x-api-key，exit1，request `req_011Cftij3vNu1bC3An5JZVXj`，session NONE。初次sandbox DNS拒絕不算provider狀態，網路可用後只做一次真正health；不重試認證。
+
+## 2026-10-11 S0/S1 follow-up（不重寫原審查）
+
+- AIE-02：MITIGATED_BY_UNAVAILABLE_STATE；commit ea5f185，正式入口 disabled/unsupported，零刪除／零假成功。完整 erase 能力 OPEN。
+- AIE-01/03/06：S1 已接線 snapshot/page/strip/grid，新增行為 RED／GREEN、真 host JNI/editor、320/360/600dp/landscape/font tests；local final gate 與 physical 限制以 S1 handoff 為準。
+- AIE-05：有限 macOS host nextPageUpdate samples 已量測（S1 median22.375ms），不是 Android latency 或改善證據，詳 S1/03-performance-baseline.md。
+- AIE-04/07/09/10/11：仍 OPEN 或 DESIGN_DECISION；沒有排名、QR、native learning ACK ownership、touch/symbol、public release 變更。
+- 新 snapshot pointer 與 hide→finish gap 由獨立 review 發現並實際 RED，於 S1 修正；完整 final review 另記，沒有承襲舊片不存在的 APPROVE。
+
+- EN-pointer（既存 MEDIUM follow-up）：P0與S1 English strip 均為index node重用；英文state guard攔captured舊callback，但不能保證 down→prefix變更→up 的起手snapshot。尚未修／未測完整跨prefixgesture，本片沒有改English session/ranking，不冒稱同中文ref保護。

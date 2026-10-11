@@ -1,6 +1,6 @@
 # AIE V1 測試矩陣
 
-本輪只審查／static gate；下列新案例全為PLANNED_NOT_RUN。229 app/37host/104Python為P0歷史證據。Matrix coverage不能代替release readiness。
+S0/S1 已實作；CAN-01～06 有本輪 session/Compose/真 pinned host JNI 證據，實機 DEV-01 仍 NOT_TESTED。新 ranking／learning／touch／symbol 案仍 PLANNED_NOT_RUN；以下保留完整規劃範圍。最終 fresh counts 見 S1 交接，不能以 coverage 替代 release readiness。
 
 | ID / 層 | 可觀察契約 | Test seam / direct evidence |
 |---|---|---|
@@ -31,15 +31,19 @@
 | DEV-01 physical | 候選drag-expand-page-select、長句/editor切換/rotation/no doublecommit | 真KU-Yin軟鍵＋controlledhost；固定serial、授權、restoreproof |
 | REL-01 build/release | source/version/hash/signer、install-update不清資料、licenses | APKprovenance＋正常pm update；簽章錯誤停止、不uninstall |
 
-## 批准後S1命令（尚未執行）
+## S0/S1 已執行的驗證路徑
+
+新類別：LearningResetSafetyUiTest、CandidateBrowserStateTest、CandidateBrowserUiTest、CandidateBrowserLifecycleTest、NativeCandidatePagingTest；正式 NativeTypingEditorIntegrationTest 增第二頁選字／繼續輸入案例。
 
 ```sh
-JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home ./gradlew :app:testDebugUnitTest --tests 'com.example.ime.CandidateBrowsingUiTest' --console=plain
+# 真 host JNI opt-in；沒有這兩個 env 時 native tests 可能 skip，不能宣稱全 PASS
+KUYIN_NATIVE_HOST_DIR="$PWD/build/aie-s1-evidence/native" \
+KUYIN_NATIVE_HOST_DATA='/private/tmp/kuyin-p0r-native-20261010/fcitx5-android-prebuilt/chewing-dict' \
+./gradlew :app:testDebugUnitTest :acceptance-host:testDebugUnitTest --console=plain
+python3 -m unittest discover -s scripts/tests -p 'test_p*.py'
 python3 scripts/verify.py --static
 ```
 
-上述新testclass是S1預定新增的test，現階段不存在，不能拿compile failure當RED。RED應在test成功compile後確認missingUI/錯dispatch。
+S0-01～10 的 unsupported 分支限制見 S0/01-red-green.md；S1-01～24 對照見 `../review/aie-s1-candidate-browser/02-red-green-evidence.md`。Compose touch 是實際 pointer gesture，沒有以 hardware Enter 當 software callback 證據，但仍是 host framework 模擬。完整 native erase、TalkBack/OEM、裝置 install/update 都未驗證。
 
-整合：serial `:app:testDebugUnitTest :acceptance-host:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebugAndroidTest`；native變更需bootstrap＋`scripts/p0r_native_host_probe.py`及KUYIN_NATIVE_HOST_DIR/DATA opt-in，不能把沒有native host的skip當全PASS。
-
-Release build gate按既有keystore狀態誠實記錄；不得為了review產新signing key。實機不使用舊P1v3hash/26manifest驗新P0/AIE；需先版本化package/protocolreview，不另建runner。
+Release build 依既有缺 keystore 狀態誠實記錄。新 AIE APK 不能套用凍結 P1 v3 的 APK hash/舊 manifest；先依 AIE 手冊版本核對，不另造 runner。

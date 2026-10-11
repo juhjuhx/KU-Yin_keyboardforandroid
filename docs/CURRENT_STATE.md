@@ -1,8 +1,20 @@
+# CURRENT_STATE（目前事實）
+
+## 2026-10-11：AIE S0/S1 本地實作
+
+- 工作分支 `feat/aie-s1-candidate-browser`，S0 commit `ea5f1853b3d4aba9f6c0deb1fbcd0e092b1cdac8`；Option1 已批准。最終 source/文件 SHA、APK 與審查以 `review/aie-s1-candidate-browser/06-handoff.md` 為準。
+- S0 停用不完整 reset：明示 unsupported、移除 fallback-only 清除及假成功通知，零資料刪除。完整 native/fallback erase 仍 OPEN。
+- S1 單列橫捲＋可展開網格／前後頁；preedit 保留、收合回原 keyboard，唯一 session owner；snapshot/provider/page/identity 校驗拒絕 stale tap。沿用 P0 scratch preview、原 orderedCommits/InputConnection ACK；未更動 ranking/native pins/learning/touch/symbols。
+- fresh App54類265測、Host3類37測（實際 rerun）、Python104測、contracts10/10，零 failure/error/skip；真 pinned host JNI 分頁4案、真 native/service/EditText6案含第二頁選字一次→繼續輸入。不是裝置驗收。
+- native bootstrap/probe、Debug與 app/host instrumentation build 成功；Release package 仍受既有缺 keystore 阻擋。新 Debug `20003 / 0.2.0-aie.1`；沒有簽 Release／push／merge。
+- ADB inventory 無裝置：RUNTIME=NOT_TESTED，PHYSICAL_ACCEPTANCE=OPEN，RELEASE=NOT_READY，M4=NOT_VALIDATED。完整 native erase、English 既存跨prefix pointer、personal preview/ranking、TalkBack/OEM 等限制另記。
+- 下列為歷史時間點，不與當前裁定混用；原 AIE review 的「UX待批准、reset未修」已由上述 S0/S1 更新。
+
 ## AIE S0 安全修正（2026-10-11）
 
 S0 reset defect 採明確 unsupported/no-deletion 防護：停用誤導入口、移除fallback-only確認與成功訊息；native/fallback/設定全部保留。完整 erase 能力仍 OPEN。S0本地232測/50類0失敗與contracts10/10；真JNI僅證現有核心typing，非fullerase。S1 Option1已由使用者批准，S1將從通過S0的明確HEAD隔離繼續。
 
-# CURRENT_STATE（目前事實）
+## 歷史狀態記錄
 
 ## 2026-10-11：AIE V1 審查／使用者 P0-R 復驗
 

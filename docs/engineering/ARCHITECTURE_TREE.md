@@ -6,14 +6,14 @@ KU-Yin / :app
 │  ├─ EditorEffectTracker [EXISTS] offsets + ACK + recovery
 │  └─ CommitEffectObserver [PROPOSED] acknowledged supplemental learning
 ├─ ime/ui [EXISTS] Compose themes / canonical Dachen / candidate LazyRow
-│  ├─ CandidatePanel [NEXT / UX_APPROVAL_REQUIRED]
-│  ├─ expanded paging [UNWIRED → S1]
+│  ├─ CandidatePanel [S1 EXISTS / strip + bounded grid]
+│  ├─ expanded paging [S1 EXISTS / immutable scoped snapshot]
 │  └─ TouchResolver [LATER / PRIVACY+CORRECTION_APPROVAL_REQUIRED]
 ├─ ime/session [EXISTS] Chinese sole owner + English token owner
 ├─ engines/android [EXISTS] libchewing adapter / derived scratch previews
 │  └─ CandidateRanker seam [LATER / IDENTITY+REPLAY_GATES]
 ├─ userdict.dat [EXISTS] native Chinese learning
-│  └─ reset controls [HIGH_DEFECT / isolated repair pending]
+│  └─ reset controls [S0 UNSUPPORTED / disabled, no deletion]
 ├─ UserLearning [PROPOSED] supplemental stores / versioning / erase
 ├─ SymbolRepository [LATER / DATA_LICENSE+UX_APPROVAL_REQUIRED]
 └─ community/donation/credits [PRESERVE]

@@ -86,3 +86,9 @@ English suggestions 額外尊重 `NO_SUGGESTIONS`／`AUTO_COMPLETE`；editor 自
 現有P0-R runtime架構保留。新的candidate presentation/retrieval/ranking、learning、touchresolver與symbolrepo圖是PROPOSED，見 `engineering/AIE_V1_ARCHITECTURE.md`，並非已存在runtime。ADR0006尚待UX答案，不能據舊M4視覺授權重設品牌。native live為persistent唯一owner，derived scratch只是查詢投影；舊ADR0003的per-key禁止不應誤解為移除安全preview。
 
 現行學習是productionnative或startupfallback各自store；設定頁reset未涵蓋native為已確認HIGH。任何futureexternallearning需避免對nativeauto-learn重複計次；見privacy matrix與issueledger。
+
+## AIE S0/S1 implemented boundary（2026-10-11）
+
+候選現由 EngineCandidatePage → CandidatePageSnapshot/Ref → CandidatePanel 呈現單列與展開網格；typed page/selection events 經唯一 session 校驗。翻頁在既有 scratch plan projection 邊界內，沒有 live native 方向鍵／候選 refresh mutation。composition 與 snapshot generation 分開，editor/hide/close 失效 prior refs，view-start gate 恢復輸入。原 orderedCommits 與 InputConnection ACK/recovery 不變。
+
+設定的完整學習 reset 暫不支援且停用，不作局部刪除或假成功。native learning owner/存放/政策未改。新 ranking、personal preview、adaptive touch、SymbolCatalog 仍為未來提案；S1 不等同 M4 或 release acceptance。詳 `review/aie-s1-candidate-browser/01-native-and-state-contract.md`。
