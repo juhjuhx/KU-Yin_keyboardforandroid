@@ -54,7 +54,6 @@ import com.example.feedback.ui.FeedbackHistoryDialog
 import com.example.feedback.ui.FeedbackSubmissionDialog
 import com.example.feedback.ui.FeedbackViewModel
 import com.example.ime.engine.KuYinEngine
-import com.example.ime.engine.ZhuyinDictionary
 import com.example.ime.session.ZhuyinDictionarySession
 import com.example.ime.settings.KeyboardSettings
 import com.example.ime.ui.KEYBOARD_THEMES
@@ -97,7 +96,6 @@ fun KuYinSetupScreen(
 ) {
     val context = LocalContext.current
     val settings = remember { KeyboardSettings(context) }
-    val dict = remember { ZhuyinDictionary(context) }
 
     val allFeedback by feedbackViewModel.allFeedback.collectAsStateWithLifecycle()
     val filteredFeedback by feedbackViewModel.filteredFeedback.collectAsStateWithLifecycle()
@@ -133,7 +131,6 @@ fun KuYinSetupScreen(
     var soundState by remember { mutableStateOf(settings.isSoundEnabled) }
     var candidateFontSize by remember { mutableStateOf(settings.candidateFontSizeSp) }
     var themeIndex by remember { mutableIntStateOf(settings.keyboardThemeIndex) }
-    var showResetDialog by remember { mutableStateOf(false) }
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
     val focusRequester = remember { FocusRequester() }
@@ -559,7 +556,8 @@ fun KuYinSetupScreen(
 
                         // 清除自訂字詞學習紀錄
                         OutlinedButton(
-                            onClick = { showResetDialog = true },
+                            onClick = {},
+                            enabled = false,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("btn_reset_dictionary"),
@@ -569,8 +567,13 @@ fun KuYinSetupScreen(
                         ) {
                             Icon(Icons.Default.DeleteOutline, contentDescription = null)
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text("重設字詞學習紀錄")
+                            Text("重設字詞學習紀錄（暫不支援）")
                         }
+                        Text(
+                            "尚未支援安全重設原生與備援學習紀錄；目前不會刪除任何資料。",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
 
                         HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
 
@@ -685,31 +688,6 @@ fun KuYinSetupScreen(
             item {
                 OpenSourceDonationCard()
             }
-        }
-
-        // 重設對話框
-        if (showResetDialog) {
-            AlertDialog(
-                onDismissRequest = { showResetDialog = false },
-                title = { Text("重設學習紀錄") },
-                text = { Text("這將會清除您打字過程中的候選字常用排序紀錄，是否確定重設？") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            dict.clearLearnedFrequencies()
-                            showResetDialog = false
-                            snackbarMessage = "已成功重設字詞學習紀錄"
-                        }
-                    ) {
-                        Text("確定重設", color = MaterialTheme.colorScheme.error)
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showResetDialog = false }) {
-                        Text("取消")
-                    }
-                }
-            )
         }
 
         // 提交回饋對話框

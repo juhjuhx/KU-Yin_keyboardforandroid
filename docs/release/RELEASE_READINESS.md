@@ -21,3 +21,6 @@
 | Channels/publication | 尚未批准 | GitHubalpha/F-Droid/Play逐群決策；明示publish才發布 |
 
 下一階段不是自動publicrelease，而是候選UX批准與S1。Rime/model/新telemetry不屬release補丁。M4仍NOT_VALIDATED。
+
+## S0 安全修正
+誤導reset HIGH以 unsupported/no-deletion mitigation 關閉；完整原生＋fallback學習清除仍未支援，因此privacy/erase release gate保持OPEN。不能將停用按鈕當erase PASS。

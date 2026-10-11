@@ -1,3 +1,7 @@
+## AIE S0 安全修正（2026-10-11）
+
+S0 reset defect 採明確 unsupported/no-deletion 防護：停用誤導入口、移除fallback-only確認與成功訊息；native/fallback/設定全部保留。完整 erase 能力仍 OPEN。S0本地232測/50類0失敗與contracts10/10；真JNI僅證現有核心typing，非fullerase。S1 Option1已由使用者批准，S1將從通過S0的明確HEAD隔離繼續。
+
 # CURRENT_STATE（目前事實）
 
 ## 2026-10-11：AIE V1 審查／使用者 P0-R 復驗
