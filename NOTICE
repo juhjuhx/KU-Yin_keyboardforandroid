@@ -38,3 +38,15 @@ at commit 127336e9f29d69607eab55982324b210279ae8c5, under Apache License 2.0.
 Original copyright/NOTICE, complete license and reproducible filtering provenance
 are included in app/src/main/assets/english/{NOTICE,LICENSE-Apache-2.0.txt,SOURCE.md}.
 No LatinIME implementation code, HeliBoard GPL code, or Rime schemas were copied.
+
+AIE Alpha source/relink materials
+--------------------------------
+The 0.2.0-aie.1 prerelease includes complete KU-Yin product source, libchewing
+source a6a8fa4abd3f215e3ba89a7b61702eaf8ca68f5c, its data submodule
+ ea74f76dd2548b1d65d0ff70c3ae66057a6ad97d, the actual prebuilder libchewing
+build patch at 55e3c0877ba060bf6670120156eea61e4438797c, locked Rust dependency
+sources/notices, four ABI static archives and KU-Yin JNI objects for relinking.
+Data word.csv and tsi.csv explicitly identify LGPL-2.1-or-later and
+Copyright (c) 2025 libchewing Core Team. Original misc data is preserved.
+See docs/release/AIE_ALPHA_LICENSE_AND_BUILD.md and release source materials.
+No additional restriction forbids reverse engineering to debug LGPL changes.

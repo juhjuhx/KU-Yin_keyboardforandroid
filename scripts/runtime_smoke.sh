@@ -1,10 +1,29 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# This script owns only the disposable emulator created by GitHub Actions.
+# Owner-authorized physical testing uses p1_acceptance_device.py instead.
+if [[ "${CI:-}" != "true" ]]; then
+  echo "runtime_smoke.sh requires an isolated CI emulator" >&2
+  exit 2
+fi
+KUYIN_CI_SERIAL="$(command adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
+if [[ -z "$KUYIN_CI_SERIAL" || "$KUYIN_CI_SERIAL" == *$'\n'* || "$KUYIN_CI_SERIAL" != emulator-* ]]; then
+  echo "Expected exactly one CI emulator; refusing ambiguous or physical target" >&2
+  exit 2
+fi
+if [[ "$(command adb -s "$KUYIN_CI_SERIAL" shell getprop ro.kernel.qemu | tr -d '\r')" != "1" ]]; then
+  echo "Target is not an emulator; refusing device mutation" >&2
+  exit 2
+fi
+export ANDROID_SERIAL="$KUYIN_CI_SERIAL"
+adb() { command adb -s "$KUYIN_CI_SERIAL" "$@"; }
+
 APP_PACKAGE="$(sed -n 's/.*applicationId = "\([^"]*\)".*/\1/p' app/build.gradle.kts | head -n1)"
 
 bash scripts/bootstrap_native_deps.sh
-./gradlew installDebug --stacktrace
+select_product_ime() {
+  ./gradlew -Pandroid.injected.device.serial="$KUYIN_CI_SERIAL" :app:installDebug --stacktrace
 
 installed=""
 for _ in $(seq 1 40); do
@@ -52,4 +71,12 @@ done
 printf 'Selected IME: %s\n' "$selected"
 [ "$selected" = "$IME_COMPONENT" ]
 
-./gradlew connectedDebugAndroidTest --stacktrace
+}
+
+select_product_ime
+./gradlew -Pandroid.injected.device.serial="$KUYIN_CI_SERIAL" :app:connectedDebugAndroidTest --stacktrace
+
+# Gradle's product-suite installation/cleanup can reset the default IME.
+# Establish the real precondition again before the external editor suite.
+select_product_ime
+./gradlew -Pandroid.injected.device.serial="$KUYIN_CI_SERIAL" :acceptance-host:connectedDebugAndroidTest --stacktrace

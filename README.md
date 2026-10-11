@@ -1,15 +1,24 @@
 # KU-Yin 酷音注音鍵盤 for Android
 
-> 狀態：alpha（`0.2.0-alpha.1`，versionCode 20001）。Compose 產品主線開發中，需實機驗證。
+> 狀態：實驗性 Alpha（`0.2.0-aie.1`，versionCode `20003`）。Debug 簽章，S1 完整實機驗收尚未完成。
 
-臺灣大千注音 Android 輸入法。Jetpack Compose 產品 UI，中文解碼正由靜態詞表（`ZhuyinDictionary`，過渡）遷往 libchewing 權威解碼（`ChewingEngine`／JNI 已編入 APK，尚未接線）。
+臺灣大千注音 Android 輸入法，使用 Jetpack Compose 與固定版本 libchewing。離線執行，英文提供本機 10,000 詞的字首補全；沒有雲端建議或大型語言模型。
 
-## 功能（已實作，未實機驗收前皆視為 UNVERIFIED）
+## 下載與安裝
 
-- 大千注音輸入、候選橫條、選字、空白／Backspace／Enter
-- 英文 QWERTY（含 Shift／CapsLock）、符號頁、emoji 頁
-- 深色模式、多套鍵盤配色、候選字級、震動／音效開關
-- 使用者回饋（本機 Room 儲存）、開源捐贈卡（見下）
+[GitHub 預發布與來源材料](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1)。安裝 `KU-Yin-AIE-S1-candidate-browser-debug.apk` 後，在 Android 輸入法設定啟用並選取 KU-Yin。
+
+公開 APK 沿用 P0-R Debug certificate；正常更新應保留資料。若 Android 回報簽章不符或版本降級，先停止，不要解除安裝或清除資料。CI 重新產生的 Debug APK 不保證相同 signer，請使用 Release 所列的精確檔案並核對 SHA256SUMS。
+
+## 已實作與驗證邊界
+
+- 41 鍵大千注音、無聲調候選、連續組字、選字與 editor commit；P0-R 基本中文有使用者手機回報。
+- S1 單列候選橫捲、展開網格、前後頁與 stale snapshot 防護；本地 JNI／Compose／editor 測試通過，實機 browsing 待驗。
+- 英文 QWERTY、Shift／CapsLock、字首補全；基本符號與 emoji 頁。
+- 深色模式、配色、候選字級、震動／音效設定、本機回饋及既有開源捐贈卡。
+- S0 停用不完整「重設學習」，明示不會刪資料；完整 learning erase 尚未支援。
+
+實機 30-case matrix、OEM／TalkBack、完整資料清除、正式簽章及商店發布仍 OPEN。此版本不是 production-ready；已知限制與 TODO 見 [發布進度](docs/release/AIE_ALPHA_PROGRESS.md)。
 
 ## 隱私與安全（程式實測）
 
@@ -23,20 +32,22 @@
 
 ```bash
 bash scripts/bootstrap_native_deps.sh   # 一次性抓取 pinned 原生依賴＋詞庫
-./gradlew :app:testDebugUnitTest        # 61 測試
+./gradlew :app:testDebugUnitTest        # JVM 行為測試；數量以本次報告為準
 ./gradlew :app:assembleDebug            # app/build/outputs/apk/debug/app-debug.apk
 ```
 
 合約檢查：`scripts/check_*.py`（dachen／P0／editor_sync／P1／P2／P3）。Application ID：`io.github.juhjuhx.kuyin`。
 
-## 架構（收斂中）
+## 架構
 
-```
-KuYinInputMethodService → KuYinEngine → ZhuyinDictionary（過渡）→ Compose UI → InputConnection
-                                     ↘（C1–C3 已備）ComposeDecoderSession ← ChewingEngine ← AndroidChewingEngine ← JNI ← libchewing
+```text
+InputMethodService → ComposeDecoderSession → ChewingEngineSession → JNI → libchewing
+                   ↘ EnglishWordSession → offline EnglishLexicon
+CandidatePageSnapshot → Compose strip / expanded grid
+orderedCommits → InputConnection → editor acknowledgment
 ```
 
-C1–C3（`ime/session/`：`ComposeImeState`／`ImeCommand`／雙適配器，RED-first 測試）已合入；C4 生產切換需實機 Gate（CASE 4 選字後續打、C6 轉屏）通過才走。舊 View shell（PR #4）僅為 donor，不再是產品 UI。
+Service 管 Android lifecycle／editor effects；session 是唯一組字 owner；UI 不直接呼叫 JNI。Native 啟動失敗才使用 `ZhuyinDictionarySession`。候選預覽在 scratch context，避免破壞 live composition。詳細責任見 [ARCHITECTURE](docs/ARCHITECTURE.md)。
 
 ## 開源捐贈
 

@@ -106,3 +106,22 @@ A=來源/審查/隔離設計；B=S0安全TDD；C=S1/native/ComposeTDD；D=獨立
 | finishing-a-development-branch | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/finishing-a-development-branch/SKILL.md` | `8db5a922b242dd4e1bf824cb91c13b3e8d8e8a86d6ceaf7f0774eb9cce909d65` | D / useralreadydirectedlocalkeep/nopush | USED_KEEP_LOCAL |
 
 S0 reviewer確認unsupported mitigation、S1兩reviewer簽核source `39acf96c6cfc058106315f3553e1c8b88438f4f7`；沒有physical PASS。Visual-atelier保留原美術，沒有新art/fonts/theme。Official-code-review沒有PR/comment；OCR沒有approval。finishing skill的generic選項已由使用者本prompt明確localcommits/no push/no merge決定，保留branches/worktrees，無需重問。LSP diagnostics工具未提供，使用Kotlin/JNIcompiler/測試/JSON/Markdownlinks/gitdiffcheck，沒有假稱LSP PASS。
+
+## 2026-10-12：GitHub integration / experimental Alpha
+
+本階段採使用者准許的較省資源路由；沒有硬湊15–20個skills、重新跑未修改產品的全部Gradle，也未執行全部24個Addy。實際catalog盤點640個nested SKILL.md，未去重，不宣稱670。
+
+| Skill | 實際路徑 | SHA256 | 用途／狀態 |
+|---|---|---|---|
+| using-superpowers | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/using-superpowers/SKILL.md` | `82c5c8866ad7f5dd4440ce66bd7806ba48a2f13771beae5cf112e53f08fe36ba` | 路由與已授權工作 / LOADED_USED_SCOPED |
+| context-optimizer | `/Users/huang/.agents/skills/pro-context-optimizer/SKILL.md` | `4d974efb9e780e47eae08a6df69d2b5c5662c1b25b71935c953092bb034b69d8` | 短入口與持久化TODO / LOADED_USED_SCOPED |
+| addyosmani-planning-and-task-breakdown | `/Users/huang/.agents/skills/addyosmani-planning-and-task-breakdown/SKILL.md` | `019f5ea92c7195090d449d24bbec7d7156220b064e8e584f060932dc8bf19218` | 依賴排序 / LOADED_USED_SCOPED |
+| addyosmani-source-driven-development | `/Users/huang/.agents/skills/addyosmani-source-driven-development/SKILL.md` | `43721639846981b90bda48b13c9bebf55a6713bf3fb0b29e4893e5a3fad44807` | 固定原生與詞庫來源 / LOADED_USED_SCOPED |
+| systematic-debugging | `/Users/huang/.agents/skills/systematic-debugging/SKILL.md` | `85fe505cc2dfeeca5e5ebefd5dfc61132d9d4e1338684b7610d0ea83de7bf39a` | CI first failing boundary / LOADED_USED_SCOPED |
+| test-driven-development | `/Users/huang/.agents/skills/test-driven-development/SKILL.md` | `7dee67b4af6bdccc7a914ca34533184d64592d0f5b23aeae631538168db14994` | fake工具RED/GREEN / LOADED_USED_SCOPED |
+| addyosmani-ci-cd-and-automation | `/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md` | `067d15958ad69341fe37600be810e7a19f884fa67045385e48fd41c25dbd8e7d` | 兩層IMEprecondition/手動發布 / LOADED_USED_SCOPED |
+| addyosmani-shipping-and-launch | `/Users/huang/.agents/skills/addyosmani-shipping-and-launch/SKILL.md` | `9ef215b2c69d03b29dd9c804af51f57a8d7294da0e9a1097980805300c76de34` | 實驗性發布範圍與限制 / LOADED_USED_SCOPED |
+| verification-before-completion | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/verification-before-completion/SKILL.md` | `2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3` | 實測hash/CI/重鏈結 / LOADED_USED_SCOPED |
+| finishing-a-development-branch | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/finishing-a-development-branch/SKILL.md` | `8db5a922b242dd4e1bf824cb91c13b3e8d8e8a86d6ceaf7f0774eb9cce909d65` | 沿用已批准push/merge/release，保留工區 / LOADED_USED_SCOPED |
+
+平台未提供 `/init`／`/compact` 或 LSP diagnostics 呼叫；持久化入口替代手動reset，使用編譯／合約／git diff／JSON驗證，不聲稱虛構工具執行。OCR沿用最近401證據，未重試。獨立review另外記錄實際結果。

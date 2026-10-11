@@ -1,8 +1,7 @@
 name: Publish Alpha Prerelease
 
 on:
-  push:
-    branches: [main]
+  # Manual only: a CI-generated debug key cannot update the locally signed APK.
   workflow_dispatch:
 
 permissions:

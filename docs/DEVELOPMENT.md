@@ -54,8 +54,8 @@ home-grown Kotlin parser — behavior belongs in JVM tests.
 
 `.github/workflows/build.yml` is blocking (contracts → toolchain → bootstrap →
 JVM → Debug APK → artifact). `runtime-smoke` is experimental
-(`continue-on-error: true`) and never counts as PASS. `prerelease.yml` tags
-prereleases on main; `upstream-watch.yml` only files review issues.
+(`continue-on-error: true`) and never counts as PASS. `prerelease.yml` is manual-only; a fresh CI debug key cannot update the
+published locally signed APK. Publish reviewed assets with source/relink materials; `upstream-watch.yml` only files review issues.
 
 ## Contribution workflow
 

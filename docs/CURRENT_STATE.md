@@ -1,5 +1,9 @@
 # CURRENT_STATE（目前事實）
 
+## 2026-10-12：GitHub 整合與實驗性 Alpha 發布準備
+
+使用者已授權 push／正常合併／發布。S1 分支 `65ec00b…` 已推送，PR #8；本輪只改 CI／發布文件，不改 `app/` 或候選引擎。短 TODO 與當前發布裁定以 `release/AIE_ALPHA_PROGRESS.md` 為準，續作入口是 `engineering/CODEX_CONTEXT_ANCHOR.md`。以下「沒有 push／merge」是原驗證時間點紀錄。Production release 仍 NOT_READY，完整實機仍 OPEN。
+
 ## 2026-10-11：AIE S0/S1 本地實作
 
 - 工作分支 `feat/aie-s1-candidate-browser`，S0 commit `ea5f1853b3d4aba9f6c0deb1fbcd0e092b1cdac8`；Option1 已批准。最終 source/文件 SHA、APK 與審查以 `review/aie-s1-candidate-browser/06-handoff.md` 為準。

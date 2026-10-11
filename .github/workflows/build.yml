@@ -111,5 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: runtime-smoke-report
-          path: app/build/reports/androidTests/connected
+          path: |
+            app/build/reports/androidTests/connected
+            acceptance-host/build/reports/androidTests/connected
           if-no-files-found: warn
