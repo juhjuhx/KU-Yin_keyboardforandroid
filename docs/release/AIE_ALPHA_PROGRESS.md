@@ -15,9 +15,9 @@
 1. [x] 修正 CI 跨模組測試的 IME precondition；fake 工具驗 RED/GREEN，完整 suite 不刪測試。新 CI 結果另記，不能以 fake 測試聲稱 runtime PASS。
 2. [x] 停止 main push 自動產生／發布不同 Debug signer 的 APK；手動發布需明確啟用。
 3. [x] 補齊 pinned 原生／詞庫來源、build patch、license、JNI relink object 與重建說明；核對包內 hash，保留原 APK。
-4. [ ] 更新 README、CURRENT_STATE、release readiness、實際 skill routing；完成 diff review 及所需 contracts。
-5. [ ] 推送 PR 更新，等待 blocking CI；正常 merge，保留遠端 main 現有內容。
-6. [ ] 標記來源，發布 exact APK＋source/relink/notice/manifest；重新下載核對資產，記錄最終 URL／SHA。
+4. [x] 更新 README、CURRENT_STATE、release readiness、實際 skill routing；完成 diff review 及所需 contracts。
+5. [x] 推送 PR 更新，blocking CI已通過；正常 merge，保留遠端 main 現有內容。
+6. [x] 標記來源，發布 exact APK＋source/relink/notice/manifest；用GitHub server SHA256／size核對資產，記錄最終 URL／SHA。
 
 ## 發布限制與後續
 
@@ -38,3 +38,9 @@ GitHub main 含核對過的產品；公開 prerelease 的 APK 與原 hash 完全
 - 對產品來源39acf96的 `app/` diff 為空；沒有重建或替換 APK，沒有實體裝置操作。
 - 原生 source/relink 包四 ABI 真link exit0；`.text`／`.rodata` 比對APK全相同；完整ELF hash可因metadata不同。
 - 新CI與正式GitHub merge/publish仍待執行，不能把fake工具測試當成裝置PASS。
+
+## 已公開結果
+
+PR #8正常merge至912b5cc，v0.2.0-aie.1公開experimental prerelease。exact APK與source/relink材料皆有server hash proof；詳細交接見 `AIE_ALPHA_HANDOFF.md`。
+
+新CI host不是PASS：32 tests，15PASS、9FAIL、8skipped。已確認fixture stale-read及旧selector/新layout不相容，部分timeout仍未證明原因；不把未測scope算通過。下一步是bounded fixture adapter、保持exactly-once斷言、重跑32-test suite、再做手機復驗。M4/S2仍未開始。

@@ -18,11 +18,11 @@
 - 深色模式、配色、候選字級、震動／音效設定、本機回饋及既有開源捐贈卡。
 - S0 停用不完整「重設學習」，明示不會刪資料；完整 learning erase 尚未支援。
 
-實機 30-case matrix、OEM／TalkBack、完整資料清除、正式簽章及商店發布仍 OPEN。此版本不是 production-ready；已知限制與 TODO 見 [發布進度](docs/release/AIE_ALPHA_PROGRESS.md)。
+實機 30-case matrix、OEM／TalkBack、完整資料清除、正式簽章及商店發布仍 OPEN。此版本不是 production-ready；最新 emulator host為15PASS/9FAIL/8skip，fixture適配待完成；不能稱完整驗收通過。已知限制與 TODO 見 [發布交接](docs/release/AIE_ALPHA_HANDOFF.md)。
 
 ## 隱私與安全（程式實測）
 
-- 零權限：無 `INTERNET`、無 `VIBRATE`；`allowBackup=false`
+- 無網路／震動權限：無 `INTERNET`、無 `VIBRATE`；`allowBackup=false`
 - 全本機：輸入不傳輸、不記錄按鍵明文；詞庫與 userdict 在 app-private `noBackupFilesDir`
 - 原生依賴固定 revision（`scripts/bootstrap_native_deps.sh`：fcitx5-android/prebuilt `3587ba33`、libchewing `a6a8fa4`），非浮動分支
 

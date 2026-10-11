@@ -1,5 +1,9 @@
 # CURRENT_STATE（目前事實）
 
+## 2026-10-12：已公開實驗性 Alpha
+
+PR #8正常合併至GitHub main（912b5cc），tag v0.2.0-aie.1來源2ce6810；exact APK產品來源39acf96。Release附source/relink與真實限制。blocking CI通過、emulator app5/5；host32為15PASS/9FAIL/8skip，fixture適配與剩餘timeout待處理，不稱full runtime PASS。交接 `release/AIE_ALPHA_HANDOFF.md`；下一步fixture adapter＋手機復驗，production NOT_READY、M4 NOT_VALIDATED。以下為發布前準備紀錄。
+
 ## 2026-10-12：GitHub 整合與實驗性 Alpha 發布準備
 
 使用者已授權 push／正常合併／發布。S1 分支 `65ec00b…` 已推送，PR #8；本輪只改 CI／發布文件，不改 `app/` 或候選引擎。短 TODO 與當前發布裁定以 `release/AIE_ALPHA_PROGRESS.md` 為準，續作入口是 `engineering/CODEX_CONTEXT_ANCHOR.md`。以下「沒有 push／merge」是原驗證時間點紀錄。Production release 仍 NOT_READY，完整實機仍 OPEN。

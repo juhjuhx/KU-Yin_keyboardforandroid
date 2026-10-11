@@ -1,6 +1,6 @@
 # KU-Yin Release Readiness
 
-更新2026-10-12；PRODUCTION_RELEASE=NOT_READY；使用者已授權 GitHub 實驗性 Alpha prerelease。使用者回報P0基本中文可用；沒有完整physical matrix證據，也本輪只有新 AIE Debug 測試 artifact，沒有 Release artifact。
+更新2026-10-12；PRODUCTION_RELEASE=NOT_READY；GitHub v0.2.0-aie.1 experimental prerelease已公開；詳見 AIE_ALPHA_HANDOFF.md。使用者回報P0基本中文可用；沒有完整physical matrix證據，也本輪只有新 AIE Debug 測試 artifact，沒有 Release artifact。
 
 | Gate | 狀態／直接證據 | 關閉條件 |
 |---|---|---|
@@ -14,7 +14,7 @@
 | Device acceptance | FULL_PHYSICAL_ACCEPTANCE=OPEN | 正式case-by-case裁定＋未觀察scope disposition；恢復真證據 |
 | Native/data licensing | LGPLsource/relink與ABI/repro義務OPEN；EnglishApache notices存在 | 逐檔notice/license、pin/source/relink文件包；build不是授權完成 |
 | Unicode/new upstream | 研究固定rev，NO_IMPORT | approvedcopy策略、CLDRdata vsLDML區分，轉換器/pins/notices |
-| CI/source consolidation | S1分支已推／PR #8；blocking CI38144366396成功，experimental host setup失敗；更新CI待驗 | explicitpush/merge授權後requiredCI；nativehost缺席不可假PASS |
+| CI/source consolidation | PR #8已merge；CI38164320915 blocking成功，app5PASS、host15PASS/9FAIL/8skip；fixture待適配 | explicitpush/merge授權後requiredCI；nativehost缺席不可假PASS |
 | Signing/update | AIE Debug同certificate/version20003；releasekeystore未建立 | 簽章管理與updatecompat策略批准；不得用新key導致清資料 |
 | Community/credits | donation/sourcecards保留；QR僅hash圖 | 功能links保留／歸屬正確；QR如宣稱可掃須真encoder+掃描 |
 | Repro/build/contributing | 既有DEVELOPMENT與固定toolchain | 驗證freshcheckout/pins、sourcecompat、CONTRIBUTING與版本changelog |

@@ -2,6 +2,10 @@
 
 更新：2026-10-12。先讀本檔與 `../release/AIE_ALPHA_PROGRESS.md`，再按未完成任務讀相關來源；不要以聊天記憶推定 SHA 或測試結果。
 
+## 當前結果
+
+GitHub PR #8 已正常merge（912b5cc），`v0.2.0-aie.1` 已公開experimental prerelease，tag來源2ce6810、APK產品來源39acf96。詳細hash／CI限制見 `../release/AIE_ALPHA_HANDOFF.md`。本輪未改產品；下一個最小任務是fixture adapter與手機復驗，不是AIE-S2。
+
 ## 已核對基線
 
 - S1 產品來源：`39acf96c6cfc058106315f3553e1c8b88438f4f7`；文件／已推送分支：`65ec00bf1bd2b90c9821c3ca11e0951c0b9b8e22`。
