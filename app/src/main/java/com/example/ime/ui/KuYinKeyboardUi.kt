@@ -35,6 +35,7 @@ import com.example.ime.session.ImeCommand
 import com.example.ime.session.DispatchResult
 import com.example.ime.session.EnglishWordSession
 import com.example.ime.session.orderedCommits
+import com.example.ime.session.CandidatePageSnapshot
 import com.example.ime.settings.KeyboardSettings
 
 data class KeyboardThemeColors(
@@ -151,6 +152,7 @@ fun KuYinKeyboardUi(
     val englishState = englishSession?.state?.collectAsState()?.value
     val composingZhuyin = if (mode == KeyboardMode.ENGLISH && englishState != null)
         englishState.wordBuffer else sessionState.preedit
+    val expanded = mode == KeyboardMode.ZHUYIN && sessionState.candidatesExpanded && sessionState.candidatePage != null
     val candidates = if (mode == KeyboardMode.ENGLISH && englishState != null)
         englishState.candidates else sessionState.candidates
 
@@ -189,6 +191,19 @@ fun KuYinKeyboardUi(
         else dispatchChinese(ImeCommand.Punctuation(punctuation))
     }
 
+    val onCandidateSelect: (Int) -> Unit = { index ->
+        onFeedback()
+        if (mode == KeyboardMode.ENGLISH && englishSession != null) {
+            if (englishSession.state.value === englishState)
+                dispatchEnglish { englishSession.select(index) }
+        } else if (session.state.value === sessionState) {
+            dispatchChinese(ImeCommand.SelectCandidate(index, sessionState.candidatePage?.ref(index)))
+        }
+    }
+    fun browse(command: ImeCommand) {
+        // Presentation/page operations produce no editor effects.
+        if (shouldAcceptInput() && session.state.value === sessionState) session.dispatch(command)
+    }
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
     val keyboardBg = currentTheme.keyboardBg
     val keyBgNormal = currentTheme.keyBgNormal
@@ -224,15 +239,11 @@ fun KuYinKeyboardUi(
                 isClipboardBarEnabled = settings.isClipboardBarEnabled,
                 theme = currentTheme,
                 mode = mode,
-                onCandidateClick = { index ->
-                    onFeedback()
-                    if (mode == KeyboardMode.ENGLISH && englishSession != null) {
-                        if (englishSession.state.value === englishState)
-                            dispatchEnglish { englishSession.select(index) }
-                    } else if (session.state.value === sessionState) {
-                        dispatchChinese(ImeCommand.SelectCandidate(index))
-                    }
-                },
+                onCandidateClick = onCandidateSelect,
+                pageSnapshot = sessionState.candidatePage,
+                expanded = expanded,
+                onExpandCandidates = { browse(ImeCommand.OpenExpandedCandidates) },
+                onCollapseCandidates = { browse(ImeCommand.CloseExpandedCandidates) },
                 onClearComposing = {
                     onFeedback()
                     if (shouldAcceptInput()) {
@@ -262,7 +273,14 @@ fun KuYinKeyboardUi(
             Spacer(modifier = Modifier.height(4.dp))
 
             // 鍵盤主體區
-            when (mode) {
+            if (expanded) {
+                val page = sessionState.candidatePage!!
+                ExpandedCandidateGrid(page, settings.candidateFontSizeSp, currentTheme,
+                    onSelect = onCandidateSelect,
+                    onPrevious = { browse(ImeCommand.PreviousCandidatePage(page)) },
+                    onNext = { browse(ImeCommand.NextCandidatePage(page)) },
+                )
+            } else when (mode) {
                 KeyboardMode.ZHUYIN -> {
                     ZhuyinKeyboardLayout(
                         keyBgNormal = keyBgNormal,
@@ -431,139 +449,62 @@ fun CandidateBar(
     onQuickPunctuation: (String) -> Unit,
     onPasteClipboard: (String) -> Unit = {},
     onHideKeyboard: () -> Unit,
-    onOpenFeedback: () -> Unit
+    onOpenFeedback: () -> Unit,
+    pageSnapshot: CandidatePageSnapshot? = null,
+    expanded: Boolean = false,
+    onExpandCandidates: () -> Unit = {},
+    onCollapseCandidates: () -> Unit = {},
 ) {
-    val candidateBg = theme?.candidateBg ?: Color(0xFF0F172A)
-    val accentColor = theme?.keyBgAccent ?: Color(0xFF0284C7)
-    val textColor = theme?.keyTextPrimary ?: Color.White
-    val subTextColor = theme?.keyTextSub ?: Color(0xFF94A3B8)
-    val candidateCardBg = theme?.keyBgNormal ?: Color(0xFF1E293B)
-
-    // 零網路/無剪貼簿讀取政策：已移除剪貼簿自動讀取，不再存取系統剪貼簿
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(44.dp)
-            .background(candidateBg)
-            .padding(horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 拼音暫存標籤 (若有輸入)
-        AnimatedVisibility(
-            visible = composingZhuyin.isNotEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(accentColor.copy(alpha = 0.2f))
-                    .border(1.dp, accentColor.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = composingZhuyin,
-                    color = accentColor,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "清除",
-                    tint = accentColor,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clip(CircleShape)
-                        .clickable { onClearComposing() }
-                )
-            }
-        }
-
-        if (composingZhuyin.isNotEmpty()) {
-            Spacer(modifier = Modifier.width(6.dp))
-        }
-
-        // 候選字列表
-        if (candidates.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                itemsIndexed(candidates) { index, candidate ->
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .clickable { onCandidateClick(index) },
-                        color = candidateCardBg,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
-                    ) {
-                        Text(
-                            text = candidate,
-                            color = textColor,
-                            fontSize = candidateFontSizeSp.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                        )
-                    }
+    val colors = theme ?: KEYBOARD_THEMES[0]
+    Column(Modifier.fillMaxWidth().background(colors.candidateBg)) {
+        if (composingZhuyin.isNotEmpty() || expanded) {
+            Row(Modifier.fillMaxWidth().height(48.dp).padding(start = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(composingZhuyin, color = colors.keyBgAccent, fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f))
+                IconButton(onClick = onClearComposing, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.Close, "清除", tint = colors.keyBgAccent)
                 }
-            }
-        } else {
-            // 無候選字時：呈現常用標點
-            LazyRow(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                val quickPunct = listOf("，", "。", "！", "？", "、", "～", "…", "「", "」")
-                items(quickPunct) { punct ->
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .clickable { onQuickPunctuation(punct) },
-                        color = candidateCardBg
-                    ) {
-                        Text(
-                            text = punct,
-                            color = subTextColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                        )
-                    }
+                if (expanded) IconButton(onClick = onCollapseCandidates, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.ExpandLess, "收合候選", tint = colors.keyTextSub)
+                }
+                IconButton(onClick = onOpenFeedback, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.RateReview, "意見回饋與問題回報", tint = colors.keyTextSub)
+                }
+                IconButton(onClick = onHideKeyboard, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.KeyboardHide, "收起鍵盤", tint = colors.keyTextSub)
                 }
             }
         }
-
-        // 意見回饋 / 問題回報快捷鍵
-        IconButton(
-            onClick = onOpenFeedback,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.RateReview,
-                contentDescription = "意見回饋與問題回報",
-                tint = subTextColor
-            )
-        }
-
-        // 收起鍵盤圖示
-        IconButton(
-            onClick = onHideKeyboard,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardHide,
-                contentDescription = "收起鍵盤",
-                tint = subTextColor
-            )
+        if (!expanded) {
+            if (candidates.isNotEmpty() || (mode == KeyboardMode.ZHUYIN &&
+                    pageSnapshot != null && (pageSnapshot.hasPrevious || pageSnapshot.hasNext))) {
+                CandidateStrip(candidates, pageSnapshot, candidateFontSizeSp, colors,
+                    showExpand = mode == KeyboardMode.ZHUYIN && composingZhuyin.isNotEmpty(),
+                    onSelect = onCandidateClick, onExpand = onExpandCandidates)
+            } else {
+                Row(Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+                    LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp)) {
+                        items(listOf("，", "。", "！", "？", "、", "～", "…", "「", "」")) { punct ->
+                            Surface(Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                                .clickable { onQuickPunctuation(punct) },
+                                color = colors.keyBgNormal, shape = RoundedCornerShape(6.dp)) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(punct, color = colors.keyTextSub, fontSize = 16.sp)
+                                }
+                            }
+                        }
+                    }
+                    IconButton(onClick = onOpenFeedback, modifier = Modifier.size(48.dp)) {
+                        Icon(Icons.Default.RateReview, "意見回饋與問題回報", tint = colors.keyTextSub)
+                    }
+                    if (composingZhuyin.isEmpty()) IconButton(onClick = onHideKeyboard, modifier = Modifier.size(48.dp)) {
+                        Icon(Icons.Default.KeyboardHide, "收起鍵盤", tint = colors.keyTextSub)
+                    }
+                }
+            }
         }
     }
 }

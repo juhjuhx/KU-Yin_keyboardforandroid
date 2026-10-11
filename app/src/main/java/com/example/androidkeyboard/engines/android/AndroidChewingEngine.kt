@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.androidkeyboard.engines.core.ChewingEngine
 import com.example.androidkeyboard.engines.core.ChewingEngine.Layout
 import com.example.androidkeyboard.engines.core.EngineUpdate
+import com.example.androidkeyboard.engines.core.EngineCandidatePage
 
 /** Android libchewing adapter. JNI calls stay behind this boundary. */
 class AndroidChewingEngine(
@@ -283,6 +284,13 @@ class AndroidChewingEngine(
             candidates = candidates,
             committedText = committed,
             unavailableReason = unavailableReason,
+            candidatePage = if (lastTotalChoices > 0) EngineCandidatePage(
+                candidatePage, candidatePageSize,
+                (lastTotalChoices + candidatePageSize - 1) / candidatePageSize,
+                visibleCandidatePlans.map { plan ->
+                    plan.identity?.let { "native:${it.occurrence}:${it.text}" } ?: "default"
+                },
+            ) else null,
         )
     }
 

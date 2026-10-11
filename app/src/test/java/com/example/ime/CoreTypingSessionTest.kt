@@ -47,7 +47,7 @@ class CoreTypingSessionTest {
         val engine = TypingContractEngine().apply { selectionUnavailable = "候選已更新，請重新選擇" }
         val session = ChewingEngineSession(engine)
         session.dispatch(ImeCommand.TapZhuyinKey("ㄨ"))
-        val result = session.dispatch(ImeCommand.SelectCandidate(0))
+        val result = session.dispatch(ImeCommand.SelectCandidate(0, session.state.value.candidatePage?.ref(0)))
         assertNull(result.commitText)
         assertEquals(0, engine.commits)
         assertEquals("ㄨㄛ", session.state.value.preedit)
@@ -66,7 +66,7 @@ class CoreTypingSessionTest {
         val engine = TypingContractEngine()
         val session = ChewingEngineSession(engine)
         session.dispatch(ImeCommand.TapZhuyinKey("ㄨ"))
-        val result = session.dispatch(ImeCommand.SelectCandidate(0))
+        val result = session.dispatch(ImeCommand.SelectCandidate(0, session.state.value.candidatePage?.ref(0)))
         assertEquals("我", result.commitText)
         assertTrue(result.consumed)
         assertEquals(1, engine.commits)

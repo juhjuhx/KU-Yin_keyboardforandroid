@@ -17,13 +17,17 @@ class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderS
     }
 
     private fun refresh() {
+        val revision = _state.value.generation + 1
         _state.value = ComposeImeState(
             preedit = engine.composingZhuyin.value,
             candidates = engine.candidates.value,
             canPageBackward = false,
             canPageForward = false,
-            candidatesExpanded = _state.value.candidatesExpanded,
-            generation = _state.value.generation + 1,
+            candidatesExpanded = _state.value.candidatesExpanded && engine.composingZhuyin.value.isNotEmpty(),
+            generation = revision,
+            candidatePage = if (engine.composingZhuyin.value.isNotEmpty()) candidatePageSnapshot(
+                "fallback", revision, revision, engine.candidates.value,
+            ) else null,
         )
     }
 
@@ -46,6 +50,8 @@ class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderS
         when (command) {
             is ImeCommand.TapZhuyinKey -> engine.onZhuyinKey(command.char) { commit = it }
             is ImeCommand.SelectCandidate -> {
+                if (command.reference == null || command.reference != _state.value.candidatePage?.ref(command.index))
+                    return DispatchResult(null, false)
                 val candidate = _state.value.candidates.getOrNull(command.index)
                     ?: return DispatchResult(null, false)
                 engine.selectCandidate(candidate) { commit = it }
@@ -79,10 +85,15 @@ class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderS
             }
             ImeCommand.PageForward -> return DispatchResult(null, false)
             ImeCommand.PageBackward -> return DispatchResult(null, false)
-            ImeCommand.ToggleCandidatesExpanded -> {
-                _state.value = _state.value.copy(
-                    candidatesExpanded = !_state.value.candidatesExpanded
-                )
+            is ImeCommand.NextCandidatePage, is ImeCommand.PreviousCandidatePage -> return DispatchResult(null, false)
+            ImeCommand.OpenExpandedCandidates, ImeCommand.ToggleCandidatesExpanded -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+                val expanded = command == ImeCommand.OpenExpandedCandidates || !_state.value.candidatesExpanded
+                _state.value = _state.value.withExpanded(expanded)
+                return DispatchResult(null, false)
+            }
+            ImeCommand.CloseExpandedCandidates -> {
+                _state.value = _state.value.withExpanded(false, invalidate = true)
                 return DispatchResult(null, false)
             }
             ImeCommand.ClearComposing, ImeCommand.Reset -> engine.clearComposing()

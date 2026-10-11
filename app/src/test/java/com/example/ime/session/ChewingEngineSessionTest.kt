@@ -62,7 +62,7 @@ class ChewingEngineSessionTest {
         val engine = FakeChewingEngine()
         val session = ChewingEngineSession(engine)
         session.dispatch(ImeCommand.TapZhuyinKey("ㄋ"))
-        assertEquals(DispatchResult("你", true), session.dispatch(ImeCommand.SelectCandidate(0)))
+        assertEquals(DispatchResult("你", true), session.dispatch(ImeCommand.SelectCandidate(0, session.state.value.candidatePage?.ref(0))))
     }
 
     @Test

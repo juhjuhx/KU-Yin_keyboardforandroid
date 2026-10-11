@@ -31,6 +31,7 @@ class NativeTypingEditorIntegrationTest {
     private lateinit var editor: EditText
     private var activity: Activity? = null
     private var eventId = 0
+    private var commitCalls = 0
 
     @Before fun start() {
         val data = System.getProperty("kuyin.native.host.data").orEmpty()
@@ -47,6 +48,7 @@ class NativeTypingEditorIntegrationTest {
         editor.requestFocus()
         val recordingConnection = object : InputConnectionWrapper(editor.onCreateInputConnection(EditorInfo())!!, false) {
             override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
+                commitCalls++
                 val before = editor.text.toString()
                 val result = super.commitText(text, newCursorPosition)
                 println("P0R_SYNTHETIC_TRACE=" + JSONObject().put("event_id", ++eventId)
@@ -100,5 +102,22 @@ class NativeTypingEditorIntegrationTest {
         type("ㄒ", "ㄧ", "ㄢ", "ˋ", "ㄗ", "ㄞ", "ˋ")
         choose("現在")
         rule.runOnIdle { assertEquals("我現在", editor.text.toString()) }
+    }
+    @Test fun `expanded second native page selection writes exact displayed text once`() {
+        type("ㄨ", "ㄛ")
+        rule.onNodeWithContentDescription("展開候選").performClick()
+        rule.onNodeWithContentDescription("下一頁候選").performClick()
+        var label = ""
+        rule.runOnIdle {
+            label = ReflectionHelpers.getField<ComposeDecoderSession>(harness!!.service, "session")
+                .state.value.candidates.first()
+        }
+        choose(label)
+        rule.runOnIdle { assertEquals(label, editor.text.toString()); assertEquals(1, commitCalls) }
+        rule.onNodeWithTag("candidate_grid").assertDoesNotExist()
+        // Continue with real soft-key callbacks after the grid disappears.
+        type("ㄨ", "ㄛ")
+        choose("我")
+        rule.runOnIdle { assertEquals(label + "我", editor.text.toString()) }
     }
 }

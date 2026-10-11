@@ -83,7 +83,7 @@ class ChewingPagingIntegrityTest {
         session.dispatch(ImeCommand.TapZhuyinKey("ㄋ"))
         session.dispatch(ImeCommand.PageForward)
         assertEquals(listOf("c2", "c3"), session.state.value.candidates)
-        session.dispatch(ImeCommand.SelectCandidate(1))
+        session.dispatch(ImeCommand.SelectCandidate(1, session.state.value.candidatePage?.ref(1)))
         assertEquals(listOf(3), engine.chosenGlobals)
     }
 

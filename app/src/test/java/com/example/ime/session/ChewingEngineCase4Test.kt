@@ -52,7 +52,7 @@ class ChewingEngineCase4Test {
 
         listOf(
             session.dispatch(ImeCommand.TapZhuyinKey("ㄋ")),
-            session.dispatch(ImeCommand.SelectCandidate(0)),
+            session.dispatch(ImeCommand.SelectCandidate(0, session.state.value.candidatePage?.ref(0))),
             session.dispatch(ImeCommand.TapZhuyinKey("ㄏ"))
         ).mapNotNull { it.commitText }.forEach { commits.add(it) }
 
@@ -67,7 +67,7 @@ class ChewingEngineCase4Test {
     fun `out-of-range select is unconsumed and stateless`() {
         val engine = ContinuingFakeEngine()
         val session = ChewingEngineSession(engine)
-        val result = session.dispatch(ImeCommand.SelectCandidate(9))
+        val result = session.dispatch(ImeCommand.SelectCandidate(9, session.state.value.candidatePage?.ref(9)))
         assertFalse(result.consumed)
         assertEquals("", session.state.value.preedit)
     }

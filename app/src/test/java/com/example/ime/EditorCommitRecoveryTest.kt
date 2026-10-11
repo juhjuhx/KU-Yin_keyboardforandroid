@@ -111,6 +111,7 @@ class EditorCommitRecoveryTest {
                 initialSelStart = 0; initialSelEnd = 0
             }
             harness.service.onStartInput(info, false)
+            harness.service.onStartInputView(info, false)
         }
         rule.onNodeWithText("ㄨ").performClick()
         rule.runOnIdle {

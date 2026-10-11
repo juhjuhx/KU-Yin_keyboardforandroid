@@ -44,6 +44,7 @@ class KuYinInputMethodService : InputMethodService() {
     private lateinit var session: ComposeDecoderSession
     private lateinit var settings: KeyboardSettings
     private lateinit var feedbackHelper: FeedbackHelper
+    private var inputViewAccepting = false
     private var userPreferredMode: KeyboardMode = KeyboardMode.ZHUYIN
     private var nativeOwner: NativeChewingEngineOwner? = null
     private var nativeEngine: ChewingEngine? = null
@@ -123,7 +124,7 @@ class KuYinInputMethodService : InputMethodService() {
                             "敏感欄位的未確認文字已遮蔽，請自行核對。" else it
                     },
                     onDismissEditorWriteFailure = ::discardUnconfirmedText,
-                    shouldAcceptInput = { editorWriteFailure.value == null },
+                    shouldAcceptInput = { inputViewAccepting && editorWriteFailure.value == null },
                     onDeleteSurroundingText = {
                         performEditorBackspace()
                     },
@@ -131,6 +132,8 @@ class KuYinInputMethodService : InputMethodService() {
                         handleEditorAction()
                     },
                     onHideKeyboard = {
+                        inputViewAccepting = false
+                        session.dispatch(ImeCommand.CloseExpandedCandidates)
                         requestHideSelf(0)
                     },
                     onFeedback = {
@@ -154,6 +157,7 @@ class KuYinInputMethodService : InputMethodService() {
 
     override fun onStartInput(attribute: EditorInfo?, restarting: Boolean) {
         super.onStartInput(attribute, restarting)
+        inputViewAccepting = false
         finishOwnedComposition()
         editorEffects.startEditor(currentInputConnection,
             attribute?.initialSelStart ?: -1, attribute?.initialSelEnd ?: -1)
@@ -174,6 +178,7 @@ class KuYinInputMethodService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        inputViewAccepting = true
         window?.window?.decorView?.let { decor ->
             lifecycleOwner.attachToView(decor)
         }
@@ -217,6 +222,7 @@ class KuYinInputMethodService : InputMethodService() {
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
+        inputViewAccepting = false
         finishOwnedComposition()
         super.onFinishInputView(finishingInput)
         session.dispatch(ImeCommand.Reset)
@@ -225,6 +231,7 @@ class KuYinInputMethodService : InputMethodService() {
     }
 
     override fun onFinishInput() {
+        inputViewAccepting = false
         finishOwnedComposition()
         session.dispatch(ImeCommand.Reset)
         englishSession.reset()
@@ -243,6 +250,7 @@ class KuYinInputMethodService : InputMethodService() {
     }
 
     private fun performEditorBackspace() {
+        if (!inputViewAccepting) return
         if (editorWriteFailure.value != null) return
         val ic = currentInputConnection ?: return
         val hasSelection = !ic.getSelectedText(0).isNullOrEmpty()
@@ -262,6 +270,7 @@ class KuYinInputMethodService : InputMethodService() {
     }
 
     private fun handleEditorAction() {
+        if (!inputViewAccepting) return
         if (editorWriteFailure.value != null) return
         val ic = currentInputConnection ?: return
         when (val behavior = currentEnterPolicy.value.behavior) {

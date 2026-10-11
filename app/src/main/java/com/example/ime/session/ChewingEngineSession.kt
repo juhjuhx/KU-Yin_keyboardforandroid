@@ -14,23 +14,32 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
 
     private val _state = MutableStateFlow(ComposeImeState())
     override val state: StateFlow<ComposeImeState> = _state.asStateFlow()
+    private var compositionGeneration = 0L
 
-    private fun project(update: EngineUpdate): DispatchResult {
+    private fun project(update: EngineUpdate, compositionChanged: Boolean = true): DispatchResult {
+        if (compositionChanged) compositionGeneration++
+        val revision = _state.value.generation + 1
+        val backward = engine.canPageCandidatesBackward()
+        val forward = engine.canPageCandidatesForward()
         _state.value = ComposeImeState(
             preedit = update.preedit,
             candidates = update.candidates,
-            canPageBackward = engine.canPageCandidatesBackward(),
-            canPageForward = engine.canPageCandidatesForward(),
-            candidatesExpanded = _state.value.candidatesExpanded,
-            generation = _state.value.generation + 1,
+            canPageBackward = backward,
+            canPageForward = forward,
+            candidatesExpanded = _state.value.candidatesExpanded && update.preedit.isNotEmpty(),
+            generation = revision,
             unavailableReason = update.unavailableReason,
+            candidatePage = if (update.preedit.isNotEmpty()) candidatePageSnapshot(
+                "libchewing", revision, compositionGeneration, update.candidates,
+                update.candidatePage, backward, forward,
+            ) else null,
         )
         return DispatchResult(update.committedText.takeIf { it.isNotEmpty() }, update.consumed)
     }
 
     private fun resetState() {
-        _state.value = ComposeImeState(candidatesExpanded = _state.value.candidatesExpanded,
-            generation = _state.value.generation + 1)
+        compositionGeneration++
+        _state.value = ComposeImeState(generation = _state.value.generation + 1)
     }
 
     private fun completeComposition(): DispatchResult {
@@ -50,6 +59,8 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
                 if (command.index !in _state.value.candidates.indices) {
                     return DispatchResult(null, false)
                 }
+                if (command.reference == null || command.reference != _state.value.candidatePage?.ref(command.index))
+                    return DispatchResult(null, false)
                 val selected = engine.selectCandidateUpdate(command.index)
                 // Native choice replaces the composing interval; it is not yet
                 // an Android editor write. A visible candidate tap completes it.
@@ -70,18 +81,32 @@ class ChewingEngineSession(private val engine: ChewingEngine) : ComposeDecoderSe
                 return DispatchResult(flushed.commitText, true, listOf(command.text))
             }
             ImeCommand.Enter, ImeCommand.Complete -> return completeComposition()
+            is ImeCommand.NextCandidatePage -> {
+                if (command.snapshot != _state.value.candidatePage) return DispatchResult(null, false)
+                val update = engine.nextPageUpdate() ?: return DispatchResult(null, false)
+                return project(update, compositionChanged = false)
+            }
+            is ImeCommand.PreviousCandidatePage -> {
+                if (command.snapshot != _state.value.candidatePage) return DispatchResult(null, false)
+                val update = engine.prevPageUpdate() ?: return DispatchResult(null, false)
+                return project(update, compositionChanged = false)
+            }
             ImeCommand.PageForward -> {
                 val update = engine.nextPageUpdate() ?: return DispatchResult(null, false)
-                return project(update)
+                return project(update, compositionChanged = false)
             }
             ImeCommand.PageBackward -> {
                 val update = engine.prevPageUpdate() ?: return DispatchResult(null, false)
-                return project(update)
+                return project(update, compositionChanged = false)
             }
-            ImeCommand.ToggleCandidatesExpanded -> {
-                _state.value = _state.value.copy(
-                    candidatesExpanded = !_state.value.candidatesExpanded
-                )
+            ImeCommand.OpenExpandedCandidates, ImeCommand.ToggleCandidatesExpanded -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+                val expanded = command == ImeCommand.OpenExpandedCandidates || !_state.value.candidatesExpanded
+                _state.value = _state.value.withExpanded(expanded)
+                return DispatchResult(null, false)
+            }
+            ImeCommand.CloseExpandedCandidates -> {
+                _state.value = _state.value.withExpanded(false, invalidate = true)
                 return DispatchResult(null, false)
             }
             ImeCommand.ClearComposing, ImeCommand.Reset -> {

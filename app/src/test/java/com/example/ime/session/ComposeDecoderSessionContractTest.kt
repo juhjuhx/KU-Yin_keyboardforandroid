@@ -59,7 +59,7 @@ class ComposeDecoderSessionContractTest {
     @Test
     fun `selecting from empty candidates commits nothing`() {
         val session = FakeSession()
-        val result = session.dispatch(ImeCommand.SelectCandidate(0))
+        val result = session.dispatch(ImeCommand.SelectCandidate(0, session.state.value.candidatePage?.ref(0)))
         assertNull(result.commitText)
         assertFalse(result.consumed)
         assertTrue(session.state.value.candidates.isEmpty())

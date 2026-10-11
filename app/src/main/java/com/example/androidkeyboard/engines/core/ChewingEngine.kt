@@ -7,6 +7,15 @@ data class EngineUpdate(
     val candidates: List<String>,
     val committedText: String,
     val unavailableReason: String? = null,
+    val candidatePage: EngineCandidatePage? = null,
+)
+
+/** Page of adapter plans; totals are not a count of unique display strings. */
+data class EngineCandidatePage(
+    val pageIndex: Int,
+    val pageSize: Int,
+    val totalPages: Int?,
+    val selectionIds: List<String>,
 )
 
 /**
