@@ -1,0 +1,43 @@
+{
+  "source_code_sha": "75b93a3b68867fd6ec4c6adadd3e279d71e98104",
+  "base_sha": "94e91916d481959fb73e0adf37edb76764b26bed",
+  "APK_PATH": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/app-debug.apk",
+  "APK_SIZE": 29158832,
+  "APK_SHA256": "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9",
+  "applicationId": "io.github.juhjuhx.kuyin",
+  "versionCode": "20001",
+  "versionName": "0.2.0-alpha.1",
+  "debuggable": true,
+  "allowBackup": false,
+  "merged_permissions": [
+    "io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+  ],
+  "self_signature_permission": "io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+  "no_INTERNET_or_VIBRATE": true,
+  "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86",
+    "x86_64"
+  ],
+  "native_entries": [
+    "lib/arm64-v8a/libandroidx.graphics.path.so",
+    "lib/arm64-v8a/libchewing-jni.so",
+    "lib/armeabi-v7a/libandroidx.graphics.path.so",
+    "lib/armeabi-v7a/libchewing-jni.so",
+    "lib/x86/libandroidx.graphics.path.so",
+    "lib/x86/libchewing-jni.so",
+    "lib/x86_64/libandroidx.graphics.path.so",
+    "lib/x86_64/libchewing-jni.so"
+  ],
+  "dictionary_entries": [
+    "assets/libchewing/swkb.dat",
+    "assets/libchewing/symbols.dat",
+    "assets/libchewing/tsi.dat",
+    "assets/libchewing/word.dat"
+  ],
+  "runtime_status": "NOT_TESTED",
+  "signature_verify_exit": 0,
+  "manifest_print_exit": 0,
+  "debug_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94"
+}

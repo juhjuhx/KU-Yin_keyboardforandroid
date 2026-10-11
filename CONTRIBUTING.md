@@ -24,9 +24,9 @@ python3 scripts/check_p1_build_contract.py
 python3 scripts/check_p2_ui_contract.py
 python3 scripts/check_p3_architecture_security_contract.py
 bash scripts/bootstrap_native_deps.sh
-gradle testDebugUnitTest --stacktrace
-gradle assembleDebug --stacktrace
-gradle assembleRelease --stacktrace
+./gradlew testDebugUnitTest --stacktrace
+./gradlew assembleDebug --stacktrace
+./gradlew assembleRelease --stacktrace
 ```
 
 Python contracts 是快速 preflight；Kotlin 行为以 JVM tests 为主要 truth。涉及 IME lifecycle / native 的修改应附 runtime evidence。
@@ -48,3 +48,9 @@ Conventional Commit 风格推荐：`fix(input): ...`、`test(session): ...`、`d
 ## License
 
 提交到本仓库的贡献按仓库 `LICENSE` 与适用上游义务处理。若引入第三方代码，请同时补齐 provenance / NOTICE 信息。
+
+## AIE Alpha 發布檢查
+
+修改 Python 工具時執行 `python3 -m unittest discover -s scripts/tests -v`。CI runtime smoke 只操作隔離 emulator；實機必須依對應版本 runbook 保存與還原狀態。
+
+發布 exact APK 時一併提供 source/relink materials、license notices、SHA256、signer及版本資訊。不得以不同 Debug key 的 CI APK替代既有可更新檔案，不提交私鑰、個人字典或裝置狀態。Compile／fake ADB／Robolectric／實機證據分開說明；Alpha不代表production ready。

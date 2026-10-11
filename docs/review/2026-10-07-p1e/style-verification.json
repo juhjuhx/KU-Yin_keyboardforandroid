@@ -1,0 +1,17 @@
+{
+  "source_and_document_diff_check": "PASS",
+  "markdown_links": "PASS",
+  "raw_stdout_preserved": true,
+  "raw_log_whitespace_observations": [
+    {
+      "file": "app-release.log",
+      "lines": [
+        85,
+        87,
+        91
+      ],
+      "classification": "ORIGINAL_GRADLE_OUTPUT_NOT_CODE"
+    }
+  ],
+  "lsp_diagnostics": "UNAVAILABLE"
+}

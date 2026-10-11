@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import com.example.BuildConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -136,14 +137,14 @@ fun UpstreamSyncCard(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("本地安裝版本", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("v0.2.0-alpha.1 (離線發行版)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
+                        Text("v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
                     }
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("繁體大千注音詞庫", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                        Text("1250+ 詞組 (完整性已校驗)", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF16A34A))
+                        Text("隨 App 提供的離線詞庫", style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = Color(0xFF16A34A))
                     }
 
                     HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))

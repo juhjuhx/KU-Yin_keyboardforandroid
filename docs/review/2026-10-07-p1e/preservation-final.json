@@ -1,0 +1,55 @@
+{
+  "original_worktrees_checked": 8,
+  "unchanged": true,
+  "frozen_artifacts_verified": 3,
+  "worktrees": [
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid",
+      "head": "fe1e96fb29ba2555b176b8889380a3ce9b2e9fb9",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 2
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline",
+      "head": "3d86f7538c47dc929e25cdb0bd0755f8cc3bad60",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 5
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch",
+      "head": "e72acb3d2ba1f58c25821d40dfb64bc54cee8c87",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 8
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/fix-pre-c4-production-hardening",
+      "head": "3f0297652aa427666220885af976eeba53f95efe",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 0
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline",
+      "head": "3d86f7538c47dc929e25cdb0bd0755f8cc3bad60",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 5
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance",
+      "head": "5c6bcad34c4048e40ce4e871e70e176c10195bcf",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 0
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1a-native-startup-hardening",
+      "head": "870fc03cbfe8e5107b8ff8dc13478ac7754eec9f",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 0
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy",
+      "head": "94e91916d481959fb73e0adf37edb76764b26bed",
+      "status_identical": true,
+      "dirty_file_hashes_checked": 0
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" tests="22" skipped="0" failures="0" errors="0" timestamp="2026-10-07T15:20:35.035Z" hostname="MacBook-Air.local" time="0.018">
+  <properties/>
+  <testcase name="wrongLabelTypeIsRejected" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.004"/>
+  <testcase name="customIdZeroIsValid" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="customZeroActionCounts" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.002"/>
+  <testcase name="preservesTypeNull" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="emptyCustomLabelIsNotMissing" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="nullLabelIsAllowed" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="wrongIntTypeIsRejected" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.002"/>
+  <testcase name="wrongBooleanTypeIsRejected" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="snapshotsRemainImmutableAndAdvanceRevision" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="falseActionStillCountsAndDoesNotInsertText" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="commitObservationDoesNotFakeEditableText" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="nullConnectionIsRepresentedHonestly" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="defaultsAreExplicit" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="unknownExtrasDoNotAffectDefaults" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="carriageReturnIsNotInventedAsNewline" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="newlineCountComesFromActualText" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="initialTextIsObserved" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="connectionRecordsActualPlatformAndFinalSeparately" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="nonPositiveMinLinesIsRejected" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="parsesAllPrimitiveExtras" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.001"/>
+  <testcase name="trueActionCountsExactIds" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <testcase name="explicitNullIntIsRejected" classname="io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

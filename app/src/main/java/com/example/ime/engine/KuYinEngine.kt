@@ -1,6 +1,8 @@
 package com.example.ime.engine
 
 import android.content.Context
+import com.example.androidkeyboard.input.EditorAction
+import com.example.androidkeyboard.input.EditorPolicy
 import com.example.ime.api.IKuYinEngine
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,19 @@ class KuYinEngine(context: Context) : IKuYinEngine {
 
     val dictionary = ZhuyinDictionary(context)
 
+    private var policy: EditorPolicy = EditorPolicy(
+        isSensitive = false,
+        allowPersonalizedLearning = true,
+        allowCandidates = true,
+        allowComposition = true,
+        forceAscii = false,
+        action = EditorAction.UNSPECIFIED
+    )
+
+    fun applyPolicy(policy: EditorPolicy) {
+        this.policy = policy
+    }
+
     // 當前模式
     private val _mode = MutableStateFlow(KeyboardMode.ZHUYIN)
     override val mode: StateFlow<KeyboardMode> = _mode.asStateFlow()
@@ -40,21 +55,21 @@ class KuYinEngine(context: Context) : IKuYinEngine {
     override val candidates: StateFlow<List<String>> = _candidates.asStateFlow()
 
     override fun setMode(newMode: KeyboardMode) {
+        if (newMode == KeyboardMode.ZHUYIN && !policy.allowComposition) return
         _mode.value = newMode
         if (newMode != KeyboardMode.ZHUYIN) {
             clearComposing()
         }
     }
 
-    // 切換中英文/符號模式時，若有未上屏之暫存注音或候選字，自動提交上屏
-    override fun switchMode(newMode: KeyboardMode, onCommit: (String) -> Unit) {
-        if (_composingZhuyin.value.isNotEmpty()) {
-            val commitText = _candidates.value.firstOrNull() ?: _composingZhuyin.value
-            onCommit(commitText)
-            dictionary.recordWordSelection(commitText)
+    // Legacy entry point kept for API stability: production completes composition
+    // via session BEFORE switching, so this only flips presentation mode now.
+    override fun switchMode(newMode: KeyboardMode, _onCommit: (String) -> Unit) {
+        if (newMode == KeyboardMode.ZHUYIN && !policy.allowComposition) return
+        _mode.value = newMode
+        if (newMode != KeyboardMode.ZHUYIN) {
             clearComposing()
         }
-        _mode.value = newMode
     }
 
     override fun toggleShift() {
@@ -67,6 +82,7 @@ class KuYinEngine(context: Context) : IKuYinEngine {
 
     // 處理注音按鍵輸入 (支援新酷音 / RIME 首字母縮寫與長詞連打，如 ㄨㄕㄕ、ㄨㄛㄕㄕㄟ、ㄨㄛˇㄕˋㄕㄟˊ -> 我是誰)
     override fun onZhuyinKey(zhuyinChar: String, onCommit: (String) -> Unit) {
+        if (!policy.allowComposition) return
         val current = _composingZhuyin.value
 
         if (ZhuyinConstants.isTone(zhuyinChar)) {
@@ -93,7 +109,7 @@ class KuYinEngine(context: Context) : IKuYinEngine {
     // 處理候選字選取
     override fun selectCandidate(candidate: String, onCommit: (String) -> Unit) {
         onCommit(candidate)
-        dictionary.recordWordSelection(candidate)
+        if (policy.allowPersonalizedLearning) dictionary.recordWordSelection(candidate)
         clearComposing()
     }
 
@@ -114,6 +130,14 @@ class KuYinEngine(context: Context) : IKuYinEngine {
             // 無暫存注音，直接送出標準空格
             onCommit(" ")
         }
+    }
+
+    // 標點提交：有組字時先按空白鍵政策排空，再送標點，避免繞過 state machine 留下 stale composition
+    fun commitPunctuation(punct: String, onCommit: (String) -> Unit) {
+        if (_composingZhuyin.value.isNotEmpty()) {
+            onSpace(onCommit)
+        }
+        onCommit(punct)
     }
 
     // 處理刪除鍵 (Backspace)

@@ -1,0 +1,32 @@
+		ADDED from [androidx.window:window:1.0.0] /Users/huang/.gradle/caches/9.3.1/transforms/ab221dd20341305f35b6ece1221b532b/transformed/window-1.0.0/AndroidManifest.xml:29:13-51
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+permission#io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+permission#io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+uses-permission#io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+uses-permission#io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.18.0] /Users/huang/.gradle/caches/9.3.1/transforms/ecc68afd26c8af23022556110aeda110/transformed/core-1.18.0/AndroidManifest.xml:26:22-94
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.8.7] /Users/huang/.gradle/caches/9.3.1/transforms/986134e4d5e532876230da5d310974c6/transformed/lifecycle-process-2.8.7/AndroidManifest.xml:29:13-31:52
+	android:value

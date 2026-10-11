@@ -1,0 +1,25 @@
+{
+  "base_sha": "5c6bcad34c4048e40ce4e871e70e176c10195bcf",
+  "branch": "test/p1-alpha-acceptance-fixture",
+  "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture",
+  "common_repo": "/Users/huang/KU-Yin_keyboardforandroid/.git",
+  "initial_status": "CLEAN",
+  "preservation_snapshot": "/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/kuyin-p1e-bsz80o1z/preservation.json",
+  "frozen_artifacts": [
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/app-debug.apk",
+      "bytes": 29158832,
+      "sha256": "b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9"
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/app-debug-androidTest.apk",
+      "bytes": 965496,
+      "sha256": "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd"
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/KU-Yin-P1-Alpha驗收包.zip",
+      "bytes": 30148078,
+      "sha256": "556e16317f716e8dfd04ec32f8190465fb4f7393952fcf98b4aaad0fd6fbc268"
+    }
+  ]
+}

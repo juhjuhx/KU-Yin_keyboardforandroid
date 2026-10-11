@@ -1,0 +1,13 @@
+{
+  "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/build/p1-alpha-acceptance-v2-fixture/KU-Yin-P1-Alpha驗收包-v2-fixture.zip",
+  "bytes": 28096851,
+  "sha256": "787d44f788b172dad942087fcffb2e34e1bdad8bfcdeebb7a02b086ab5a3e65d",
+  "zip_crc": "PASS",
+  "entry_count": 418,
+  "apk_hashes_verified_inside_zip": 4,
+  "portable_runner_artifacts": "PASS",
+  "fixture_source_sha": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "final_handoff_outside_zip": true,
+  "runtime": "NOT_TESTED",
+  "physical_acceptance": "OPEN"
+}

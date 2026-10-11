@@ -1,0 +1,82 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_ci_c4_trigger.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_ci_c4_trigger.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_dachen_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_dachen_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs_consistency.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_docs_consistency.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_editor_sync_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_editor_sync_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_ndk_pin_consistency.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_ndk_pin_consistency.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_p0_keyboard_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_p0_keyboard_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_p1_build_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_p1_build_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_p2_ui_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_p2_ui_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_p3_architecture_security_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_p3_architecture_security_contract.log"
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_production_compose_contract.py"
+    ],
+    "exit": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/check_production_compose_contract.log"
+  }
+]

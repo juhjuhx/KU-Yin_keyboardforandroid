@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.androidkeyboard.input.EditorPolicyTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:39.434Z" hostname="MacBook-Air.local" time="0.001">
+  <properties/>
+  <testcase name="visiblePasswordIsStillSensitive" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="textPasswordIsSensitiveAndSuppressesCompositionAndCandidates" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="noPersonalizedLearningDisablesLearningWithoutMakingNormalFieldSensitive" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="nonTextEditorsDisableCompositionCandidatesAndLearning" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.001"/>
+  <testcase name="editorActionsAreNormalizedIntoDomainEnum" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="webPasswordIsSensitive" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="forceAsciiSuppressesChewingCompositionAndCandidates" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="ordinaryTextVariationsKeepCompositionAndLearning" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="numericPasswordIsSensitive" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <testcase name="normalTextAllowsChewingAndPersonalizedLearning" classname="com.example.androidkeyboard.input.EditorPolicyTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

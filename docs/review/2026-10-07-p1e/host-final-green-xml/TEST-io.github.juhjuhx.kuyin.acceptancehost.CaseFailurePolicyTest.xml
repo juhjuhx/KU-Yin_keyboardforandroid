@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-10-07T15:20:35.022Z" hostname="MacBook-Air.local" time="0.009">
+  <properties/>
+  <testcase name="sameThrowableDoesNotCreateSelfSuppression" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.001"/>
+  <testcase name="genuineCleanupOverridesJUnitAssumption" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.003"/>
+  <testcase name="solePrimaryIsPreserved" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="twoScopeLimitationsRemainInconclusiveWithBothReasons" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="twoGenuineFailuresPreserveBoth" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="noFailureRemainsSuccess" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="genuineCleanupOverridesInconclusiveAndKeepsScopeReason" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="soleCleanupFailureMustFail" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.0"/>
+  <testcase name="genuinePrimaryIsNotDowngradedByInconclusiveCleanup" classname="io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

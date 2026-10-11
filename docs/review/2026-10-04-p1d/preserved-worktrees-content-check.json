@@ -1,0 +1,125 @@
+{
+  "note": "只核對既有dirty檔bytes；git status因工具EMFILE無法重新執行",
+  "files": [
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/AGENTS.md",
+      "expected": "88778398472cab4508c901eaf5a11e308c34c09432307fa9dacb8ae87ada51f4",
+      "actual": "88778398472cab4508c901eaf5a11e308c34c09432307fa9dacb8ae87ada51f4",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/docs/HANDOFF-2026-09-22-compact.md",
+      "expected": "598b2e1018640ac7257af92857e2f1f430357f4e851a49694db315a4e8b6421c",
+      "actual": "598b2e1018640ac7257af92857e2f1f430357f4e851a49694db315a4e8b6421c",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline/AGENTS.md",
+      "expected": "73d597f82219cd89c29d4b02a2b76fd53ffa98d94b58b567b591c4d5fc232af2",
+      "actual": "73d597f82219cd89c29d4b02a2b76fd53ffa98d94b58b567b591c4d5fc232af2",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline/docs/ARCHITECTURE.md",
+      "expected": "b643837cb31af46bf9e7da713deddc08c8cef4f23d378c871c47663201a44c2f",
+      "actual": "b643837cb31af46bf9e7da713deddc08c8cef4f23d378c871c47663201a44c2f",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline/docs/CURRENT_STATE.md",
+      "expected": "8f96e1eedf9a253c975008f53f2252c847ab5911171aa14ea58350e30b2c73ea",
+      "actual": "8f96e1eedf9a253c975008f53f2252c847ab5911171aa14ea58350e30b2c73ea",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline/KU_YIN_C4_CLEAN_BASELINE.md",
+      "expected": "29db5051aae8ce89b73b3c1737082832f4bbedeb9ef4803468b45df86d576383",
+      "actual": "29db5051aae8ce89b73b3c1737082832f4bbedeb9ef4803468b45df86d576383",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline/KU_YIN_DOC_RECONCILIATION.md",
+      "expected": "2564a0990f6a62b6ee35394183be5dcd829a699fdd0b456e42bc93ca16503f13",
+      "actual": "2564a0990f6a62b6ee35394183be5dcd829a699fdd0b456e42bc93ca16503f13",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/main/java/com/example/ime/KuYinInputMethodService.kt",
+      "expected": "e7de283c626584367a2609d2c2f6ac533e20edf9135026b8d8eb79e836cb5822",
+      "actual": "e7de283c626584367a2609d2c2f6ac533e20edf9135026b8d8eb79e836cb5822",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/main/java/com/example/ime/engine/KuYinEngine.kt",
+      "expected": "d18d82b1e39a500d730f4017303e6b9efbd5c9254b0a9d8531da8aaf5f309176",
+      "actual": "d18d82b1e39a500d730f4017303e6b9efbd5c9254b0a9d8531da8aaf5f309176",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/main/java/com/example/ime/session/ChewingEngineSession.kt",
+      "expected": "3ab71bb11301b56382eca3d2a499c0fc3db5dbb1a3ec4e407c768cc7d69af89e",
+      "actual": "3ab71bb11301b56382eca3d2a499c0fc3db5dbb1a3ec4e407c768cc7d69af89e",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/main/java/com/example/ime/session/ZhuyinDictionarySession.kt",
+      "expected": "944522af825f53e6eb70d1b923eeadf164b8703ef8eb5bc4363fef04722841e7",
+      "actual": "944522af825f53e6eb70d1b923eeadf164b8703ef8eb5bc4363fef04722841e7",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt",
+      "expected": "325bd42796061d3de18c72f05515705b0ecce77f0a79fe1b2ea5b8c12e55cd58",
+      "actual": "325bd42796061d3de18c72f05515705b0ecce77f0a79fe1b2ea5b8c12e55cd58",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/KU_YIN_DIRTY_FORENSICS_FINAL.md",
+      "expected": "2ab1c54a031aa5e00f379f3523e19078316657e9b66d0247b293ab87a9a6e471",
+      "actual": "2ab1c54a031aa5e00f379f3523e19078316657e9b66d0247b293ab87a9a6e471",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/test/java/com/example/ime/engine/EditorForcedModeRestorationTest.kt",
+      "expected": "32e697c27f8f45d2f5521b2cf0c8b464503e9c53145158f55d20be0c1bbbfbe9",
+      "actual": "32e697c27f8f45d2f5521b2cf0c8b464503e9c53145158f55d20be0c1bbbfbe9",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch/app/src/test/java/com/example/ime/session/EnterSessionTest.kt",
+      "expected": "67a5d31de5aaebcc657d93abcf1ac54d71fd7e902e45d1e8ec55140b3a7074c1",
+      "actual": "67a5d31de5aaebcc657d93abcf1ac54d71fd7e902e45d1e8ec55140b3a7074c1",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline/app/build.gradle.kts",
+      "expected": "4e9e21785e69db98b5ebf7f9b102fb9465fb330a24d5f7f8305b3574f872dc54",
+      "actual": "4e9e21785e69db98b5ebf7f9b102fb9465fb330a24d5f7f8305b3574f872dc54",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline/KU_YIN_M4A1A_FINAL.md",
+      "expected": "7a54ae575aed362d750c3fa5ff70c6860107db324b49d650a1a7813ca4aef6ad",
+      "actual": "7a54ae575aed362d750c3fa5ff70c6860107db324b49d650a1a7813ca4aef6ad",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline/KU_YIN_M4A1B_FINAL.md",
+      "expected": "fa17e4ce6689a80604f665f289b9e64111f929d1d3a09ccfe01692820a210adb",
+      "actual": "fa17e4ce6689a80604f665f289b9e64111f929d1d3a09ccfe01692820a210adb",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline/app/src/androidTest/java/com/example/ime/benchmark/FrameQualityBenchmark.kt",
+      "expected": "c2bd8af0c998ac1e4dd3514f4832085fb7eb384aa109141cd3c674e88aa5bfee",
+      "actual": "c2bd8af0c998ac1e4dd3514f4832085fb7eb384aa109141cd3c674e88aa5bfee",
+      "unchanged": true
+    },
+    {
+      "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline/app/src/androidTest/java/com/example/ime/benchmark/SessionLatencyBenchmark.kt",
+      "expected": "30865d0aedb257379e06e1bb1ffc6a3a1be33c3a245ac25f923fe9a52d86194b",
+      "actual": "30865d0aedb257379e06e1bb1ffc6a3a1be33c3a245ac25f923fe9a52d86194b",
+      "unchanged": true
+    }
+  ]
+}

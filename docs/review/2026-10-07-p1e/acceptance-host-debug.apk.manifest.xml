@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionCode="1"
+    android:versionName="1.0-p1e"
+    android:compileSdkVersion="36"
+    android:compileSdkVersionCodename="16"
+    package="io.github.juhjuhx.kuyin.acceptancehost"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16">
+
+    <uses-sdk
+        android:minSdkVersion="24"
+        android:targetSdkVersion="36" />
+
+    <application
+        android:theme="@ref/0x1030241"
+        android:label="KU-Yin 驗收編輯器"
+        android:debuggable="true"
+        android:testOnly="true"
+        android:allowBackup="false"
+        android:extractNativeLibs="false">
+
+        <activity
+            android:name="io.github.juhjuhx.kuyin.acceptancehost.AcceptanceEditorActivity"
+            android:exported="true"
+            android:configChanges="0x480"
+            android:windowSoftInputMode="0x15" />
+    </application>
+</manifest>

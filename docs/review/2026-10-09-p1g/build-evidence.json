@@ -1,0 +1,126 @@
+{
+  "jvm": {
+    "app": {
+      "classes": 40,
+      "tests": 190,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "acceptance-host": {
+      "classes": 3,
+      "tests": 37,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    }
+  },
+  "commands": {
+    "contracts": {
+      "command": [
+        "python3",
+        "scripts/verify.py",
+        "--static"
+      ],
+      "exit": 0,
+      "time": "2026-10-09T10:02:59.463773+08:00",
+      "summary": [],
+      "failures": []
+    },
+    "bootstrap-network": {
+      "command": [
+        "bash",
+        "scripts/bootstrap_native_deps.sh"
+      ],
+      "exit": 0,
+      "time": "2026-10-09T10:03:46.742279+08:00",
+      "summary": [],
+      "failures": []
+    },
+    "gradle-debug-permitted": {
+      "command": [
+        "./gradlew",
+        ":acceptance-host:testDebugUnitTest",
+        ":acceptance-host:assembleDebug",
+        ":acceptance-host:assembleDebugAndroidTest",
+        ":app:assembleDebugAndroidTest",
+        ":app:testDebugUnitTest",
+        ":app:assembleDebug",
+        "--no-build-cache",
+        "--console=plain"
+      ],
+      "exit": 0,
+      "time": "2026-10-09T10:08:14.596992+08:00",
+      "summary": [],
+      "failures": []
+    },
+    "gradle-release": {
+      "command": [
+        "./gradlew",
+        ":app:assembleRelease",
+        "--no-build-cache",
+        "--console=plain"
+      ],
+      "exit": 1,
+      "time": "2026-10-09T22:22:53.724710+08:00",
+      "summary": [
+        "FAILED",
+        "FAILED in 59s"
+      ],
+      "failures": []
+    },
+    "payload-schema-green": {
+      "command": [
+        "python3",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_p*.py",
+        "-v"
+      ],
+      "exit": 0,
+      "time": "2026-10-09T22:21:10.435779+08:00",
+      "summary": [
+        "FAILED_UPDATE_INCOMPATIBLE]; RESTORE_ERROR=BLOCKED_SUBTYPE_RESTORE_UNSUPPORTED：未核對的 Android API subtype profile; RESTORE_RESULT=FAIL",
+        "Ran 101 tests in 0.556s",
+        "OK"
+      ],
+      "failures": []
+    }
+  },
+  "frozen_apk_identities": [
+    {
+      "file": "app-debug.apk",
+      "signer_exit": 0,
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "manifest_exit": 0,
+      "application_id": "io.github.juhjuhx.kuyin"
+    },
+    {
+      "file": "app-debug-androidTest.apk",
+      "signer_exit": 0,
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "manifest_exit": 0,
+      "application_id": "io.github.juhjuhx.kuyin.test"
+    },
+    {
+      "file": "acceptance-host-debug.apk",
+      "signer_exit": 0,
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "manifest_exit": 0,
+      "application_id": "io.github.juhjuhx.kuyin.acceptancehost"
+    },
+    {
+      "file": "acceptance-host-debug-androidTest.apk",
+      "signer_exit": 0,
+      "signer_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+      "manifest_exit": 0,
+      "application_id": "io.github.juhjuhx.kuyin.acceptancehost.test"
+    }
+  ],
+  "lsp_diagnostics": "TOOL_NOT_AVAILABLE; full Python imports/tests and Android compiler gates used"
+}

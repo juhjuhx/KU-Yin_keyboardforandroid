@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.ProductionEditorPolicyTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:28:36.484Z" hostname="MacBook-Air.local" time="0.056">
+  <properties/>
+  <testcase name="force ASCII cannot return to Zhuyin composition" classname="com.example.ime.ProductionEditorPolicyTest" time="0.007"/>
+  <testcase name="text password disables learning" classname="com.example.ime.ProductionEditorPolicyTest" time="0.008"/>
+  <testcase name="visible password disables learning" classname="com.example.ime.ProductionEditorPolicyTest" time="0.007"/>
+  <testcase name="normal editor allows learning" classname="com.example.ime.ProductionEditorPolicyTest" time="0.01"/>
+  <testcase name="numeric password disables learning" classname="com.example.ime.ProductionEditorPolicyTest" time="0.007"/>
+  <testcase name="web password disables learning" classname="com.example.ime.ProductionEditorPolicyTest" time="0.007"/>
+  <testcase name="no-learning editor selection does not mutate frequency" classname="com.example.ime.ProductionEditorPolicyTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

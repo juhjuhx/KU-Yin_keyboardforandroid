@@ -1,0 +1,13 @@
+{
+  "path": "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance/build/p1-alpha-acceptance/app-debug-androidTest.apk",
+  "bytes": 965496,
+  "sha256": "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd",
+  "package": "io.github.juhjuhx.kuyin.test",
+  "targetPackage": "io.github.juhjuhx.kuyin",
+  "runner": "androidx.test.runner.AndroidJUnitRunner",
+  "signature_verify_exit": 0,
+  "debug_certificate_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+  "certificate_matches_app": true,
+  "runtime": "NOT_TESTED",
+  "production_source_modified": false
+}

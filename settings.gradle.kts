@@ -25,3 +25,4 @@ dependencyResolutionManagement {
 rootProject.name = "KU-Yin Keyboard"
 
 include(":app")
+include(":acceptance-host")

@@ -52,19 +52,19 @@ class ImeRuntimeSmokeTest {
         val listed = waitForRegisteredIme()
         assertTrue(
             "KU-Yin must be installed as an IME. Installed IMEs:\n$listed",
-            listed.contains(APP_PACKAGE),
+            listed.contains(appPackage),
         )
 
         val enabled = waitForEnabledIme()
         assertTrue(
             "runtime fixture must pre-enable KU-Yin. Enabled IMEs:\n$enabled",
-            enabled.contains(APP_PACKAGE),
+            enabled.contains(appPackage),
         )
 
         val selected = waitForSelectedIme()
         assertTrue(
             "runtime fixture must pre-select KU-Yin. default_input_method: '$selected'",
-            selected.contains(APP_PACKAGE) && selected.contains("ChewingInputMethodService"),
+            selected.contains(appPackage) && selected.contains(PRODUCTION_IME_SERVICE),
         )
 
         ActivityScenario.launch(ImeHostActivity::class.java).use { scenario ->
@@ -79,15 +79,18 @@ class ImeRuntimeSmokeTest {
         val dump = shell("dumpsys input_method")
         assertTrue(
             "InputMethodManager should still reference KU-Yin after the smoke flow",
-            dump.contains(APP_PACKAGE) && dump.contains("ChewingInputMethodService"),
+            dump.contains(appPackage) && dump.contains(PRODUCTION_IME_SERVICE),
         )
     }
+
+    private val appPackage: String
+        get() = instrumentation.targetContext.packageName
 
     private fun waitForRegisteredIme(): String {
         var lastOutput = ""
         repeat(POLL_ATTEMPTS) {
             lastOutput = shell("ime list -s -a")
-            if (lastOutput.contains(APP_PACKAGE)) return lastOutput
+            if (lastOutput.contains(appPackage)) return lastOutput
             SystemClock.sleep(POLL_INTERVAL_MS)
         }
         return lastOutput
@@ -97,7 +100,7 @@ class ImeRuntimeSmokeTest {
         var lastOutput = ""
         repeat(POLL_ATTEMPTS) {
             lastOutput = shell("ime list -s")
-            if (lastOutput.contains(APP_PACKAGE)) return lastOutput
+            if (lastOutput.contains(appPackage)) return lastOutput
             SystemClock.sleep(POLL_INTERVAL_MS)
         }
         return lastOutput
@@ -107,7 +110,7 @@ class ImeRuntimeSmokeTest {
         var lastOutput = ""
         repeat(POLL_ATTEMPTS) {
             lastOutput = shell("settings get secure default_input_method").trim()
-            if (lastOutput.contains(APP_PACKAGE) && lastOutput.contains("ChewingInputMethodService")) {
+            if (lastOutput.contains(appPackage) && lastOutput.contains(PRODUCTION_IME_SERVICE)) {
                 return lastOutput
             }
             SystemClock.sleep(POLL_INTERVAL_MS)
@@ -141,7 +144,7 @@ class ImeRuntimeSmokeTest {
     }
 
     private companion object {
-        const val APP_PACKAGE = "com.example.androidkeyboard"
+        const val PRODUCTION_IME_SERVICE = "com.example.ime.KuYinInputMethodService"
         const val POLL_ATTEMPTS = 40
         const val POLL_INTERVAL_MS = 250L
     }

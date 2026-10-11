@@ -11,6 +11,7 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -29,6 +30,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ime.engine.*
+import com.example.ime.session.ComposeDecoderSession
+import com.example.ime.session.ImeCommand
+import com.example.ime.session.DispatchResult
+import com.example.ime.session.EnglishWordSession
+import com.example.ime.session.orderedCommits
+import com.example.ime.session.CandidatePageSnapshot
 import com.example.ime.settings.KeyboardSettings
 
 data class KeyboardThemeColors(
@@ -122,6 +129,7 @@ val KEYBOARD_THEMES = listOf(
 @Composable
 fun KuYinKeyboardUi(
     engine: KuYinEngine,
+    session: ComposeDecoderSession,
     settings: KeyboardSettings,
     actionLabel: String,
     onCommitText: (String) -> Unit,
@@ -129,13 +137,73 @@ fun KuYinKeyboardUi(
     onPerformEditorAction: () -> Unit,
     onHideKeyboard: () -> Unit,
     onFeedback: () -> Unit,
-    onOpenFeedback: () -> Unit = {}
+    onOpenFeedback: () -> Unit = {},
+    onUserModeSelected: (KeyboardMode) -> Unit = {},
+    isActionPresentation: Boolean = actionLabel != "換行",
+    englishSession: EnglishWordSession? = null,
+    onComposingText: (String) -> Unit = {},
+    editorWriteFailure: String? = null,
+    onDismissEditorWriteFailure: () -> Unit = {},
+    shouldAcceptInput: () -> Boolean = { true },
 ) {
     val mode by engine.mode.collectAsState()
     val shiftState by engine.shiftState.collectAsState()
-    val composingZhuyin by engine.composingZhuyin.collectAsState()
-    val candidates by engine.candidates.collectAsState()
+    val sessionState by session.state.collectAsState()
+    val englishState = englishSession?.state?.collectAsState()?.value
+    val composingZhuyin = if (mode == KeyboardMode.ENGLISH && englishState != null)
+        englishState.wordBuffer else sessionState.preedit
+    val expanded = mode == KeyboardMode.ZHUYIN && sessionState.candidatesExpanded && sessionState.candidatePage != null
+    val candidates = if (mode == KeyboardMode.ENGLISH && englishState != null)
+        englishState.candidates else sessionState.candidates
 
+    fun applyResult(result: DispatchResult, preedit: String) {
+        orderedCommits(result).forEach(onCommitText)
+        onComposingText(preedit)
+    }
+    fun dispatchChinese(command: ImeCommand): DispatchResult {
+        if (!shouldAcceptInput()) return DispatchResult(null, true)
+        return session.dispatch(command).also { applyResult(it, session.state.value.preedit) }
+    }
+    fun dispatchEnglish(action: () -> DispatchResult): DispatchResult {
+        if (!shouldAcceptInput()) return DispatchResult(null, true)
+        return action().also { applyResult(it, englishSession?.state?.value?.wordBuffer.orEmpty()) }
+    }
+    fun commitLiteral(text: String) {
+        if (shouldAcceptInput()) onCommitText(text)
+    }
+    val switchPresentationMode: (KeyboardMode) -> Unit = switch@ { selectedMode ->
+        if (!shouldAcceptInput()) return@switch
+        if (mode == KeyboardMode.ENGLISH && englishSession != null)
+            dispatchEnglish { englishSession.complete() }
+        else {
+            dispatchChinese(ImeCommand.Complete)
+            if (session.state.value.preedit.isNotEmpty() || session.state.value.unavailableReason != null)
+                return@switch
+        }
+        if (shouldAcceptInput()) {
+            onUserModeSelected(selectedMode)
+            engine.setMode(selectedMode)
+        }
+    }
+    val applyPunctuation: (String) -> Unit = { punctuation ->
+        if (mode == KeyboardMode.ENGLISH && englishSession != null)
+            dispatchEnglish { englishSession.punctuation(punctuation) }
+        else dispatchChinese(ImeCommand.Punctuation(punctuation))
+    }
+
+    val onCandidateSelect: (Int) -> Unit = { index ->
+        onFeedback()
+        if (mode == KeyboardMode.ENGLISH && englishSession != null) {
+            if (englishSession.state.value === englishState)
+                dispatchEnglish { englishSession.select(index) }
+        } else if (session.state.value === sessionState) {
+            dispatchChinese(ImeCommand.SelectCandidate(index, sessionState.candidatePage?.ref(index)))
+        }
+    }
+    fun browse(command: ImeCommand) {
+        // Presentation/page operations produce no editor effects.
+        if (shouldAcceptInput() && session.state.value === sessionState) session.dispatch(command)
+    }
     val currentTheme = KEYBOARD_THEMES.getOrElse(settings.keyboardThemeIndex) { KEYBOARD_THEMES[0] }
     val keyboardBg = currentTheme.keyboardBg
     val keyBgNormal = currentTheme.keyBgNormal
@@ -155,6 +223,14 @@ fun KuYinKeyboardUi(
                 .fillMaxWidth()
                 .padding(bottom = 6.dp)
         ) {
+            if (editorWriteFailure != null) {
+                Text("編輯器未確認送出", color = keyTextPrimary)
+                Text(editorWriteFailure, color = keyTextPrimary, maxLines = 2)
+                TextButton(onClick = onDismissEditorWriteFailure) { Text("捨棄未確認文字") }
+            }
+            if (mode == KeyboardMode.ZHUYIN && sessionState.unavailableReason != null) {
+                Text(sessionState.unavailableReason.orEmpty(), color = keyTextPrimary)
+            }
             // 頂部候選字 / 狀態列
             CandidateBar(
                 composingZhuyin = composingZhuyin,
@@ -163,21 +239,27 @@ fun KuYinKeyboardUi(
                 isClipboardBarEnabled = settings.isClipboardBarEnabled,
                 theme = currentTheme,
                 mode = mode,
-                onCandidateClick = { candidate ->
-                    onFeedback()
-                    engine.selectCandidate(candidate, onCommitText)
-                },
+                onCandidateClick = onCandidateSelect,
+                pageSnapshot = sessionState.candidatePage,
+                expanded = expanded,
+                onExpandCandidates = { browse(ImeCommand.OpenExpandedCandidates) },
+                onCollapseCandidates = { browse(ImeCommand.CloseExpandedCandidates) },
                 onClearComposing = {
                     onFeedback()
-                    engine.clearComposing()
+                    if (shouldAcceptInput()) {
+                        if (mode == KeyboardMode.ENGLISH && englishSession != null) {
+                            englishSession.reset()
+                            onComposingText("")
+                        } else dispatchChinese(ImeCommand.ClearComposing)
+                    }
                 },
                 onQuickPunctuation = { punct ->
                     onFeedback()
-                    onCommitText(punct)
+                    applyPunctuation(punct)
                 },
                 onPasteClipboard = { text ->
                     onFeedback()
-                    onCommitText(text)
+                    commitLiteral(text)
                 },
                 onHideKeyboard = onHideKeyboard,
                 onOpenFeedback = onOpenFeedback
@@ -191,7 +273,14 @@ fun KuYinKeyboardUi(
             Spacer(modifier = Modifier.height(4.dp))
 
             // 鍵盤主體區
-            when (mode) {
+            if (expanded) {
+                val page = sessionState.candidatePage!!
+                ExpandedCandidateGrid(page, settings.candidateFontSizeSp, currentTheme,
+                    onSelect = onCandidateSelect,
+                    onPrevious = { browse(ImeCommand.PreviousCandidatePage(page)) },
+                    onNext = { browse(ImeCommand.NextCandidatePage(page)) },
+                )
+            } else when (mode) {
                 KeyboardMode.ZHUYIN -> {
                     ZhuyinKeyboardLayout(
                         keyBgNormal = keyBgNormal,
@@ -200,43 +289,40 @@ fun KuYinKeyboardUi(
                         keyTextPrimary = keyTextPrimary,
                         keyTextSub = keyTextSub,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onZhuyinPress = { key ->
                             onFeedback()
-                            engine.onZhuyinKey(key, onCommitText)
+                            dispatchChinese(ImeCommand.TapZhuyinKey(key))
                         },
                         onSpacePress = {
                             onFeedback()
-                            engine.onSpace(onCommitText)
+                            dispatchChinese(ImeCommand.Space)
                         },
                         onBackspacePress = {
                             onFeedback()
-                            engine.onBackspace(onDeleteSurroundingText)
+                            val result = dispatchChinese(ImeCommand.Backspace)
+                            if (!result.consumed) onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
-                            if (composingZhuyin.isNotEmpty()) {
-                                // 如果正在拼音，按 Enter 直接送出拼音本身
-                                onCommitText(composingZhuyin)
-                                engine.clearComposing()
-                            } else {
-                                onPerformEditorAction()
-                            }
+                            val result = dispatchChinese(ImeCommand.Enter)
+                            if (!result.consumed) onPerformEditorAction()
                         },
                         onSwitchToEnglish = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ENGLISH, onCommitText)
+                            switchPresentationMode(KeyboardMode.ENGLISH)
                         },
                         onSwitchToSymbols = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.SYMBOLS, onCommitText)
+                            switchPresentationMode(KeyboardMode.SYMBOLS)
                         },
                         onSwitchToEmoji = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.EMOJI, onCommitText)
+                            switchPresentationMode(KeyboardMode.EMOJI)
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            onCommitText(p)
+                            applyPunctuation(p)
                         }
                     )
                 }
@@ -248,9 +334,13 @@ fun KuYinKeyboardUi(
                         keyBgAccent = keyBgAccent,
                         keyTextPrimary = keyTextPrimary,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onKeyPress = { char ->
                             onFeedback()
-                            engine.onEnglishKey(char, onCommitText)
+                            if (shouldAcceptInput()) engine.onEnglishKey(char) { typed ->
+                                if (englishSession == null) commitLiteral(typed)
+                                else dispatchEnglish { englishSession.typeText(typed) }
+                            }
                         },
                         onShiftPress = {
                             onFeedback()
@@ -258,27 +348,34 @@ fun KuYinKeyboardUi(
                         },
                         onSpacePress = {
                             onFeedback()
-                            onCommitText(" ")
+                            if (englishSession == null) commitLiteral(" ")
+                            else dispatchEnglish { englishSession.space() }
                         },
                         onBackspacePress = {
                             onFeedback()
-                            onDeleteSurroundingText()
+                            if (englishSession == null) {
+                                if (shouldAcceptInput()) onDeleteSurroundingText()
+                            } else if (!dispatchEnglish { englishSession.backspace() }.consumed)
+                                onDeleteSurroundingText()
                         },
                         onEnterPress = {
                             onFeedback()
-                            onPerformEditorAction()
+                            if (englishSession == null) {
+                                if (shouldAcceptInput()) onPerformEditorAction()
+                            } else if (!dispatchEnglish { englishSession.complete() }.consumed)
+                                onPerformEditorAction()
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         },
                         onSwitchToSymbols = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.SYMBOLS, onCommitText)
+                            switchPresentationMode(KeyboardMode.SYMBOLS)
                         },
                         onPunctuation = { p ->
                             onFeedback()
-                            onCommitText(p)
+                            applyPunctuation(p)
                         }
                     )
                 }
@@ -289,9 +386,10 @@ fun KuYinKeyboardUi(
                         keyBgAccent = keyBgAccent,
                         keyTextPrimary = keyTextPrimary,
                         actionLabel = actionLabel,
+                        isActionPresentation = isActionPresentation,
                         onSymbolPress = { symbol ->
                             onFeedback()
-                            onCommitText(symbol)
+                            commitLiteral(symbol)
                         },
                         onBackspacePress = {
                             onFeedback()
@@ -303,15 +401,15 @@ fun KuYinKeyboardUi(
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         },
                         onSwitchToEnglish = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ENGLISH, onCommitText)
+                            switchPresentationMode(KeyboardMode.ENGLISH)
                         },
                         onSpacePress = {
                             onFeedback()
-                            onCommitText(" ")
+                            commitLiteral(" ")
                         }
                     )
                 }
@@ -321,7 +419,7 @@ fun KuYinKeyboardUi(
                         keyTextPrimary = keyTextPrimary,
                         onEmojiPress = { emoji ->
                             onFeedback()
-                            onCommitText(emoji)
+                            commitLiteral(emoji)
                         },
                         onBackspacePress = {
                             onFeedback()
@@ -329,7 +427,7 @@ fun KuYinKeyboardUi(
                         },
                         onSwitchToZhuyin = {
                             onFeedback()
-                            engine.switchMode(KeyboardMode.ZHUYIN, onCommitText)
+                            switchPresentationMode(KeyboardMode.ZHUYIN)
                         }
                     )
                 }
@@ -346,144 +444,67 @@ fun CandidateBar(
     isClipboardBarEnabled: Boolean = true,
     theme: KeyboardThemeColors? = null,
     mode: KeyboardMode,
-    onCandidateClick: (String) -> Unit,
+    onCandidateClick: (Int) -> Unit,
     onClearComposing: () -> Unit,
     onQuickPunctuation: (String) -> Unit,
     onPasteClipboard: (String) -> Unit = {},
     onHideKeyboard: () -> Unit,
-    onOpenFeedback: () -> Unit
+    onOpenFeedback: () -> Unit,
+    pageSnapshot: CandidatePageSnapshot? = null,
+    expanded: Boolean = false,
+    onExpandCandidates: () -> Unit = {},
+    onCollapseCandidates: () -> Unit = {},
 ) {
-    val candidateBg = theme?.candidateBg ?: Color(0xFF0F172A)
-    val accentColor = theme?.keyBgAccent ?: Color(0xFF0284C7)
-    val textColor = theme?.keyTextPrimary ?: Color.White
-    val subTextColor = theme?.keyTextSub ?: Color(0xFF94A3B8)
-    val candidateCardBg = theme?.keyBgNormal ?: Color(0xFF1E293B)
-
-    // 零網路/無剪貼簿讀取政策：已移除剪貼簿自動讀取，不再存取系統剪貼簿
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(44.dp)
-            .background(candidateBg)
-            .padding(horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 拼音暫存標籤 (若有輸入)
-        AnimatedVisibility(
-            visible = composingZhuyin.isNotEmpty(),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
-                    .background(accentColor.copy(alpha = 0.2f))
-                    .border(1.dp, accentColor.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = composingZhuyin,
-                    color = accentColor,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "清除",
-                    tint = accentColor,
-                    modifier = Modifier
-                        .size(16.dp)
-                        .clip(CircleShape)
-                        .clickable { onClearComposing() }
-                )
-            }
-        }
-
-        if (composingZhuyin.isNotEmpty()) {
-            Spacer(modifier = Modifier.width(6.dp))
-        }
-
-        // 候選字列表
-        if (candidates.isNotEmpty()) {
-            LazyRow(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                items(candidates) { candidate ->
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .clickable { onCandidateClick(candidate) },
-                        color = candidateCardBg,
-                        border = androidx.compose.foundation.BorderStroke(1.dp, accentColor.copy(alpha = 0.4f))
-                    ) {
-                        Text(
-                            text = candidate,
-                            color = textColor,
-                            fontSize = candidateFontSizeSp.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                        )
-                    }
+    val colors = theme ?: KEYBOARD_THEMES[0]
+    Column(Modifier.fillMaxWidth().background(colors.candidateBg)) {
+        if (composingZhuyin.isNotEmpty() || expanded) {
+            Row(Modifier.fillMaxWidth().height(48.dp).padding(start = 8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                Text(composingZhuyin, color = colors.keyBgAccent, fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f))
+                IconButton(onClick = onClearComposing, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.Close, "清除", tint = colors.keyBgAccent)
                 }
-            }
-        } else {
-            // 無候選字時：呈現常用標點
-            LazyRow(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                val quickPunct = listOf("，", "。", "！", "？", "、", "～", "…", "「", "」")
-                items(quickPunct) { punct ->
-                    Surface(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .clickable { onQuickPunctuation(punct) },
-                        color = candidateCardBg
-                    ) {
-                        Text(
-                            text = punct,
-                            color = subTextColor,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Medium,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
-                        )
-                    }
+                if (expanded) IconButton(onClick = onCollapseCandidates, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.ExpandLess, "收合候選", tint = colors.keyTextSub)
+                }
+                IconButton(onClick = onOpenFeedback, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.RateReview, "意見回饋與問題回報", tint = colors.keyTextSub)
+                }
+                IconButton(onClick = onHideKeyboard, modifier = Modifier.size(48.dp)) {
+                    Icon(Icons.Default.KeyboardHide, "收起鍵盤", tint = colors.keyTextSub)
                 }
             }
         }
-
-        // 意見回饋 / 問題回報快捷鍵
-        IconButton(
-            onClick = onOpenFeedback,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.RateReview,
-                contentDescription = "意見回饋與問題回報",
-                tint = subTextColor
-            )
-        }
-
-        // 收起鍵盤圖示
-        IconButton(
-            onClick = onHideKeyboard,
-            modifier = Modifier.size(36.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.KeyboardHide,
-                contentDescription = "收起鍵盤",
-                tint = subTextColor
-            )
+        if (!expanded) {
+            if (candidates.isNotEmpty() || (mode == KeyboardMode.ZHUYIN &&
+                    pageSnapshot != null && (pageSnapshot.hasPrevious || pageSnapshot.hasNext))) {
+                CandidateStrip(candidates, pageSnapshot, candidateFontSizeSp, colors,
+                    showExpand = mode == KeyboardMode.ZHUYIN && composingZhuyin.isNotEmpty(),
+                    onSelect = onCandidateClick, onExpand = onExpandCandidates)
+            } else {
+                Row(Modifier.fillMaxWidth().height(48.dp), verticalAlignment = Alignment.CenterVertically) {
+                    LazyRow(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        contentPadding = PaddingValues(horizontal = 6.dp)) {
+                        items(listOf("，", "。", "！", "？", "、", "～", "…", "「", "」")) { punct ->
+                            Surface(Modifier.sizeIn(minWidth = 48.dp, minHeight = 48.dp)
+                                .clickable { onQuickPunctuation(punct) },
+                                color = colors.keyBgNormal, shape = RoundedCornerShape(6.dp)) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Text(punct, color = colors.keyTextSub, fontSize = 16.sp)
+                                }
+                            }
+                        }
+                    }
+                    IconButton(onClick = onOpenFeedback, modifier = Modifier.size(48.dp)) {
+                        Icon(Icons.Default.RateReview, "意見回饋與問題回報", tint = colors.keyTextSub)
+                    }
+                    if (composingZhuyin.isEmpty()) IconButton(onClick = onHideKeyboard, modifier = Modifier.size(48.dp)) {
+                        Icon(Icons.Default.KeyboardHide, "收起鍵盤", tint = colors.keyTextSub)
+                    }
+                }
+            }
         }
     }
 }
@@ -503,7 +524,8 @@ fun ZhuyinKeyboardLayout(
     onSwitchToEnglish: () -> Unit,
     onSwitchToSymbols: () -> Unit,
     onSwitchToEmoji: () -> Unit,
-    onPunctuation: (String) -> Unit
+    onPunctuation: (String) -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     Column(
         modifier = Modifier
@@ -515,7 +537,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_1.forEach { keyDef ->
+            DachenKeyboardRows.rows[0].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -532,7 +554,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_2.forEach { keyDef ->
+            DachenKeyboardRows.rows[1].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -549,7 +571,7 @@ fun ZhuyinKeyboardLayout(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            ZhuyinConstants.ROW_3.forEach { keyDef ->
+            DachenKeyboardRows.rows[2].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -561,13 +583,13 @@ fun ZhuyinKeyboardLayout(
             }
         }
 
-        // 第四排 (8 個注音鍵 + Backspace)
+        // 第四排 (10 個注音鍵 + Backspace)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(0.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ZhuyinConstants.ROW_4.forEach { keyDef ->
+            DachenKeyboardRows.rows[3].forEach { keyDef ->
                 ZhuyinKeyView(
                     modifier = Modifier.weight(1f),
                     keyDef = keyDef,
@@ -657,7 +679,7 @@ fun ZhuyinKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }
@@ -679,7 +701,8 @@ fun EnglishKeyboardLayout(
     onEnterPress: () -> Unit,
     onSwitchToZhuyin: () -> Unit,
     onSwitchToSymbols: () -> Unit,
-    onPunctuation: (String) -> Unit
+    onPunctuation: (String) -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     val row1 = listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p")
     val row2 = listOf("a", "s", "d", "f", "g", "h", "j", "k", "l")
@@ -815,7 +838,7 @@ fun EnglishKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }
@@ -834,7 +857,8 @@ fun SymbolsKeyboardLayout(
     onEnterPress: () -> Unit,
     onSwitchToZhuyin: () -> Unit,
     onSwitchToEnglish: () -> Unit,
-    onSpacePress: () -> Unit
+    onSpacePress: () -> Unit,
+    isActionPresentation: Boolean = actionLabel != "換行",
 ) {
     val row1 = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "0")
     val row2 = listOf("，", "。", "！", "？", "：", "；", "「", "」", "『", "』")
@@ -955,7 +979,7 @@ fun SymbolsKeyboardLayout(
                 modifier = Modifier.weight(1.5f),
                 bg = keyBgAccent,
                 text = actionLabel,
-                icon = if (actionLabel == "換行") Icons.Default.KeyboardReturn else null,
+                icon = if (!isActionPresentation) Icons.Default.KeyboardReturn else null,
                 onClick = onEnterPress
             )
         }

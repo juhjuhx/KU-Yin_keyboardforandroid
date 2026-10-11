@@ -1,0 +1,26 @@
+[
+  {
+    "entry": "lib/arm64-v8a/libchewing-jni.so",
+    "old_sha256": "d6ab2f4d64d8e62f1ea6078ca2e19fc6a9cde65d094fc23c849156aeb36c4d3f",
+    "new_sha256": "aec74e1c6a9170fa6f63b25a3e036cb1768603fc2e5c27622d4c2a0f92c853e7",
+    "fixture_debug_path_present": false
+  },
+  {
+    "entry": "lib/armeabi-v7a/libchewing-jni.so",
+    "old_sha256": "fc4a2da4f576301b2f133152880217a6d90a6cd27e317b548f68dd8a1d40923c",
+    "new_sha256": "cb7725c78ad4b4b485e8880099348baa749d681b2a00ab25012ea87c1773dbd8",
+    "fixture_debug_path_present": false
+  },
+  {
+    "entry": "lib/x86/libchewing-jni.so",
+    "old_sha256": "72acf097d06beb857847642c40e8b253bdf6479bf36b8d950319bb96be0aa5a8",
+    "new_sha256": "5ca82d3945d4b098f70b54112ea09936b56e5bc29280a39f8b483602b1a1cb00",
+    "fixture_debug_path_present": false
+  },
+  {
+    "entry": "lib/x86_64/libchewing-jni.so",
+    "old_sha256": "e6977e1c38377cc1494217611c1e1c5259fe2a117bffe84860cead2b2cbf3b54",
+    "new_sha256": "4476c04aadbaed374cb1be755d9241e9445dcec7f951a460cf805473e2288fb4",
+    "fixture_debug_path_present": false
+  }
+]

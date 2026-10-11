@@ -1,0 +1,12 @@
+{
+  "command": [
+    "./gradlew",
+    ":app:assembleDebugAndroidTest",
+    "--no-build-cache",
+    "--console=plain"
+  ],
+  "JAVA_HOME": "/opt/homebrew/opt/openjdk@21",
+  "exit": 0,
+  "log": "instrumentation-build.log",
+  "runtime": "NOT_TESTED"
+}

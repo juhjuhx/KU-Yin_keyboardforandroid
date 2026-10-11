@@ -1,0 +1,10 @@
+{
+  "command": [
+    "python3",
+    "scripts/verify.py",
+    "--static"
+  ],
+  "exit": 0,
+  "count": 10,
+  "log": "static-contracts.log"
+}

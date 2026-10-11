@@ -1,0 +1,80 @@
+docs/review/2026-10-04-p1d/final-green/review.patch:65: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:69: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:82: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:92: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:103: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:109: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:729: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:747: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/final-green/review.patch:751: trailing whitespace.
++ 
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:456: trailing whitespace.
++"G1 Conc#1" os_prio=31 cpu=46827.71ms elapsed=303.70s tid=0x0000000151f77cf0 nid=34819 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:458: trailing whitespace.
++"GC Thread#7" os_prio=31 cpu=1883.83ms elapsed=305.44s tid=0x0000000151e1acf0 nid=41475 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:460: trailing whitespace.
++"GC Thread#6" os_prio=31 cpu=1888.00ms elapsed=305.44s tid=0x0000000151e1a390 nid=34051 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:462: trailing whitespace.
++"GC Thread#5" os_prio=31 cpu=1887.25ms elapsed=305.44s tid=0x0000000151e19a30 nid=33795 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:464: trailing whitespace.
++"GC Thread#4" os_prio=31 cpu=1891.66ms elapsed=305.44s tid=0x0000000151e190d0 nid=41987 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:466: trailing whitespace.
++"GC Thread#3" os_prio=31 cpu=1887.45ms elapsed=305.44s tid=0x0000000151e18770 nid=42243 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:468: trailing whitespace.
++"GC Thread#2" os_prio=31 cpu=1887.18ms elapsed=305.44s tid=0x0000000151e18200 nid=42755 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:470: trailing whitespace.
++"GC Thread#1" os_prio=31 cpu=1905.08ms elapsed=305.44s tid=0x0000000151e17e60 nid=33027 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:472: trailing whitespace.
++"VM Thread" os_prio=31 cpu=424.18ms elapsed=305.68s tid=0x0000000151e06bb0 nid=17667 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:474: trailing whitespace.
++"VM Periodic Task Thread" os_prio=31 cpu=63.06ms elapsed=305.69s tid=0x0000000151f0c490 nid=20739 waiting on condition  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:476: trailing whitespace.
++"G1 Service" os_prio=31 cpu=20.23ms elapsed=305.69s tid=0x0000000151f0a7e0 nid=21507 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:478: trailing whitespace.
++"G1 Refine#0" os_prio=31 cpu=90.37ms elapsed=305.69s tid=0x000000014208f600 nid=14083 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:480: trailing whitespace.
++"G1 Conc#0" os_prio=31 cpu=46832.46ms elapsed=305.69s tid=0x0000000151f082c0 nid=13571 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:482: trailing whitespace.
++"G1 Main Marker" os_prio=31 cpu=177.70ms elapsed=305.69s tid=0x0000000141e045d0 nid=15107 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:484: trailing whitespace.
++"GC Thread#0" os_prio=31 cpu=1880.75ms elapsed=305.69s tid=0x0000000151f07d50 nid=13315 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure-second/thread-dump.txt:487: new blank line at EOF.
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:456: trailing whitespace.
++"G1 Conc#1" os_prio=31 cpu=42874.12ms elapsed=256.38s tid=0x0000000149f27000 nid=35075 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:458: trailing whitespace.
++"GC Thread#7" os_prio=31 cpu=1767.04ms elapsed=258.37s tid=0x0000000149e223a0 nid=41731 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:460: trailing whitespace.
++"GC Thread#6" os_prio=31 cpu=1783.47ms elapsed=258.37s tid=0x0000000149e21a40 nid=34563 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:462: trailing whitespace.
++"GC Thread#5" os_prio=31 cpu=1753.76ms elapsed=258.37s tid=0x0000000149e210e0 nid=34051 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:464: trailing whitespace.
++"GC Thread#4" os_prio=31 cpu=1791.32ms elapsed=258.37s tid=0x0000000149e20780 nid=33795 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:466: trailing whitespace.
++"GC Thread#3" os_prio=31 cpu=1785.41ms elapsed=258.37s tid=0x0000000149e20210 nid=42755 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:468: trailing whitespace.
++"GC Thread#2" os_prio=31 cpu=1756.35ms elapsed=258.37s tid=0x0000000149e1fca0 nid=43011 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:470: trailing whitespace.
++"GC Thread#1" os_prio=31 cpu=1773.10ms elapsed=258.37s tid=0x0000000149e1f730 nid=43267 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:472: trailing whitespace.
++"VM Thread" os_prio=31 cpu=389.69ms elapsed=258.64s tid=0x0000000139e0a4d0 nid=19715 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:474: trailing whitespace.
++"VM Periodic Task Thread" os_prio=31 cpu=45.91ms elapsed=258.64s tid=0x0000000139e07800 nid=17155 waiting on condition  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:476: trailing whitespace.
++"G1 Service" os_prio=31 cpu=18.26ms elapsed=258.65s tid=0x0000000149f077a0 nid=16643 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:478: trailing whitespace.
++"G1 Refine#0" os_prio=31 cpu=77.58ms elapsed=258.65s tid=0x000000012a85c800 nid=13571 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:480: trailing whitespace.
++"G1 Conc#0" os_prio=31 cpu=42859.37ms elapsed=258.65s tid=0x0000000149f053c0 nid=13315 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:482: trailing whitespace.
++"G1 Main Marker" os_prio=31 cpu=162.70ms elapsed=258.65s tid=0x0000000149f04a40 nid=14339 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:484: trailing whitespace.
++"GC Thread#0" os_prio=31 cpu=1786.95ms elapsed=258.65s tid=0x0000000139e069a0 nid=12291 runnable  
+docs/review/2026-10-04-p1d/full-idle-failure/thread-dump.txt:487: new blank line at EOF.

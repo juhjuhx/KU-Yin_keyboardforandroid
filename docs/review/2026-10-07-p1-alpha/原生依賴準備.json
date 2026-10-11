@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "scripts/bootstrap_native_deps.sh"
+  ],
+  "cache": "/private/tmp/kuyin-p1-alpha-native-20261007",
+  "exit": 0,
+  "output": "KU-Yin native dependencies ready: 3587ba3355711f0aca50136e787719f6562676b8",
+  "log": "原生依賴準備.log"
+}

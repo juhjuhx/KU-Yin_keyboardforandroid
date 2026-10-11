@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.androidkeyboard.engines.android.VisiblePreeditTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:39.426Z" hostname="MacBook-Air.local" time="0.001">
+  <properties/>
+  <testcase name="missing bopomofo preserves composition buffer" classname="com.example.androidkeyboard.engines.android.VisiblePreeditTest" time="0.001"/>
+  <testcase name="bopomofo alone is visible" classname="com.example.androidkeyboard.engines.android.VisiblePreeditTest" time="0.0"/>
+  <testcase name="cursor is safely clamped" classname="com.example.androidkeyboard.engines.android.VisiblePreeditTest" time="0.0"/>
+  <testcase name="bopomofo is inserted at libchewing cursor" classname="com.example.androidkeyboard.engines.android.VisiblePreeditTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

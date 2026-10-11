@@ -1,0 +1,70 @@
+Calculating task graph as no cached configuration is available for tasks: :acceptance-host:testDebugUnitTest :acceptance-host:assembleDebugAndroidTest
+> Task :acceptance-host:generateDebugAndroidTestAssets UP-TO-DATE
+> Task :acceptance-host:preBuild UP-TO-DATE
+> Task :acceptance-host:preDebugBuild UP-TO-DATE
+> Task :acceptance-host:preDebugUnitTestBuild UP-TO-DATE
+> Task :acceptance-host:preDebugAndroidTestBuild SKIPPED
+> Task :acceptance-host:generateDebugResources UP-TO-DATE
+> Task :acceptance-host:processDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:checkDebugAarMetadata UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebug UP-TO-DATE
+> Task :acceptance-host:mapDebugSourceSetPaths UP-TO-DATE
+> Task :acceptance-host:mergeDebugResources UP-TO-DATE
+> Task :acceptance-host:packageDebugResources UP-TO-DATE
+> Task :acceptance-host:createDebugCompatibleScreenManifests UP-TO-DATE
+> Task :acceptance-host:extractDeepLinksDebug UP-TO-DATE
+> Task :acceptance-host:compileDebugNavigationResources UP-TO-DATE
+> Task :acceptance-host:processDebugMainManifest UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebugUnitTest UP-TO-DATE
+> Task :acceptance-host:parseDebugLocalResources UP-TO-DATE
+> Task :acceptance-host:generateDebugAndroidTestResources UP-TO-DATE
+> Task :acceptance-host:processDebugManifest UP-TO-DATE
+> Task :acceptance-host:processDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :acceptance-host:processDebugManifestForPackage UP-TO-DATE
+> Task :acceptance-host:javaPreCompileDebugAndroidTest UP-TO-DATE
+> Task :acceptance-host:packageDebugAndroidTestResources UP-TO-DATE
+> Task :acceptance-host:generateDebugRFile UP-TO-DATE
+> Task :acceptance-host:parseDebugAndroidTestLocalResources UP-TO-DATE
+> Task :acceptance-host:mergeDebugAndroidTestAssets UP-TO-DATE
+> Task :acceptance-host:compressDebugAndroidTestAssets UP-TO-DATE
+> Task :acceptance-host:generateDebugAndroidTestRFile UP-TO-DATE
+> Task :acceptance-host:checkDebugAndroidTestDuplicateClasses UP-TO-DATE
+> Task :acceptance-host:desugarDebugAndroidTestFileDependencies UP-TO-DATE
+> Task :acceptance-host:mergeLibDexDebugAndroidTest UP-TO-DATE
+> Task :acceptance-host:mergeExtDexDebugAndroidTest UP-TO-DATE
+> Task :acceptance-host:checkDebugAndroidTestAarMetadata UP-TO-DATE
+> Task :acceptance-host:processDebugResources UP-TO-DATE
+> Task :acceptance-host:mapDebugAndroidTestSourceSetPaths UP-TO-DATE
+> Task :acceptance-host:compileDebugKotlin UP-TO-DATE
+> Task :acceptance-host:compileDebugAndroidTestNavigationResources UP-TO-DATE
+> Task :acceptance-host:compileDebugJavaWithJavac NO-SOURCE
+> Task :acceptance-host:bundleDebugClassesToRuntimeJar UP-TO-DATE
+> Task :acceptance-host:mergeDebugAndroidTestResources UP-TO-DATE
+> Task :acceptance-host:bundleDebugClassesToCompileJar UP-TO-DATE
+> Task :acceptance-host:processDebugJavaRes UP-TO-DATE
+> Task :acceptance-host:processDebugAndroidTestManifest UP-TO-DATE
+> Task :acceptance-host:mergeDebugAndroidTestJniLibFolders UP-TO-DATE
+> Task :acceptance-host:mergeDebugJniLibFolders UP-TO-DATE
+> Task :acceptance-host:mergeDebugNativeLibs NO-SOURCE
+> Task :acceptance-host:processDebugAndroidTestResources UP-TO-DATE
+> Task :acceptance-host:mergeDebugAndroidTestNativeLibs NO-SOURCE
+> Task :acceptance-host:validateSigningDebugAndroidTest UP-TO-DATE
+> Task :acceptance-host:stripDebugAndroidTestDebugSymbols NO-SOURCE
+> Task :acceptance-host:writeDebugAndroidTestSigningConfigVersions UP-TO-DATE
+> Task :acceptance-host:compileDebugUnitTestKotlin
+> Task :acceptance-host:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugUnitTestJavaRes UP-TO-DATE
+> Task :acceptance-host:testDebugUnitTest
+> Task :acceptance-host:compileDebugAndroidTestKotlin
+> Task :acceptance-host:compileDebugAndroidTestJavaWithJavac NO-SOURCE
+> Task :acceptance-host:processDebugAndroidTestJavaRes
+> Task :acceptance-host:mergeDebugAndroidTestJavaResource
+> Task :acceptance-host:dexBuilderDebugAndroidTest
+> Task :acceptance-host:mergeProjectDexDebugAndroidTest
+> Task :acceptance-host:packageDebugAndroidTest
+> Task :acceptance-host:assembleDebugAndroidTest
+> Task :acceptance-host:createDebugAndroidTestApkListingFileRedirect UP-TO-DATE
+
+BUILD SUCCESSFUL in 9s
+53 actionable tasks: 8 executed, 45 up-to-date
+Configuration cache entry stored.

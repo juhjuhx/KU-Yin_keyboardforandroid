@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.ui.DachenKeyboardLayoutTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-10-04T09:21:34.095Z" hostname="MacBook-Air.local" time="0.702">
+  <properties/>
+  <testcase name="four phonetic rows keep key order with backspace at fourth row end" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.144"/>
+  <testcase name="function keys use dedicated callbacks without phonetic dispatch" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.159"/>
+  <testcase name="narrow phone keeps every phonetic key and backspace visible" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.089"/>
+  <testcase name="each visible phonetic tap dispatches its standard code to native session once" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.174"/>
+  <testcase name="all 37 phonetic symbols and four tones are visible exactly once" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.078"/>
+  <testcase name="lower row hints match standard physical codes" classname="com.example.ime.ui.DachenKeyboardLayoutTest" time="0.051"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

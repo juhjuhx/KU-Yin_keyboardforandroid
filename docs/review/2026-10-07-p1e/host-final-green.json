@@ -1,0 +1,41 @@
+{
+  "totals": {
+    "tests": 37,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "classes": 3
+  },
+  "suites": [
+    {
+      "name": "io.github.juhjuhx.kuyin.acceptancehost.MatrixDefinitionTest",
+      "tests": "6",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T15:20:35.054Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.011"
+    },
+    {
+      "name": "io.github.juhjuhx.kuyin.acceptancehost.FixtureLogicTest",
+      "tests": "22",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T15:20:35.035Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.018"
+    },
+    {
+      "name": "io.github.juhjuhx.kuyin.acceptancehost.CaseFailurePolicyTest",
+      "tests": "9",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "timestamp": "2026-10-07T15:20:35.022Z",
+      "hostname": "MacBook-Air.local",
+      "time": "0.009"
+    }
+  ]
+}

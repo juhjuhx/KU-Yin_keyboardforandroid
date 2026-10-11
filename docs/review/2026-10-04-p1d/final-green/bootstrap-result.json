@@ -1,0 +1,10 @@
+{
+  "command": [
+    "bash",
+    "scripts/bootstrap_native_deps.sh"
+  ],
+  "KUYIN_DEPS_CACHE": "/private/tmp/kuyin-p1d-native-20261005",
+  "exit": 0,
+  "log": "docs/review/2026-10-04-p1d/final-green/bootstrap.log",
+  "prebuilt_sha": "3587ba3355711f0aca50136e787719f6562676b8"
+}

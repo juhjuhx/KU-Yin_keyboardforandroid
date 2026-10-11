@@ -1311,10 +1311,13 @@ class ZhuyinDictionary(context: Context) {
     )
 
     // 分層候選：精確 > 有效延續 > 聲調回退；同層按頻率再按穩定順序
+    // 延續僅接受 tone-compatible：已含聲調的輸入不走去聲調前綴分支
     fun query(syllables: String): List<String> {
         if (syllables.isBlank()) return emptyList()
 
         val strippedQuery = syllables.filterNot { ZhuyinConstants.isTone(it.toString()) }
+        if (strippedQuery.isEmpty()) return emptyList()
+        val queryHasTone = strippedQuery != syllables
         val exact = LinkedHashSet<String>()
         phraseDictionary[syllables]?.let { exact.addAll(it) }
         charDictionary[syllables]?.let { exact.addAll(it) }
@@ -1322,9 +1325,15 @@ class ZhuyinDictionary(context: Context) {
         val continuation = LinkedHashSet<String>()
         for ((key, phrases) in phraseDictionary) {
             if (key == syllables) continue
-            val strippedKey = key.filterNot { ZhuyinConstants.isTone(it.toString()) }
-            if (key.startsWith(syllables) || strippedKey.startsWith(strippedQuery)) {
+            if (key.startsWith(syllables)) {
                 continuation.addAll(phrases)
+                continue
+            }
+            if (!queryHasTone) {
+                val strippedKey = key.filterNot { ZhuyinConstants.isTone(it.toString()) }
+                if (strippedKey.startsWith(strippedQuery)) {
+                    continuation.addAll(phrases)
+                }
             }
         }
 

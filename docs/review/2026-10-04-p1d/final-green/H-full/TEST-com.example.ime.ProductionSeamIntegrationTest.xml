@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.ProductionSeamIntegrationTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:41.628Z" hostname="MacBook-Air.local" time="0.023">
+  <properties/>
+  <testcase name="force ascii editor never accumulates composing" classname="com.example.ime.ProductionSeamIntegrationTest" time="0.007"/>
+  <testcase name="password editor stays silent end to end" classname="com.example.ime.ProductionSeamIntegrationTest" time="0.007"/>
+  <testcase name="normal editor full cycle types selects and learns" classname="com.example.ime.ProductionSeamIntegrationTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

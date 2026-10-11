@@ -16,8 +16,8 @@ android {
     applicationId = "io.github.juhjuhx.kuyin"
     minSdk = 24
     targetSdk = 36
-    versionCode = 20001
-    versionName = "0.2.0-alpha.1"
+    versionCode = 20003
+    versionName = "0.2.0-aie.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     externalNativeBuild {
@@ -71,16 +71,17 @@ android {
   }
 }
 
-// Some unused dependencies are commented out below instead of being removed.
-// This makes it easy to add them back in the future if needed.
+// Explicit opt-in host-native gate; ordinary CI retains its JVM-only layer.
+tasks.withType<Test>().configureEach {
+  System.getenv("KUYIN_NATIVE_HOST_DIR")?.let {
+    jvmArgs("-Djava.library.path=$it")
+    systemProperty("kuyin.native.host.data", System.getenv("KUYIN_NATIVE_HOST_DATA") ?: "")
+  }
+}
+
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
-  // implementation(libs.accompanist.permissions)
   implementation(libs.androidx.activity.compose)
-  // implementation(libs.androidx.camera.camera2)
-  // implementation(libs.androidx.camera.core)
-  // implementation(libs.androidx.camera.lifecycle)
-  // implementation(libs.androidx.camera.view)
   implementation(libs.androidx.compose.material.icons.core)
   implementation(libs.androidx.compose.material.icons.extended)
   implementation(libs.androidx.compose.material3)
@@ -91,17 +92,13 @@ dependencies {
   implementation(libs.androidx.appcompat)
   implementation(libs.androidx.preference)
   implementation(libs.material)
-  // implementation(libs.androidx.datastore.preferences)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.runtime.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
-  // implementation(libs.androidx.navigation.compose)
   implementation(libs.androidx.room.ktx)
   implementation(libs.androidx.room.runtime)
-  // implementation(libs.coil.compose)
   implementation(libs.kotlinx.coroutines.android)
   implementation(libs.kotlinx.coroutines.core)
-  // implementation(libs.play.services.location)
   testImplementation(libs.androidx.compose.ui.test.junit4)
   testImplementation(libs.androidx.core)
   testImplementation(libs.androidx.junit)

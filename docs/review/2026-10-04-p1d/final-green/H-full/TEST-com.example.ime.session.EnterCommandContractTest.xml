@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.EnterCommandContractTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:41.765Z" hostname="MacBook-Air.local" time="0.038">
+  <properties/>
+  <testcase name="chewing enter with active preedit commits via engine exactly once" classname="com.example.ime.session.EnterCommandContractTest" time="0.007"/>
+  <testcase name="dictionary enter with active preedit commits first candidate exactly once" classname="com.example.ime.session.EnterCommandContractTest" time="0.01"/>
+  <testcase name="dictionary enter with unmatched composing commits raw zhuyin once" classname="com.example.ime.session.EnterCommandContractTest" time="0.007"/>
+  <testcase name="dictionary enter on empty preedit is unconsumed" classname="com.example.ime.session.EnterCommandContractTest" time="0.006"/>
+  <testcase name="chewing enter on empty preedit is unconsumed without touching engine" classname="com.example.ime.session.EnterCommandContractTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

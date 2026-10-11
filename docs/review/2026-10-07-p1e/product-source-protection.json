@@ -1,0 +1,355 @@
+{
+  "base_sha": "5c6bcad34c4048e40ce4e871e70e176c10195bcf",
+  "tracked_app_files_checked": 87,
+  "source_changed": false,
+  "files": [
+    {
+      "file": "app/src/androidTest/java/com/example/ExampleInstrumentedTest.kt",
+      "sha256": "c6ef958cafb00dbec798a71f5be604e9cf56189676312bea40f63dd07ca0d674"
+    },
+    {
+      "file": "app/src/androidTest/java/com/example/androidkeyboard/runtime/ContinuousSentenceTest.kt",
+      "sha256": "7e4325abe522d818b65d9155465c7e1314db20d89c9b769ae68c9a4ba6e3aef1"
+    },
+    {
+      "file": "app/src/androidTest/java/com/example/androidkeyboard/runtime/ImeRuntimeSmokeTest.kt",
+      "sha256": "cfe4daf9e27f638d5a5eea4ffdecc06593f6d0b743185f6fa491cf5eb795d14e"
+    },
+    {
+      "file": "app/src/androidTest/java/com/example/androidkeyboard/runtime/NativeCase4Test.kt",
+      "sha256": "971aa6aa65cea72114d9a738190d955fd7ef3749f1dc9d9d846d0643af11d94e"
+    },
+    {
+      "file": "app/src/debug/AndroidManifest.xml",
+      "sha256": "c63a2049917f629c3227d6c7f95de7c4a0bc708188886054c05b3aaa225c5a7a"
+    },
+    {
+      "file": "app/src/debug/java/com/example/androidkeyboard/runtime/ImeHostActivity.kt",
+      "sha256": "9206c670dd61334b9a5a8a54feffea644132e701e3ecc48e0e3ea17342fe7aae"
+    },
+    {
+      "file": "app/src/main/AndroidManifest.xml",
+      "sha256": "866bd6800cda3900a6717c7305b7e391cd096af8f0c253ae1ba65d7919d4cb5e"
+    },
+    {
+      "file": "app/src/main/cpp/CMakeLists.txt",
+      "sha256": "50dc3042fe2adfdae5c4892231334276d60c35480212692639fbf4ace99dc783"
+    },
+    {
+      "file": "app/src/main/cpp/chewing_jni.cpp",
+      "sha256": "8bb8192b1867a2d991c06fa7ff962b6a909b089a982f24d564432afaafbd576d"
+    },
+    {
+      "file": "app/src/main/java/com/example/MainActivity.kt",
+      "sha256": "938b320ee95d57afa9b0bfe0616a926826930c276cb6321a55f7e267acfc5612"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/SettingsActivity.kt",
+      "sha256": "ab4413e376d56a0eaab9fd1d41f36e682e92f116c05a890a2d6463a279e2f2a3"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/android/AndroidChewingEngine.kt",
+      "sha256": "36f8822bfa401f4e25c13b666982842e6f3cbaa22076be40b2d154c0cc87d766"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/android/LibChewingDataInstaller.kt",
+      "sha256": "4aa831a01d25ef49f8716a8d2a723c0eba86dbfb300404ba29d42d18f0450f96"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/core/ChewingEngine.kt",
+      "sha256": "547c6b3c0133cbbba94b51d1df03da6e26d8b8d55c535b86a43ed16209a3cbcd"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/core/ChineseConverter.kt",
+      "sha256": "c17d10494415d142c83c1aa1db4d85d1593d52a3c0618e8ada850daa611c38bc"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/core/IMEConfig.kt",
+      "sha256": "6dbfe1397ee00ca956c7efecc611aeb354b2089e65b1f882f0ffe5f10befaaf6"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/engines/opencc/OpenCCConverter.kt",
+      "sha256": "a129846aa13968fdb2b8c059a04539447a7f06fbb6b479c76bd031d2a0a9ea8c"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/ChewingInputMethodService.kt",
+      "sha256": "a96719d9a7d800393247f1e38c7ea346533d1a9eb0593c725eec621e44682a19"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/EditorEnterPolicy.kt",
+      "sha256": "f908149cd6427c07feb4d6f16a77b3c059cae375b90660a5d394dc1618435c98"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/EditorPolicy.kt",
+      "sha256": "3bba0ec10f6e7806d113bcdf7772d41ccdf5c517af0149fdcd21df998959edce"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/ImeSessionController.kt",
+      "sha256": "7fd52a9d72bc7a25911e2f7520d955868761f0e49291bc7ef53cb6920254df4c"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/KeyMapping.kt",
+      "sha256": "70d2aee09793b010139935c1c3f1d47f9c473b3c267952860b1828add417e966"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/KeyboardLayout.kt",
+      "sha256": "6d619fec0f73b258ca72757261737088e6b6c1c23d641da940d09b20d7b4a80c"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/KeyboardView.kt",
+      "sha256": "bf64520538c9b1547ad1fc63af18b947e2d5e3d82b767b3fb41fda766ab58d43"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/input/SymbolPicker.kt",
+      "sha256": "b42f8d4385f707072be3cd12ffaf763f2b326f93c193d923133b51129e82ecd7"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/ui/CandidateView.kt",
+      "sha256": "66c8efc0861bf4d896f21cdd708554496be56b24673b0e08272cffac32831d56"
+    },
+    {
+      "file": "app/src/main/java/com/example/androidkeyboard/ui/ImePalette.kt",
+      "sha256": "3691b79999161fd42c773154407707beb2806f1e60b10e1615e9a2f188f0a986"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/data/AppDatabase.kt",
+      "sha256": "1ce0c523d83438de3a202eb3cd59ec3497fa4aa512e4e3b11d6cb346a048281d"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/data/FeedbackDao.kt",
+      "sha256": "572ee5519f4633a73eaaa1aa302f642afc35d0b962f1f437563d21ee126ad19c"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/data/FeedbackEntity.kt",
+      "sha256": "42acf0f70139021d0321a31f5455aac9dd977d99900dc43eb57407fac57ce75b"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/data/FeedbackRepository.kt",
+      "sha256": "369ef4d1f4f231adc5ad0204461176b777426fcd38f7109774c1d3a8e722d66a"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/ui/FeedbackDialogs.kt",
+      "sha256": "70e1413ac254a6c57a1904a7f564bd3e6bdc59aad07f156dcbbb225f8ba613a7"
+    },
+    {
+      "file": "app/src/main/java/com/example/feedback/ui/FeedbackViewModel.kt",
+      "sha256": "7fbdc330ea203f941a79dfe4d182764717a19fb7ed5308265a191e1ce5a8dbdb"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/KuYinInputMethodService.kt",
+      "sha256": "ff0e4a390d2b4200bd50846eb6ba0ea3004ab4ecf96e3987e74ba3f45e3f1b9f"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/api/KuYinExtensionApi.kt",
+      "sha256": "218726e4e7419c9fc8feb1282076cf19f1c9e7d99f55671cb47462865a67fd66"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/engine/KuYinEngine.kt",
+      "sha256": "7cd15a254156ca0b49f8b963de4e7ee7ea5bba5df6330cb50a278db01ae4f2ae"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/engine/ZhuyinConstants.kt",
+      "sha256": "343037ef3a60144fc822412508ff4bbf223651ffb8b0c0f11fcc8a8cb9d04541"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/engine/ZhuyinDictionary.kt",
+      "sha256": "a2ba7d5f3b8a519d14611eb192cc100f810bbe0bb9ae4c474d7a7ca253f54428"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/CompositionResetPolicy.kt",
+      "sha256": "34f3d1b815d7acb5b2545f147a01dbc2413423854df3d6aa1d6ba4216bbc79a8"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/EditorDeletion.kt",
+      "sha256": "563d569540115221d73f6a83175371b29ff36cc28edd9758b73b30fb83be814f"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/EffectiveModePolicy.kt",
+      "sha256": "e1a16b8a9fe4190b9c9ba4a383b159f35c3d628d8534c724d594c1ffc081bb3f"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/ImeLifecycleOwner.kt",
+      "sha256": "4d70fce539e87589ef508cd29f7565518ccec14107c2a460b3be1ac9aa903711"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/NativeChewingEngineOwner.kt",
+      "sha256": "6d19a05c9815e2016f757da9901668a9f259d3c334ff4c7f5c5a2c8f5b9e3bb5"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/NativeLearningPolicy.kt",
+      "sha256": "ff3c89f78e3a2d66f7268601e15c5b3e4b0d5aba1d61b8bbdb9dad7d364f795d"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/service/NativeStartupGate.kt",
+      "sha256": "e46e2ae41cb18ff38e69684a5a3b0221b90890183058be04fad87fbaa2bcc6bc"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/session/ChewingEngineSession.kt",
+      "sha256": "56a1bd07a68f0855ea5e8ded597a08ad511233dddf3eb2c17d4785227e3b8330"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/session/ComposeSession.kt",
+      "sha256": "d2b96d60be0d6c5ff01515145f421e1f4187d806679a91c695c22006bbdfdd0d"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/session/ProductionDecoderResolver.kt",
+      "sha256": "9201ffbfdc5f036f994a815bd23f2af96628baf21badbc127b76ca22df3e4276"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/session/ZhuyinDictionarySession.kt",
+      "sha256": "0d7ec1917b7e6e48e3e01b2e46655b98b8683ae037ca25b2d952c10e06f3b2a8"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/settings/KeyboardSettings.kt",
+      "sha256": "62f605fd1360a4d77b7a4c0d95e9da3d22107c50ec41d87c9525779b13706cdc"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/ui/DachenKeyboardRows.kt",
+      "sha256": "6bc08c88d5269e844d9d777eb6f5203b7a5f5e0faa75d80be4967098d3df9b7e"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt",
+      "sha256": "58ce0a4a195dffc916213764fb696daefd2502b33861345bde7494c120e68691"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/ui/OpenSourceDonationCard.kt",
+      "sha256": "177eec183f8b5bdffa7bbf3c1bf8acf33b7247741ca08edd62b5e58b3536fca2"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/ui/UpstreamAndCommunityCards.kt",
+      "sha256": "0d3142521ff56ac475ca932fb6120805cb235f3f26bfcf38c9899e79d58b57cf"
+    },
+    {
+      "file": "app/src/main/java/com/example/ime/util/FeedbackHelper.kt",
+      "sha256": "4256a742dcee2af727184f84f5f73e4bd0195e6cb37392c7d815a8a28fbd8327"
+    },
+    {
+      "file": "app/src/main/java/com/example/ui/theme/Color.kt",
+      "sha256": "49b776eb44cf05d92c2e55ce8192409b1373fc84720c8c810e635851883969c6"
+    },
+    {
+      "file": "app/src/main/java/com/example/ui/theme/Theme.kt",
+      "sha256": "17f5f17ae66a070088b5a33dce67b1ea8c7ffbe33229ea7828a4d0a5a2263acc"
+    },
+    {
+      "file": "app/src/main/java/com/example/ui/theme/Type.kt",
+      "sha256": "4d1ed9437091dd4506aa51c0e040b7e0168bf90f3b0a1e7c266ac362e6c89d69"
+    },
+    {
+      "file": "app/src/main/res/drawable/ic_kuyin_logo.jpg",
+      "sha256": "ee73ff14f7d67094a489632ee0493211de06ef53043cc59e97ea1a851c24df71"
+    },
+    {
+      "file": "app/src/main/res/drawable/ic_launcher_background.xml",
+      "sha256": "22ee1b9d96f85abdabb5e960bd56abe727bfd8075faf025b4947a2f23f710de3"
+    },
+    {
+      "file": "app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "sha256": "4dd09bf6d02585e86519bf43452d3dc1b9b1e931dee7e95e7d5cdd9389442d4f"
+    },
+    {
+      "file": "app/src/main/res/drawable/kuyin_zhuyin_icon_1789306106095.jpg",
+      "sha256": "382aa73288b0c3a2f30131ab3aeaffee41b9eae71e17ff832635937794472d38"
+    },
+    {
+      "file": "app/src/main/res/layout/activity_input.xml",
+      "sha256": "e7aed89be9f6e305b5bf67dc1ca214134bcfae3ca26788085999331b5e21ce10"
+    },
+    {
+      "file": "app/src/main/res/layout/activity_main.xml",
+      "sha256": "001707b1952d416dd33f73212d71108411993919e9bbfc0eed392bd1279d1a31"
+    },
+    {
+      "file": "app/src/main/res/layout/activity_settings.xml",
+      "sha256": "44744f3dbf520bcb871efd7ae7cf0825476596ba86bc1f27dac8f28bc2c47c4f"
+    },
+    {
+      "file": "app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "sha256": "6d0988175971f41bdc83eadb144af3d84c40052fa125e90edbe7d89227be4b25"
+    },
+    {
+      "file": "app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "sha256": "6d0988175971f41bdc83eadb144af3d84c40052fa125e90edbe7d89227be4b25"
+    },
+    {
+      "file": "app/src/main/res/mipmap-hdpi/ic_launcher.webp",
+      "sha256": "99221f2905af79868986b0dd1701ea91a5387146ba701c18b2ee2252a67be481"
+    },
+    {
+      "file": "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp",
+      "sha256": "7c93f81de792b7216b0db55c1471abe5fccbbcde8278a25264d83ebf8464f498"
+    },
+    {
+      "file": "app/src/main/res/mipmap-mdpi/ic_launcher.webp",
+      "sha256": "b9089fe59f9049e993f92646161e0723496224a44436a2500087e2d05409e8f7"
+    },
+    {
+      "file": "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp",
+      "sha256": "943bd647827e0e7f0fa51be8164f9f1835202d90af6d95ffae44dbb094f44060"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xhdpi/ic_launcher.webp",
+      "sha256": "b3a0802c4fc82b3fd796cc2d57c0c1ea93e64fdfc46aab1e74a0bfa45fcef4f4"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp",
+      "sha256": "2df674233ecc4e9fe6c8d4dfceb6c3257995e6613b0447b93c4a4893ff61c675"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp",
+      "sha256": "b479b07551ee8fd8ba4f96dc0e5d34ae675d485d8a341c369443b397a2defdbf"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp",
+      "sha256": "cb1b8197fa5009f511a5e9aea71e2eff952355cadaf776a83ab99db28fadb24f"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
+      "sha256": "fe039e8aff6718652748d5d2daa5743cbf38759392a7feb723e7c032349b6e81"
+    },
+    {
+      "file": "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp",
+      "sha256": "4d95c8cb035a1827eef9c0cf065e4be0f8fc0b86d6c420e9f3bccc366fba921d"
+    },
+    {
+      "file": "app/src/main/res/values-night/themes.xml",
+      "sha256": "9c2e2373f77931aabf1eebf331f6d9a6c70c26f227cfa5aaf6f1fe656713ed86"
+    },
+    {
+      "file": "app/src/main/res/values/colors.xml",
+      "sha256": "91349bbf37433824a6d932f6c7e2f677305b4c416a843c198dc8b9e9e6623dce"
+    },
+    {
+      "file": "app/src/main/res/values/dimens.xml",
+      "sha256": "e51ea8411e024bacfef4b86364d33402ae4c83a3914dd4618d4df36e7b7d4fe8"
+    },
+    {
+      "file": "app/src/main/res/values/strings.xml",
+      "sha256": "28341ad9a27ff1d988bbe7ce2a729a692e13d639421459aa7350584ed767a7a4"
+    },
+    {
+      "file": "app/src/main/res/values/themes.xml",
+      "sha256": "e8288b65767f4f28854d168c7b19c308579d3703bdf3fc26c2b266e19148f465"
+    },
+    {
+      "file": "app/src/main/res/values/tooltips.xml",
+      "sha256": "f0688921cb78f883298aee57c429549db85086d9477003b35d30cd8b30cbfe34"
+    },
+    {
+      "file": "app/src/main/res/xml/backup_rules.xml",
+      "sha256": "173c90cbeb773e6a65b430581a85720dc5c7ddba17d543cfefe3d2aed9b9a7a4"
+    },
+    {
+      "file": "app/src/main/res/xml/data_extraction_rules.xml",
+      "sha256": "30ae995624fd57d839bf0d638900f8d2c17c703d6e7d6c8640708a8a7cac2402"
+    },
+    {
+      "file": "app/src/main/res/xml/input_method.xml",
+      "sha256": "03fcfde337895897b4b6a506d9b63aaa83f75777c6795d73a2c4bf4825fcd060"
+    },
+    {
+      "file": "app/src/main/res/xml/method.xml",
+      "sha256": "d37ed890e0d6e1f741ea349efc78eb6a5fefd85e894af1c3e3546f02cf8a7b2f"
+    }
+  ]
+}

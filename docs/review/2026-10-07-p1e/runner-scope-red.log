@@ -1,0 +1,54 @@
+........FFF..............
+======================================================================
+FAIL: test_b_surface_pass_does_not_close_full_manual_or_native_scope (test_p1_acceptance_device.InstrumentationParserTest.test_b_surface_pass_does_not_close_full_manual_or_native_scope) (case='B01')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/scripts/tests/test_p1_acceptance_device.py", line 116, in test_b_surface_pass_does_not_close_full_manual_or_native_scope
+    self.assertEqual("INCONCLUSIVE", cases[case]["full_acceptance_result"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'INCONCLUSIVE' != 'PASS'
+- INCONCLUSIVE
++ PASS
+
+
+======================================================================
+FAIL: test_b_surface_pass_does_not_close_full_manual_or_native_scope (test_p1_acceptance_device.InstrumentationParserTest.test_b_surface_pass_does_not_close_full_manual_or_native_scope) (case='B02')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/scripts/tests/test_p1_acceptance_device.py", line 116, in test_b_surface_pass_does_not_close_full_manual_or_native_scope
+    self.assertEqual("INCONCLUSIVE", cases[case]["full_acceptance_result"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'INCONCLUSIVE' != 'PASS'
+- INCONCLUSIVE
++ PASS
+
+
+======================================================================
+FAIL: test_b_surface_pass_does_not_close_full_manual_or_native_scope (test_p1_acceptance_device.InstrumentationParserTest.test_b_surface_pass_does_not_close_full_manual_or_native_scope) (case='B03')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/scripts/tests/test_p1_acceptance_device.py", line 116, in test_b_surface_pass_does_not_close_full_manual_or_native_scope
+    self.assertEqual("INCONCLUSIVE", cases[case]["full_acceptance_result"])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'INCONCLUSIVE' != 'PASS'
+- INCONCLUSIVE
++ PASS
+
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.025s
+
+FAILED (failures=3)
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmptguhqkpz/evidence/prepare-20261007T231240-26eb1687
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmplldokbfu/run-20261007T231240-74738389
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmplldokbfu/run-20261007T231240-74738389/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmppiruj09j/run-20261007T231240-82b49d0a
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmppiruj09j/run-20261007T231240-82b49d0a/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp9gegnd3d/install-20261007T231240-7d0f5408
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE

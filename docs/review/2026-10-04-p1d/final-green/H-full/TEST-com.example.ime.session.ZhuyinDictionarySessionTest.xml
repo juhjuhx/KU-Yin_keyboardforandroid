@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ZhuyinDictionarySessionTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:41.882Z" hostname="MacBook-Air.local" time="0.033">
+  <properties/>
+  <testcase name="fresh session is empty and collapsed" classname="com.example.ime.session.ZhuyinDictionarySessionTest" time="0.009"/>
+  <testcase name="backspace on empty session commits nothing" classname="com.example.ime.session.ZhuyinDictionarySessionTest" time="0.008"/>
+  <testcase name="tapping zhuyin appends preedit and projects candidates" classname="com.example.ime.session.ZhuyinDictionarySessionTest" time="0.008"/>
+  <testcase name="session shares the caller engine instance" classname="com.example.ime.session.ZhuyinDictionarySessionTest" time="0.007"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

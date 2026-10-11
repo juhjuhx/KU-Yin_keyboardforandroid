@@ -1,0 +1,27 @@
+.....F..................
+======================================================================
+FAIL: test_select_keeps_primary_and_restore_errors_in_console_and_evidence (test_p1_acceptance_device.FakeAdbTest.test_select_keeps_primary_and_restore_errors_in_console_and_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture/scripts/tests/test_p1_acceptance_device.py", line 277, in test_select_keeps_primary_and_restore_errors_in_console_and_evidence
+    self.assertIn("PRIMARY_ARTIFACT_CHANGED", errors.getvalue())
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'PRIMARY_ARTIFACT_CHANGED' not found in 'STOP：SECONDARY_EXTERNAL_IME_CHANGED\n保留 evidence；不自動 uninstall／pm clear／覆寫其他 IME 設定。\n'
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.023s
+
+FAILED (failures=1)
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpyko21t62/evidence/prepare-20261007T231534-428f0bd1
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+PREPARED：四 APK 驗證、原 IME raw 狀態保存；sequence=NOT_EXECUTED
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpkwlhw88j/run-20261007T231534-e2f0755f
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpkwlhw88j/run-20261007T231534-e2f0755f/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp6l5cijfo/run-20261007T231534-1df51ed7
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE
+sequence=NOT_EXECUTED; result=FAIL; full_acceptance_complete=False
+restore=PASS; summary=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmp6l5cijfo/run-20261007T231534-1df51ed7/run-summary.json
+evidence=/private/var/folders/jq/mcbqz2gj0wsgsgstpxjn4zwm0000gn/T/tmpx14a9ziz/install-20261007T231534-7175fe53
+native_learning_observer=OPEN; D17_IME_false_IPC_scope=INCONCLUSIVE

@@ -1,0 +1,248 @@
+[
+  {
+    "path": "app/src/main/java/com/example/androidkeyboard/input/EditorPolicy.kt",
+    "category": "P1C_PRODUCT",
+    "size": 2830,
+    "sha256": "3bba0ec10f6e7806d113bcdf7772d41ccdf5c517af0149fdcd21df998959edce"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/engine/ZhuyinConstants.kt",
+    "category": "P1B_PRODUCT",
+    "size": 1923,
+    "sha256": "343037ef3a60144fc822412508ff4bbf223651ffb8b0c0f11fcc8a8cb9d04541"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/service/EffectiveModePolicy.kt",
+    "category": "P1C_PRODUCT",
+    "size": 567,
+    "sha256": "e1a16b8a9fe4190b9c9ba4a383b159f35c3d628d8534c724d594c1ffc081bb3f"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/service/NativeChewingEngineOwner.kt",
+    "category": "P1A_PRODUCT",
+    "size": 1179,
+    "sha256": "6d19a05c9815e2016f757da9901668a9f259d3c334ff4c7f5c5a2c8f5b9e3bb5"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/service/NativeStartupGate.kt",
+    "category": "P1A_PRODUCT",
+    "size": 1298,
+    "sha256": "e46e2ae41cb18ff38e69684a5a3b0221b90890183058be04fad87fbaa2bcc6bc"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/ui/DachenKeyboardRows.kt",
+    "category": "P1B_PRODUCT",
+    "size": 790,
+    "sha256": "6bc08c88d5269e844d9d777eb6f5203b7a5f5e0faa75d80be4967098d3df9b7e"
+  },
+  {
+    "path": "app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt",
+    "category": "P1B_PRODUCT",
+    "size": 40407,
+    "sha256": "3fcfefe2b3e102d2f1424337efa6bddf735c561d1611291b1f50251fb76025e4"
+  },
+  {
+    "path": "app/src/test/java/com/example/androidkeyboard/input/EditorPolicyTest.kt",
+    "category": "P1C_TEST",
+    "size": 6220,
+    "sha256": "b6854b7aec8226656fd8ae15602abbe8416777d32e0d5f972e3555e5abb441f3"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt",
+    "category": "P1C_TEST",
+    "size": 7040,
+    "sha256": "ae1e25d9685fe017b3eed1fbc89e3e1269a95375eea9073e1b4b5fb891291932"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/service/EffectiveModePolicyTest.kt",
+    "category": "P1C_TEST",
+    "size": 3431,
+    "sha256": "03325abb1f5af8118a26da5fe426ecfd6b35a1651c7f3867a0227797a0a62599"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/service/NativeChewingEngineOwnerTest.kt",
+    "category": "P1A_TEST",
+    "size": 4518,
+    "sha256": "4825c2b938f7f4d57f8b20d42e9d31ed421d6c9a1d2cb1df6fb16e6c6b834da9"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/service/NativeLearningPolicyTest.kt",
+    "category": "P1C_TEST",
+    "size": 2007,
+    "sha256": "b2afea0bac106c695b57f7697647ece13829557cbbdc4ac20c984077257d9475"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/service/NativeStartupGateTest.kt",
+    "category": "P1A_TEST",
+    "size": 5363,
+    "sha256": "8ad33f557ff120ae4f4fc48d708026788a423e04431ff4c17e3c23e40cff71cc"
+  },
+  {
+    "path": "app/src/test/java/com/example/ime/ui/DachenKeyboardLayoutTest.kt",
+    "category": "P1B_TEST",
+    "size": 7340,
+    "sha256": "54a8fd4a6f5a20c931e17343c31d737465aad4bffad03c3ba22a19e1f5203f80"
+  },
+  {
+    "path": "docs/CURRENT_STATE.md",
+    "category": "P1C_DOC",
+    "size": 1861,
+    "sha256": "7aeb5bce7d2cec75395c060e972a64288d2bb1df7a43f32ab44ef23484c997da"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/00-source-of-truth.md",
+    "category": "P1A_DOC",
+    "size": 3399,
+    "sha256": "8da1b4b8b1830a1a2dae703cf912ee2e86400a625ae6c7c42e646d0f41ef3cc3"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/01-deep-understanding.md",
+    "category": "P1A_DOC",
+    "size": 5725,
+    "sha256": "625e5aa333419a9c279b280828efbb591f4296e5758105c1f0ee11d278838ddd"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/02-open-code-review.md",
+    "category": "P1A_DOC",
+    "size": 1102,
+    "sha256": "7d1b974d295e76cc87728443288210c028c3d1fa349946d7eef6aa58c561b6b9"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/03-p1a-design.md",
+    "category": "P1A_DOC",
+    "size": 4365,
+    "sha256": "442307a32bb12cf61efbe9b0ab3736a4668bdafb7fbc68b0a2b84eac48bf860e"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/04-test-evidence.md",
+    "category": "P1A_DOC",
+    "size": 2039,
+    "sha256": "e1fe1b561165ce5a7c4298cc9e082a81ccacd532a325536414845a4bc0b2763c"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/05-independent-review.md",
+    "category": "P1A_DOC",
+    "size": 2077,
+    "sha256": "d4e857050173de3af2f0596afbfeb9a21193764e87446cffb623a62c2e4b2317"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1a/06-handoff.md",
+    "category": "P1A_DOC",
+    "size": 5755,
+    "sha256": "f19313950b8983482641eddec6f62bdaf30a8ac3dec58bce6e517b50e530dec1"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/00-來源與範圍.md",
+    "category": "P1B_DOC",
+    "size": 3244,
+    "sha256": "0135745b6aec9e27414add2f18115a4c3a0f078250663925b9a26f916edb4eb2"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/01-RED測試.xml",
+    "category": "P1B_DOC",
+    "size": 22452,
+    "sha256": "c9a9bc2d02a6752f08717c43307bc9f88eab0079b6ca456533a98548ecbb53b7"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/02-GREEN測試.xml",
+    "category": "P1B_DOC",
+    "size": 1255,
+    "sha256": "ba821c947debea284fa800c5af3bda2378e72b4bdc8968087598d67931963fa5"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/03-四排大千預覽.png",
+    "category": "P1B_DOC",
+    "size": 19229,
+    "sha256": "22189009239c06545c08f1261cdd16abfc62c761646b15af4ecf9d1c4ce3fe85"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/04-驗證結果.json",
+    "category": "P1B_DOC",
+    "size": 7045,
+    "sha256": "9def2ec2ba477e238cb71e4c5e255436ae40aa85e662f506365c803473ab460c"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/05-程式審查.md",
+    "category": "P1B_DOC",
+    "size": 2501,
+    "sha256": "3ca5b9edca47dc0d53a653c3d93cad966087d073c9ada0d5887a36ec1054ee35"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1b/06-交接.md",
+    "category": "P1B_DOC",
+    "size": 3572,
+    "sha256": "4f81a4dc674392b0f506f2c914bc60731aa3253de99ae4476cf19593260e101f"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/00-來源與範圍.md",
+    "category": "P1C_DOC",
+    "size": 3921,
+    "sha256": "0e2389c286fb88c79f4d538ce1fe4597388c432cfb82aade5b172d7e645fe51f"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/01-RED/TEST-com.example.androidkeyboard.input.EditorPolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 5948,
+    "sha256": "bb6b9d45db570786167a678df5a1e6f9598b6155df8e6b121131cb885d4f1997"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/01-RED/TEST-com.example.ime.NonTextEditorServiceTest.xml",
+    "category": "P1C_DOC",
+    "size": 26391,
+    "sha256": "a11ad2cb63bfe3b5abf4cbbf226df5668f31d05578cb89badf956c4f69e8b3d0"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/01-RED/TEST-com.example.ime.service.EffectiveModePolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 9646,
+    "sha256": "60289d7703f3bc7ed6fe4ef88e1a616394b0cb74b927cce32e6bf01dec7b5ce4"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/01-RED/TEST-com.example.ime.service.NativeLearningPolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 5192,
+    "sha256": "22cac9e9a2d273663a0818408bda92083485b381c0ab11197613a005237882ef"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/02-GREEN/TEST-com.example.androidkeyboard.input.EditorPolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 1760,
+    "sha256": "6ed0edbaa06ce223b0dfdb47123594b9fd1d9a3d330973ab7f62b31b6e4f62b7"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/02-GREEN/TEST-com.example.ime.NonTextEditorServiceTest.xml",
+    "category": "P1C_DOC",
+    "size": 1126,
+    "sha256": "a0671f42878e419d1b4153465e626fc8837db6a499365bde0b4534d9455dba94"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/02-GREEN/TEST-com.example.ime.service.EffectiveModePolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 1030,
+    "sha256": "033d14980abff4add489eaf24969589c561cf148f4b86dbb5dbcb1184311fbe7"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/02-GREEN/TEST-com.example.ime.service.NativeLearningPolicyTest.xml",
+    "category": "P1C_DOC",
+    "size": 1013,
+    "sha256": "bd18aa30d1112d6c97c1d1d9d1b0442dd9b80a6d7710de2bd3e5df872580aa97"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/04-驗證結果.json",
+    "category": "P1C_DOC",
+    "size": 7233,
+    "sha256": "d4acdceb1c5094074cac8fc0d4015bbaa7a76238679f29576724ec04e34c84d0"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/05-程式審查.md",
+    "category": "P1C_DOC",
+    "size": 2907,
+    "sha256": "8e031772cf52daa396d81afea6eb8097351f7af2ea5a901cac038d89386b3cb0"
+  },
+  {
+    "path": "docs/review/2026-10-04-p1c/06-交接.md",
+    "category": "P1C_DOC",
+    "size": 3292,
+    "sha256": "696a359963928a326d820de2000ed35c11d14dd79352d09ce37caf63d28a04a3"
+  }
+]

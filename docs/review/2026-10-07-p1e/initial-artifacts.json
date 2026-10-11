@@ -1,0 +1,26 @@
+[
+  {
+    "artifact": "host",
+    "path": "acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk",
+    "bytes": 861628,
+    "sha256": "8e53e8933e1b436b3192dab4319a7da1fe58e98afba038447924f51e1481d829",
+    "signer_exit": 0,
+    "manifest_exit": 0
+  },
+  {
+    "artifact": "fresh-app",
+    "path": "app/build/outputs/apk/debug/app-debug.apk",
+    "bytes": 29158832,
+    "sha256": "b7b67be5da2e17f3ee815e254215f02ac5bf45944a26eeef22d467c21ca143c5",
+    "signer_exit": 0,
+    "manifest_exit": 0
+  },
+  {
+    "artifact": "fresh-app-test",
+    "path": "app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk",
+    "bytes": 965496,
+    "sha256": "3938b3e3c1fb711ed6141d491a3841839e098dfb2c2ae81924b94f0d6106b8bd",
+    "signer_exit": 0,
+    "manifest_exit": 0
+  }
+]

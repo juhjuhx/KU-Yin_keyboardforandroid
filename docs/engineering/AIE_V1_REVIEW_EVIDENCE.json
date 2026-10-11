@@ -1,0 +1,65 @@
+{
+  "base_sha": "3072affee95fa7fa8b0016ad85aac322272e4dea",
+  "product_sha": "9f5db676a17b5770a738b5c20da937f9211e5a34",
+  "branch": "docs/aie-v1-engineering-review",
+  "product_diff_empty": true,
+  "existing_worktrees_heads_status_unchanged": [
+    "/Users/huang/KU-Yin_keyboardforandroid",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-clean-baseline",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/c4-compose-libchewing-switch",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/fix-pre-c4-production-hardening",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/m4-performance-baseline",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p0-core-typing-recovery",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1-alpha-acceptance-fixture",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1a-native-startup-hardening",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1d-enter-policy",
+    "/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1g-runner-safety"
+  ],
+  "apk_sha256": "14082a60527ef57542d62cfb2bfaac1ed53a99080fb5af7f0de2792862fe260f",
+  "apk_bytes": 32276066,
+  "new_gradle_native_device_tests": "NOT_RUN_REVIEW_ONLY",
+  "historical_counts": {
+    "app_tests": 229,
+    "host_unit_tests": 37,
+    "python_tests": 104
+  },
+  "user_report": "BASIC_TYPING_WORKS_ON_USER_DEVICE",
+  "full_physical_acceptance": "OPEN",
+  "independent_review": "PARTIAL_USAGE_LIMIT_NO_FINAL_APPROVAL",
+  "ocr": "BLOCKED_BY_PROVIDER_401",
+  "fresh_static_verification": {
+    "command": [
+      "python3",
+      "scripts/verify.py",
+      "--static"
+    ],
+    "exit": 0,
+    "contract_count": 10,
+    "stdout": "Dachen contract OK\nP0 keyboard contract OK\nEditor sync contract OK\nP1 build contract OK\nP2 UI contract OK\nP3 architecture/security contract OK\nProduction Compose contract OK\nCI C4 trigger contract OK\nNDK pin contract OK\nPASS dev-doc gradle wrapper version\nPASS dev-doc AGP version\nPASS dev-doc Kotlin version\nPASS dev-doc compileSdk version\nPASS dev-doc targetSdk version\nPASS dev-doc minSdk version\nPASS dev-doc NDK version\nPASS dev-doc CMake version\nPASS dev-doc applicationId\nPASS ARCHITECTURE is Compose-normative\nPASS ARCHITECTURE not View-production\nPASS ROADMAP keeps done items done\nPASS SECURITY_AUDIT not API-33-current\nPASS SECURITY_AUDIT current platform\n\ndocs consistency OK\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_dachen_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p0_keyboard_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_editor_sync_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p1_build_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p2_ui_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_p3_architecture_security_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_production_compose_contract.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_ci_c4_trigger.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_ndk_pin_consistency.py\n$ /Library/Frameworks/Python.framework/Versions/3.14/bin/python3 scripts/check_docs_consistency.py\nverify OK\n",
+    "stderr": ""
+  },
+  "local_verifier_note": "An earlier evidence-count assertion used an absolute-path substring against relative script paths; corrected the metadata parser. Repository static verification itself returned exit0; not RED/product failure.",
+  "native_source_evidence": {
+    "source_commit": "a6a8fa4abd3f215e3ba89a7b61702eaf8ca68f5c",
+    "archive_sha256": "29fdb2470a0a09133c1779c6d8058e394778a917c2c35da7f43a2e2869860816",
+    "cache_matches_archive": [
+      {
+        "path": "src/editor/mod.rs",
+        "sha256": "4e00da6d6b7fd8ff2ed13119cd67e037e4a5fb9e09181822e12a16102cedbbc1"
+      },
+      {
+        "path": "src/editor/selection/phrase.rs",
+        "sha256": "e9655ad479761401549a3f709cd080199cf1bc15b511b887508bf2d88e70b786"
+      },
+      {
+        "path": "capi/src/io.rs",
+        "sha256": "17e6cb048d8c5b6b500a3fe4fe0edb8ad1f38fa6b8fc04a8741082a701d4adf8"
+      }
+    ],
+    "git_checkout": false
+  },
+  "documentation_changed_count": 26,
+  "fresh_docs_validation": "JSON_PARSE / LOCAL_MARKDOWN_LINKS / FENCES / DIFF_CHECK_PASS",
+  "verification_timestamp": "2026-10-10T18:40:58.128176+00:00"
+}

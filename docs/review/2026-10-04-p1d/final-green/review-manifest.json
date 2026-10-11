@@ -1,0 +1,46 @@
+{
+  "base_sha": "870fc03cbfe8e5107b8ff8dc13478ac7754eec9f",
+  "patch_sha256": "401484b25829a350164975a9a48718e80768a5cc46a49eefec94b97379811b90",
+  "files": [
+    {
+      "path": "app/src/main/java/com/example/androidkeyboard/input/EditorEnterPolicy.kt",
+      "bytes": 1851,
+      "sha256": "f908149cd6427c07feb4d6f16a77b3c059cae375b90660a5d394dc1618435c98"
+    },
+    {
+      "path": "app/src/main/java/com/example/ime/KuYinInputMethodService.kt",
+      "bytes": 9034,
+      "sha256": "ff0e4a390d2b4200bd50846eb6ba0ea3004ab4ecf96e3987e74ba3f45e3f1b9f"
+    },
+    {
+      "path": "app/src/main/java/com/example/ime/ui/KuYinKeyboardUi.kt",
+      "bytes": 40856,
+      "sha256": "58ce0a4a195dffc916213764fb696daefd2502b33861345bde7494c120e68691"
+    },
+    {
+      "path": "app/src/test/java/com/example/androidkeyboard/input/EditorEnterPolicyTest.kt",
+      "bytes": 4316,
+      "sha256": "85294e718ca014acab2d57a92dcdb89d872c81e5e0400e7c31b44f24dada98ba"
+    },
+    {
+      "path": "app/src/test/java/com/example/ime/EnterServiceHarness.kt",
+      "bytes": 5151,
+      "sha256": "961605e8e4b8b5efb3879fa853fdbd733993145c4155529dbf5dccaf70622461"
+    },
+    {
+      "path": "app/src/test/java/com/example/ime/EnterPolicyServiceTest.kt",
+      "bytes": 4863,
+      "sha256": "2117f17457cfff298f91f8fbde4ed8593e061bb3c49cfec4d2327b7f42d8e284"
+    },
+    {
+      "path": "app/src/test/java/com/example/ime/EnterUiWiringTest.kt",
+      "bytes": 7317,
+      "sha256": "3ed9eae7bcf391692b02fcd8ab566f97ce51ecb25dba39d772fb40eb62768f27"
+    },
+    {
+      "path": "app/src/test/java/com/example/ime/NonTextEditorServiceTest.kt",
+      "bytes": 7415,
+      "sha256": "ff993a7daaabf1327a94a80e18fcf18a539e69c08eb49a5bb6d31113394822d2"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.service.NativeChewingEngineOwnerTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:28.299Z" hostname="MacBook-Air.local" time="0.004">
+  <properties/>
+  <testcase name="close exactly once and repeated close does not double free" classname="com.example.ime.service.NativeChewingEngineOwnerTest" time="0.001"/>
+  <testcase name="repeated ensureStarted inits native engine exactly once" classname="com.example.ime.service.NativeChewingEngineOwnerTest" time="0.001"/>
+  <testcase name="init failure propagates and retains no engine for retry" classname="com.example.ime.service.NativeChewingEngineOwnerTest" time="0.0"/>
+  <testcase name="session reset does not recreate native engine" classname="com.example.ime.service.NativeChewingEngineOwnerTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

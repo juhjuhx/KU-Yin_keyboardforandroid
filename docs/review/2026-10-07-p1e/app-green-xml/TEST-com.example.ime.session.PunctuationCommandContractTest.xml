@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.PunctuationCommandContractTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-07T14:56:21.210Z" hostname="MacBook-Air.local" time="0.058">
+  <properties/>
+  <testcase name="dictionary punct with unmatched composing commits raw then punctuation" classname="com.example.ime.session.PunctuationCommandContractTest" time="0.011"/>
+  <testcase name="dictionary punct on empty commits once" classname="com.example.ime.session.PunctuationCommandContractTest" time="0.012"/>
+  <testcase name="chewing punct on empty commits once without touching engine" classname="com.example.ime.session.PunctuationCommandContractTest" time="0.013"/>
+  <testcase name="chewing punct flushes native preedit then punctuation" classname="com.example.ime.session.PunctuationCommandContractTest" time="0.008"/>
+  <testcase name="dictionary punct flushes composition then punctuation with clean state" classname="com.example.ime.session.PunctuationCommandContractTest" time="0.011"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

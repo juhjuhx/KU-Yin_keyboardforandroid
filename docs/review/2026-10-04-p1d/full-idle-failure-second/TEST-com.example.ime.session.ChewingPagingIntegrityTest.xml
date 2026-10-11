@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ChewingPagingIntegrityTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:34:58.996Z" hostname="MacBook-Air.local" time="0.0">
+  <properties/>
+  <testcase name="forward at last page is unconsumed with state unchanged" classname="com.example.ime.session.ChewingPagingIntegrityTest" time="0.0"/>
+  <testcase name="page round trip restores first page with no stale flags" classname="com.example.ime.session.ChewingPagingIntegrityTest" time="0.0"/>
+  <testcase name="backward at first page is unconsumed" classname="com.example.ime.session.ChewingPagingIntegrityTest" time="0.0"/>
+  <testcase name="select on second page addresses global native index" classname="com.example.ime.session.ChewingPagingIntegrityTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

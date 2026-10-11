@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.NonTextEditorServiceTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-10-04T18:29:13.807Z" hostname="MacBook-Air.local" time="4.455">
+  <properties/>
+  <testcase name="text to non text clears native composition and restores Zhuyin on return" classname="com.example.ime.NonTextEditorServiceTest" time="3.565"/>
+  <testcase name="restarting non text input resets native state and keeps English" classname="com.example.ime.NonTextEditorServiceTest" time="0.031"/>
+  <testcase name="numeric editor blocks Zhuyin and symbol digit commits ASCII without native phonetic input" classname="com.example.ime.NonTextEditorServiceTest" time="0.646"/>
+  <testcase name="non text start turns native learning off and text return restores it" classname="com.example.ime.NonTextEditorServiceTest" time="0.027"/>
+  <testcase name="service preserves every user preference across numeric editor" classname="com.example.ime.NonTextEditorServiceTest" time="0.027"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

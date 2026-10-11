@@ -1,0 +1,13 @@
+{
+  "checked_at": "2026-10-07T18:02:30.950086+08:00",
+  "command": [
+    "/opt/homebrew/share/android-commandlinetools/platform-tools/adb",
+    "devices",
+    "-l"
+  ],
+  "exit": 0,
+  "output": "List of devices attached\n\n",
+  "stderr": "",
+  "device_count": 0,
+  "runtime_status": "NOT_TESTED"
+}

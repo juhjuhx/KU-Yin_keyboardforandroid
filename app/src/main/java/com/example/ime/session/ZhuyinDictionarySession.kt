@@ -6,9 +6,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class ZhuyinDictionarySession(context: Context) : ComposeDecoderSession {
+class ZhuyinDictionarySession(private val engine: KuYinEngine) : ComposeDecoderSession {
 
-    private val engine = KuYinEngine(context)
+    constructor(context: Context) : this(KuYinEngine(context))
     private val _state = MutableStateFlow(ComposeImeState())
     override val state: StateFlow<ComposeImeState> = _state.asStateFlow()
 
@@ -17,37 +17,88 @@ class ZhuyinDictionarySession(context: Context) : ComposeDecoderSession {
     }
 
     private fun refresh() {
+        val revision = _state.value.generation + 1
         _state.value = ComposeImeState(
             preedit = engine.composingZhuyin.value,
             candidates = engine.candidates.value,
             canPageBackward = false,
             canPageForward = false,
-            candidatesExpanded = _state.value.candidatesExpanded
+            candidatesExpanded = _state.value.candidatesExpanded && engine.composingZhuyin.value.isNotEmpty(),
+            generation = revision,
+            candidatePage = if (engine.composingZhuyin.value.isNotEmpty()) candidatePageSnapshot(
+                "fallback", revision, revision, engine.candidates.value,
+            ) else null,
         )
     }
 
-    override fun dispatch(command: ImeCommand): String? {
+    private fun completeComposition(): String? {
+        if (_state.value.preedit.isEmpty()) return null
+        val first = _state.value.candidates.firstOrNull()
+        return if (first != null) {
+            var flushed: String? = null
+            engine.selectCandidate(first) { flushed = it }
+            flushed
+        } else {
+            val raw = engine.composingZhuyin.value
+            engine.clearComposing()
+            raw
+        }
+    }
+
+    override fun dispatch(command: ImeCommand): DispatchResult {
         var commit: String? = null
         when (command) {
             is ImeCommand.TapZhuyinKey -> engine.onZhuyinKey(command.char) { commit = it }
             is ImeCommand.SelectCandidate -> {
-                val candidate = _state.value.candidates.getOrNull(command.index) ?: return null
+                if (command.reference == null || command.reference != _state.value.candidatePage?.ref(command.index))
+                    return DispatchResult(null, false)
+                val candidate = _state.value.candidates.getOrNull(command.index)
+                    ?: return DispatchResult(null, false)
                 engine.selectCandidate(candidate) { commit = it }
             }
-            ImeCommand.Backspace -> engine.onBackspace { }
+            ImeCommand.Backspace -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+                engine.onBackspace { }
+            }
             ImeCommand.Space -> engine.onSpace { commit = it }
-            ImeCommand.Enter -> return null
-            ImeCommand.PageForward -> return null
-            ImeCommand.PageBackward -> return null
-            ImeCommand.ToggleCandidatesExpanded -> {
-                _state.value = _state.value.copy(
-                    candidatesExpanded = !_state.value.candidatesExpanded
-                )
-                return null
+            is ImeCommand.Punctuation -> {
+                if (_state.value.preedit.isEmpty()) {
+                    return DispatchResult(command.text, true)
+                }
+                val first = _state.value.candidates.firstOrNull()
+                return if (first != null) {
+                    var flushed: String? = null
+                    engine.selectCandidate(first) { flushed = it }
+                    refresh()
+                    DispatchResult(flushed, true, listOf(command.text))
+                } else {
+                    val raw = engine.composingZhuyin.value
+                    engine.clearComposing()
+                    refresh()
+                    DispatchResult(raw, true, listOf(command.text))
+                }
+            }
+            ImeCommand.Enter, ImeCommand.Complete -> {
+                val done = completeComposition() ?: return DispatchResult(null, false)
+                refresh()
+                return DispatchResult(done, true)
+            }
+            ImeCommand.PageForward -> return DispatchResult(null, false)
+            ImeCommand.PageBackward -> return DispatchResult(null, false)
+            is ImeCommand.NextCandidatePage, is ImeCommand.PreviousCandidatePage -> return DispatchResult(null, false)
+            ImeCommand.OpenExpandedCandidates, ImeCommand.ToggleCandidatesExpanded -> {
+                if (_state.value.preedit.isEmpty()) return DispatchResult(null, false)
+                val expanded = command == ImeCommand.OpenExpandedCandidates || !_state.value.candidatesExpanded
+                _state.value = _state.value.withExpanded(expanded)
+                return DispatchResult(null, false)
+            }
+            ImeCommand.CloseExpandedCandidates -> {
+                _state.value = _state.value.withExpanded(false, invalidate = true)
+                return DispatchResult(null, false)
             }
             ImeCommand.ClearComposing, ImeCommand.Reset -> engine.clearComposing()
         }
         refresh()
-        return commit
+        return DispatchResult(commit, true)
     }
 }

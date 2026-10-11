@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ChewingBackspaceContractTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-10-07T14:56:20.992Z" hostname="MacBook-Air.local" time="0.016">
+  <properties/>
+  <testcase name="native consumed backspace projects state and needs no editor delete" classname="com.example.ime.session.ChewingBackspaceContractTest" time="0.015"/>
+  <testcase name="unconsumed backspace leaves editor fallback path open" classname="com.example.ime.session.ChewingBackspaceContractTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

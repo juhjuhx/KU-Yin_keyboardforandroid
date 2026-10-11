@@ -1,0 +1,2 @@
+[ocr] WARNING: provider "anthropic" has both api_key and api_key_cmd set; using the static api_key
+Error: llm request failed: POST "https://api.anthropic.com/v1/messages": 401 Unauthorized (Request-ID: req_011CfnkCr2PvNq6SwcBDSBz4) {"type":"error","error":{"type":"authentication_error","message":"invalid x-api-key"},"request_id":"req_011CfnkCr2PvNq6SwcBDSBz4"}

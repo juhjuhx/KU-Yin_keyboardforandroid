@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.ime.session.ModeSwitchContractTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-04T14:28:36.759Z" hostname="MacBook-Air.local" time="0.025">
+  <properties/>
+  <testcase name="zhuyin active to english commits once and flips mode" classname="com.example.ime.session.ModeSwitchContractTest" time="0.007"/>
+  <testcase name="empty to english switches with no commit" classname="com.example.ime.session.ModeSwitchContractTest" time="0.006"/>
+  <testcase name="zhuyin active to symbols and emoji commit without ghost state" classname="com.example.ime.session.ModeSwitchContractTest" time="0.009"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

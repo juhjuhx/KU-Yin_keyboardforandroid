@@ -1,0 +1,164 @@
+[
+  {
+    "step": "A-pure",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.androidkeyboard.input.EditorEnterPolicyTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/A-pure/gradle.log"
+  },
+  {
+    "step": "B-enter-contract",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.session.EnterCommandContractTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 5,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/B-enter-contract/gradle.log"
+  },
+  {
+    "step": "C-service-editor",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.EnterPolicyServiceTest",
+      "--tests",
+      "com.example.ime.ProductionEditorPolicyTest",
+      "--tests",
+      "com.example.ime.ProductionSeamIntegrationTest",
+      "--tests",
+      "com.example.androidkeyboard.input.EditorPolicyTest",
+      "--tests",
+      "com.example.androidkeyboard.input.ImeSessionControllerTest",
+      "--tests",
+      "com.example.ime.service.EditorDeletionTest"
+    ],
+    "exit": 0,
+    "classes": 6,
+    "tests": 41,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/C-service-editor/gradle.log"
+  },
+  {
+    "step": "D-compose-enter",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.EnterUiWiringTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 11,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/D-compose-enter/gradle.log"
+  },
+  {
+    "step": "E-p1c",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.androidkeyboard.input.EditorPolicyTest",
+      "--tests",
+      "com.example.ime.NonTextEditorServiceTest",
+      "--tests",
+      "com.example.ime.service.EffectiveModePolicyTest",
+      "--tests",
+      "com.example.ime.service.NativeLearningPolicyTest"
+    ],
+    "exit": 0,
+    "classes": 4,
+    "tests": 25,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/E-p1c/gradle.log"
+  },
+  {
+    "step": "F-p1b",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.ui.DachenKeyboardLayoutTest"
+    ],
+    "exit": 0,
+    "classes": 1,
+    "tests": 6,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/F-p1b/gradle.log"
+  },
+  {
+    "step": "G-p1a",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain",
+      "--tests",
+      "com.example.ime.service.NativeStartupGateTest",
+      "--tests",
+      "com.example.ime.service.NativeChewingEngineOwnerTest",
+      "--tests",
+      "com.example.ime.session.ProductionDecoderResolverTest"
+    ],
+    "exit": 0,
+    "classes": 3,
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/G-p1a/gradle.log"
+  },
+  {
+    "step": "H-full",
+    "command": [
+      "./gradlew",
+      ":app:testDebugUnitTest",
+      "--no-build-cache",
+      "--console=plain"
+    ],
+    "exit": 0,
+    "classes": 40,
+    "tests": 190,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "log": "docs/review/2026-10-04-p1d/final-green/H-full/gradle.log"
+  }
+]
