@@ -21,15 +21,14 @@ bash scripts/bootstrap_native_deps.sh
 ./gradlew assembleDebug --stacktrace
 ```
 
-Outputs: `app/build/outputs/apk/debug/app-debug.apk`; release stays unsigned
-(no keystore — never present unsigned artifacts as signed).
+Outputs: `app/build/outputs/apk/debug/app-debug.apk` (Debug signed). Release configuration requires a keystore; if absent, packaging is BLOCKED_BY_SIGNING, not a successful unsigned artifact.
 
 P1-E 驗收工具建置 gates（不需要裝置）：
 
 ```bash
 ./gradlew :acceptance-host:testDebugUnitTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest
 ./gradlew :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:assembleDebug
-python3 -m unittest discover -s scripts/tests -p 'test_p*.py'
+python3 -m unittest discover -s scripts/tests -v
 ```
 
 Host APK 是 test-only helper；編譯成功不能代替實機驗收。依
@@ -39,9 +38,7 @@ Host APK 是 test-only helper；編譯成功不能代替實機驗收。依
 
 ## What bootstrap does
 
-Fetches pinned `fcitx5-android/prebuilt` commit + libchewing source commit
-(see script + `docs/UPSTREAM.md`), verifies per-ABI archives and dictionaries,
-fails loudly on anything missing.
+Fetches the pinned `fcitx5-android/prebuilt` commit; records its associated libchewing source commit as provenance (does not rebuild Rust). Checks checkout SHA and nonempty per-ABI archives/dictionaries. Stages to `app/src/main/cpp/.deps/libchewing` and `assets/libchewing`. Use a fresh `KUYIN_DEPS_CACHE` because bootstrap replaces its checkout/output directories.
 
 ## Tests
 
@@ -52,7 +49,7 @@ home-grown Kotlin parser — behavior belongs in JVM tests.
 
 ## CI
 
-`.github/workflows/build.yml` is blocking (contracts → toolchain → bootstrap →
+`.github/workflows/build.yml` is blocking (Python infrastructure regressions + all 10 contracts → toolchain → bootstrap →
 JVM → Debug APK → artifact). `runtime-smoke` is experimental
 (`continue-on-error: true`) and never counts as PASS. `prerelease.yml` is manual-only; a fresh CI debug key cannot update the
 published locally signed APK. Publish reviewed assets with source/relink materials; `upstream-watch.yml` only files review issues.

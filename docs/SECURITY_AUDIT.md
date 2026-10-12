@@ -1,54 +1,29 @@
-# Security, Privacy, Performance Audit (rebaselined 2026-09-23, static)
+# Security Audit
 
-Baseline: full-tree grep + manifest + build files + JNI boundary read at D2.5
-candidate. Not a third-party certification. Native-production claims are
-withheld until D3 switches the decoder.
+ACTIVE source audit，R1基線a6a4c65。不是第三方certification，也沒有新的physical/OEM安全證據。D2.5 static原稿留在Git歷史，當前dataflow以ARCHITECTURE/architecture為準。
 
-## Findings summary
-
-| Area | Current evidence | Risk / follow-up |
+| 邊界 | 來源核對 | 限制／處置 |
 |---|---|---|
-| Network exfiltration | Source manifest requests no permissions; verified P1-D merged Debug APK requests only the app-defined signature `DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` from AndroidX Core, no INTERNET/VIBRATE; no HTTP/WS/socket libs or URL fetch paths | Artifact clarification 2026-10-07; re-audit on any network dependency |
-| Plaintext logging | Only 3 native-error `Log.e` in AndroidChewingEngine (load/init paths, no keystroke/preedit/candidate content) | Keep input content out of logs |
-| Clipboard | WRITE-only (`FeedbackViewModel.copyToClipboard`, user share gesture); Compose donation/clipboard cards use write/paste-into-field paths; no programmatic READ harvesting found | Re-audit if any read path appears |
-| User dictionary | `noBackupFilesDir/libchewing/user/userdict.dat` via installer | app-private/no-backup; no extra encryption (device-compromise out of scope) |
-| Android backup | `allowBackup=false` | Done |
-| Sensitive editor | `EditorPolicy` (text/web/visible/number password, FORCE_ASCII, NO_PERSONALIZED_LEARNING) + `EffectiveModePolicy` preferred/effective split; restricted editors cannot reach Zhuyin (policy guard + engine guard) | Device runtime matrix still required |
-| Personalized learning | Gated on policy in both adapters; dual Zhuyin-prefs + libchewing-learn coexists | B8 must select single production ranking |
-| JNI memory lifecycle | New/delete paired; GetStringUTFChars usage per audit doc; strings released after call | ASAN/instrumentation hardening later |
-| Native supply chain | Pinned immutable commits (prebuilt 3587ba33, libchewing a6a8fa4) + bootstrap verification | Per-file hash manifest + rebuild equivalence still missing |
-| Release signing | No production signing | Unsigned artifacts must never present as releases |
-| Platform age | target/compile 36, Compose product UI | Current; CI pins toolchain |
-| Performance | Local decoder, no network round-trip | No latency/memory benchmarks claimed |
+| Network | source Manifest無INTERNET；keyboard無cloudsuggestion | externalbrowser/share明確usergesture可傳feedback；不是零外部資料流 |
+| Native userdict | noBackupFilesDir/system與user分離，personal appprivate | 未app加密／完整erase；不保護root compromiseddevice |
+| Backup | allowBackup=false，native noBackup excluded | Android12+ OEM D2D語义不同；Room/prefs XML缺有效transfer excludes，OPEN |
+| Sensitive input | EditorPolicy→NativeLearningPolicy；password/forceASCII/nontext/no-personalizedlearning | genericprivate mode/learning observer與physical矩陣OPEN |
+| Content logging | native僅init/loaderror；syntheticprobe不編入product | R1不保存私人trace；敏感writefailure顯示遮蔽 |
+| Composition/effect | snapshot stale guard、ordered effects、falseACK禁止重送 | nativeACK早於editorACK；無跨storetransaction/end-to-end exactlyonce保証 |
+| Reset | disabled/unsupported、no deletion | S0已關誤導入口；fullerase仍OPEN，不再稱現行假成功HIGH |
+| Room | feedback v1，email/description/metadata local | 無migration/TTL/quota；share JSON控制字元escape不足、UI無DBdeleteACK，待獨立產品修正 |
+| System dict | installer只驗非空 | 無assetrevision/hash/update gate；未稱現有字典已損毀 |
+| Supply chain | immutableprebuilt/source pins、source/relinkrelease材料 | bootstrap不是Rust重編等價/完整LGPL法律review |
+| Release | 現有sameDebugsigner experimentalAlpha | productionkey未配置；manuallegacypublish須另hardening，禁止重簽替代 |
 
-## Data flow
+compile/target SDK 36（minor1）/min24；version20003/0.2.0-aie.1，實際build身份見DEVELOPMENT與release交接。
 
-```text
-Touch → Compose UI → session → ZhuyinDictionary (production) → InputConnection
-Touch → Compose UI → session → ChewingEngine → JNI → libchewing (D3 target)
-```
+## 正常資料流
 
-No cloud service in either path. User dictionary maintained locally only.
+EditorInfo→service policy→Chinese session/native live與scratch候選→Compose snapshot→ordered effects→InputConnection。EnglishofflineWordSession獨立。個人learning在nativecommit可能早於editor回傳；fallbackprefs只在dictionary路徑（含試打）寫。Room只儲存手動feedback，不接輸入事件／ranking。
 
-## Artifact clarification (2026-10-07, exact local P1-D APK)
+## 本輪已確認、未擴大修正的議題
 
-This adds a bounded artifact observation to the historical static audit, not a new
-full security certification. Verified Debug APK SHA256:
-`b223620743831e0370a31a65dcc998e6a74dfe70d45e020036c4f8b4468e39c9`.
+來源：`app/src/main/res/xml/data_extraction_rules.xml`；`feedback/data/FeedbackEntity.kt` escapeJson；`feedback/ui/FeedbackDialogs.kt`版本1.0.0與Issue URL；`MainActivity.kt`feedback成功訊息；`LibChewingDataInstaller.kt`非空跳過。維持ledger於maintenance/INDEPENDENT_REVIEW，不在文檔治理中改product/schema或做data deletion。
 
-Its merged manifest declares and requests the app-defined signature permission
-`io.github.juhjuhx.kuyin.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION`; merger provenance
-is `androidx.core:core:1.18.0`. Thus "zero permissions" applies to the source manifest,
-not literally to the merged APK. INTERNET/VIBRATE remain absent; allowBackup=false.
-Debug signature is valid and is not production signing.
-
-The normative current decoder is ChewingEngineSession with startup-only dictionary
-fallback (CURRENT_STATE/ARCHITECTURE); the data-flow sketch above is the historical
-D2.5 audit context. Physical P1 runtime/security coverage remains NOT_TESTED.
-Evidence: `review/2026-10-07-p1-alpha/產品APK核對.json` and `合併權限來源.txt`.
-
-## 2026-10-11 AIE source review（不是完整security certification）
-
-先前summary中dual-learning/B8是歷史描述：現行production是native，fallback只在startupfailure。AIE已確認MainActivity reset只清fallbackprefs、未nativeuserdict卻報成功（HIGH）；發布前須isolatedrepair與真實store測試。nativeauto-learn先於editorACK是當前时序，futureexternallearning要防doublecount，未宣稱這已導致重復commit。
-
-本輪未改privacydefaults/source/permissions。private mode、統一erase、touch consent、export/migrations未實作；具體按 `research/AIE_V1_PRIVACY_MATRIX.md` 與 `release/RELEASE_READINESS.md`。OCR401 blocked，獨立review僅部分findings没有final signoff。
+官方語義參考：[Android Auto Backup](https://developer.android.com/identity/data/autobackup)。這是source/contract推論，不是已測OEM傳輸。歷史exactP1/AIE APK權限觀察見release/AIE_ALPHA_HANDOFF與review；app-definedsignatureDYNAMIC_RECEIVER permission不代表INTERNET。

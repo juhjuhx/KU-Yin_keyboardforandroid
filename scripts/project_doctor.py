@@ -35,7 +35,7 @@ def main():
     row("NDK 28.2.13676358", "OK" if ndk and ndk.is_dir() else "MISSING")
     row("CMake 3.22.1", "OPTIONAL", "verified at build time")
     row("gradle wrapper", "OK" if (ROOT / "gradlew").exists() else "MISSING")
-    deps = ROOT / "app" / ".deps"
+    deps = ROOT / "app" / "src" / "main" / "cpp" / ".deps" / "libchewing"
     row("native .deps", "OK" if deps.is_dir() else "MISSING", "run scripts/bootstrap_native_deps.sh")
     row("adb", "OK" if shutil.which("adb") else "MISSING", "runtime smoke needs it")
     row("ocr", "OK" if shutil.which("ocr") else "MISSING", "review scans need it (needs valid LLM key)")

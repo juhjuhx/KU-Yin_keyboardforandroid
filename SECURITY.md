@@ -5,7 +5,7 @@ KU-Yin 是输入法，可能接触密码、私人通信与其他高敏感文字�
 ## 当前控制
 
 - Manifest 不申请 Android `INTERNET` permission。
-- Android backup 明确关闭。
+- Manifest 設 allowBackup=false；native noBackupFilesDir 排除備份。部分 Android 12+ OEM device-transfer 行為不由此旗標全面禁止；Room/prefs D2D 限制見 docs/maintenance/DATA_STORAGE_INVENTORY.md。
 - libchewing system/user data 位于 app-private `noBackupFilesDir`。
 - `EditorPolicy` 识别 password、FORCE_ASCII 与 `IME_FLAG_NO_PERSONALIZED_LEARNING`。
 - native adapter 可关闭 libchewing personalized learning。
