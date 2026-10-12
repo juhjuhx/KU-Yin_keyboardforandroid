@@ -1,6 +1,6 @@
 # R1：外部 host fixture 適配交接
 
-工區：`.worktrees/r1-host-fixture-adapter`；分支 `fix/r1-host-fixture-adapter`；base `a6a4c654845338521700121ac06586887d1ec085`。本次只改 `acceptance-host` 的 androidTest／sharedTest／JVM tests 及本文件；沒有修改 `app/`、native、product permissions、個人字典或既有凍結 parser／manifest，作者未執行 Git／裝置操作；提交與 PR 由整合者負責。
+工區：`.worktrees/r1-host-fixture-adapter`；分支 `fix/r1-host-fixture-adapter`；base `a6a4c654845338521700121ac06586887d1ec085`。本次改 `acceptance-host` 的 androidTest／sharedTest／JVM tests、凍結來源與當前 identities 的 Python regression fixtures 及本文件；沒有修改 `app/`、native、product permissions、個人字典或既有凍結 parser／manifest，作者未執行 Git／裝置操作；提交與 PR 由整合者負責。
 
 ## 問題與適配
 
@@ -68,3 +68,9 @@ GREEN／編譯命令：
 ## 獨立審查
 
 2026-10-12，fresh reviewer `/root/r1_architecture_audit` 直接核對最終 9 檔 diff、09 RED／10 GREEN XML 與 source hashes，裁定 **APPROVE（僅 fixture 修正範圍）**。沒有未解 blocking finding。曾提出的 whitespace regex finding 經原始 source 字元核對為 false positive，正式撤回；space／tab regression 在 RED 階段即 PASS，regex 未修改。外部原始證據備份於 `/Users/huang/Desktop/KU-Yin-Engineering-Archive-2026-10-12/r1-fixture-evidence/`；runtime 結果依後續 CI raw evidence，不從此核准推論。
+
+## 全量 CI 的 frozen/current 契約整合
+
+PR #10 首次納入全 Python gate，run `38225839753` 在 109 tests 中產生一個真 assertion RED：原 `test_source_hashes_match_frozen_instrumentation_sources` 將 6595b684 的 8 個 frozen SHA 套在已更新 Dachen／Driver 上。原 runner、manifest、其 26-test identities 與 frozen APK 不可重算。現在完整保留 8 份 6595b684 exact source bytes（53,224 bytes）作不編譯的 `scripts/tests/fixtures/p1e-frozen-instrumentation/`；仍按原 8 digest 核對，缺檔由原 skip 改硬 FAIL，新增 missing／tamper negative tests。另 `current_instrumentation_identities.json` 明列本次原有 app 5／host 32 identities，對 current source 比較完整 set、count、unique count，未支援的 annotation 形狀 fail closed。這項修正讓歷史 proof 與 current inventory 各自受驗證，沒有換掉 frozen parser 或放寬 runtime assertions。
+
+全 Python **113 tests PASS／exit 0**、10 contracts PASS（外部 `fixture-python-green.log`／`fixture-contracts-green.json`）。凍結原件 bytes 與原 source base 比對一致；歷史 source fixtures 不含使用者資料、不加入任何 APK。
