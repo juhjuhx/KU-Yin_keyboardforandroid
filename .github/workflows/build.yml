@@ -67,6 +67,16 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace
 
+      - name: Upload JVM test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jvm-test-report
+          path: |
+            app/build/test-results/testDebugUnitTest
+            acceptance-host/build/test-results/testDebugUnitTest
+          if-no-files-found: warn
+
       # Release APK stays out until the signing decision lands (no keystore yet).
 
       - name: Upload Debug APK
