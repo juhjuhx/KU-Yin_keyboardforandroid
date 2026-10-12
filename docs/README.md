@@ -1,16 +1,11 @@
-# KU-Yin Documentation
+# 文件導航
 
-本目录只保留当前仍具权威性的工程文档。历史 recovery / audit / spec 已收敛进 [`HISTORY.md`](HISTORY.md)；需要追溯原始决策时，可查看 Git 历史与 [`archive/`](archive/)。
+先讀 [CURRENT_STATE](CURRENT_STATE.md) 的現在事實、[ARCHITECTURE](ARCHITECTURE.md) 的規範，再讀 [DEVELOPMENT](DEVELOPMENT.md)、[安全稽核](SECURITY_AUDIT.md)、[上游](UPSTREAM.md)。續作先看 [短入口](engineering/CODEX_CONTEXT_ANCHOR.md)。
 
-| 文档 | 用途 |
-|---|---|
-| [`ARCHITECTURE.md`](ARCHITECTURE.md) | 当前 Android IME / JNI / libchewing 架构与边界 |
-| [`DEVELOPMENT.md`](DEVELOPMENT.md) | Build、测试、CI、release 与开发流程 |
-| [`UPSTREAM.md`](UPSTREAM.md) | 上游来源、固定 revision、reference-only 边界 |
-| [`SECURITY_AUDIT.md`](SECURITY_AUDIT.md) | 安全、资料外泄、供应链与效能审计 |
-| [`ROADMAP.md`](ROADMAP.md) | 后续开发优先级 |
-| [`HISTORY.md`](HISTORY.md) | 从不可用 APK 到可建置 alpha 的迭代报告 |
-| [`i18n/`](i18n/) | 简体中文与英文项目简介 |
-| [`archive/`](archive/) | consolidation 设计与计划等历史记录 |
-
-根目录 [`README.md`](../README.md) 是面向使用者与贡献者的主要入口；[`CONTRIBUTING.md`](../CONTRIBUTING.md)、[`SECURITY.md`](../SECURITY.md)、[`NOTICE`](../NOTICE) 与 [`LICENSE`](../LICENSE) 为正式政策文件。
+- [R1交接](maintenance/FINAL_HANDOFF.md)：SHA、PR、保存與下一最小任務。
+- [Maintenance inventory](maintenance/MAINLINE_INVENTORY.md)、[Worktrees](maintenance/WORKTREE_INVENTORY.md)、[Branches](maintenance/BRANCH_LINEAGE.md)、[資料政策](maintenance/DATA_STORAGE_INVENTORY.md)。
+- [Validation](maintenance/VALIDATION_MATRIX.md)：fresh/historical、PASS/FAIL/SKIP/BLOCKED。
+- [Future roadmap](roadmap/AIE_V1_ROADMAP.md)：S2等未批准實作，不能視production架構。
+- [ADR](adr/)：個別accepted/superseded狀態按決策；提案不得越過currentsource。
+- [Review index](review/INDEX.md)、[Archive index](archive/INDEX.md)：歷史證據，不重讀數百文件作續作起點。
+- [Release readiness](release/RELEASE_READINESS.md)與[既有Alpha交接](release/AIE_ALPHA_HANDOFF.md)：公開Debugalpha不代表production/physical PASS。

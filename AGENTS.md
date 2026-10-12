@@ -1,39 +1,24 @@
-# AGENTS.md
+# Repository Guidelines
 
-## Project source of truth
+## 權威與閱讀順序
 
-Read in this order before making changes (later overrides earlier on conflict):
+修改前依序讀本檔、[CURRENT_STATE](docs/CURRENT_STATE.md)、[ARCHITECTURE](docs/ARCHITECTURE.md)、[DEVELOPMENT](docs/DEVELOPMENT.md)、[SECURITY](SECURITY.md)、[SECURITY_AUDIT](docs/SECURITY_AUDIT.md)、[UPSTREAM](docs/UPSTREAM.md)。後者可校正前者的事實，不能擴大使用者授權。README是入口；ROADMAP僅future；HISTORY/review/archive保留歷史，不能作當前狀態。續作短入口：docs/engineering/CODEX_CONTEXT_ANCHOR.md。
 
-1. `AGENTS.md` (this file: instructions + order)
-2. `docs/CURRENT_STATE.md` (what is active NOW)
-3. `docs/ARCHITECTURE.md` (normative architecture)
-4. `docs/DEVELOPMENT.md` (canonical build/toolchain)
-5. `SECURITY.md` (security policy)
-6. `docs/SECURITY_AUDIT.md` (evidence-backed audit)
-7. `docs/UPSTREAM.md` (dependency/provenance truth)
-8. `docs/ROADMAP.md` (future only)
-9. `docs/HISTORY.md` (historical only)
-10. `docs/COMPOSE-MAINLINE.md` (migration record only)
-11. `docs/archive/` (superseded documents)
+## 模組與責任
 
-`README.md` is the public landing page, not an architecture authority.
+app是產品；acceptance-host是獨立test-only Views editor；scripts是contracts、native bootstrap及驗收工具。Kotlin/Compose在app/src/main/java，JNI/CMake在cpp，assets是詞庫；JVM/test與androidTest分層。
 
-## Core architecture
+Production IME：KuYinInputMethodService → ComposeDecoderSession → ChewingEngineSession → AndroidChewingEngine → JNI/libchewing；啟動失敗才dictionaryfallback。MainActivity試打另用dictionary。EnglishWordSession使用offlinelexicon。UI只派command/呈現snapshot，service唯一執行InputConnection effects；native ACK與editor ACK不相同。詳細ownership以ARCHITECTURE與architecture/為準。
 
-`InputMethodService → EditorPolicy (+preferred/effective mode) / UI → ComposeDecoderSession → ZhuyinDictionarySession (production) → Compose UI → InputConnection`, with `ChewingEngineSession → AndroidChewingEngine → JNI/C++ → libchewing C API` wired and tested as the D3 production target.
+## 開發與驗證
 
-Keep Android lifecycle, UI and JNI boundaries explicit. UI should not call native symbols directly.
+- Kotlin四空白、類別PascalCase、函式camelCase；遵循附近來源，避免無關format/refactor。Git message用fix/test/docs/chore等目的明確的atomic commits。
+- 行為修正先最小RED regression，再GREEN。測試命名描述行為；JUnit4/Robolectric/Compose/native和真editor各自標明證據層。
+- 必要gates：`python3 -m unittest discover -s scripts/tests -v`、全部scripts/check_*.py、安全獨立cache的bootstrap、JVM、Debug/host/instrumentation編譯、diff/文件有效性。Release缺keystore=BLOCKED_BY_SIGNING，不能冒稱unsigned成功。
+- PR描述問題／結果／驗證／限制；正常merge前獨立review與適用CI。emulatorjob非blocking不代表runtimePASS，compile不代表physical。
 
-## Development rules
+## 安全與來源
 
-- Fix root causes, not CI symptoms.
-- Add the narrowest regression test for behavior changes.
-- Do not claim runtime readiness from `assembleDebug` alone.
-- Do not float native dependency revisions.
-- Do not copy code from reference keyboards without license/provenance review.
-- Do not add network typing paths, content logging or telemetry without an explicit privacy design and user consent model.
-- Keep release signing status truthful: current release artifact is unsigned.
+保留使用者dirty/untracked、歷史工區與exactrelease資產。禁止無授權reset/clean/force/historyrewrite/清userdata；清理先manifest、backup及restoreproof。資料來源/pin/ABI/appID/signature不能漂移；外部code/data需licenseprovenance。不得新增networktyping、releasecontentlogs或telemetry。敏感editor不學習；fulllearningerase暫不支援。
 
-## Required validation
-
-Run Python contracts, `scripts/bootstrap_native_deps.sh`, JVM tests, Debug build and Release build. Changes to IME lifecycle/native behavior require runtime evidence where feasible.
+新產品功能、decoder/privacy/license/UIgeometry/release決策需要明確scope；任務授權正常doc/tool治理PR不需再重問。M4/S2不因本輪收束自動開始。

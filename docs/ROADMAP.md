@@ -1,32 +1,20 @@
-# Roadmap (FUTURE work only; done items live in HISTORY/CURRENT_STATE)
+# Roadmap（FUTURE only）
 
-## 目前 AIE V1（2026-10-11）
+ACTIVE future入口，R1 2026-10-12。當前事實見CURRENT_STATE，規範見ARCHITECTURE。詳細AIE entry/exit/rollback見[分階段roadmap](roadmap/AIE_V1_ROADMAP.md)。不以此文件授權新功能。
 
-P0-R user basic typing可用；先AIE審查與候選UX批准，再逐片瀏覽／取得排名／學習／touch／symbols／device與release。精確entry/exit/test/rollback見 `roadmap/AIE_V1_ROADMAP.md`。没有自動M4、decoder切換或公開發布授權。下列舊C4路線保留歷史；不是重做已经完成的P1/P0要求。
+## DONE
 
-## DONE (do not re-plan)
+applicationId與toolchain更新、native production/startupfallback、P1-A/B/C/D、P0核心typing/EnglishMVP、AIE S0unsupportedreset/S1candidatebrowser已有main source。v0.2.0-aie.1 experimental Alpha已公開；不重做decodercutover或候選UX選項批准。R1為docs/inventory/工具收束，非產品擴張。
 
-- applicationId migration → `io.github.juhjuhx.kuyin` (shipped in build file)
-- SDK modernization → JDK21/Gradle9/AGP9/Kotlin2.2/compile-target36/NDK28.2 (shipped)
-- C4-D2 decoder sessions + D2.5 state ownership (branch work, SDK verification pending)
+## 最小下一步
 
-## Historical C4 CURRENT（以下保留當時狀態，非目前任務）
+1. currentHostfixture適配後case-by-case emulator/physical editor證據；保留舊15/9/8與INCONCLUSIVE範圍。
+2. exact公開APK手機候選scroll/expand/page/select/continue及editor切換；不能用JVM代替。
+3. 已確認privacy/update/feedback/Englishpointer議題，各自隔離fix與ADR，不混進治理或清userdata。
+4. 完整learningerase／migration／export、OEM D2D策略、production signing與完整license/reproreview需獨立設計及決策。
 
-- D2.5 SDK gate: JVM + assembleDebug + runtime smoke on exact candidate SHA
-- D3 production libchewing switch (needs D2.5 PASS + human authorization)
+## 未開始
 
-## NEXT
+AIE-S2 retrieval/ranking、personal supplementallearning、TouchResolver、SymbolRepository/search、newnativebackend、M4測量、F-Droid/Play／productionrelease。均非R1授權；不可因compile或Alpha公開自動開始。舊C4/M4路線保留Git/HISTORY/review/archive，不當當前要求。
 
-- Physical CASE-4/CASE-6 + long-sentence auto-selection acceptance
-- M4 UX slices (candidate strip, geometry, touch, QWERTY, symbols, long-press, emoji, toolbar)
-- Formal release signing / key management (Release APK stays unsigned until then)
-- libchewing supply-chain: per-file hash manifest + source-rebuild equivalence
-
-## LATER
-
-- Device/OEM compatibility matrix, accessibility virtual nodes, insets/rotation/tablet
-- Hsu/Eten26 only with layout+decoder+tests complete together
-- OpenCC backend evaluation (current stub is not a feature), userdict import/export (privacy design first)
-- Clipboard/gesture/prediction features each need threat model + opt-in first
-- Upstream libchewing (Codeberg 0.12/0.13 APIs) via independent ABI-verified PR, never auto-drift
-- Brand/visual identity after code baseline stabilizes
+dependencyupdates只immutable pin與reviewedPR；正常merge/rollback與既有資料保存優先，禁止floatingupstream或重簽破壞updatecompat。

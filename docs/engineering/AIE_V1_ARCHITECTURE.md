@@ -1,3 +1,5 @@
+> 現行IMPLEMENTED責任以[規範架構](../ARCHITECTURE.md)為準；本文保留AIE提案及S0/S1採納範圍。native ACK不等editor ACK；candidate plan totals不等uniquepool。
+
 # AIE V1 架構選項
 
 狀態：S0/S1 已批准並實作，LOCAL_VERIFIED；DEVICE_NOT_TESTED；S2 以後仍 PROPOSED／未批准。現況以 ../ARCHITECTURE.md 與 S1 交接為準。本輪不新增 module／database／decoder／runtime owner。

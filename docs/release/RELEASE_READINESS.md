@@ -4,7 +4,7 @@
 
 | Gate | 狀態／直接證據 | 關閉條件 |
 |---|---|---|
-| Source identity | 核3072aff/9f5db67，P0APK14082… | 統一approvedmainline、source/version/artifactmanifest |
+| Source identity | main a6a4c65含S1 source39acf96，公開APKacdbacd… | 統一approvedmainline、source/version/artifactmanifest |
 | Basic Chinese | WORKS_ON_USER_DEVICE（report）；P0native/JVMhistoricalgreen | 每個coretyping/devicecase rawevidence；不把report扩成30PASS |
 | Candidate browsing | S1 已接 strip/expand/page；host tests 綠，實機待驗 | 真scroll/expand/page/select，longpreedit/大字級/OEM |
 | English | 10k offline MVP，historicaltests | currentdevice完成completion/space/case/sensitive cases |
@@ -12,7 +12,7 @@
 | Privacy/erase | sensitivepolicy有；S0已停用不完整reset，fullerase仍OPEN | native＋futurestores verifiederase、optout/privatecontrols、privacydocs |
 | Critical data-loss/doubleeffect | P0ACKguard＋S1 native/editor/gesture/lifecycle fresh green；實機OPEN | 失敗matrix、cursor/span/editor切換、沒有未關閉high/blocker |
 | Device acceptance | FULL_PHYSICAL_ACCEPTANCE=OPEN | 正式case-by-case裁定＋未觀察scope disposition；恢復真證據 |
-| Native/data licensing | LGPLsource/relink與ABI/repro義務OPEN；EnglishApache notices存在 | 逐檔notice/license、pin/source/relink文件包；build不是授權完成 |
+| Native/data licensing | Alpha已附source/relink與四ABI proof；完整Rust runtime/license review與重編等價OPEN；EnglishApache notices存在 | 逐檔notice/license、pin/source/relink文件包；build不是授權完成 |
 | Unicode/new upstream | 研究固定rev，NO_IMPORT | approvedcopy策略、CLDRdata vsLDML區分，轉換器/pins/notices |
 | CI/source consolidation | PR #8已merge；CI38164320915 blocking成功，app5PASS、host15PASS/9FAIL/8skip；fixture待適配 | explicitpush/merge授權後requiredCI；nativehost缺席不可假PASS |
 | Signing/update | AIE Debug同certificate/version20003；releasekeystore未建立 | 簽章管理與updatecompat策略批准；不得用新key導致清資料 |

@@ -1,3 +1,5 @@
+> R1 2026-10-12：S0/S1已在main並公開experimentalAlpha；目前只mainline/document/tool收束與Hostfixtureadapter。完整physical仍OPEN；S2/M4不自動開始。當前下一步與限制以CURRENT_STATE/R1 FINAL_HANDOFF為準；以下階段設計保留future scope。
+
 # AIE V1 Roadmap
 
 日期2026-10-11；S0/S1 已批准（Option1），實作／驗證狀態見 S1 交接；S2–8 仍 PROPOSED。沿用P0-R，不重建／不換decoder／不改visualidentity。先候選，再品質與學習，再touch/symbols；每片獨立gate，不因compile自動進下一phase。
