@@ -1,13 +1,13 @@
 # KU-Yin 續作短入口
 
-更新2026-10-12 R1。先讀[CURRENT_STATE](../CURRENT_STATE.md)、[規範架構](../ARCHITECTURE.md)、[R1交接](../maintenance/FINAL_HANDOFF.md)，再按下一任務讀source；無需重讀數百份review。fresh/historical矩陣在maintenance/VALIDATION_MATRIX.md。
+2026-10-12 R1。只需先讀[CURRENT_STATE](../CURRENT_STATE.md)、[規範ARCHITECTURE](../ARCHITECTURE.md)、[FINAL_HANDOFF](../maintenance/FINAL_HANDOFF.md)與[VALIDATION_MATRIX](../maintenance/VALIDATION_MATRIX.md)，再按最小任務讀source；不重讀數百review。
 
-起始GitHubmain a6a4c654845338521700121ac06586887d1ec085；finalmerge SHA以R1交接核對。產品39acf96、tagv0.2.0-aie.1 source2ce6810、exactAPKacdbacdf…仍保留。R1只docs/doctor/CI/獨立Hostfixtureadapter，無產品/pins/signing/data變更。
+R1文件／doctor／CI PR #9正常merge `bf7c5d1d912d77ae8c6c7179d26d72bf835232bc`。文件交付後精確main在GitHub與外部`R1_FINAL_RECEIPT.json`；canonical本地checkout `.worktrees/mainline` branch main。原root與15原工區保持，新增共18；禁止reset／clean／prune。
 
-外部工程archive：/Users/huang/Desktop/KU-Yin-Engineering-Archive-2026-10-12。15原工作樹與4dirty未提交資料保留；bundle不含dirty，已有patch/source及4clone還原演練。私人詞庫/DB/keys只定位不backup、不GitHub。
+外部archive `/Users/huang/Desktop/KU-Yin-Engineering-Archive-2026-10-12/`：569baselinehash、4dirtyclone restore PASS，536refs／470copies；private data／keys excluded，DB不改，removed0。產品39acf96、tagv0.2.0-aie.1 source2ce6810、exactAPKacdbacdf…不變。
 
-當前native production＋startupfallback；MainActivitytrial另dictionary；Englishoffline10k。S1 scratchplanpage/generation/ref，nativeACK早於editorACK，不end-to-end exactlyonce。S0fullresetunsupported/disabled。Room僅feedbackv1，不是AIElearning schema。
+Host PR #10 **HOLD／未merge**。baseline fresh emulator App5PASS／Host15PASS9FAIL8SKIP；087adapter Host15PASS17SKIP；ea5c2b5 CI38254806233 App4PASS1FAIL（IME visibility :72），Host未跑。來源不改App，rootcauseUNKNOWN，不能用skips或workflowSUCCESS宣稱修好。新source測試詳見fixturebranch交接。
 
-限制：歷史host32=15PASS/9FAIL/8SKIP；新fixture結果依case/CIraw證據，不能將puretests當devicePASS。supplemental native stress180sTIMEOUT/rootcauseUNKNOWN（四compilePASS、nativeJVM10短流程PASS）。physical/OEM/TalkBack/fullerase/licenseruntime/signing仍OPEN，productionNOT_READY、M4NOT_VALIDATED、S2未開始。
+NEXT：bounded test-infra定位IME visibility／完整capture成本，保留strict preedit與exact commit/action/newline，取得完整runtime再裁定PR10；不得盲retry、改assertions、清字典或新增decoder。True產品defect另isolatedfix。physical／OEM／TalkBack／erase／license／signing仍OPEN；productionNOT_READY、M4NOT_VALIDATED、S2未開始。
 
-下一個最小工作以R1交接為準：case-by-case實際Hostruntime/手機候選與editor復驗，或已證產品缺陷的隔離fix；不要新decoder/touch/ranking。TAUI和舊branchesKEEP待owner決策。無/ init、/compact或LSP API；持久入口与平台自動壓縮，不改globalCodexconfig。
+Native production＋startupfallback；MainActivitytrial另dictionary；Englishoffline10k。scratch snapshotplan/generation/ref；nativeACK早於editorACK；fullresetunsupported；Roomfeedback v1。Supplemental native stress180s TIMEOUT不當PASS。TAUI／oldbranches KEEP待owner決策。無init/compact/LSP API；不改globalCodexconfig。

@@ -1,6 +1,6 @@
 # R1 驗證矩陣
 
-ACTIVE；逐個gates待最後fresh命令補登。未執行不借歷史PASS。
+本輪證據逐層列示。CI workflow SUCCESS不代表所有runtime cases通過；未執行不借歷史PASS。
 
 | Gate | Evidence freshness | 結果 | Scope |
 |---|---|---|---|
@@ -16,9 +16,15 @@ ACTIVE；逐個gates待最後fresh命令補登。未執行不借歷史PASS。
 | Host original JVM | FRESH | 3類37PASS/0skip exit0 | 非physical |
 | Debug/host/instrumentation | FRESH | 全部assemble成功 exit0 | app/host/test artifacts只驗建置，不替換發布APK |
 | supplemental native stress | FRESH | TIMEOUT 180s / NOT_COMPLETED | Cargo/JNI/Kotlincompile4步PASS，未有最終JSON；根因UNKNOWN |
-| Hostadapter unit/instrumentation | FRESH in progress | RED verified；GREEN pending | separatefixturebranch，非runtime |
+| Host adapter unit／instrumentation | FRESH | 5類71 PASS／0skip，instrumentation assembled | RED 20/11、23/3、composition 11/6；後續 scoped-idle 切片另驗 |
+| Frozen/current provenance | FRESH | Python 113 PASS／10 contracts PASS | CI fdd8385 RED 109中1fail；8 exact frozen sources＋current app5/host32；原 runner／manifest 未改 |
 | Release build | FRESH | BLOCKED_BY_SIGNING / exit1 | packageRelease因my-upload-key.jks不存在；無key生成／data修改 |
-| JSON/YAML/doclinks/Mermaid | FRESH | PASS | maintenanceJSON/workflowPyYAML/121links0missing，7chartsmermaid11parserPASS |
+| JSON/YAML/doclinks/Mermaid | FRESH | PASS | 2 maintenanceJSON／3 YAML／131 links零missing，7 charts Mermaid11 parser PASS |
 | HistoricalCI38164320915 | HISTORICAL | blockingPASS/app5PASS/host15PASS9FAIL8SKIP | 不算本輪新驗證 |
-| R1GitHubCI/PRmerge | NOT_EXECUTED_YET | PENDING | reviewer/gates後正常merge |
+| PR #9 blocking CI / merge | FRESH | PASS／MERGED | run38224799842；merge bf7c5d1，獨立審查APPROVE |
+| PR #9 CI JVM | FRESH XML | App265（10SKIP）／Host37（0SKIP）；0failure/error | 本機host JNI10已實際PASS；Linux CI缺host JNI所以10skip |
+| PR #9 emulator baseline | FRESH XML | App5PASS；Host15PASS／9FAIL／8SKIP | 保存原始 connected XML；不以非blockingjob overall success遮蓋 |
+| Host 087ff39 emulator | FRESH HTML/log | App5PASS；Host15PASS／0FAIL／17SKIP | 舊workflow無XML；全部new gaps仍未驗證；與原9FAIL並列保留 |
+| PR #10 ea5c2b5 CI | FRESH XML | blocking buildPASS；App4PASS／1FAIL；Host NOT_EXECUTED | run38254806233；IME visibility assertion失敗；根因UNKNOWN，不盲retry |
+| Host scoped-idle local follow-up | FRESH in progress | PENDING local evidence | 只test process capture成本；不改App precondition或strict assertions |
 | Physical acceptance | NOT_EXECUTED | OPEN | 本輪不宣稱裝置PASS |

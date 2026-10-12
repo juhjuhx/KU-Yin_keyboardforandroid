@@ -25,4 +25,14 @@ Canonicalcatalog640 nested SKILL.md，Superpowers6.4.2有15，Addy24entries可�
 | executing-plans | local Skill / `/Users/huang/.agents/skills/executing-plans/SKILL.md` | `ae12b8581157d44c6c1544995dd90111ae5e7669022bd75e8f715fb95f373b8b` | G/H | 已批准prompt按序執行，inline與獨立review | LOADED / USED_SCOPED |
 | verification-before-completion | local Skill / `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/verification-before-completion/SKILL.md` | `2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3` | H | 不聲稱未跑gates | LOADED / USED_SCOPED |
 
-brainstorming/UI/visual/marketing/Three.js：NOT_APPLICABLE，user已批准收束非newdesign。official-code-review有安裝但本輪尚無PR時NOT_APPLICABLE；取得PR後按需路由。Addy其餘未load條目DISCOVERED_NOT_USED，不宣稱全24執行。Independent reviewers：r1_architecture_audit、r1_storage_build_audit、r1_fixture_audit（後者實作時不自評，final交另reviewer）。
+brainstorming/UI/visual/marketing/Three.js：NOT_APPLICABLE，user已批准收束非newdesign。official-code-review已LOADED；其特定模型四管線不支援，FULL_WORKFLOW=BLOCKED_BY_HARNESS，改採可用 fresh-context reviewers，不宣稱完成該管線。Addy其餘未load條目DISCOVERED_NOT_USED，不宣稱全24執行。Independent reviewers：r1_architecture_audit、r1_storage_build_audit、r1_fixture_audit（後者實作時不自評，final交另reviewer）。
+
+## R1 最終路由補登
+
+完整離線 catalog：canonical 640＋Superpowers 15＋guardrails 2＝657 entries；其中 Addy 24。可呼叫 nested tool metadata 596（含不相關 apps）與 direct tools 已盤點；只使用任務相關 exec/patch/Git/gh/clock/independent collaboration，官方 UIAutomator 文件另以 web 唯讀核對。没有 init/compact/LSP API，無修改 global agent config。
+
+| skill_name | provider / actualpath | SHA256 | phase | reason / result | status |
+|---|---|---|---|---|---|
+| addyosmani-ci-cd-and-automation | local Skill / `/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md` | `067d15958ad69341fe37600be810e7a19f884fa67045385e48fd41c25dbd8e7d` | H | blocking Python/10 contracts；保存 XML；不改 signing | LOADED / USED_SCOPED |
+| finishing-a-development-branch | local Skill / `/Users/huang/.agents/skills/finishing-a-development-branch/SKILL.md` | `5c8d4b59aedb14c94e2f5d787a3265e858e8f53d4ceffe7ff1c15878a52b0e91` | H | 依已批准 normal PR/merge；保留 branches/worktrees | LOADED / USED_SCOPED |
+| official-code-review | local Skill / `/Users/huang/.agents/skills/official-code-review/SKILL.md` | `ae97f416c7e5ae708aa68a64a0cd137ff952c78ffd50f19ab147e19b2713adf3` | H | 已讀；指定模型流程不可執行，使用可用獨立 reviewer | LOADED / BLOCKED_FULL_WORKFLOW |

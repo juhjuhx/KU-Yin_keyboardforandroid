@@ -7,3 +7,7 @@
 Hostadapter另小slice：明確處理stale讀取/現候選geometry與P0即時completion契約，保留strictpreedit/editorexactdelta；不能把編譯或purehelper tests當裝置PASS。最新結果以VALIDATION_MATRIX與FINAL_HANDOFF。
 
 公開v0.2.0-aie.1/exactAPK/tag保持；fullphysicalOPEN、productionNOT_READY、M4NOT_VALIDATED、AIE-S2NOT_STARTED。文檔／工具可獨立merge，並不豁免原host/runtime/privacy/signing/licensinggates。
+
+## 主線裁定
+
+文件／工具治理已通過本輪必要gates及獨立審查，PR #9 正常MERGED。Host修正保持獨立PR #10；最新 runtime 的App可見性前提失敗，Host未執行，因此 **HOLD，不能宣稱候選驗收修好**。本輪收束可以交付main與完整工程文檔，typing acceptance／fixture runtime修復是下一個受限follow-up，不擴展成產品重構。
