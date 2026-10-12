@@ -62,6 +62,6 @@ Service 管 Android lifecycle／editor effects；session 是唯一組字 owner�
 ## 文件
 
 - `docs/COMPOSE-MAINLINE.md`：主線檔案審計（保留／刪除收錄／新增）、決策與路線圖
-- `docs/ARCHITECTURE.md`：描述舊 View 架構（待 C12 重寫，現為歷史）
+- [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)：現行規範架構，10章來源、ownership、資料與故障圖；舊 View 僅歷史參考
 - `SECURITY.md`：安全聲明（與程式一致）
 - `docs/ROADMAP.md`、`docs/HISTORY.md`：歷史路線與沿革（部分條目已過時，見審計文檔）
