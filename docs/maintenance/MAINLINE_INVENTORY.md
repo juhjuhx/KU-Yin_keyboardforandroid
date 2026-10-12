@@ -13,3 +13,7 @@ TAUI兩檔仍在main；無Android consumers，額外保存exact bytes，owner/�
 ## 來源及資料保護
 
 完整metadata與dirty bytes僅保存在repo外工程archive。實機證據目錄/keys/不明userdict只定位且KEEP，未copy私人資料。沒有Android device-local DB讀取。
+
+## 本輪主線同步
+
+PR #9 正常merge `bf7c5d1d912d77ae8c6c7179d26d72bf835232bc`。原root仍在使用者dirty docs分支；已新增 `.worktrees/mainline` checkout真正local `main`，以 `git merge --ff-only origin/main` 從舊653b4a3同步，沒有reset或強制改ref。原15工作樹HEAD／status與569baselinebackup再次核對一致。

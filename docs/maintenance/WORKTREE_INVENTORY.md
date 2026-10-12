@@ -21,3 +21,7 @@
 | `/Users/huang/KU-Yin_keyboardforandroid/.worktrees/p1g-runner-safety` | `85711bc8c749d488923954e8f4c173a493bf27eb` | `refs/heads/fix/p1g-acceptance-runner-safety` | NO | 640/0/3429 |
 
 所有4個dirty工作樹patch＋未追蹤來源均離線備份，已獨立clone演練；禁止reset/clean/prune。
+
+## R1 新增工區
+
+本輪實際18個main-repo工區：原15＋consolidation／fixture／canonical main 三個；另獨立D2.5 repo未併入此數。原15個 HEAD/status/dirty bytes仍匹配外部 baseline，4個dirty已隔離還原演練；沒有刪除／prune。`.worktrees/mainline` 是今後產品主線 checkout（branch main），原root仍為使用者dirty docs branch。Host fixture工區保留待阻擋解除；R1文件工區保留正常PR歷史。

@@ -30,3 +30,15 @@ OCR v1.12.13 / Anthropic401 invalidx-api-key / request req_011CfwdzDtFeoobZcX43C
 ## Supplemental stress verdict
 
 r1_storage_build_audit獨立讀probe/source/log/manifest：180秒timeout不阻擋docs/doctor/CI治理merge，probe未改且非必要CIgate；必須明列NOT_COMPLETED，不稱stressPASS。四compile步PASS與nativeJVM4＋6短流程PASS不同scope。只有最後輸出JSON，無法定位停在哪案，禁止聲稱longstream是已證根因。traceback/manifest保存於外部native-probe.log與build/r1-evidence/native。
+
+## PR／fixture 追加審查
+
+PR #9 actual range a6a4c65..c590d364 在正常 merge 前由 architecture及storage/build reviewers核 source／privacy metadata／doctor／CI diff，無 High，已合併 bf7c5d1。
+
+`r1_architecture_audit` 對 fixture 087ff39 的9檔、71測 XML與composing interval replacement實作核准；whitespace regex finding經原始字元查驗屬false positive並正式撤回。後續 frozen/current provenance 実際 patch 也取得該 reviewer scoped APPROVE：8份source exact bytes 53,224；missing硬FAIL、tamper與unsupported shape拒絕；current app5／host32 exact set／count／unique。Storage reviewer核准方案，final turn usage-limit未完成actual patch approval，不偽稱其追加核准。
+
+Source-level UIAutomator2.3.0成本已核：UiObject2 getters、hashCode／equals會呼叫getAccessibilityNodeInfo → waitForIdle＋refresh；equals可能將stale轉false。首輪runtime15PASS／17SKIP不能說修好；下一個窄fixture capture切片與CI證據單獨判定，不變產品或放寬strict assertions。
+
+## 最新 runtime 阻擋與安全處置審查
+
+`r1_architecture_audit` 重讀 run38254806233 raw XML／log與fail-fast source，核實App4PASS／1FAIL為第一次visibility（recreate未開始），Host task未執行；CI真正checkout `42fb9afb59b54e8e0e11859f508ba554d939379a`。reviewer **APPROVE bounded disposition**：PR10 HOLD，不盲retry、不改App/assertions；已合併PR9的文檔／工具交付可正常完成。沒有把source不變推論成emulator flake，也沒有將未跑Host記成skip／PASS。
