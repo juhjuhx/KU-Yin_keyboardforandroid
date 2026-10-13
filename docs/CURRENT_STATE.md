@@ -17,3 +17,7 @@ ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX�
 本輪 fresh baseline emulator run38224799842：App5PASS；Host15PASS／9FAIL／8SKIP。隔離 Host PR #10 未合併：087ff39 run38225649247 Host15PASS／17SKIP；ea5c2b5 run38254806233 blocking buildPASS，但App runtime4PASS／1FAIL（input window visibility），Host未執行。根因UNKNOWN，不能稱emulator flaky或由fixture造成；不跳過App層、不盲retry、不改產品／visibility assertion。Host adapter後續device-free成本修正另列local證據，仍須完整新runtime gate。
 
 詳見[本輪驗證](maintenance/VALIDATION_MATRIX.md)與[交接](maintenance/FINAL_HANDOFF.md)。Physical OPEN／Production NOT_READY／M4 NOT_VALIDATED／S2 NOT_STARTED不變。
+
+## R2 active investigation（2026-10-14）
+
+main精確63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR9/11合併，PR10remote ea5c2b5 OPEN/HOLD，local reviewed Host4fc43ff尚未merge main。R2隔離test-only observer＋CI controlled comparison，不改product/pins/signing/資料。fresh local App273（含native10）、Host97、Python120、contracts10、四test APK編譯PASS；不是emulator visibility修好證明。根因UNRESOLVED，actual A/B/C待執行。最新[階段交接](testing/R2_FINAL_HANDOFF.md)／[R2證據矩陣](testing/R2_VALIDATION_MATRIX.md)；歷史R1文件保留。

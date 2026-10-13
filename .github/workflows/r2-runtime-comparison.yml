@@ -1,0 +1,147 @@
+name: R2 Controlled IME Comparison
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/r2-runtime-comparison.yml'
+      - 'app/src/debug/**'
+      - 'app/src/androidTest/**'
+      - 'scripts/runtime_smoke.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools ndk;28.2.13676358 cmake;3.22.1
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Prepare exact sources and observer-only overlays
+        id: sources
+        shell: python
+        run: |
+          import os, pathlib, subprocess, shutil, json, hashlib
+          root = pathlib.Path.cwd()
+          baseline = '63c9e4ab8ad7e277013acb5d7cce99228ec1f827'
+          candidate = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          protected = ['app/src/main', 'app/build.gradle.kts', 'acceptance-host/src/main', 'gradle', 'LICENSE', 'NOTICE']
+          assert not subprocess.check_output(['git', 'diff', baseline, candidate, '--', *protected])
+          observer = [
+              'app/src/debug/java/com/example/androidkeyboard/runtime/ImeHostActivity.kt',
+              'app/src/debug/java/com/example/androidkeyboard/runtime/R2FailureEvidenceBoundary.kt',
+              'app/src/androidTest/java/com/example/androidkeyboard/runtime/ImeRuntimeSmokeTest.kt',
+              'app/src/androidTest/java/com/example/androidkeyboard/runtime/R2ImeEvidence.kt',
+          ]
+          receipt = []
+          for variant in ['main-original', 'main-observed', 'pr10-observed']:
+              base = candidate if variant == 'pr10-observed' else baseline
+              target = pathlib.Path(os.environ['RUNNER_TEMP']) / variant
+              subprocess.run(['git', 'worktree', 'add', '--detach', str(target), base], check=True)
+              overlay = ['scripts/runtime_smoke.sh'] + (observer if variant != 'main-original' else [])
+              for rel in overlay:
+                  dst = target / rel
+                  dst.parent.mkdir(parents=True, exist_ok=True)
+                  shutil.copy2(root / rel, dst)
+              source_hashes = {}
+              for rel in ['scripts/runtime_smoke.sh', 'scripts/bootstrap_native_deps.sh', 'app/build.gradle.kts', 'acceptance-host/build.gradle.kts', 'settings.gradle.kts', 'gradle/libs.versions.toml']:
+                  source_hashes[rel] = hashlib.sha256((target / rel).read_bytes()).hexdigest()
+              for base_dir in ['app/src/main', 'app/src/debug', 'app/src/androidTest', 'acceptance-host/src/androidTest', 'acceptance-host/src/sharedTest']:
+                  for path in sorted((target / base_dir).rglob('*')):
+                      if path.is_file():
+                          source_hashes[str(path.relative_to(target))] = hashlib.sha256(path.read_bytes()).hexdigest()
+              receipt.append({'variant': variant, 'base_sha': base, 'observer_sha': candidate,
+                              'overlay_paths': overlay, 'source_hashes': source_hashes})
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+                  output.write(variant.replace('-', '_') + '=' + str(target) + '\n')
+          # B/C must have identical product and App observer sources. Host differs intentionally.
+          app_sources = lambda item: {path: digest for path, digest in item['source_hashes'].items() if path.startswith('app/')}
+          assert app_sources(receipt[1]) == app_sources(receipt[2]), 'B/C App source keys or hashes differ'
+          pathlib.Path('r2-comparison-source-manifest.json').write_text(json.dumps(receipt, indent=2))
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: A main exact product and original App test
+        id: a
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r2_a
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: cd '${{ steps.sources.outputs.main_original }}' && bash scripts/runtime_smoke.sh
+      - name: B main exact product with passive App observer
+        id: b
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          KUYIN_R2_OBSERVER: 'true'
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r2_b
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: cd '${{ steps.sources.outputs.main_observed }}' && bash scripts/runtime_smoke.sh
+      - name: C PR10 local lineage with identical passive App observer
+        id: c
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          KUYIN_R2_OBSERVER: 'true'
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r2_c
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: cd '${{ steps.sources.outputs.pr10_observed }}' && bash scripts/runtime_smoke.sh
+      - name: Upload every comparison, including failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r2-controlled-runtime-evidence
+          path: |
+            r2-comparison-source-manifest.json
+            ${{ runner.temp }}/main-original/build/r2-runtime-evidence
+            ${{ runner.temp }}/main-original/*/build/outputs/androidTest-results/connected
+            ${{ runner.temp }}/main-observed/build/r2-runtime-evidence
+            ${{ runner.temp }}/main-observed/*/build/outputs/androidTest-results/connected
+            ${{ runner.temp }}/pr10-observed/build/r2-runtime-evidence
+            ${{ runner.temp }}/pr10-observed/*/build/outputs/androidTest-results/connected
+          if-no-files-found: error
+      - name: Preserve all failed comparison outcomes
+        if: always()
+        env:
+          A_RESULT: ${{ steps.a.outcome }}
+          B_RESULT: ${{ steps.b.outcome }}
+          C_RESULT: ${{ steps.c.outcome }}
+        run: |
+          printf 'A=%s B=%s C=%s\n' "$A_RESULT" "$B_RESULT" "$C_RESULT"
+          [[ "$A_RESULT" == success && "$B_RESULT" == success && "$C_RESULT" == success ]]

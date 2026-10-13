@@ -1,6 +1,6 @@
 # KU-Yin 續作短入口
 
-2026-10-12 R1。只需先讀[CURRENT_STATE](../CURRENT_STATE.md)、[規範ARCHITECTURE](../ARCHITECTURE.md)、[FINAL_HANDOFF](../maintenance/FINAL_HANDOFF.md)與[VALIDATION_MATRIX](../maintenance/VALIDATION_MATRIX.md)，再按最小任務讀source；不重讀數百review。
+2026-10-14 R2 active。先讀[CURRENT_STATE](../CURRENT_STATE.md)、[規範ARCHITECTURE](../ARCHITECTURE.md)、[R2階段交接](../testing/R2_FINAL_HANDOFF.md)與[R2驗證矩陣](../testing/R2_VALIDATION_MATRIX.md)，再按最小任務讀exactsource；R1 handoff保留歷史，不重讀數百review。
 
 R1文件／doctor／CI PR #9正常merge `bf7c5d1d912d77ae8c6c7179d26d72bf835232bc`。文件交付後精確main在GitHub與外部`R1_FINAL_RECEIPT.json`；canonical本地checkout `.worktrees/mainline` branch main。原root與15原工區保持，新增共18；禁止reset／clean／prune。
 
