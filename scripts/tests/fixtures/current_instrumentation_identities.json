@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "source_checkpoint": "087ff3929aa01349894abad9001aac43b9d1fd1c",
+  "purpose": "Current CI instrumentation identity inventory; separate from frozen P1-E 26-test runner",
+  "app": {
+    "expected_count": 5,
+    "identities": [
+      "com.example.ExampleInstrumentedTest#useAppContext",
+      "com.example.androidkeyboard.runtime.ContinuousSentenceTest#nihaoCoexistsConvertsCorrectsAndCommitsOnce",
+      "com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#nativeEngineSurfacesVisibleDachenPhoneticPreedit",
+      "com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#imeBindsAndSurvivesEditorRecreate",
+      "com.example.androidkeyboard.runtime.NativeCase4Test#selectionCommitsSegmentAndNextKeyContinuesSameContext"
+    ]
+  },
+  "acceptance-host": {
+    "expected_count": 32,
+    "identities": [
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted",
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh02ThirdToneWoIsSelectableAndCommitted",
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh04ContinuousNoTonePhraseCommitsExactlyOnce",
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh05ContinuousTonedPhraseCommitsExactlyOnce",
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit",
+      "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#en02EnglishDictionaryCompletionCommitsActualEditorWord",
+      "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b01CanonicalKeysAndShiRiHaveStrictPreeditEvidence",
+      "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b02RealCandidateSelectionThenContinuedComposition",
+      "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b03RealContinuousSentenceCandidateAndSingleFinalCommit",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d01NoneInsertsOneNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d02UnspecifiedInsertsOneNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d03GoDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d04SearchDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d05SendDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d06NextDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d07DoneDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d08PreviousDispatchesOneAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d09SendWithNoEnterActionInsertsNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d10GoWithNoEnterActionInsertsNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d11CustomActionUsesCustomId",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d12NoEnterActionOverridesCustomAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d13CompositionCompletesBeforeSend",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d14CompositionCompletesBeforeNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d15ExplicitMultilineInsertsNewline",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d16CustomNewlineLabelRemainsTextAction",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d17HostFalseHasObservableActionButIpcScopeRemainsOpen",
+      "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d18AllThreeLayoutsWireRealSoftEnter",
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c01NumberTemporarilyUsesEnglish",
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c02PhoneTemporarilyUsesEnglish",
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c03DatetimeTemporarilyUsesEnglish",
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive",
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c05ReturningToTextRestoresBothPriorPreferredModes"
+    ]
+  }
+}
