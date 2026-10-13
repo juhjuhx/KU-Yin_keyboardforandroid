@@ -524,6 +524,7 @@ internal class AcceptanceDriver(private val caseId: String) {
     private fun captureUi(): CapturedUi = try {
         externalUi.capture(observationDeadline ?: (SystemClock.uptimeMillis() + UI_TIMEOUT_MS))
     } catch (error: UiReadDeadline) {
+        if (error.suppressed.isNotEmpty()) throw error
         if (observationDeadline != null) throw error
         blocked("fresh UI observation 未在有界 deadline 完成；沒有使用部分或過時 observation 判定結果")
     }
@@ -538,9 +539,11 @@ internal class AcceptanceDriver(private val caseId: String) {
             do {
                 try {
                     if (predicate()) return SystemClock.uptimeMillis() <= deadline
-                } catch (_: StaleObjectException) {
+                } catch (error: StaleObjectException) {
                     // Host metadata read only; gestures are never executed in a predicate.
-                } catch (_: UiReadDeadline) {
+                    if (!retryableScopedStale(error) { it is StaleObjectException }) throw error
+                } catch (error: UiReadDeadline) {
+                    if (error.suppressed.isNotEmpty()) throw error
                     // A prior completed tree cannot diagnose the current preedit after an
                     // unobservable tail. Preserve this read gap instead of asserting a decoder fault.
                     blocked("fresh UI observation 未在當次 polling deadline 完成；timeout 根因未證明")
@@ -563,6 +566,7 @@ internal class AcceptanceDriver(private val caseId: String) {
         .put("error", error?.message ?: JSONObject.NULL)
         .put("error_details", error?.toFailureEvidence() ?: JSONObject.NULL)
         .put("observations", observations)
+        .put("ui_reads", externalUi.diagnostics())
 
     companion object {
         const val HOST_PACKAGE = "io.github.juhjuhx.kuyin.acceptancehost"
@@ -608,11 +612,7 @@ internal fun acceptanceCase(caseId: String, block: AcceptanceDriver.() -> Unit) 
         putString("stream", "P1_ACCEPTANCE_CASE=$envelope\n")
     }
     InstrumentationRegistry.getInstrumentation().sendStatus(2, status)
-    when (val error = failure) {
-        null -> Unit
-        is CaseInconclusive -> throw AssumptionViolatedException("$caseId RESULT=INCONCLUSIVE REASON=${error.reason}: ${error.message}", error)
-        else -> throw error
-    }
+    failure?.let { throw terminalCaseFailure(caseId, it) }
 }
 
 private fun EditorSnapshot.effectKey(): List<Any?> = listOf(
