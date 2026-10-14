@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import HTTPRedirectHandler, Request, build_opener
 import json
 import uuid
 
@@ -54,7 +54,13 @@ def build_multipart(wav: bytes, model: str, language: str, boundary: str):
     return bytes(out), "multipart/form-data; boundary=" + boundary
 
 
-def transcribe_api(wav_path: Path, settings: ApiSettings, opener=urlopen) -> str:
+class NoRedirectHandler(HTTPRedirectHandler):
+    """Prevent ASR bytes or Authorization headers being forwarded to a redirect."""
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        return None
+
+
+def transcribe_api(wav_path: Path, settings: ApiSettings, opener=None) -> str:
     endpoint = validate_endpoint(settings.endpoint)
     if settings.timeout <= 0 or settings.timeout > 300:
         raise ValueError("ASR timeout must be 1..300 seconds")
@@ -67,6 +73,8 @@ def transcribe_api(wav_path: Path, settings: ApiSettings, opener=urlopen) -> str
     if settings.api_key:
         headers["Authorization"] = "Bearer " + settings.api_key
     request = Request(endpoint, data=data, headers=headers, method="POST")
+    if opener is None:
+        opener = build_opener(NoRedirectHandler()).open
     try:
         with opener(request, timeout=settings.timeout) as response:
             raw = response.read(5 * 1024 * 1024 + 1)
