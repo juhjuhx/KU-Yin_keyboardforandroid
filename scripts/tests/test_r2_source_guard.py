@@ -23,6 +23,7 @@ class R2SourceGuardTest(unittest.TestCase):
                 "app/src/main/Product.kt": "unchanged product",
                 "acceptance-host/src/main/Host.kt": "unchanged editor",
                 "gradle/native-pin.txt": "unchanged native pin",
+                "scripts/bootstrap_native_deps.sh": "actual bootstrap dependency pin",
                 "gradle/libs.versions.toml": '[versions]\nuiautomator = "2.3.0"\ncore = "1.6.1"\n',
             }
             for path, content in files.items():
@@ -59,8 +60,11 @@ class R2SourceGuardTest(unittest.TestCase):
         result = self.run_guard(("gradle/libs.versions.toml", '[versions]\nuiautomator = "9.0.0"\ncore = "1.6.1"\n'))
         self.assertNotEqual(0, result.returncode)
 
-    def test_native_pin_change_is_rejected(self):
+    def test_other_gradle_file_change_is_rejected(self):
         self.assertNotEqual(0, self.run_guard(("gradle/native-pin.txt", "different pin")).returncode)
+
+    def test_actual_native_bootstrap_pin_change_is_rejected(self):
+        self.assertNotEqual(0, self.run_guard(("scripts/bootstrap_native_deps.sh", "changed actual bootstrap pin")).returncode)
 
     def test_product_or_host_source_change_is_rejected(self):
         for path in ("app/src/main/Product.kt", "acceptance-host/src/main/Host.kt"):

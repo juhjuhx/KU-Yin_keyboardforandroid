@@ -40,7 +40,7 @@ jobs:
         run: |
           import hashlib, json, pathlib, subprocess, tomllib
           baseline = '63c9e4ab8ad7e277013acb5d7cce99228ec1f827'
-          protected = ['app/src/main', 'acceptance-host/src/main', 'app/build.gradle.kts', 'acceptance-host/build.gradle.kts', 'gradle', 'LICENSE', 'NOTICE']
+          protected = ['app/src/main', 'acceptance-host/src/main', 'app/build.gradle.kts', 'acceptance-host/build.gradle.kts', 'gradle', 'scripts/bootstrap_native_deps.sh', 'LICENSE', 'NOTICE']
           catalog = 'gradle/libs.versions.toml'
           assert not subprocess.check_output(['git', 'diff', baseline, 'HEAD', '--', *protected, ':(exclude)' + catalog])
           before = tomllib.loads(subprocess.check_output(['git', 'show', baseline + ':' + catalog], text=True))
