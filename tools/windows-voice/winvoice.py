@@ -34,8 +34,20 @@ class Config:
     language: str = "zh"
     sample_rate: int = 16000
     max_seconds: int = 30
+    provider: str = "offline"
+    api_url: str = ""
+    api_model: str = "whisper-1"
+    api_key_env: str = "KUYIN_VOICE_API_KEY"
 
     def validate(self) -> None:
+        if self.provider == "api":
+            from provider import validate_endpoint
+            validate_endpoint(self.api_url)
+            if not self.api_model:
+                raise ValueError("ASR API model must not be empty")
+            return
+        if self.provider != "offline":
+            raise ValueError("Unknown ASR provider")
         if not self.cli.is_file():
             raise FileNotFoundError(f"找不到 whisper-cli: {self.cli}")
         if not self.model.is_file():
@@ -47,6 +59,12 @@ class Config:
 def transcribe(wav_path: Path, config: Config, runner=subprocess.run) -> str:
     """Run a pinned local executable without invoking a shell or network."""
     config.validate()
+    if config.provider == "api":
+        from provider import ApiSettings, transcribe_api
+        return transcribe_api(wav_path, ApiSettings(
+            endpoint=config.api_url, model=config.api_model,
+            api_key=os.environ.get(config.api_key_env, ""),
+            language=config.language))
     with tempfile.TemporaryDirectory(prefix="kuyin-whisper-") as directory:
         stem = Path(directory) / "transcript"
         argv = [str(config.cli), "-m", str(config.model), "-f", str(wav_path),
@@ -180,9 +198,11 @@ def type_unicode(text: str) -> None:
 
 
 class VoiceApp:
-    def __init__(self, config: Config, traditional: bool):
+    def __init__(self, config: Config, traditional: bool, on_status=None):
         self.config = config
         self.traditional = traditional
+        self.on_status = on_status
+        self._message_thread_id = None
         self.recorder = Recorder(config.sample_rate)
         self.tmp = None
         self.wav = None
@@ -193,10 +213,16 @@ class VoiceApp:
         self.user32 = ctypes.WinDLL("user32", use_last_error=True)
         self.user32.GetForegroundWindow.restype = wintypes.HWND
 
+    def _emit(self, status: str):
+        if self.on_status is not None:
+            self.on_status(status)
+        else:
+            print(status)
+
     def toggle(self):
         with self._lock:
             if self.processing:
-                print("辨識中，暫不接受下一次錄音")
+                self._emit("辨識中，暫不接受下一次錄音")
                 return
             if self.recording:
                 self.recording = False
@@ -212,7 +238,7 @@ class VoiceApp:
             self.wav = Path(self.tmp.name) / "capture.wav"
             try:
                 self.recorder.start(self.wav)
-                print("🎙 錄音中。再次按 Ctrl+Alt+Space 轉錄")
+                self._emit("🎙 錄音中。再次按 Ctrl+Alt+Space 轉錄")
                 self._timer = threading.Timer(self.config.max_seconds, self._auto_stop)
                 self._timer.daemon = True
                 self._timer.start()
@@ -221,7 +247,7 @@ class VoiceApp:
                 self.tmp = None
                 with self._lock:
                     self.recording = False
-                print(f"錄音失敗: {type(exc).__name__}: {exc}")
+                self._emit(f"錄音失敗: {type(exc).__name__}: {exc}")
 
     def _auto_stop(self):
         with self._lock:
@@ -240,14 +266,14 @@ class VoiceApp:
                 text = transcribe(self.wav, self.config)
                 text = to_traditional(text, self.traditional)
                 if not text:
-                    print("沒有辨識到文字")
+                    self._emit("沒有辨識到文字")
                 elif target and self.user32.GetForegroundWindow() == target:
                     type_unicode(text)
-                    print("✓ 已輸入（無文字紀錄）")
+                    self._emit("✓ 已輸入（無文字紀錄）")
                 else:
-                    print("焦點已變更：為避免輸入到錯誤視窗，已捨棄結果")
+                    self._emit("焦點已變更：為避免輸入到錯誤視窗，已捨棄結果")
             except Exception as exc:
-                print(f"處理失敗: {type(exc).__name__}: {exc}")
+                self._emit(f"處理失敗: {type(exc).__name__}: {exc}")
             finally:
                 self.tmp.cleanup()
                 self.tmp = None
@@ -255,14 +281,19 @@ class VoiceApp:
                     self.processing = False
         threading.Thread(target=worker, daemon=True).start()
 
+    def stop(self):
+        if self._message_thread_id:
+            self.user32.PostThreadMessageW(self._message_thread_id, 0x0012, 0, 0)
+
     def run(self):
         self.config.validate()
+        self._message_thread_id = ctypes.windll.kernel32.GetCurrentThreadId()
         self.user32.RegisterHotKey.argtypes = (wintypes.HWND, ctypes.c_int,
                                                 wintypes.UINT, wintypes.UINT)
         self.user32.RegisterHotKey.restype = wintypes.BOOL
         if not self.user32.RegisterHotKey(None, HOTKEY_ID, MOD_CONTROL | MOD_ALT, VK_SPACE):
             raise OSError("Ctrl+Alt+Space 熱鍵註冊失敗，可能已被其他程式占用")
-        print("KU-Yin Voice for Windows：Ctrl+Alt+Space 開始／停止；Ctrl+C 結束")
+        self._emit("KU-Yin Voice for Windows：Ctrl+Alt+Space 開始／停止")
         msg = wintypes.MSG()
         try:
             while self.user32.GetMessageW(ctypes.byref(msg), None, 0, 0) > 0:
@@ -283,10 +314,14 @@ def main(argv=None):
     parser.add_argument("--model", default=os.environ.get("KUYIN_WHISPER_MODEL", ""))
     parser.add_argument("--language", default="zh", choices=["zh", "en", "auto"])
     parser.add_argument("--traditional", action="store_true", help="使用 OpenCC 轉臺灣繁體中文")
+    parser.add_argument("--provider", choices=["offline", "api"], default="offline")
+    parser.add_argument("--api-url", default="", help="Explicit opt-in transcription endpoint")
+    parser.add_argument("--api-model", default="whisper-1")
     parser.add_argument("--wav", type=Path, help="僅轉錄現有 16k/16bit/mono WAV，不啟用熱鍵")
     args = parser.parse_args(argv)
     config = Config(cli=Path(args.whisper_cli).expanduser().resolve(),
-                    model=Path(args.model).expanduser().resolve(), language=args.language)
+                    model=Path(args.model).expanduser().resolve(), language=args.language,
+                    provider=args.provider, api_url=args.api_url, api_model=args.api_model)
     if args.wav:
         print(to_traditional(transcribe(args.wav, config), args.traditional))
         return
