@@ -487,11 +487,15 @@ internal class AcceptanceDriver(private val caseId: String) {
 
     fun close() {
         val active = scenario ?: return
+        externalUi.cleanupOwner(true)
         try {
-            clearComposition()
+            runCaseCleanup(::clearComposition) {
+                scenario = null
+                active.close()
+            }
         } finally {
             scenario = null
-            active.close()
+            externalUi.cleanupOwner(false)
         }
     }
 

@@ -25,8 +25,16 @@ main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR10 remote `ea5c2b5b3404508c8
 - [x] exact source／18 worktrees／frozen資料保存／歷史raw XML覆核。
 - [x] TEST_ONLY observer regression RED：debug host final EditorInfo／IC presence、focus/attachment、既有show返回；不記text，不增加show呼叫。
 - [x] 保留40×250ms poll與原assert；failure現場在ActivityScenario.use內、close前採證。診斷schema與CI failure evidence自身也做RED/GREEN。
-- [ ] API33 default x86_64 pixel7、user0、相同runner/install/IME setup，A原main/App test、B原main＋observer、C PR10 local＋同observer；source/hash/provenance逐組保存。一次多變數比較不作因果證據。
+- [x] API33 default x86_64 pixel7、user0、相同runner/install/IME setup，A原main/App test、B原main＋observer、C PR10 local＋同observer；source/hash/provenance逐組保存。一次多變數比較不作因果證據。
 - [ ] 真runtime找第一個分歧，支持root後才最小repair RED/GREEN；原App5過才跑Host32。
 - [x] fresh Python120／contracts10／App273／Host97／bootstrap／四APK編譯，診斷source獨立審查；emulator證據審查仍待執行。
 
 本機沒有emulator或system image；runtime需CI disposable emulator。原實機與P1安全runner不修改。PR10 HOLD，physical OPEN，release NOT_READY。
+
+## 2026-10-14 受控執行結果
+
+[CI38459179007](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/38459179007) actual merge698d107c／PR12 head7f474c41：A/B/C原始App XML均5PASS0FAIL0SKIP；A/B原Host各15PASS9FAIL8SKIP，C为15PASS0FAIL17SKIP。完整source manifest逐blob核對；產品不改，並非binary-identical APK實驗。三個fresh emulator/user0皆未重現ea5首次visibility失敗，不能推定flaky或已修復。
+
+B：attached/windowfocus/token及真IC已有，但原IMM show回false；其後平台仍完成show且visibility=true。C：初次show request前已visible，不能把該次PASS歸因posted IMM。recreate在三組真執行且可見。參見外部「受控比較生命週期與根因獨立覆核.md」與[新階段探測](R2_HOST_OBSERVATION_PROBE.md)。
+
+Host9個FAIL→SKIP不是repaired；完整capture仍阻擋strict preedit證據。新增有界getter/REGISTER階段trace＋獨立cleanup failure保留，準備兩案有限probe；尚無產品根因或產品修正。PR10保持HOLD。

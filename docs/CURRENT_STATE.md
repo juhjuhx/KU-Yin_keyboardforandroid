@@ -20,4 +20,4 @@ ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX�
 
 ## R2 active investigation（2026-10-14）
 
-main精確63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR9/11合併，PR10remote ea5c2b5 OPEN/HOLD，local reviewed Host4fc43ff尚未merge main。R2隔離test-only observer＋CI controlled comparison，不改product/pins/signing/資料。fresh local App273（含native10）、Host97、Python120、contracts10、四test APK編譯PASS；不是emulator visibility修好證明。根因UNRESOLVED，actual A/B/C待執行。最新[階段交接](testing/R2_FINAL_HANDOFF.md)／[R2證據矩陣](testing/R2_VALIDATION_MATRIX.md)；歷史R1文件保留。
+main精確63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR9/11合併，PR10remote ea5c2b5 OPEN/HOLD，local reviewed Host4fc43ff尚未merge main。R2隔離test-only observer＋CI controlled comparison，不改product/pins/signing/資料。fresh local App273（含native10）、Host107、Python122、contracts10及instrumentation編譯PASS。受控A/B/C App均5PASS；A/B Host15PASS9FAIL8SKIP，C Host15PASS17SKIP，FAIL→SKIP不算修复。visibility舊失敗未重現、根因UNRESOLVED；正在有限Host階段探測。最新[階段交接](testing/R2_FINAL_HANDOFF.md)／[R2證據矩陣](testing/R2_VALIDATION_MATRIX.md)；歷史R1文件保留。

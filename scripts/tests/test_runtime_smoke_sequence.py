@@ -161,6 +161,21 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
         proc, _ = self.run_fixture(FAKE_PROBE_EXIT="13")
         self.assertNotEqual(0, proc.returncode, "ADB transport failure must differ from snapshot absence")
 
+    def test_explicit_host_probe_filters_only_host_and_labels_limited_scope(self):
+        proc, calls = self.run_fixture(KUYIN_R2_HOST_PROBE="true")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        app = next(args for name, args in calls if name == "gradlew" and ":app:connectedDebugAndroidTest" in args)
+        host = next(args for name, args in calls if name == "gradlew" and ":acceptance-host:connectedDebugAndroidTest" in args)
+        self.assertFalse(any("RunnerArguments.class=" in arg for arg in app))
+        expected = "-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted,io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive"
+        self.assertIn(expected, host)
+        self.assertIn("FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE", proc.stdout)
+
+    def test_invalid_probe_mode_is_rejected_before_device_commands(self):
+        proc, calls = self.run_fixture(KUYIN_R2_HOST_PROBE="typo")
+        self.assertEqual(2, proc.returncode)
+        self.assertEqual([], calls)
+
 
 if __name__ == "__main__":
     unittest.main()

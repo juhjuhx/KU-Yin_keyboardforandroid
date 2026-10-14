@@ -1,13 +1,6 @@
 name: R2 Controlled IME Comparison
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/r2-runtime-comparison.yml'
-      - 'app/src/debug/**'
-      - 'app/src/androidTest/**'
-      - 'scripts/runtime_smoke.sh'
   workflow_dispatch:
 
 permissions:

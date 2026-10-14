@@ -2,6 +2,13 @@ package io.github.juhjuhx.kuyin.acceptancehost
 
 import org.junit.AssumptionViolatedException
 
+internal fun runCaseCleanup(clear: () -> Unit, close: () -> Unit) {
+    var failure: Throwable? = null
+    try { clear() } catch (error: Throwable) { failure = error }
+    try { close() } catch (error: Throwable) { failure = mergeCaseFailure(failure, error) }
+    failure?.let { throw it }
+}
+
 internal class CaseInconclusive(val reason: String, detail: String = reason) : RuntimeException(detail)
 
 /** 測試結果不得把真正 cleanup failure 降成 assumption。只供 test/androidTest。 */

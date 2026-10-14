@@ -7,6 +7,10 @@ if [[ "${CI:-}" != "true" ]]; then
   echo "runtime_smoke.sh requires an isolated CI emulator" >&2
   exit 2
 fi
+case "${KUYIN_R2_HOST_PROBE:-false}" in
+  true|false) ;;
+  *) echo "Invalid TEST_ONLY Host probe mode; refusing device commands" >&2; exit 2 ;;
+esac
 KUYIN_CI_SERIAL="$(command adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
 if [[ -z "$KUYIN_CI_SERIAL" || "$KUYIN_CI_SERIAL" == *$'\n'* || "$KUYIN_CI_SERIAL" != emulator-* ]]; then
   echo "Expected exactly one CI emulator; refusing ambiguous or physical target" >&2
@@ -33,6 +37,14 @@ ensure_ci_user
 
 R2_EVIDENCE_DIR="build/r2-runtime-evidence"
 mkdir -p "$R2_EVIDENCE_DIR"
+HOST_TEST_ARGS=(--stacktrace)
+if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "true" ]]; then
+  # Two source-verified identities only. App prerequisite remains the complete suite.
+  HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted,io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive)
+  echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"
+else
+  echo FULL_SUITE_EXECUTION | tee "$R2_EVIDENCE_DIR/scope.txt"
+fi
 capture_r2() {
   local phase="$1" failed=0 snapshot_presence
   date -u '+%Y-%m-%dT%H:%M:%SZ' > "$R2_EVIDENCE_DIR/$phase-time.txt" || failed=1
@@ -160,4 +172,4 @@ capture_r2 before-app
 select_product_ime
 ensure_ci_user
 capture_r2 before-host
-./gradlew -Pandroid.injected.device.serial="$KUYIN_CI_SERIAL" :acceptance-host:connectedDebugAndroidTest --stacktrace
+./gradlew -Pandroid.injected.device.serial="$KUYIN_CI_SERIAL" :acceptance-host:connectedDebugAndroidTest "${HOST_TEST_ARGS[@]}"

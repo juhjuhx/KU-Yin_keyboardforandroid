@@ -7,6 +7,7 @@ import androidx.test.uiautomator.Configurator
 import androidx.test.uiautomator.StaleObjectException
 import androidx.test.uiautomator.UiDevice
 import androidx.test.uiautomator.UiObject2
+import org.json.JSONArray
 import org.json.JSONObject
 
 /** Live nodes survive only to perform one gesture; every property comes from the completed capture. */
@@ -23,6 +24,8 @@ internal class CapturedUi(val tree: VisibleUiSnapshot, private val handles: Map<
 }
 
 internal class ExternalUiObservation(private val device: UiDevice) {
+    private val trace = UiReadTrace(SystemClock::uptimeMillis) { it is StaleObjectException }
+    fun cleanupOwner(cleanup: Boolean) { trace.owner = if (cleanup) UiReadOwner.CLEANUP else UiReadOwner.BODY }
     private var captureCount = 0
     private var attemptCount = 0
     private var completedCount = 0
@@ -33,12 +36,17 @@ internal class ExternalUiObservation(private val device: UiDevice) {
     private var lastNodeCount = 0
     private val idleControl = object : IdleReadControl {
         override fun getWaitForIdleTimeout() = Configurator.getInstance().getWaitForIdleTimeout()
-        override fun setWaitForIdleTimeout(timeout: Long) { Configurator.getInstance().setWaitForIdleTimeout(timeout) }
-        override fun waitForIdle(timeout: Long) { device.waitForIdle(timeout) }
+        override fun setWaitForIdleTimeout(timeout: Long) {
+            trace.read(if (timeout == 0L) UiReadPhase.DISABLE_IDLE else UiReadPhase.RESTORE_IDLE) {
+                Configurator.getInstance().setWaitForIdleTimeout(timeout)
+            }
+        }
+        override fun waitForIdle(timeout: Long) { trace.read(UiReadPhase.IDLE) { device.waitForIdle(timeout) } }
     }
     fun capture(deadline: Long): CapturedUi {
         val started = SystemClock.uptimeMillis()
         captureCount++
+        trace.capture = captureCount
         lastDeadline = deadline
         lastComplete = false
         lastNodeCount = 0
@@ -46,6 +54,7 @@ internal class ExternalUiObservation(private val device: UiDevice) {
             val captured = freshUiRead(deadline, SystemClock::uptimeMillis, SystemClock::sleep,
                 { retryableScopedStale(it) { error -> error is StaleObjectException } }) {
                 attemptCount++
+                trace.attempt = attemptCount
                 scopedIdleRead(deadline, SystemClock::uptimeMillis, idleControl, ::captureOnce)
             }
             completedCount++
@@ -65,28 +74,43 @@ internal class ExternalUiObservation(private val device: UiDevice) {
         .put("elapsed_ms", elapsedMs).put("max_elapsed_ms", maxElapsedMs)
         .put("last_deadline_ms", lastDeadline).put("last_complete", lastComplete)
         .put("last_node_count", lastNodeCount)
+        .put("stale_count", trace.staleCount)
+        .put("recent_read_failures", trace.failures.toDiagnostics())
+        .put("last_read_failure_by_owner", trace.lastFailuresByOwner.toDiagnostics())
+
+    private fun List<UiReadFailure>.toDiagnostics() = JSONArray(map { failure ->
+            JSONObject().put("owner", failure.owner.name).put("capture", failure.capture)
+                .put("attempt", failure.attempt).put("phase", failure.phase.name)
+                .put("node", failure.node).put("elapsed_ms", failure.elapsedMs).put("stale", failure.stale)
+        })
 
     private fun captureOnce(): CapturedUi {
         val handles = mutableListOf<UiObject2>()
         val ids = LinkedHashMap<UiObject2, Int>()
-        fun register(handle: UiObject2): Int = ids.getOrPut(handle) {
+        fun register(handle: UiObject2): Int = trace.read(UiReadPhase.REGISTER) { ids.getOrPut(handle) {
             if (handles.size >= 1_000) throw CaseInconclusive("BLOCKED_SELECTOR", "完整 UI hierarchy 超過 fixture 的有界上限；不使用部分樹")
             handles.add(handle)
             handles.lastIndex
-        }
-        device.findObjects(By.pkg(FIXTURE_PRODUCT_PACKAGE)).forEach(::register)
+        } }
+        trace.read(UiReadPhase.QUERY) { device.findObjects(By.pkg(FIXTURE_PRODUCT_PACKAGE)) }.forEach(::register)
         val nodes = mutableListOf<VisibleUiNode>()
         var index = 0
         while (index < handles.size) {
             val handle = handles[index]
-            val parent = handle.parent?.takeIf { it.applicationPackage == FIXTURE_PRODUCT_PACKAGE }
+            val parent = trace.read(UiReadPhase.PARENT, index) { handle.parent }?.takeIf {
+                trace.read(UiReadPhase.PARENT_PACKAGE, index) { it.applicationPackage } == FIXTURE_PRODUCT_PACKAGE
+            }
             val parentId = parent?.let(::register)
             // Traverse the reported children. A surfaced stale read invalidates the whole
             // capture; UIAutomator may omit unavailable nodes, so this is not an atomic tree.
-            handle.children.forEach(::register)
-            val rect = handle.visibleBounds
-            nodes += VisibleUiNode(index, parentId, handle.applicationPackage, handle.text,
-                handle.contentDescription, handle.isClickable, UiBounds(rect.left, rect.top, rect.right, rect.bottom))
+            trace.read(UiReadPhase.CHILDREN, index) { handle.children }.forEach(::register)
+            val rect = trace.read(UiReadPhase.BOUNDS, index) { handle.visibleBounds }
+            nodes += VisibleUiNode(index, parentId,
+                trace.read(UiReadPhase.PACKAGE, index) { handle.applicationPackage },
+                trace.read(UiReadPhase.TEXT, index) { handle.text },
+                trace.read(UiReadPhase.DESCRIPTION, index) { handle.contentDescription },
+                trace.read(UiReadPhase.CLICKABLE, index) { handle.isClickable },
+                UiBounds(rect.left, rect.top, rect.right, rect.bottom))
             index++
         }
         return CapturedUi(VisibleUiSnapshot(nodes.toList()), handles.withIndex().associate { it.index to it.value })
