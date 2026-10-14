@@ -1,0 +1,49 @@
+name: Windows IME upstream drift watch
+
+on:
+  schedule:
+    - cron: '15 9 * * 1'
+  workflow_dispatch:
+  push:
+    branches:
+      - 'feat/kuyin-desktop-voice-*'
+    paths:
+      - '.github/workflows/voice-upstream-watch.yml'
+      - 'tools/windows-voice/upstream-lock.json'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  upstream:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare pinned upstream to latest
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const lock = JSON.parse(fs.readFileSync('tools/windows-voice/upstream-lock.json','utf8'));
+            const refs = lock.upstreams;
+            const entries = [];
+            const release = async (owner, repo) => (await github.rest.repos.getLatestRelease({owner,repo})).data.tag_name;
+            const weasel = await release('rime','weasel');
+            if (weasel !== refs['rime/weasel'].ref) entries.push('Weasel ' + refs['rime/weasel'].ref + ' → ' + weasel);
+            const whisper = await release('ggml-org','whisper.cpp');
+            if (whisper !== refs['ggml-org/whisper.cpp'].ref) entries.push('whisper.cpp ' + refs['ggml-org/whisper.cpp'].ref + ' → ' + whisper);
+            const current = (await github.rest.git.getRef({owner:'xifan2333',repo:'fcitx5-vinput',ref:'heads/main'})).data.object.sha;
+            if (current !== refs['xifan2333/fcitx5-vinput'].ref) entries.push('fcitx5-vinput reference advanced to ' + current);
+            if (!entries.length) { core.notice('No upstream drift'); return; }
+            const report = entries.join('\n');
+            core.warning(report);
+            if (context.eventName === 'push') return;
+            const title = 'Review Windows voice upstream updates';
+            const found = (await github.rest.issues.listForRepo({ ...context.repo, state:'open', per_page:100 })).data.some(i => i.title === title);
+            if (!found) await github.rest.issues.create({
+              ...context.repo, title,
+              body: 'Upstreams changed since tools/windows-voice/upstream-lock.json.\n\n' + report +
+                '\n\nReview source commits, license, test matrix, Windows package and offline runtime before changing any pins. No automatic merge.'
+            });

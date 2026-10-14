@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "last_reviewed": "2026-10-14",
+  "policy": "pin-and-review; no unreviewed automatic vendor bump",
+  "upstreams": {
+    "rime/weasel": {
+      "type": "tsf-keyboard",
+      "ref": "0.17.4",
+      "commit": "9cc96e20dc71b80876b12f689bb5863c76c2a7ed",
+      "license": "GPL-3.0",
+      "installer": "weasel-0.17.4.0-installer.exe",
+      "sha256": "cf509534a8f5f8af9c98ed7cbb8f135439f145a8cbe7e50ede42bb5b5ab45c29"
+    },
+    "ggml-org/whisper.cpp": {
+      "type": "local-asr-engine",
+      "ref": "v1.9.5",
+      "commit": "d1be6fde11ac6e0407606b4e42fe72d34add8037",
+      "license": "MIT"
+    },
+    "xifan2333/fcitx5-vinput": {
+      "type": "reference-voice-workflow-only",
+      "ref": "c8ead352053d75493f40dc1de858b8e991ab3718",
+      "license": "GPL-3.0",
+      "imported_code": false
+    },
+    "ggerganov/whisper.cpp-model": {
+      "type": "weights",
+      "model": "ggml-base.bin",
+      "sha1": "465707469ff3a37a2b9b8d8f89f2f99de7299dac"
+    }
+  }
+}

@@ -1,0 +1,8 @@
+[submodule "third_party/upstream-weasel"]
+	path = third_party/upstream-weasel
+	url = https://github.com/rime/weasel.git
+	branch = master
+[submodule "third_party/upstream-fcitx5-vinput"]
+	path = third_party/upstream-fcitx5-vinput
+	url = https://github.com/xifan2333/fcitx5-vinput.git
+	branch = main
