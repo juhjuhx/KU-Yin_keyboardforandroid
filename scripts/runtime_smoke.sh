@@ -40,7 +40,7 @@ mkdir -p "$R2_EVIDENCE_DIR"
 HOST_TEST_ARGS=(--stacktrace)
 if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "true" ]]; then
   # Two source-verified identities only. App prerequisite remains the complete suite.
-  HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted,io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive)
+  HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit,io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted)
   echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"
 else
   echo FULL_SUITE_EXECUTION | tee "$R2_EVIDENCE_DIR/scope.txt"

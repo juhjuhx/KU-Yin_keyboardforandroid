@@ -87,12 +87,13 @@ internal class ExternalUiObservation(private val device: UiDevice) {
     private fun captureOnce(): CapturedUi {
         val handles = mutableListOf<UiObject2>()
         val ids = LinkedHashMap<UiObject2, Int>()
-        fun register(handle: UiObject2): Int = trace.read(UiReadPhase.REGISTER) { ids.getOrPut(handle) {
+        fun register(handle: UiObject2, origin: UiReadPhase, originNode: Int = -1): Int = trace.read(origin, originNode) { ids.getOrPut(handle) {
             if (handles.size >= 1_000) throw CaseInconclusive("BLOCKED_SELECTOR", "完整 UI hierarchy 超過 fixture 的有界上限；不使用部分樹")
             handles.add(handle)
             handles.lastIndex
         } }
-        trace.read(UiReadPhase.QUERY) { device.findObjects(By.pkg(FIXTURE_PRODUCT_PACKAGE)) }.forEach(::register)
+        trace.read(UiReadPhase.QUERY) { device.findObjects(By.pkg(FIXTURE_PRODUCT_PACKAGE)) }
+            .forEach { register(it, UiReadPhase.QUERY_REGISTER) }
         val nodes = mutableListOf<VisibleUiNode>()
         var index = 0
         while (index < handles.size) {
@@ -100,10 +101,11 @@ internal class ExternalUiObservation(private val device: UiDevice) {
             val parent = trace.read(UiReadPhase.PARENT, index) { handle.parent }?.takeIf {
                 trace.read(UiReadPhase.PARENT_PACKAGE, index) { it.applicationPackage } == FIXTURE_PRODUCT_PACKAGE
             }
-            val parentId = parent?.let(::register)
+            val parentId = parent?.let { register(it, UiReadPhase.PARENT_REGISTER, index) }
             // Traverse the reported children. A surfaced stale read invalidates the whole
             // capture; UIAutomator may omit unavailable nodes, so this is not an atomic tree.
-            trace.read(UiReadPhase.CHILDREN, index) { handle.children }.forEach(::register)
+            trace.read(UiReadPhase.CHILDREN, index) { handle.children }
+                .forEach { register(it, UiReadPhase.CHILD_REGISTER, index) }
             val rect = trace.read(UiReadPhase.BOUNDS, index) { handle.visibleBounds }
             nodes += VisibleUiNode(index, parentId,
                 trace.read(UiReadPhase.PACKAGE, index) { handle.applicationPackage },

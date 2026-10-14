@@ -167,7 +167,7 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
         app = next(args for name, args in calls if name == "gradlew" and ":app:connectedDebugAndroidTest" in args)
         host = next(args for name, args in calls if name == "gradlew" and ":acceptance-host:connectedDebugAndroidTest" in args)
         self.assertFalse(any("RunnerArguments.class=" in arg for arg in app))
-        expected = "-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted,io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive"
+        expected = "-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit,io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted"
         self.assertIn(expected, host)
         self.assertIn("FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE", proc.stdout)
 

@@ -1,7 +1,7 @@
 package io.github.juhjuhx.kuyin.acceptancehost
 
 internal enum class UiReadOwner { BODY, CLEANUP }
-internal enum class UiReadPhase { IDLE, DISABLE_IDLE, QUERY, REGISTER, PARENT, PARENT_PACKAGE, CHILDREN, BOUNDS, PACKAGE, TEXT, DESCRIPTION, CLICKABLE, RESTORE_IDLE }
+internal enum class UiReadPhase { IDLE, DISABLE_IDLE, QUERY, REGISTER, QUERY_REGISTER, PARENT_REGISTER, CHILD_REGISTER, PARENT, PARENT_PACKAGE, CHILDREN, BOUNDS, PACKAGE, TEXT, DESCRIPTION, CLICKABLE, RESTORE_IDLE }
 internal data class UiReadFailure(val owner: UiReadOwner, val capture: Int, val attempt: Int,
     val phase: UiReadPhase, val node: Int, val elapsedMs: Long, val stale: Boolean)
 
