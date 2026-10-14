@@ -1,9 +1,10 @@
-name: Windows voice prototype contracts
+name: KU-Yin Desktop voice Windows package
 
 on:
   push:
     branches:
       - 'feat/windows-voice-assessment-*'
+      - 'feat/kuyin-desktop-voice-*'
     paths:
       - 'tools/windows-voice/**'
       - '.github/workflows/voice-windows.yml'
@@ -18,7 +19,7 @@ permissions:
 
 jobs:
   contracts:
-    name: Pure contracts (${{ matrix.os }})
+    name: Voice contracts (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     strategy:
@@ -32,5 +33,71 @@ jobs:
           python-version: '3.11'
       - name: Compile module and tests
         run: python -m compileall -q tools/windows-voice
-      - name: Run voice contracts
+      - name: Run contracts
         run: python -m unittest discover -s tools/windows-voice/tests -v
+
+  package-windows:
+    name: Build offline Windows x64 artifact
+    needs: contracts
+    runs-on: windows-2022
+    timeout-minutes: 55
+    steps:
+      - name: Checkout product
+        uses: actions/checkout@v4
+      - name: Checkout pinned whisper.cpp
+        uses: actions/checkout@v4
+        with:
+          repository: ggml-org/whisper.cpp
+          ref: v1.9.5
+          path: whisper-upstream
+          submodules: recursive
+      - name: Build whisper.cpp CPU executable
+        shell: pwsh
+        run: |
+          cmake -S whisper-upstream -B whisper-build -A x64 -DWHISPER_BUILD_TESTS=OFF -DGGML_NATIVE=OFF -DGGML_AVX512=OFF
+          cmake --build whisper-build --config Release --target whisper-cli --parallel 4
+      - name: Install Python bundling toolchain
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Build Windows GUI executable
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r tools/windows-voice/requirements.txt
+          python -m pip install pyinstaller pystray pillow opencc-python-reimplemented
+          python -m PyInstaller --noconfirm --onefile --windowed --name KU-Yin-Voice --paths tools/windows-voice --collect-all sounddevice --collect-all _sounddevice_data --collect-all opencc tools/windows-voice/desktop.py
+          if (!(Test-Path dist/KU-Yin-Voice.exe)) { throw 'Voice EXE build missing' }
+      - name: Download and verify pinned offline model and official Weasel installer
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force package/KU-Yin-Desktop/models | Out-Null
+          Copy-Item dist/KU-Yin-Voice.exe package/KU-Yin-Desktop/
+          $bin = Get-ChildItem -Path whisper-build -Recurse -Filter whisper-cli.exe | Where-Object { $_.FullName -match 'Release' } | Select-Object -First 1
+          if ($null -eq $bin) { throw 'whisper-cli.exe build missing' }
+          Copy-Item -LiteralPath $bin.FullName -Destination package/KU-Yin-Desktop/
+          Get-ChildItem -Path $bin.Directory.FullName -Filter '*.dll' | Copy-Item -Destination package/KU-Yin-Desktop/
+          $model = 'package/KU-Yin-Desktop/models/ggml-base.bin'
+          Invoke-WebRequest -Uri 'https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.bin' -OutFile $model
+          if ((Get-FileHash $model -Algorithm SHA1).Hash.ToLowerInvariant() -ne '465707469ff3a37a2b9b8d8f89f2f99de7299dac') {
+            throw 'Whisper model SHA1 mismatch'
+          }
+          $installer = 'package/KU-Yin-Desktop/weasel-0.17.4.0-installer.exe'
+          Invoke-WebRequest -Uri 'https://github.com/rime/weasel/releases/download/0.17.4/weasel-0.17.4.0-installer.exe' -OutFile $installer
+          if ((Get-FileHash $installer -Algorithm SHA256).Hash.ToLowerInvariant() -ne 'cf509534a8f5f8af9c98ed7cbb8f135439f145a8cbe7e50ede42bb5b5ab45c29') {
+            throw 'Weasel installer SHA256 mismatch'
+          }
+          Copy-Item tools/windows-voice/Install.cmd package/KU-Yin-Desktop/
+          Copy-Item tools/windows-voice/Install-KU-Yin-Desktop.ps1 package/KU-Yin-Desktop/
+          Copy-Item tools/windows-voice/DESKTOP-PRODUCT.md package/KU-Yin-Desktop/README.md
+          Copy-Item whisper-upstream/LICENSE package/KU-Yin-Desktop/WHISPER-MIT-LICENSE.txt
+          Get-ChildItem package/KU-Yin-Desktop -Recurse -File | Select-Object Name, Length | Format-Table
+          if ((Get-ChildItem package/KU-Yin-Desktop -Recurse -File | Measure-Object -Property Length -Sum).Sum -lt 140MB) {
+            throw 'Package incomplete'
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: KU-Yin-Desktop-Windows-x64-offline
+          path: package/KU-Yin-Desktop
+          retention-days: 30
+          if-no-files-found: error
