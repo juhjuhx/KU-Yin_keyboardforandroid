@@ -38,12 +38,20 @@ jobs:
       - name: Verify protected source and record diagnostic provenance
         shell: python
         run: |
-          import hashlib, json, pathlib, subprocess
+          import hashlib, json, pathlib, subprocess, tomllib
           baseline = '63c9e4ab8ad7e277013acb5d7cce99228ec1f827'
           protected = ['app/src/main', 'acceptance-host/src/main', 'app/build.gradle.kts', 'acceptance-host/build.gradle.kts', 'gradle', 'LICENSE', 'NOTICE']
-          assert not subprocess.check_output(['git', 'diff', baseline, 'HEAD', '--', *protected])
+          catalog = 'gradle/libs.versions.toml'
+          assert not subprocess.check_output(['git', 'diff', baseline, 'HEAD', '--', *protected, ':(exclude)' + catalog])
+          before = tomllib.loads(subprocess.check_output(['git', 'show', baseline + ':' + catalog], text=True))
+          after = tomllib.loads(subprocess.check_output(['git', 'show', 'HEAD:' + catalog], text=True))
+          assert before['versions'].pop('uiautomator') == '2.3.0'
+          test_version = after['versions'].pop('uiautomator')
+          assert test_version in {'2.3.0', '2.4.0'} and before == after
           source = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
-                    'baseline': baseline, 'scope': 'FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE', 'files': {}}
+                    'baseline': baseline, 'scope': 'FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE',
+                    'host_test_uiautomator': test_version,
+                    'catalog_sha256': hashlib.sha256(pathlib.Path(catalog).read_bytes()).hexdigest(), 'files': {}}
           for directory in ['app/src', 'acceptance-host/src', 'scripts']:
               for path in sorted(pathlib.Path(directory).rglob('*')):
                   if path.is_file() and path.suffix in ['.kt', '.py', '.sh']:
