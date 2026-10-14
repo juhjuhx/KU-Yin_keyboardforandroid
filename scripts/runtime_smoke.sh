@@ -8,7 +8,7 @@ if [[ "${CI:-}" != "true" ]]; then
   exit 2
 fi
 case "${KUYIN_R2_HOST_PROBE:-false}" in
-  true|false) ;;
+  true|false|identity) ;;
   *) echo "Invalid TEST_ONLY Host probe mode; refusing device commands" >&2; exit 2 ;;
 esac
 KUYIN_CI_SERIAL="$(command adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
@@ -38,7 +38,10 @@ ensure_ci_user
 R2_EVIDENCE_DIR="build/r2-runtime-evidence"
 mkdir -p "$R2_EVIDENCE_DIR"
 HOST_TEST_ARGS=(--stacktrace)
-if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "true" ]]; then
+if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "identity" ]]; then
+  HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.StaleUiObjectIdentityRegressionTest)
+  echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"
+elif [[ "${KUYIN_R2_HOST_PROBE:-false}" == "true" ]]; then
   # Two source-verified identities only. App prerequisite remains the complete suite.
   HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit,io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted)
   echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"

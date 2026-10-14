@@ -176,6 +176,15 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
         self.assertEqual(2, proc.returncode)
         self.assertEqual([], calls)
 
+    def test_identity_regression_scope_keeps_complete_app_prerequisite(self):
+        proc, calls = self.run_fixture(KUYIN_R2_HOST_PROBE="identity")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        app = next(args for name, args in calls if name == "gradlew" and ":app:connectedDebugAndroidTest" in args)
+        host = next(args for name, args in calls if name == "gradlew" and ":acceptance-host:connectedDebugAndroidTest" in args)
+        self.assertFalse(any("RunnerArguments.class=" in arg for arg in app))
+        self.assertIn("-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.StaleUiObjectIdentityRegressionTest", host)
+        self.assertIn("FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE", proc.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

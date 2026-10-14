@@ -210,9 +210,9 @@ class ManifestIntegrityTests(unittest.TestCase):
             with self.assertRaises(AssertionError):
                 assert_frozen_sources(self, root)
 
-    def test_current_instrumentation_has_exact_five_and_thirty_two_identities(self):
+    def test_current_instrumentation_has_exact_five_and_thirty_three_identities(self):
         contract = json.loads((FIXTURES / 'current_instrumentation_identities.json').read_text())
-        for module, count in (('app', 5), ('acceptance-host', 32)):
+        for module, count in (('app', 5), ('acceptance-host', 33)):
             with self.subTest(module=module):
                 expected = contract[module]['identities']
                 actual = current_test_identities(MANIFEST_PATH.parents[1] / module / 'src/androidTest')

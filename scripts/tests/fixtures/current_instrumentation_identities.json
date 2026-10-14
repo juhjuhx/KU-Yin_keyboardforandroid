@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "source_checkpoint": "087ff3929aa01349894abad9001aac43b9d1fd1c",
-  "purpose": "Current CI instrumentation identity inventory; separate from frozen P1-E 26-test runner",
+  "source_checkpoint": "74193b2cb20aeec02fdb6d07e045c096ba95331a + R2 stale-node regression",
+  "purpose": "Current CI JUnit inventory: App5, Host32 case methods plus1 test-infrastructure regression; separate from frozen P1-E26 runner",
   "app": {
     "expected_count": 5,
     "identities": [
@@ -13,7 +13,7 @@
     ]
   },
   "acceptance-host": {
-    "expected_count": 32,
+    "expected_count": 33,
     "identities": [
       "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted",
       "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh02ThirdToneWoIsSelectableAndCommitted",
@@ -46,7 +46,11 @@
       "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c02PhoneTemporarilyUsesEnglish",
       "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c03DatetimeTemporarilyUsesEnglish",
       "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive",
-      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c05ReturningToTextRestoresBothPriorPreferredModes"
+      "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c05ReturningToTextRestoresBothPriorPreferredModes",
+      "io.github.juhjuhx.kuyin.acceptancehost.StaleUiObjectIdentityRegressionTest#destroyedEditorKeepsMapIdentityButCannotBeReadAsCurrentUi"
+    ],
+    "non_matrix_identities": [
+      "io.github.juhjuhx.kuyin.acceptancehost.StaleUiObjectIdentityRegressionTest#destroyedEditorKeepsMapIdentityButCannotBeReadAsCurrentUi"
     ]
   }
 }
