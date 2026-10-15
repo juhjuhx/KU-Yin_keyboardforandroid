@@ -1,6 +1,6 @@
 # R2 驗證矩陣
 
-## 最新checkpoint：3895625／2026-10-15
+## 最新正常CI checkpoint：03ac326／2026-10-15
 
 | 證據 | 實際結果 | 界線 |
 |---|---|---|
@@ -12,7 +12,12 @@
 | 59b full gate | App57classes282真執行，0fail/error/skip，含native integration10 | Host107 UP-TO-DATE；四APKassemble UP-TO-DATE，真正新selfcheck compile見55 |
 | 56 Python／58 contracts | 130PASS／10PASS，exit0 | fake ADB不代替device runtime |
 | source reviews | focus＋rawdump＋59b前提獨立窄批准，無未解High | 不批准完整runtime／ea5根因／PR10 |
-| 38660489452 | exact3895625 App5PASS→ZH06/ZH01皆PASS；0skip | AndroidRW fixedpayload驗證；只有限scope，fullHost待跑 |
+| 有限38660489452／PR有限38661678095 | App5PASS→ZH06/ZH01兩案PASS；0skip | 389或validated89f來源；AndroidRW fixedpayload，一檔／一次事件的兩pull副本 |
+| 正常38661678107 | App5PASS；Host33＝24PASS0FAIL9SKIP | matrix32＝23PASS9INCONCLUSIVE＋infra1PASS，不是fullacceptance |
+| 正常CI JVM | App272PASS10nativeSKIP；Host107PASS | 兩task真執行、XML零failure；native10完整執行證據在local59b |
+| 正常CI blocking build | Python130／contracts10／bootstrap／Debug buildPASS | 有既有KSP/AWT error annotation；pin2.3.5未變，不隱藏 |
+| 完整獨立evidence review | 33identities／32owners／原assertions及89f merge tree核對 | testinfra與已觀測scope批准，9gap／historical root／merge未批准 |
+| 65保存再驗 | 18原工區HEAD/status/diff一致，現19；releaseAPK原hash | private DB未讀刪，archive1185沿用先前收據非65重算 |
 
 以下為各切片當時結果；不得把舊PASS當最新source重跑，或把以前RUNNING當現在狀態。
 

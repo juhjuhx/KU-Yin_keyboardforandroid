@@ -46,3 +46,69 @@ P0-ZH06已有candidate「我」commit_count=1／CURRENT_TEXT="我"的部分真ed
 - P0-ZH01：無聲調ㄨㄛ可見→tap我，actual我／commit_count1；action/newline0。
 
 兩案總stale分別13／2；保留的recent entries皆為PARENT（ZH06只保留最近8條，前5次phase無原始記錄），在原bounded read內恢復；不稱零stale或效能提升。這輪只證明上述有限行為，不將其他8個舊FAIL、fullHost或physical scope推定PASS。下一步完整33JUnit／32envelopes。
+
+## 完整正常CI：03ac326／38661678107（最新）
+
+PR HEAD `03ac3264b4178afccb5781fac6445920bf41dc3a`；actual synthetic merge `89f98a93b66a630327415ece25c3f4a9cb8b0c52`，parents為該HEAD與main63c9e4a，完整tree相同。API33/default/x86_64/pixel7/user0，App5PASS／零skip；Host33JUnit＝24PASS／0FAIL／9SKIP，其中infra1PASS非matrix，32case envelopes＝23PASS／9INCONCLUSIVE。
+
+原始根目錄：外部R2證據 `CI新執行/normal-03ac326-runtime/`；每列owner的原logcat及`testlog/test-results.log`、XML可追溯，完整case JSON另存`normal-03ac326-case-emissions.json`。`normal-03ac326-protocol-audit.json`核33個start/end、exact identities、32個case owner、無duplicate、terminal-1。未修改frozen P1-G26 parser／manifest；此為current suite離線證據覆核。
+
+### 全case／owner與證據
+
+「可觀測」PASS僅指該列scope中原assertions已實際完成；不能取代右列完整驗收。actual欄為最後editor snapshot摘要，其他中間phase保留在原envelope。
+
+| Case／JUnit owner | 原要求 | actual evidence | 可觀測 | 完整result／限制 |
+|---|---|---|---|---|
+| P0-ZH06 `CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit` | 選我後續組現在、保留prefix／各完成一次 | text="我現在"; commit=2; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| P0-ZH05 `CoreTypingAcceptanceTest#zh05ContinuousTonedPhraseCommitsExactlyOnce` | 含聲調我現在連續組字／一次完成 | text="我現在"; commit=1; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| P0-ZH02 `CoreTypingAcceptanceTest#zh02ThirdToneWoIsSelectableAndCommitted` | 第三聲我可選且commit1 | text="我"; commit=1; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| P0-ZH04 `CoreTypingAcceptanceTest#zh04ContinuousNoTonePhraseCommitsExactlyOnce` | 無聲調我現在連續組字／一次完成 | text="我現在"; commit=1; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| P0-ZH01 `CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted` | 無聲調ㄨㄛ→候選我→editor我、commit1 | text="我"; commit=1; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| P0-EN02 `CoreTypingAcceptanceTest#en02EnglishDictionaryCompletionCommitsActualEditorWord` | 英文hell→hello候選、正確editor commit | text="hello"; commit=1; action=0; newline=0 | PASS | PASS／原assertions完成 |
+| B02 `DachenAcceptanceTest#b02RealCandidateSelectionThenContinuedComposition` | 候選一次提交後續組字／native context身分 | text="你ㄅ"; commit=1; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_CONTEXT_IDENTITY_UNOBSERVABLE |
+| B03 `DachenAcceptanceTest#b03RealContinuousSentenceCandidateAndSingleFinalCommit` | 連句候選一次提交後續組字／native語意 | text="你好ㄅ"; commit=1; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_CONTEXT_AND_SENTENCE_SEMANTICS_UNOBSERVABLE |
+| B01 `DachenAcceptanceTest#b01CanonicalKeysAndShiRiHaveStrictPreeditEvidence` | 41鍵／ㄕㄖ真preedit／不同寬度方向 | text=""; commit=0; action=0; newline=0 | PASS | INCONCLUSIVE／ADDITIONAL_WIDTH_AND_ORIENTATION_OBSERVATIONS_REQUIRED |
+| D04 `EditorActionAcceptanceTest#d04SearchDispatchesOneAction` | SEARCH action3一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D07 `EditorActionAcceptanceTest#d07DoneDispatchesOneAction` | DONE action6一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D02 `EditorActionAcceptanceTest#d02UnspecifiedInsertsOneNewline` | UNSPECIFIED newline1/action0 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D15 `EditorActionAcceptanceTest#d15ExplicitMultilineInsertsNewline` | multiline+NO_ENTER_ACTION newline1 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D05 `EditorActionAcceptanceTest#d05SendDispatchesOneAction` | SEND action4一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D13 `EditorActionAcceptanceTest#d13CompositionCompletesBeforeSend` | 首次組字完成／第二次SEND，無雙效果 | text="你"; commit=1; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D18 `EditorActionAcceptanceTest#d18AllThreeLayoutsWireRealSoftEnter` | ZH/EN/SYMBOLS softEnter SEND及newline接線 | text="\n\n\n"; commit=3; action=0; newline=3 | PASS | PASS／原assertions完成 |
+| D01 `EditorActionAcceptanceTest#d01NoneInsertsOneNewline` | NONE newline1/action0 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D09 `EditorActionAcceptanceTest#d09SendWithNoEnterActionInsertsNewline` | SEND+NO_ENTER_ACTION newline1/action0 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D03 `EditorActionAcceptanceTest#d03GoDispatchesOneAction` | GO action2一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D11 `EditorActionAcceptanceTest#d11CustomActionUsesCustomId` | custom確認→action73一次 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D14 `EditorActionAcceptanceTest#d14CompositionCompletesBeforeNewline` | 首次組字完成／第二次newline，無雙效果 | text="你\n"; commit=2; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D06 `EditorActionAcceptanceTest#d06NextDispatchesOneAction` | NEXT action5一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D12 `EditorActionAcceptanceTest#d12NoEnterActionOverridesCustomAction` | NO_ENTER_ACTION優先custom→newline1 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D10 `EditorActionAcceptanceTest#d10GoWithNoEnterActionInsertsNewline` | GO+NO_ENTER_ACTION newline1/action0 | text="\n"; commit=1; action=0; newline=1 | PASS | PASS／原assertions完成 |
+| D08 `EditorActionAcceptanceTest#d08PreviousDispatchesOneAction` | PREVIOUS action7一次/newline0 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| D17 `EditorActionAcceptanceTest#d17HostFalseHasObservableActionButIpcScopeRemainsOpen` | SEND一次、host false／Binder scope | text=""; commit=0; action=1; newline=0 | PASS | INCONCLUSIVE／HOST_FALSE_NOT_PROPAGATED_BY_ANDROID_IPC |
+| D16 `EditorActionAcceptanceTest#d16CustomNewlineLabelRemainsTextAction` | custom label換行仍action73 | text=""; commit=0; action=1; newline=0 | PASS | PASS／原assertions完成 |
+| C05 `NonTextEditorAcceptanceTest#c05ReturningToTextRestoresBothPriorPreferredModes` | 原ZH／EN偏好經non-text返回／學習 | text=""; commit=0; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_LEARNING_OBSERVER_UNAVAILABLE |
+| C01 `NonTextEditorAcceptanceTest#c01NumberTemporarilyUsesEnglish` | NUMBER metadata／temporary ENGLISH／native學習 | text=""; commit=0; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_LEARNING_OBSERVER_UNAVAILABLE |
+| C03 `NonTextEditorAcceptanceTest#c03DatetimeTemporarilyUsesEnglish` | DATETIME metadata／temporary ENGLISH／native學習 | text=""; commit=0; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_LEARNING_OBSERVER_UNAVAILABLE |
+| C02 `NonTextEditorAcceptanceTest#c02PhoneTemporarilyUsesEnglish` | PHONE metadata／temporary ENGLISH／native學習 | text=""; commit=0; action=0; newline=0 | PASS | INCONCLUSIVE／NATIVE_LEARNING_OBSERVER_UNAVAILABLE |
+| C04 `NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive` | TYPE_NULL真IC邊界／可觀測policy／學習 | text=""; commit=0; action=0; newline=0 | INCONCLUSIVE | INCONCLUSIVE／BLOCKED_SELECTOR |
+
+額外infra：`StaleUiObjectIdentityRegressionTest#destroyedEditorKeepsMapIdentityButCannotBeReadAsCurrentUi` PASS；原getter必stale、既存map identity不得throw，沒有case envelope。
+
+### 舊9FAIL與8SKIP的逐項處置
+
+- 舊9FAIL：P0-ZH01／02／04／05、P0-EN02、D13、D14七案此輪PASS，原可見soft-key／preedit／exact candidate／editor commit/action斷言真執行。B02、B03可見輸入／候選／commit／繼續組字斷言已走完，分別抵達原本已存在的NATIVE_CONTEXT_IDENTITY_UNOBSERVABLE及NATIVE_CONTEXT_AND_SENTENCE_SEMANTICS_UNOBSERVABLE；完整仍INCONCLUSIVE，不計FAIL→SKIP為修復。
+- 舊8SKIP：P0-ZH06現在PASS；B01、C01–C05、D17七案仍INCONCLUSIVE。B01已驗41鍵及ㄕㄖ真preedit但缺第二寬度／方向；C01/02/03/05可見mode assertions通過仍缺native learning observer；D17可見SEND1／false／newline0仍缺同步Binder回傳證明。
+- C04只有final input_type0、ime_options1、真nullIC；81個completed snapshot仍無product node，後續capture未在原deadline完成而BLOCKED_SELECTOR。不能將NULL IC或空tree推成IME端fallback IC／temporary mode／學習PASS。
+
+**完整Host驗收=PARTIAL；不是fullPASS。** 無新product defect由本輪raw證實，剩餘是觀測／驗收scope缺口。不得改assertions、故意展示不存在的TYPE_NULL軟鍵、增加production observer或刪native requirements以強行通過。PR10仍HOLD。
+
+### 本輪實際測試APK身份
+
+以下SHA由正常CI runner對實檔計算並apksigner驗證，非本機重建／公開Alpha資產；四者該VM cert SHA256均`56c8e3c485aadf3090081b04c1d3e7620fa51096a546def0cb05e75436171ebb`。
+
+| CI路徑 | bytes | SHA256 |
+|---|---:|---|
+| `app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk` | 970016 | `22747fa517174c2b77a9bde83e7c1829896bb156a1d7bb7232b8dec87fc11c15` |
+| `app/build/outputs/apk/debug/app-debug.apk` | 30380975 | `2808678598cf5b98d1534c232116aafa32a061ae141e1d89d869541fd1dece31` |
+| `acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk` | 1100804 | `b9b90898e7d6961632c38b9487c73f17bd0d591a814a46568040ddfc2fe4dd55` |
+| `acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk` | 861628 | `a50f2d764e545bc33754bc0e9f448d3798ef0a6adf7882f53f4612f7a8e48ae9` |

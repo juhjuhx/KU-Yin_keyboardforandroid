@@ -55,4 +55,8 @@ Transport自檢在`VISIBILITY_RESULT stage=recreated visible=true`後才執行�
 
 exact3895625，App5與兩個Host strict cases皆PASS／零skip。初次request仍在112291ms windowFocus=false/IC0，fixture沒有發show；112302ms focus、112304ms IC1後，112313ms Insets、112315ms IMM才發出。**首次IMM回false**，其後IC2／platform show，113448ms原WindowInsets判true；不能稱focus/IC等同remote session ready或IMM一定accepted。recreate為新Activity generation，原assert true；113799ms recreated=true後113823ms才typedTRANSPORT_SELF_CHECK。
 
-兩份實際pulled25byte檔皆`R2_SYNTHETIC_TRANSPORT_V1`，證實API33 RW固定payload傳輸；沒有本輪五個真失敗dump。terminal original_exit0/evidence_exit0，183source hashes一致。same-source單輪成功與可見的延後dispatch證明窄機制執行，完整ea5因果及長期可靠率仍未確立。
+同一檔的兩份pulled25byte副本皆`R2_SYNTHETIC_TRANSPORT_V1`，證實API33 RW固定payload傳輸；沒有本輪五個真失敗dump。terminal original_exit0/evidence_exit0，183source hashes一致。same-source單輪成功與可見的延後dispatch證明窄機制執行，完整ea5因果及長期可靠率仍未確立。
+
+## 正常完整CI的觀測界線
+
+38661678107／actual89f（tree＝PR03ac）App原5全PASS，observer OFF，原assert及recreate執行；不能捏造此輪被動focus／IC事件，細時序來自前述有限probe。Host32matrix envelopes均完成protocol，但23PASS／9INCONCLUSIVE，不是全驗收。正常runtime APK／signer hash依該VM runner實檔metadata單獨記錄，不能套用有限probe／本機簽章。

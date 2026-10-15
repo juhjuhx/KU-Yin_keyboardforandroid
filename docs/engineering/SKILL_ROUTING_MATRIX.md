@@ -192,3 +192,5 @@ R1 finishing-a-development-branch已loaded/USED_SCOPED：用户已明确normal P
 | open-code-review | `/Users/huang/.agents/skills/open-code-review/SKILL.md` | `d7fc77214056c3232b825978272da6ac4874b7825c5ee8b39a98cad19763d4c3` | A,F | BLOCKED／v1.12.13，單次provider401，無OCR批准 |
 
 本輪TDD：old2.3真emulator stale-map lookup RED → same test2.4 GREEN；真bootstrap guard RED/GREEN。官方review模型harness不可用、OCR單次401，不宣稱APPROVE；可用獨立reviewers核對source/raw graphs/archives。詳細結果見[依賴修復](../testing/R2_UIAUTOMATOR_DEPENDENCY_REPAIR.md)與[R2審查](../testing/R2_INDEPENDENT_REVIEW.md)。
+
+2026-10-15續作：同一R2路由用於debug focus8測、raw dump5測、183source／5+33protocol與逐案審查。新source沒有重啟產品設計技能。完整runtime reviewer已核原XML／Git object與source；CI reviewer另因額度中斷只有partial，不列APPROVE。OCR仍沿用本輪單次401，不重試未變認證。實際最後裁定／差異與限制見R2_FINAL_HANDOFF及R2_INDEPENDENT_REVIEW。

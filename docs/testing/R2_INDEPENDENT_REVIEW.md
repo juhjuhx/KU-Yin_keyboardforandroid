@@ -57,3 +57,13 @@ Rawdump reviewer讀3檔與API31+RW contract、53真RED／54GREEN，核對typed s
 ## 38660489452有限runtime覆核
 
 Reviewer直接驗183source hashes、App5／Host2原XML與1→2→0 protocol、兩個typed case envelope、實際editor我／commit1及我現在／commit2、兩份25byte canary，全部吻合。首次show確實延後至focus/IC後，但IMM仍false後才visible；不把local IC等同remote ready。審查批准有限runtime及更新Draft PR12進完整normalCI，不批准fullHost／完整ea5因果／merge。另修正Low文檔：13／2是總stale，ZH06只保留8條recent PARENT，不能斷言全部13的phase；舊待結果敘述標歷史。完整外部收據另存同證據目錄。
+
+## 完整正常runtime最終覆核
+
+外部「正常完整runtime與逐案契約獨立覆核.md」SHA a82e88604e049bae17b56ac98de104c3e23c7cc84244c6083033482ebd6cb403；JSON cd4f45e62eacae928a650a59384fcb803d411742d9bbb37f9d4c1f5f22d66945。Reviewer自行讀App5、Host33原XML／protocol／32owner envelopes、exact merge signed Git object與tree、source183及原source assertions：App5PASS；Host24PASS9SKIP0FAIL，其中matrix23PASS9INCONCLUSIVE、infra1PASS。正常App observer OFF、原recreate與visibility assertions真執行。
+
+舊9FAIL七案原契約真PASS；B02/B03到原有context／semantics gap仍不算完整修復。舊8SKIP只ZH06轉PASS；C04只有nullIC及81個空completed snapshot，不作完整nontext PASS。stale總69，不由recent ring推全phase或宣稱效能改善。批准完整「執行與已觀測testinfra契約」範圍，無High；不批准fullmatrix、historical ea5完整因果或merge，PR10 HOLD／PR12 Draft。
+
+CI reviewer此次有partial：核對merge parents/tree與389個JVM cases；其後額度中斷，沒有完整APPROVE。它提出KSP pin漂移疑點，已由實際git diff、tomllib比較與另一reviewer證偽：catalog只uiautomator2.3→2.4，googleDevtoolsKsp仍2.3.5。KSP/AWT error annotation真存在，舊7f/9f亦有相同訊息；不隱藏、不把pin未改誤說工具鏈無錯，另留後續工具診斷。
+
+65保存收據重新核18原工區HEAD/status/diff與公開APK；0mismatch、19總數、product protected diff0，未重算整個archive或讀私人DB。最新docs仍做links／consistency／diff gate；doc-only提交不變更03ac已驗程式source，未將doc commit冒充新的runtime執行。

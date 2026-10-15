@@ -12,7 +12,7 @@ main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR10 remote `ea5c2b5b3404508c8
 - passing traces有Insets `fromIme=true`，失敗trace只有show `fromIme=false`；現有trace缺focus／connection／service回應，第一個內部失去狀態的邊界仍未知。
 - main與PR10的App smoke、debug host、service、main/debug Manifest、runtime script相同。原registered/enabled/selected assertions通過不代表editor已連接或window可見。
 
-**ROOT_CAUSE=UNRESOLVED。** 沒有把一次success當flake證明。假說：editor/window connection race、IME installation/default reset、binding或window/control未完成、observer問題；需同image/user/install順序的trace支持／反證。產品兩個show policy回true，反證簡單「硬體鍵盤policy拒絕」說法。
+**歷史ea5 ROOT_CAUSE=UNRESOLVED。** 沒有把一次success當flake證明。假說：editor/window connection race、IME installation/default reset、binding或window/control未完成、observer問題；需同image/user/install順序的trace支持／反證。產品兩個show policy回true，反證簡單「硬體鍵盤policy拒絕」說法。
 
 ## 官方語義／診斷影響
 
@@ -45,4 +45,15 @@ Host9個FAIL→SKIP不是repaired；完整capture仍阻擋strict preedit證據�
 
 ## 2026-10-15 最小修正狀態
 
-已確認的local前置缺陷有debug-only after-focus one-shot修正33b3ac8，8測GREEN與獨立source批准；觀測缺陷另有3895625 shell stdin修正，5個JVM測試GREEN、compile通過。未更動production service、native或EditorPolicy。新實驗38660489452仍待結果；不從unit GREEN推導runtime恢復，也不把local not-served推廣成舊ea5 served失敗的完整因果。
+已確認的local前置缺陷有debug-only after-focus one-shot修正33b3ac8，8測GREEN與獨立source批准；觀測缺陷另有3895625 shell stdin修正，5個JVM測試GREEN、compile通過。未更動production service、native或EditorPolicy。當時新實驗38660489452尚待；現在有限兩輪及正常App均5PASS，不從unit GREEN推導runtime恢復，也不把local not-served推廣成舊ea5 served失敗的完整因果。
+
+## 最終工程裁定（03ac326／正常38661678107）
+
+| 問題 | source-grounded root／信心 | 驗證與界線 |
+|---|---|---|
+| local首次show過早 | HIGH；window focus／IC0時發show，平台not-served | debug after-focus one-shot有有效RED/GREEN；有限與正常App原5皆PASS，但首次IMM仍可false |
+| Host stale registration | HIGH；UiAutomator2.3 hashCode refresh live Accessibility node | 真existing-map regression RED→2.4 GREEN；完整32case可到原assertions／scope結尾 |
+| raw dump未落地 | HIGH；UiAutomation Runtime.exec不處理shell redirect | JVM真shell RED/GREEN＋API33 stdin fixedpayload已驗；五真failure dumps未驗 |
+| historical ea5 served後不顯示 | UNRESOLVED | 原失敗缺當刻IMMS／focus／IC資料，不能用新的not-served直接替代完整因果 |
+
+完整Host為matrix23PASS／9INCONCLUSIVE＋infra1PASS。舊9FAIL七案真正PASS、兩案到既存nativecontext gap；舊8SKIP僅ZH06轉PASS。C04真nullIC後空tree／selector不可證，無新production defect由本輪證據成立。PR10 HOLD；不能以workflow綠燈、FAIL→SKIP或更改acceptance scope強行解除。
