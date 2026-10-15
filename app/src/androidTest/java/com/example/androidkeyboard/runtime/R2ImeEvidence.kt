@@ -18,13 +18,24 @@ internal object R2ImeEvidence {
         val observedAt = SystemClock.elapsedRealtime()
         Log.i(TAG, JSONObject().put("event", "VISIBILITY_RESULT")
             .put("stage", stage).put("visible", visible).put("elapsed_ms", observedAt).toString())
-        if (visible) return
+        // Do not delay the first-show/recreate observations to self-test the transport.
+        if (visible && stage != "recreated") return
         // No IMM.isActive/isAcceptingText query: those call checkFocus and change the experiment.
         if (shell("getprop ro.kernel.qemu").trim() != "1") {
             Log.i(TAG, "{\"event\":\"SNAPSHOT_REFUSED_NOT_EMULATOR\"}")
             return
         }
         shell("mkdir -p /data/local/tmp/kuyin-r2")
+        if (visible) {
+            val destination = "/data/local/tmp/kuyin-r2/transport-self-check.txt"
+            val payload = "R2_SYNTHETIC_TRANSPORT_V1"
+            captureR2ShellDump("printf $payload", destination, ::shell)
+            check(shell("cat $destination") == payload) { "TEST_ONLY raw dump roundtrip failed" }
+            Log.i(TAG, JSONObject().put("event", "TRANSPORT_SELF_CHECK")
+                .put("stage", stage).put("persistence_verified", true)
+                .put("content_verified", true).put("elapsed_ms", SystemClock.elapsedRealtime()).toString())
+            return
+        }
         val commands = listOf(
             "input-method" to "dumpsys -t 2 input_method",
             "window" to "dumpsys -t 2 window windows",
@@ -34,9 +45,10 @@ internal object R2ImeEvidence {
         )
         for ((kind, command) in commands) {
             try {
-                shell("$command > /data/local/tmp/kuyin-r2/$stage-$kind.txt 2>&1")
+                captureR2ShellDump(command, "/data/local/tmp/kuyin-r2/$stage-$kind.txt", ::shell)
                 Log.i(TAG, JSONObject().put("event", "LIVE_FAILURE_DUMP")
                     .put("stage", stage).put("kind", kind)
+                    .put("persistence_verified", true)
                     .put("observed_false_at_ms", observedAt)
                     .put("dump_completed_at_ms", SystemClock.elapsedRealtime()).toString())
             } catch (error: Exception) {
@@ -49,9 +61,17 @@ internal object R2ImeEvidence {
         // Logs and shell snapshots survive Gradle cleanup; leave JUnit status events unchanged.
     }
 
-    private fun shell(command: String): String {
-        val descriptor = InstrumentationRegistry.getInstrumentation().uiAutomation
-            .executeShellCommand(command)
-        return ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
+    private fun shell(command: String, input: String? = null): String {
+        val automation = InstrumentationRegistry.getInstrumentation().uiAutomation
+        if (input == null) {
+            val descriptor = automation.executeShellCommand(command)
+            return ParcelFileDescriptor.AutoCloseInputStream(descriptor).bufferedReader().use { it.readText() }
+        }
+        check(android.os.Build.VERSION.SDK_INT >= 31) { "TEST_ONLY raw dump stdin requires API31+" }
+        val descriptors = automation.executeShellCommandRw(command)
+        return ParcelFileDescriptor.AutoCloseInputStream(descriptors[0]).bufferedReader().use { reader ->
+            ParcelFileDescriptor.AutoCloseOutputStream(descriptors[1]).bufferedWriter().use { it.write(input) }
+            reader.readText()
+        }
     }
 }
