@@ -14,7 +14,7 @@ main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR10 remote `ea5c2b5b3404508c8
 
 **ROOT_CAUSE=UNRESOLVED。** 沒有把一次success當flake證明。假說：editor/window connection race、IME installation/default reset、binding或window/control未完成、observer問題；需同image/user/install順序的trace支持／反證。產品兩個show policy回true，反證簡單「硬體鍵盤policy拒絕」說法。
 
-## 官方語義／诊斷影響
+## 官方語義／診斷影響
 
 [Keyboard visibility](https://developer.android.com/develop/ui/views/touch-and-input/keyboard-input/visibility)說IMM show需window/view connection；[ActivityScenario](https://developer.android.com/reference/androidx/test/core/app/ActivityScenario)只保證lifecycle transition，不保證window focus。[WindowInsetsController](https://developer.android.com/reference/android/view/WindowInsetsController)可defer control，但不代表任何early show必成功。AOSP Android13 IMM的isActive/isAcceptingText會checkFocus，不能加入passive poll，以免修飾正在調查的race。
 
@@ -33,8 +33,16 @@ main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR10 remote `ea5c2b5b3404508c8
 
 ## 2026-10-14 受控執行結果
 
-[CI38459179007](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/38459179007) actual merge698d107c／PR12 head7f474c41：A/B/C原始App XML均5PASS0FAIL0SKIP；A/B原Host各15PASS9FAIL8SKIP，C为15PASS0FAIL17SKIP。完整source manifest逐blob核對；產品不改，並非binary-identical APK實驗。三個fresh emulator/user0皆未重現ea5首次visibility失敗，不能推定flaky或已修復。
+[CI38459179007](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/38459179007) actual merge698d107c／PR12 head7f474c41：A/B/C原始App XML均5PASS0FAIL0SKIP；A/B原Host各15PASS9FAIL8SKIP，C為15PASS0FAIL17SKIP。完整source manifest逐blob核對；產品不改，並非binary-identical APK實驗。三個fresh emulator/user0皆未重現ea5首次visibility失敗，不能推定flaky或已修復。
 
 B：attached/windowfocus/token及真IC已有，但原IMM show回false；其後平台仍完成show且visibility=true。C：初次show request前已visible，不能把該次PASS歸因posted IMM。recreate在三組真執行且可見。參見外部「受控比較生命週期與根因獨立覆核.md」與[新階段探測](R2_HOST_OBSERVATION_PROBE.md)。
 
 Host9個FAIL→SKIP不是repaired；完整capture仍阻擋strict preedit證據。新增有界getter/REGISTER階段trace＋獨立cleanup failure保留，準備兩案有限probe；尚無產品根因或產品修正。PR10保持HOLD。
+
+## 已定位的另一個Host基礎設施缺陷
+
+38529968625將失敗邊界定位QUERY_REGISTER的live UiObject2 hash；old2.3.0在真destroyed editor的existing-map lookup確實StaleObjectException（38561946857）。同一source regression、同API33／user0，僅test dependency2.4後GREEN（38563163760），getter仍stale，沒有使用失效UI作fresh observation。這是已驗證primitive修復，不等於原9個Host cases全部修復，更不等於historical App visibility根因。官方source／版本／license與精確RED/GREEN見[依賴修復](R2_UIAUTOMATOR_DEPENDENCY_REPAIR.md)。有限真軟鍵sequence執行中，通過後才完整Host。
+
+## 2026-10-15 最小修正狀態
+
+已確認的local前置缺陷有debug-only after-focus one-shot修正33b3ac8，8測GREEN與獨立source批准；觀測缺陷另有3895625 shell stdin修正，5個JVM測試GREEN、compile通過。未更動production service、native或EditorPolicy。新實驗38660489452仍待結果；不從unit GREEN推導runtime恢復，也不把local not-served推廣成舊ea5 served失敗的完整因果。

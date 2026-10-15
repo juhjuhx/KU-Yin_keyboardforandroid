@@ -18,6 +18,12 @@ ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX�
 
 詳見[本輪驗證](maintenance/VALIDATION_MATRIX.md)與[交接](maintenance/FINAL_HANDOFF.md)。Physical OPEN／Production NOT_READY／M4 NOT_VALIDATED／S2 NOT_STARTED不變。
 
-## R2 active investigation（2026-10-14）
+## R2 active investigation（2026-10-15）
 
-main精確63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR9/11合併，PR10remote ea5c2b5 OPEN/HOLD，local reviewed Host4fc43ff尚未merge main。R2隔離test-only observer＋CI controlled comparison，不改product/pins/signing/資料。fresh local App273（含native10）、Host107、Python122、contracts10及instrumentation編譯PASS。受控A/B/C App均5PASS；A/B Host15PASS9FAIL8SKIP，C Host15PASS17SKIP，FAIL→SKIP不算修复。visibility舊失敗未重現、根因UNRESOLVED；正在有限Host階段探測。最新[階段交接](testing/R2_FINAL_HANDOFF.md)／[R2證據矩陣](testing/R2_VALIDATION_MATRIX.md)；歷史R1文件保留。
+main精確63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR9/11合併，PR10 remote ea5c2b5 OPEN/HOLD，local reviewed Host4fc43ff尚未merge main。R2保持product/pins/signing/資料不變，只修改debug editor、instrumentation、工具及Host test依賴。
+
+同source3fc2c89的38563975932已重現App4PASS／1firstVisibilityFAIL：window focus及InputConnection尚未建立便show，平台明確not-served。已確認test precondition缺陷，debug after-focus one-shot修正有8個Robolectric測試；舊ea5曾served，完整歷史IMMS根因仍UNRESOLVED。另修正raw dump重導向沒有真正寫檔的觀測缺陷。exact3895625有限emulator38660489452已App5及ZH06/ZH01皆PASS、零skip，真editor文字我／我現在及commit次數符合；完整Host仍須新CI。
+
+59b本地App57classes／282測試真重跑PASS（含native integration10）；Host107此次UP-TO-DATE，非fresh重跑。Python130、contracts10及四APKassemble PASS。55的3個native失敗源自舊host詞庫路徑變空；新獨立cache重新bootstrap相同pin後59b通過，原失敗證據保留。UiAutomator2.3→2.4只Host androidTest，真stale-map primitive有emulator RED→GREEN；最新full Host仍15PASS／17SKIP，不是完整acceptance。現在Host33JUnit＝32case＋1infra，frozen26 manifest不變。
+
+最新[階段交接](testing/R2_FINAL_HANDOFF.md)／[R2證據矩陣](testing/R2_VALIDATION_MATRIX.md)；歷史R1文件保留。Physical OPEN、production NOT_READY、PR10 HOLD、S2/M4未啟動。

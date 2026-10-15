@@ -166,3 +166,29 @@ R1 finishing-a-development-branch已loaded/USED_SCOPED：用户已明确normal P
 | addyosmani-ci-cd-and-automation | local Skill / `/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md` | `067d15958ad69341fe37600be810e7a19f884fa67045385e48fd41c25dbd8e7d` | H | blocking Python/10 contracts；保存 XML；不改 signing | LOADED / USED_SCOPED |
 | finishing-a-development-branch | local Skill / `/Users/huang/.agents/skills/finishing-a-development-branch/SKILL.md` | `5c8d4b59aedb14c94e2f5d787a3265e858e8f53d4ceffe7ff1c15878a52b0e91` | H | 依已批准 normal PR/merge；保留 branches/worktrees | LOADED / USED_SCOPED |
 | official-code-review | local Skill / `/Users/huang/.agents/skills/official-code-review/SKILL.md` | `ae97f416c7e5ae708aa68a64a0cd137ff952c78ffd50f19ab147e19b2713adf3` | H | 已讀；指定模型流程不可執行，使用可用獨立 reviewer | LOADED / BLOCKED_FULL_WORKFLOW |
+
+## R2 路由（2026-10-14，實際使用）
+
+依phase選相關subset；不以catalog數量冒稱執行全部技能。A=來源／root audit，B=passive instrumentation，C=安全TDD，D=emulator／review／handoff。無init／compact／LSP API，使用本輪短context anchor與真compiler/static證據。
+
+| Skill | 實際provider/path | SHA256 | Phase | Status／結果 |
+|---|---|---|---|---|
+| using-superpowers | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/using-superpowers/SKILL.md` | `82c5c8866ad7f5dd4440ce66bd7806ba48a2f13771beae5cf112e53f08fe36ba` | A–F | USED／技能入口／控制授權 |
+| deep-understanding | `/Users/huang/.agents/skills/deep-understanding/SKILL.md` | `a83d28eb0274847dc6c3cd4f849f5aaf5bc01ce1ebfa885f9aa91834f37340b6` | A | USED／真實Android流程及來源 |
+| systematic-debugging | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/systematic-debugging/SKILL.md` | `808fc5717aa88ad65efff312b11c186294d3e6ee301afb584e2f86599b137787` | A–D | USED／第一分歧／可反證假說 |
+| writing-plans | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/writing-plans/SKILL.md` | `a6c67c1900064347c2a329990dd3c555657c51c3ec53b259a08aa01a2c26139a` | A | USED／有依賴的R2診斷計畫 |
+| using-git-worktrees | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/using-git-worktrees/SKILL.md` | `8cfb86f121269e8f7f12361e6795c4f6738828340e28964c9229d365666c9edd` | A | USED／隔離main／保留dirty |
+| test-driven-development | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/test-driven-development/SKILL.md` | `64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d` | B,D | USED／真正assertion RED→GREEN |
+| code-verification | `/Users/huang/.codex/plugins/cache/openai-curated-remote/codex-engineering-guardrails/1.1.1/skills/code-verification/SKILL.md` | `4aab85003f547ac6e1ee12e3ceb3f89d5744af56f3b22a3643e545007474fc87` | A,F | USED／證據分層與完整gates |
+| code-work | `/Users/huang/.codex/plugins/cache/openai-curated-remote/codex-engineering-guardrails/1.1.1/skills/code-work/SKILL.md` | `a3727efa825ff26a2ce67ff60379ad0e3a4bfcfc498c3632514fd662e7a0f3a6` | B,D | USED／限制test-only修改 |
+| addyosmani-observability-and-instrumentation | `/Users/huang/.agents/skills/addyosmani-observability-and-instrumentation/SKILL.md` | `99e1024c67ce3c2410b356444ce5784301922ec044d9a022b2d121b729108c55` | B | USED／metadata觀察／no input logs |
+| addyosmani-debugging-and-error-recovery | `/Users/huang/.agents/skills/addyosmani-debugging-and-error-recovery/SKILL.md` | `3908746ea39a4c23f3df27a7faa04540ad7834332e0f534922fbfffec630ec54` | A–D | USED／保留原失敗與diagnostic失敗 |
+| addyosmani-ci-cd-and-automation | `/Users/huang/.agents/skills/addyosmani-ci-cd-and-automation/SKILL.md` | `067d15958ad69341fe37600be810e7a19f884fa67045385e48fd41c25dbd8e7d` | C,F | USED／controlled A/B/C＋failure artifacts |
+| code-review-excellence | `/Users/huang/.agents/skills/code-review-excellence/SKILL.md` | `68df968e01fc7cc234f68ac9439a64e2f70b6c2dc02ad7bdb2928a61058ed8e8` | A,F | USED／severity/source定位 |
+| requesting-code-review | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/requesting-code-review/SKILL.md` | `cfcee1b06774e7c0517f1e09be1a11f2d5680257072723e709ddbcf7e08b795a` | A,F | USED／三個獨立唯讀reviewer |
+| receiving-code-review | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/receiving-code-review/SKILL.md` | `091df1629510af1b92fc4abd6f96732ebedb4cb2c0f3457e8f2740b0504a2438` | B,F | USED／核對finding再用regression修正 |
+| verification-before-completion | `/Users/huang/.codex/plugins/cache/openai-curated-remote/superpowers/6.4.2/skills/verification-before-completion/SKILL.md` | `2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3` | F | USED／fresh執行／不冒稱runtime |
+| official-code-review | `/Users/huang/.agents/skills/official-code-review/SKILL.md` | `ae97f416c7e5ae708aa68a64a0cd137ff952c78ffd50f19ab147e19b2713adf3` | F | BLOCKED／指定Haiku/Sonnet/Opus及4 parallel slots不可用；非聲稱同技能批准 |
+| open-code-review | `/Users/huang/.agents/skills/open-code-review/SKILL.md` | `d7fc77214056c3232b825978272da6ac4874b7825c5ee8b39a98cad19763d4c3` | A,F | BLOCKED／v1.12.13，單次provider401，無OCR批准 |
+
+本輪TDD：old2.3真emulator stale-map lookup RED → same test2.4 GREEN；真bootstrap guard RED/GREEN。官方review模型harness不可用、OCR單次401，不宣稱APPROVE；可用獨立reviewers核對source/raw graphs/archives。詳細結果見[依賴修復](../testing/R2_UIAUTOMATOR_DEPENDENCY_REPAIR.md)與[R2審查](../testing/R2_INDEPENDENT_REVIEW.md)。

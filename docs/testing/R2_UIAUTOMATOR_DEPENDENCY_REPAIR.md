@@ -2,7 +2,7 @@
 
 ## 目的與界線
 
-調查 Host observation 的 `QUERY_REGISTER` 失敗。這是 test infrastructure，不是 KU-Yin decoder／UI 修正；historical App 首次 visibility failure 仍 `UNRESOLVED_NOT_REPRODUCED`，PR10 HOLD、physical acceptance OPEN。
+調查 Host observation 的 `QUERY_REGISTER` 失敗。這是 test infrastructure，不是 KU-Yin decoder／UI 修正；historical ea5 App visibility完整因果仍 `UNRESOLVED`；same3fc的新首次visibility失敗已重現且有獨立debug前置修正，見[R2 lifecycle](R2_ANDROID_IME_LIFECYCLE_TRACE.md)，PR10 HOLD、physical acceptance OPEN。
 
 ## 直接來源
 
@@ -19,7 +19,7 @@
 
 2.4 hashCode 仍會嘗試 refresh，遇 stale 才使用 cached-node hash；不能稱為完全無 IPC。UiDevice 每2秒核對 service flags 並呼叫 setServiceInfo，使 accessibility cache 更新；不是增加本專案 read deadline。平台 UiAutomation.clearCache 是 API34 起，不能假裝 API33 有此公開 API。
 
-POM direct dependencies：uiautomator-shell2.4.0、tracing1.1.0、annotation1.8.1、Kotlin stdlib2.1.20、jspecify1.0.0、test core1.7.0、JUnit4.13.2。monitor 等實際版本以 Gradle resolved graph 為準，不由此 POM 猜測。
+POM direct dependencies：uiautomator-shell2.4.0、tracing1.1.0、annotation1.8.1、Kotlin stdlib2.1.20、jspecify1.0.0、test core1.7.0、JUnit4.13.2。實際 resolved graph：core原先已1.7.0、monitor仍1.8.0、Kotlin仍2.2.10；annotation變1.8.1，新增shell／shell-android2.4與jspecify1.0。
 
 ## RED → 最小修正 → GREEN
 
@@ -32,10 +32,16 @@ POM direct dependencies：uiautomator-shell2.4.0、tracing1.1.0、annotation1.8.
 
 ## CI 保護與本地證據
 
-workflow guard 保護 main/Host production source、Gradle build scripts、全部 gradle 目錄、LICENSE、NOTICE；只從 catalog comparison 移除已核對的 versions.uiautomator scalar，其餘 parsed data 必須相同，版本僅接受2.3.0／2.4.0。六項真 isolated Git fixture 執行 workflow 程式：38有效1 assertion RED、39全部GREEN；包含拒絕 native pin、其他 dependency、product／Host source及未審查版本。
+workflow guard 保護 main/Host production source、Gradle build scripts、全部 gradle 目錄、LICENSE、NOTICE；只從 catalog comparison 移除已核對的 versions.uiautomator scalar，實際bootstrap script亦保護；其餘 parsed data 必須相同，版本僅接受2.3.0／2.4.0。實際 isolated Git fixture 執行 workflow 程式：38有效1 assertion RED、39六測GREEN；原測試僅覆蓋gradle內檔案，reviewer再指出真native pin位於bootstrap script的guard缺口，46七測1 assertion RED後加入實際bootstrap路徑，47七測全部GREEN。拒絕其他dependency、product／Host source、未審查版本與真native bootstrap變更。
 
 33b instrumentation compile PASS；35b有限模式13PASS；36b current inventory32!=33有效RED後明確加入精確新identity；37全量Python123PASS。36首次 import error不作RED；35 concurrent fake timeout保留，不延長timeout。
 
 ## 裁定
 
-目前 `RUNTIME_RED_CONFIRMED_GREEN_PENDING`。不得宣稱完整 Host、historical visibility 或 physical acceptance 已修復。依賴更新／resolved graph／native與凍結資產保存／獨立 review 均須另記實際結果。
+目前 `IDENTITY_RUNTIME_RED_GREEN_CONFIRMED`。只確認既存map identity不再拋stale；不得宣稱完整Host、historical visibility或physical acceptance已修復。完整Host與freeze-preservation independent receipt須另記。
+
+## 更新後本地驗證
+
+42 instrumentation真正重新compile PASS；Host unit當時UP-TO-DATE不當fresh證據。41b／42因重複Gradle task只取到App runtime＋Host AndroidTest graph，42c／42b單獨補足baseline／current Host runtime；App及Host production graph前後完全相同。首次空parser結果保留為invalid，不作證據。44 Python129PASS，43 contracts10PASS；45 --rerun-tasks真正執行App273與Host107，原始XML另存。GREEN runtime38563163760／3fc2c89：App5PASS、相同infra regression1PASS；181source hashes一致。getter仍stale前置assertion保留。有限ZH06→ZH01與完整Host尚待結果。
+
+49最終Python130PASS（含7個真guard回歸）；45 App273／Host107無failure/error/skip；48四APK assemble PASS，signer46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94。全source gate不改產品／Host main／實際bootstrap pin；新檔是test infrastructure、read-only evidence與文檔。
