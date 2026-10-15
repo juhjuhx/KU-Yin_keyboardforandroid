@@ -12,20 +12,28 @@ class DachenAcceptanceTest {
         launch(CaseConfig(caseId = "B01", imeOptions = 4))
         selectMode(VisibleKeyboardMode.ZHUYIN)
         assertEmptyComposition()
-        assertCanonicalDachenKeys()
-        for (glyph in listOf("ㄕ", "ㄖ")) {
+        verifyDachenConfigurations { configuration ->
+            assertEmptyComposition()
+            for (glyph in listOf("ㄕ", "ㄖ")) {
+                val before = snapshot()
+                tapPhonetic(glyph)
+                assertEquals("實際 preedit 必須符合點擊的注音", glyph, awaitPreedit().text)
+                clearComposition()
+                val after = settledSnapshot()
+                assertEquals("clear 不得送出文字", before.currentText, after.currentText)
+                assertEquals("clear 不得呼叫 commitText", before.commitCount, after.commitCount)
+                assertEquals("clear 不得派送 action", before.editorActionCount, after.editorActionCount)
+                observe("tap-$glyph-clear", after)
+            }
+            // A real candidate tap proves that geometry is also usable for editor effects.
             val before = snapshot()
-            tapPhonetic(glyph)
-            assertEquals("實際 preedit 必須符合點擊的注音", glyph, awaitPreedit().text)
-            clearComposition()
-            val after = settledSnapshot()
-            assertEquals("clear 不得送出文字", before.currentText, after.currentText)
-            assertEquals("clear 不得呼叫 commitText", before.commitCount, after.commitCount)
-            assertEquals("clear 不得派送 action", before.editorActionCount, after.editorActionCount)
-            observe("tap-$glyph-clear", after)
+            compose(listOf("ㄨ", "ㄛ"))
+            assertEquals("無聲調 phonetic identity 不得改寫", "ㄨㄛ", awaitPreedit().text)
+            observeCandidateSnapshot("$configuration-candidate-snapshot-before-tap", "我")
+            tapCompletionCandidate("我", before.currentText + "我")
+            observe("$configuration-selected-wo", settledSnapshot())
         }
-        scope = "已測當前可見寬度／方向的 41 canonical keys 與 ㄕ／ㄖ真點擊、strict preedit、clear；第二寬度與實體方向仍需人工觀察。"
-        inconclusive("ADDITIONAL_WIDTH_AND_ORIENTATION_OBSERVATIONS_REQUIRED")
+        scope = "已執行 portrait→landscape→portrait 的實際方向/IME兩寬度、41 canonical hitboxes、ㄕ/ㄖstrict preedit與clear零effect、我候選真提交；這是 emulator/當次裝置證據，不是實體旋轉驗收或所有尺寸相容性。"
     }
 
     @Test fun b02RealCandidateSelectionThenContinuedComposition() = acceptanceCase("B02") {

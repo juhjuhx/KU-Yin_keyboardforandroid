@@ -2,12 +2,15 @@ package io.github.juhjuhx.kuyin.acceptancehost
 
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.inputmethod.BaseInputConnection
+import android.view.accessibility.AccessibilityWindowInfo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -386,7 +389,8 @@ internal class AcceptanceDriver(private val caseId: String) {
         }
     }
 
-    fun assertCanonicalDachenKeys() {
+    fun assertCanonicalDachenKeys(): List<UiBounds> {
+        val captured = captureUi()
         val rows = listOf(
             listOf("ㄅ" to "1", "ㄉ" to "2", "ˇ" to "3", "ˋ" to "4", "ㄓ" to "5", "ˊ" to "6", "˙" to "7", "ㄚ" to "8", "ㄞ" to "9", "ㄢ" to "0", "ㄦ" to "-"),
             listOf("ㄆ" to "q", "ㄊ" to "w", "ㄍ" to "e", "ㄐ" to "r", "ㄔ" to "t", "ㄗ" to "y", "ㄧ" to "u", "ㄛ" to "i", "ㄟ" to "o", "ㄣ" to "p"),
@@ -394,15 +398,22 @@ internal class AcceptanceDriver(private val caseId: String) {
             listOf("ㄈ" to "z", "ㄌ" to "x", "ㄏ" to "c", "ㄒ" to "v", "ㄖ" to "b", "ㄙ" to "n", "ㄩ" to "m", "ㄝ" to ",", "ㄡ" to ".", "ㄥ" to "/"),
         )
         val seenBounds = mutableSetOf<String>()
+        val keyBounds = mutableListOf<UiBounds>()
+        val keyEvidence = JSONArray()
         var priorRowY = -1
         for ((rowIndex, row) in rows.withIndex()) {
             var priorX = -1
             var rowY: Int? = null
             for ((glyph, hint) in row) {
-                val key = uniqueClickable("canonical:$glyph") { clickableTexts(glyph, tokenMatch = true) }
+                val key = captured.targets(captured.tree.textTargets(glyph, tokenMatch = true)).singleOrNull()
+                    ?: blocked("canonical:$glyph 在當次完整 capture 缺少唯一可見按鍵")
+                assertTrue("canonical:$glyph 必須有 clickable hitbox", key.isClickable)
                 val texts = key.texts()
                 if (texts.none { semanticToken(it, hint) }) blocked("$glyph 的 ASCII 提示 $hint 無法由可見 hierarchy 唯一驗證")
                 val bounds = key.visibleBounds
+                keyBounds += UiBounds(bounds.left, bounds.top, bounds.right, bounds.bottom)
+                keyEvidence.put(JSONObject().put("glyph", glyph).put("ascii", hint)
+                    .put("bounds", JSONArray(listOf(bounds.left, bounds.top, bounds.right, bounds.bottom))))
                 assertTrue("41 glyph 不得重用同一 hitbox", seenBounds.add(bounds.toShortString()))
                 assertTrue("canonical 第 ${rowIndex + 1} 排需保持從左至右", bounds.centerX() > priorX)
                 if (rowY != null) assertEquals("同排鍵中心高度", rowY, bounds.centerY())
@@ -414,6 +425,100 @@ internal class AcceptanceDriver(private val caseId: String) {
         }
         assertEquals("canonical phonetic／tone 可見鍵數", 41, seenBounds.size)
         note("canonical-dachen", "41 unique hitboxes；四排順序與 ASCII hint 已核對；displayRotation=${device.displayRotation}")
+        observations.put(JSONObject().put("name", "canonical-hitboxes").put("keys", keyEvidence))
+        return keyBounds
+    }
+
+    /** TEST_ONLY: changes this fixture Activity's requested orientation, never global rotation settings. */
+    fun verifyDachenConfigurations(checkInput: AcceptanceDriver.(String) -> Unit) {
+        var originalRequest = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        checkNotNull(scenario).onActivity { originalRequest = it.requestedOrientation }
+        val frames = mutableListOf<DachenGeometryFrame>()
+        runCaseCleanup({
+            for ((name, request, expected) in listOf(
+                Triple("portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT),
+                Triple("landscape", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, Configuration.ORIENTATION_LANDSCAPE),
+                Triple("portrait-return", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT),
+            )) {
+                val beforeTransition = settledSnapshot()
+                observe("$name-before-transition", beforeTransition)
+                note("$name-preedit-before", strictPreedit()?.text.orEmpty())
+                checkNotNull(scenario).onActivity { it.requestedOrientation = request }
+                var orientation = Configuration.ORIENTATION_UNDEFINED
+                if (!poll {
+                    checkNotNull(scenario).onActivity { orientation = it.resources.configuration.orientation }
+                    orientation == expected
+                }) inconclusive("ORIENTATION_TRANSITION_UNOBSERVED", "Activity request=$request；actual orientation=$orientation")
+                assertSelectedIme()
+                // Do not recreate a missing keyboard or invent a new InputConnection.
+                awaitMode(VisibleKeyboardMode.ZHUYIN)
+                note("$name-preedit-after", strictPreedit()?.text.orEmpty())
+                requireNoRotationEffects(beforeTransition, settledSnapshot())
+                val epoch = geometryEpoch()
+                val keys = assertCanonicalDachenKeys()
+                val afterEpoch = geometryEpoch()
+                if (epoch != afterEpoch) inconclusive("GEOMETRY_EPOCH_CHANGED", "layout changed during the completed key capture")
+                val ime = Rect(epoch.ime.left, epoch.ime.top, epoch.ime.right, epoch.ime.bottom)
+                val frame = epoch.copy(keys = keys)
+                frames += frame
+                val geometry = JSONObject().put("name", "$name-geometry")
+                    .put("orientation", orientation).put("rotation", frame.rotation)
+                    .put("display", JSONArray(listOf(0, 0, frame.display.right, frame.display.bottom)))
+                    .put("ime_bounds", JSONArray(listOf(ime.left, ime.top, ime.right, ime.bottom)))
+                checkNotNull(scenario).onActivity { activity ->
+                    val decor = Rect().also { activity.window.decorView.getGlobalVisibleRect(it) }
+                    geometry.put("host_visible_bounds", JSONArray(listOf(decor.left, decor.top, decor.right, decor.bottom)))
+                        .put("width_dp", activity.resources.configuration.screenWidthDp)
+                        .put("height_dp", activity.resources.configuration.screenHeightDp)
+                        .put("density", activity.resources.displayMetrics.density)
+                }
+                observations.put(geometry)
+                requireDachenGeometryFrame(frame)
+                checkInput(name)
+                observe("$name-editor-result", settledSnapshot())
+            }
+            requireDachenGeometryCoverage(frames)
+        }, {
+            checkNotNull(scenario).onActivity { it.requestedOrientation = originalRequest }
+            var restored = false
+            checkNotNull(scenario).onActivity { restored = it.requestedOrientation == originalRequest }
+            assertTrue("Host requestedOrientation 必須還原；不寫全域 rotation lock", restored)
+            note("orientation-request-restored", originalRequest.toString())
+        })
+    }
+
+    private fun geometryEpoch(): DachenGeometryFrame {
+        var orientation = Configuration.ORIENTATION_UNDEFINED
+        checkNotNull(scenario).onActivity { orientation = it.resources.configuration.orientation }
+        var imeBounds: Rect? = null
+        if (!poll {
+            val windows = instrumentation.uiAutomation.windows.filter { window ->
+                window.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
+                    window.root?.packageName?.toString() == PRODUCT_PACKAGE
+            }
+            imeBounds = windows.singleOrNull()?.let { window -> Rect().also(window::getBoundsInScreen) }
+            imeBounds?.let { it.width() > 0 && it.height() > 0 } == true
+        }) inconclusive("IME_WINDOW_BOUNDS_UNOBSERVABLE")
+        val ime = checkNotNull(imeBounds)
+        return DachenGeometryFrame(orientation, device.displayRotation,
+            UiBounds(0, 0, device.displayWidth, device.displayHeight),
+            UiBounds(ime.left, ime.top, ime.right, ime.bottom), emptyList())
+    }
+
+    fun observeCandidateSnapshot(name: String, expectedLabel: String) {
+        val captured = captureUi().tree
+        val preedit = captured.strictPreedit()
+        val candidates = if (preedit == null) emptyList() else captured.candidates(preedit)
+        observations.put(JSONObject().put("name", name)
+            .put("preedit", preedit?.text ?: JSONObject.NULL)
+            .put("candidate_count", candidates.size)
+            .put("expected_candidate_targets", JSONArray(candidates.filter {
+                captured.targetText(it) == expectedLabel
+            }.map { candidate ->
+                    val b = candidate.bounds
+                    JSONObject().put("label", expectedLabel)
+                        .put("bounds", JSONArray(listOf(b.left, b.top, b.right, b.bottom)))
+                })))
     }
 
     fun tapFirstVisibleCandidate(committedPrefix: String): String = completeCandidate(null) { committedPrefix + it }

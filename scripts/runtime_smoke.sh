@@ -8,7 +8,7 @@ if [[ "${CI:-}" != "true" ]]; then
   exit 2
 fi
 case "${KUYIN_R2_HOST_PROBE:-false}" in
-  true|false|identity) ;;
+  true|false|identity|geometry) ;;
   *) echo "Invalid TEST_ONLY Host probe mode; refusing device commands" >&2; exit 2 ;;
 esac
 KUYIN_CI_SERIAL="$(command adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
@@ -38,7 +38,10 @@ ensure_ci_user
 R2_EVIDENCE_DIR="build/r2-runtime-evidence"
 mkdir -p "$R2_EVIDENCE_DIR"
 HOST_TEST_ARGS=(--stacktrace)
-if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "identity" ]]; then
+if [[ "${KUYIN_R2_HOST_PROBE:-false}" == "geometry" ]]; then
+  HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b01CanonicalKeysAndShiRiHaveStrictPreeditEvidence)
+  echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"
+elif [[ "${KUYIN_R2_HOST_PROBE:-false}" == "identity" ]]; then
   HOST_TEST_ARGS+=(-Pandroid.testInstrumentationRunnerArguments.class=io.github.juhjuhx.kuyin.acceptancehost.StaleUiObjectIdentityRegressionTest)
   echo FOCUSED_DIAGNOSTIC_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"
 elif [[ "${KUYIN_R2_HOST_PROBE:-false}" == "true" ]]; then
