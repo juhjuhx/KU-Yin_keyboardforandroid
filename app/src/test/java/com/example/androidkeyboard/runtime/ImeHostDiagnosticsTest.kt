@@ -14,6 +14,9 @@ import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowLog
+import org.robolectric.shadows.ShadowViewRootImpl
+import org.robolectric.shadow.api.Shadow
+import org.robolectric.util.ReflectionHelpers
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [33])
@@ -23,7 +26,7 @@ class ImeHostDiagnosticsTest {
     private fun activity(enabled: Boolean = true): ImeHostActivity {
         val intent = Intent(RuntimeEnvironment.getApplication(), ImeHostActivity::class.java)
             .putExtra("KUYIN_R2_DIAGNOSTICS", enabled)
-        return Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().get()
+        return Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().windowFocusChanged(true).get()
     }
 
     private fun events() = ShadowLog.getLogsForTag("KUYIN_R2_TEST_ONLY")
@@ -71,5 +74,73 @@ class ImeHostDiagnosticsTest {
         host.requestIme()
         shadowOf(Looper.getMainLooper()).idle()
         assertTrue(events().isEmpty())
+    }
+
+    @Test fun showWaitsForRealWindowFocusThenDispatchesOriginalSequenceOnce() {
+        val intent = Intent(RuntimeEnvironment.getApplication(), ImeHostActivity::class.java)
+            .putExtra("KUYIN_R2_DIAGNOSTICS", true)
+        Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().windowFocusChanged(false).use { controller ->
+            val host = controller.get()
+            assertFalse(host.editor.hasWindowFocus())
+            host.requestIme()
+            shadowOf(Looper.getMainLooper()).idle()
+            assertFalse("an unconnected window must not issue an ineffective show", events().any {
+                it.getString("event") in setOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT")
+            })
+            controller.windowFocusChanged(true)
+            shadowOf(Looper.getMainLooper()).idle()
+            val shows = events().filter { it.getString("event") in setOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT") }
+            assertEquals(listOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT"), shows.map { it.getString("event") })
+            assertTrue(shows.all { it.getBoolean("window_focused") && it.getBoolean("attached") })
+        }
+    }
+
+    @Test fun laterWindowFocusChangesDoNotRepeatAnAlreadyDispatchedRequest() {
+        val intent = Intent(RuntimeEnvironment.getApplication(), ImeHostActivity::class.java)
+            .putExtra("KUYIN_R2_DIAGNOSTICS", true)
+        Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().windowFocusChanged(false).use { controller ->
+            val host = controller.get()
+            host.requestIme()
+            controller.windowFocusChanged(true)
+            shadowOf(Looper.getMainLooper()).idle()
+            controller.windowFocusChanged(false).windowFocusChanged(true)
+            shadowOf(Looper.getMainLooper()).idle()
+            val shows = events().filter { it.getString("event") in setOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT") }
+            assertEquals(2, shows.size)
+            assertTrue("show calls must actually occur after focus", shows.all { it.getBoolean("window_focused") })
+        }
+    }
+
+    @Test fun losingFocusBeforePostedDispatchKeepsRequestPending() {
+        val intent = Intent(RuntimeEnvironment.getApplication(), ImeHostActivity::class.java)
+            .putExtra("KUYIN_R2_DIAGNOSTICS", true)
+        Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().windowFocusChanged(true).use { controller ->
+            val host = controller.get()
+            val root = ReflectionHelpers.callInstanceMethod<Any>(host.editor, "getViewRootImpl")
+            Shadow.extract<ShadowViewRootImpl>(root).callWindowFocusChanged(false)
+            assertTrue("focus-loss message must still be queued", host.editor.hasWindowFocus())
+            host.requestIme()
+            shadowOf(Looper.getMainLooper()).idle()
+            assertFalse("focus-loss message must run before the show dispatch", host.editor.hasWindowFocus())
+            assertFalse(events().any { it.getString("event") in setOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT") })
+            controller.windowFocusChanged(true)
+            shadowOf(Looper.getMainLooper()).idle()
+            assertEquals(1, events().count { it.getString("event") == "INSETS_SHOW_REQUEST" })
+            assertEquals(1, events().count { it.getString("event") == "IMM_SHOW_RESULT" })
+        }
+    }
+
+    @Test fun destroyedActivityCancelsQueuedShow() {
+        val intent = Intent(RuntimeEnvironment.getApplication(), ImeHostActivity::class.java)
+            .putExtra("KUYIN_R2_DIAGNOSTICS", true)
+        val controller = Robolectric.buildActivity(ImeHostActivity::class.java, intent).setup().windowFocusChanged(true)
+        val host = controller.get()
+        host.requestIme()
+        controller.pause().stop().destroy()
+        ShadowLog.clear()
+        shadowOf(Looper.getMainLooper()).idle()
+        assertFalse("a destroyed fixture must not issue its queued show", events().any {
+            it.getString("event") in setOf("INSETS_SHOW_REQUEST", "IMM_SHOW_RESULT")
+        })
     }
 }

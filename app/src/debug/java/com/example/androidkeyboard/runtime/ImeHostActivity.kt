@@ -17,6 +17,8 @@ import org.json.JSONObject
 class ImeHostActivity : Activity() {
     private var connectionCount = 0
     private var eventCount = 0
+    private var imeRequestPending = false
+    private var imeRequestPosted = false
     private val diagnosticsEnabled: Boolean
         get() = intent.getBooleanExtra("KUYIN_R2_DIAGNOSTICS", false)
 
@@ -69,12 +71,35 @@ class ImeHostActivity : Activity() {
     fun requestIme() {
         val focused = editor.requestFocus()
         trace("VIEW_FOCUS_REQUEST", JSONObject().put("accepted", focused))
-        if (android.os.Build.VERSION.SDK_INT >= 30) {
-            val controller = window.insetsController
-            trace("INSETS_SHOW_REQUEST", JSONObject().put("controller_present", controller != null))
-            controller?.show(WindowInsets.Type.ime())
-        }
+        imeRequestPending = true
+        scheduleImeRequest()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus && ::editor.isInitialized) scheduleImeRequest()
+    }
+
+    override fun onDestroy() {
+        imeRequestPending = false
+        super.onDestroy()
+    }
+
+    /** Debug editor precondition: enqueue after window focus, then recheck before dispatch. */
+    private fun scheduleImeRequest() {
+        if (!imeRequestPending || imeRequestPosted || !editor.hasWindowFocus()) return
+        imeRequestPosted = true
         editor.post {
+            imeRequestPosted = false
+            if (!imeRequestPending || isFinishing || isDestroyed) return@post
+            if (!editor.isAttachedToWindow || editor.windowToken == null ||
+                !editor.hasWindowFocus() || !editor.hasFocus()) return@post
+            imeRequestPending = false
+            if (android.os.Build.VERSION.SDK_INT >= 30) {
+                val controller = window.insetsController
+                trace("INSETS_SHOW_REQUEST", JSONObject().put("controller_present", controller != null))
+                controller?.show(WindowInsets.Type.ime())
+            }
             val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             val accepted = imm.showSoftInput(editor, InputMethodManager.SHOW_IMPLICIT)
             trace("IMM_SHOW_RESULT", JSONObject().put("accepted", accepted))
