@@ -27,3 +27,13 @@ main63c9e4ab8ad7e277013acb5d7cce99228ec1f827、PR10remote ea5c2b5 HOLD不變；D
 本地59b App282含native10真PASS；正常CI App272PASS10nativeSKIP、Host107真PASS，Python130／contracts10／bootstrap／Debug buildPASS。既有KSP/AWT error annotation仍記錄，pin2.3.5未改，不掩蓋工具鏈問題。18原工區保存再驗一致、現19，exact公開APK及release tag不變；未讀刪user DB／字典／prefs。
 
 最新[R2交接](testing/R2_FINAL_HANDOFF.md)／[驗證矩陣](testing/R2_VALIDATION_MATRIX.md)與CODEX_CONTEXT_ANCHOR為續作入口。PR10 HOLD／PR12 Draft；完整觀測gap與historical disposition待處置，physicalOPEN、productionNOT_READY、M4NOT_VALIDATED、S2NOT_STARTED不變；不自動merge或release。
+
+## R2.1 acceptance evidence closure（2026-10-16）
+
+限定test-only B01 geometry及九gap研究；隔離test/r2-1-acceptance-evidence，程式checkpointb1b5bf6b3939fef7e62893d833b0853e0a08ae7d。Production Kotlin/JNI、Host main、signing/pins/schema與user data不動。main63c9e4a、PR12d6bf2Draft、PR10ea5HOLD、公開release不變。
+
+最終R2d6 fresh核CI38761725033／actualmerge3b5e084（完整tree同d6）：App5PASS；Host24PASS0FAIL9SKIP，matrix23PASS9INCONCLUSIVE＋infra1PASS；finite38761725004只5＋2。原始identity/protocol/owner與獨立review均核實，但不批准fullacceptance/merge。C04只有81completed彙總與最後node0，不能說81份逐筆全空。
+
+新B01 local App282／Host123／Python131／contracts10及Debug/instrumentation gates通過；獨立source批准僅供有限CI。run38825146067 attempt1在SDK NDK archive準備失敗，未跑測試；同SHA/設定/pin唯一重跑attempt2 App4PASS1firstVisibilityFAIL，Host/B01未執行；185source與完整protocol／五真failure dumps已核。show前focus/IC具備、timeout後remote method/session null；根因UNRESOLVED，不沿用舊early-show、不再retry。不得把compile或job綠燈算runtime。
+
+B02/B03 native context與內部reset oracle不足、C nativelearning、C04真nullIC、D17 callbackfalse/oneway契約詳[R2.1ledger](testing/R2_1_ACCEPTANCE_GAP_LEDGER.md)／[platform](testing/R2_1_ANDROID_PLATFORM_CONSTRAINTS.md)／[observer ADR](testing/R2_1_NATIVE_OBSERVABILITY_ADR.md)。新observer需另批准，未降scope、未去skip。Physical NOT_TESTED、productionNOT_READY、M4 NOT_VALIDATED／AIE-S2 NOT_STARTED；下一入口[R2.1handoff](testing/R2_1_FINAL_HANDOFF.md)。

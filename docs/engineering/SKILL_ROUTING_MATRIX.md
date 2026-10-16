@@ -194,3 +194,9 @@ R1 finishing-a-development-branch已loaded/USED_SCOPED：用户已明确normal P
 本輪TDD：old2.3真emulator stale-map lookup RED → same test2.4 GREEN；真bootstrap guard RED/GREEN。官方review模型harness不可用、OCR單次401，不宣稱APPROVE；可用獨立reviewers核對source/raw graphs/archives。詳細結果見[依賴修復](../testing/R2_UIAUTOMATOR_DEPENDENCY_REPAIR.md)與[R2審查](../testing/R2_INDEPENDENT_REVIEW.md)。
 
 2026-10-15續作：同一R2路由用於debug focus8測、raw dump5測、183source／5+33protocol與逐案審查。新source沒有重啟產品設計技能。完整runtime reviewer已核原XML／Git object與source；CI reviewer另因額度中斷只有partial，不列APPROVE。OCR仍沿用本輪單次401，不重試未變認證。實際最後裁定／差異與限制見R2_FINAL_HANDOFF及R2_INDEPENDENT_REVIEW。
+
+## R2.1（2026-10-16）
+
+入口using-superpowers6.4.2；實際載入17份相關skill的provider/path/SHA256/phase/status/result保存external `20-skill-routing.json`，不是把全部catalog或全部Addy24宣稱執行。USED：deep-understanding、systematic-debugging、writing-plans、TDD、using-git-worktrees、executing-plans、code-work、code-verification、code-review-excellence、requesting/receiving-code-review、verification-before-completion、Addy source-driven／observability／quality；成果為[R2.1 ledger](../testing/R2_1_ACCEPTANCE_GAP_LEDGER.md)、有效RED/GREEN、17/16 gates與獨立raw evidence reviews。
+
+official-code-review為BLOCKED／未執行完整指定模型pipeline，PR12仍Draft。OCR binary1.13.0的單次health被automatic approval review拒絕，未送出；狀態BLOCKED_BY_APPROVAL_REVIEW，歷史401非本輪provider結果。不呼叫無關visual/marketing技能，不改model/globalconfig/AutoPilot。沒有LSP/init/compact工具時不虛構執行，以canonical anchor/Markdown、compiler/static及externalraw收據續作。
