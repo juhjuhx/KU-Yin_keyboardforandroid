@@ -13,14 +13,14 @@ on:
         description: 'Finite diagnostic scope; never full acceptance'
         type: choice
         default: sequence
-        options: [sequence, identity, geometry]
+        options: [sequence, identity, geometry, binding]
 
 permissions:
   contents: read
 
 jobs:
   probe:
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')
+    if: (github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')) && inputs.host_scope != 'binding'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -87,4 +87,106 @@ jobs:
             build/r2-runtime-evidence
             app/build/outputs/androidTest-results/connected
             acceptance-host/build/outputs/androidTest-results/connected
+          if-no-files-found: error
+
+  binding-isolation:
+    if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'binding'
+    runs-on: ubuntu-latest
+    # Two fresh sequential emulators plus the existing ~30-minute full Host suite.
+    # No individual visibility/selector timeout is changed.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools ndk;28.2.13676358 cmake;3.22.1
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Verify unchanged Android sources and build shared four APKs once
+        run: |
+          git diff --exit-code 2b8e8e4efff73741319fb00daf4cb4e58101e4e8 HEAD -- app/src acceptance-host/src app/build.gradle.kts acceptance-host/build.gradle.kts gradle scripts/bootstrap_native_deps.sh
+          python3 -m unittest scripts.tests.test_r2_ci_protocol -v
+          bash scripts/bootstrap_native_deps.sh
+          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --stacktrace
+          mkdir -p build/r22-shared
+          sha256sum app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk > build/r22-shared/SHA256SUMS
+          git rev-parse HEAD > build/r22-shared/source-sha.txt
+          python3 - <<'PYCODE'
+          import hashlib, json, pathlib, subprocess
+          paths = subprocess.check_output(['git', 'ls-files'], text=True).splitlines()
+          source = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+                    'baseline': '2b8e8e4efff73741319fb00daf4cb4e58101e4e8',
+                    'scope': 'CONTROLLED_CI_BINDING_EXPERIMENT_NOT_ACCEPTANCE',
+                    'files': {name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()
+                              for name in paths if name.startswith(('app/src/', 'acceptance-host/src/', 'scripts/', '.github/workflows/'))}}
+          pathlib.Path('build/r22-shared/source-manifest.json').write_text(json.dumps(source, indent=2))
+          PYCODE
+          cp scripts/r2_current_instrumentation_manifest.json build/r22-shared/
+      - name: A original install-select-connected App sequence
+        id: legacy
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          KUYIN_R2_OBSERVER: 'true'
+          KUYIN_R22_BINDING_ARM: legacy
+          KUYIN_R22_APP_ONLY: 'true'
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r22_legacy
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: bash scripts/runtime_smoke.sh
+      - name: Preserve A and verify shared APK bytes before B
+        id: shared_apk_check
+        if: always() && steps.legacy.outcome != 'skipped'
+        run: |
+          sha256sum --check build/r22-shared/SHA256SUMS
+          mkdir -p build/r22-legacy
+          if [ -d app/build/outputs/androidTest-results/connected ]; then cp -R app/build/outputs/androidTest-results/connected build/r22-legacy/app-connected-results; fi
+      - name: B install target and test before IME selection then direct instrumentation
+        id: preinstalled
+        if: always() && steps.shared_apk_check.outcome == 'success'
+        continue-on-error: true
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          KUYIN_R2_OBSERVER: 'true'
+          KUYIN_R22_BINDING_ARM: preinstalled
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r22_preinstalled
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: bash scripts/runtime_smoke.sh
+      - name: Preserve outcomes without converting a failing arm into PASS
+        if: always()
+        env:
+          LEGACY_OUTCOME: ${{ steps.legacy.outcome }}
+          PREINSTALLED_OUTCOME: ${{ steps.preinstalled.outcome }}
+        run: |
+          mkdir -p build/r22-shared
+          printf 'A=%s\nB=%s\n' "$LEGACY_OUTCOME" "$PREINSTALLED_OUTCOME" > build/r22-shared/arm-outcomes.txt
+          sha256sum --check build/r22-shared/SHA256SUMS
+          test "$LEGACY_OUTCOME" = success && test "$PREINSTALLED_OUTCOME" = success
+      - name: Preserve all A and B raw evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r22-binding-isolation
+          path: |
+            build/r22-legacy
+            build/r22-preinstalled
+            build/r22-shared
           if-no-files-found: error

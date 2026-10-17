@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 COMPONENT = "io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService"
 LATIN = "com.android.inputmethod.latin/.LatinIME"
 FAKE_TOOL = r'''#!/usr/bin/env python3
-import json, os, pathlib, sys
+import json, os, pathlib, sys, hashlib
 args = sys.argv[1:]
 name = pathlib.Path(sys.argv[0]).name
 root = pathlib.Path(os.environ["FAKE_ROOT"])
@@ -34,6 +34,8 @@ if name == "adb":
         switch = os.environ.get("FAKE_USER_SWITCH")
         changed = ((root / "app-ran").exists() and switch == "after_app") or ((root / "install-ran").exists() and switch == "during_install")
         print("5" if changed else "0")
+    elif "dumpsys" in args and "input_method" in args and "--proto" in args:
+        sys.stdout.buffer.write(b'\x1a\x05\x0a\x03ime')
     elif "dumpsys" in args and (root / "app-ran").exists():
         sys.exit(int(os.environ.get("FAKE_DUMP_EXIT", "0")))
     elif args == ["shell", "test", "-d", "/data/local/tmp/kuyin-r2"]:
@@ -44,6 +46,34 @@ if name == "adb":
         print("ABSENT")
     elif args == ["shell", "ime", "list", "-s", "-a"] or args == ["shell", "ime", "list", "-s"]:
         print(component)
+    elif args == ["shell", "pm", "path", "io.github.juhjuhx.kuyin"]:
+        if not (root / "install-ran").exists():
+            sys.exit(1)
+        print("package:/data/app/synthetic/kuyin/base.apk")
+    elif args[:2] == ["shell", "sha256sum"]:
+        print(os.environ.get("FAKE_INSTALLED_APK_HASH", hashlib.sha256((root/"app/build/outputs/apk/debug/app-debug.apk").read_bytes()).hexdigest()), args[2])
+    elif args and args[0] == "install":
+        (root / "install-ran").write_text("executed")
+        print("Success")
+    elif args[:3] == ["shell", "am", "instrument"]:
+        manifest = json.loads((root / "scripts/r2_current_instrumentation_manifest.json").read_text())
+        layer = 'host' if '.acceptancehost.test/' in args[-1] else 'app'
+        tests = manifest[layer]['tests']
+        if '-e' in args and 'class' in args:
+            wanted = args[args.index('class') + 1]
+            tests = [test for test in tests if test['identity'] == wanted]
+        for index, test in enumerate(tests, 1):
+            cls, method = test["identity"].split("#")
+            for code in [1, -2 if os.environ.get("FAKE_APP_EXIT", "0") != "0" and index == 1 else 0]:
+                print(f"INSTRUMENTATION_STATUS: class={cls}\nINSTRUMENTATION_STATUS: test={method}\nINSTRUMENTATION_STATUS: numtests={len(tests)}\nINSTRUMENTATION_STATUS: current={index}\nINSTRUMENTATION_STATUS_CODE: {code}")
+                if code == 1:
+                    for case in test['cases']:
+                        event = dict(case, result='PASS', scope='SYNTHETIC_PROTOCOL_UNIT_ONLY', evidence={'synthetic': True})
+                        print('INSTRUMENTATION_STATUS: stream=P1_ACCEPTANCE_CASE=' + json.dumps(event))
+                        print('INSTRUMENTATION_STATUS_CODE: 2')
+        print("INSTRUMENTATION_RESULT: stream=" + ("FAILURES!!!" if os.environ.get("FAKE_APP_EXIT", "0") != "0" else f"OK ({len(tests)} tests)"))
+        print("INSTRUMENTATION_CODE: -1")
+        (root / "app-ran").write_text("executed")
     elif args[:3] == ["shell", "ime", "set"]:
         state.write_text(args[3])
     elif args == ["shell", "settings", "get", "secure", "default_input_method"]:
@@ -61,6 +91,8 @@ elif name == "gradlew":
         if os.environ.get("FAKE_TERMINAL_WRITE_FAILURE") == "1":
             (root / "build/r2-runtime-evidence/terminal.txt").mkdir()
         state.write_text("com.android.inputmethod.latin/.LatinIME")
+        if os.environ.get("FAKE_PACKAGE_REMOVED") == "1":
+            (root / "install-ran").unlink()
         sys.exit(int(os.environ.get("FAKE_APP_EXIT", "0")))
     if ":acceptance-host:connectedDebugAndroidTest" in args:
         if state.read_text() != component:
@@ -79,15 +111,114 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
             (root / "app/build.gradle.kts").write_text('applicationId = "io.github.juhjuhx.kuyin"\n')
             (root / "scripts/bootstrap_native_deps.sh").write_text("#!/bin/sh\nexit 0\n")
             (root / "scripts/runtime_smoke.sh").write_bytes((ROOT / "scripts/runtime_smoke.sh").read_bytes())
+            for filename in ["r2_ci_protocol.py", "p1_acceptance_device.py", "r2_current_instrumentation_manifest.json"]:
+                (root / "scripts" / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
             for target in (root / "bin/adb", root / "gradlew"):
                 target.write_text(FAKE_TOOL)
                 target.chmod(0o755)
+            if options.get("KUYIN_R22_BINDING_ARM"):
+                import zipfile
+                apk = root / "app/build/outputs/apk/debug/app-debug.apk"
+                apk.parent.mkdir(parents=True)
+                with zipfile.ZipFile(apk, 'w') as archive:
+                    archive.writestr('assets/synthetic', 'fixture only')
+                signer = root / "fake-sdk/build-tools/0/apksigner"
+                signer.parent.mkdir(parents=True)
+                signer.write_text('#!/bin/sh\nexit 0\n')
+                signer.chmod(0o755)
+                options['ANDROID_HOME'] = str(root / 'fake-sdk')
             env = dict(os.environ, CI="true", FAKE_ROOT=tmp,
                        PATH=str(root / "bin") + os.pathsep + os.environ["PATH"], **options)
             proc = subprocess.run(["bash", "scripts/runtime_smoke.sh"], cwd=root,
-                                  env=env, capture_output=True, text=True, timeout=10)
+                                  # Binding snapshots spawn many isolated fake Python/SDK tools; this is
+                                  # only their host-process watchdog, never an Android UI timeout.
+                                  env=env, capture_output=True, text=True,
+                                  timeout=30 if options.get("KUYIN_R22_BINDING_ARM") else 10)
+            proc.evidence = {str(path.relative_to(root)): path.read_text() for path in (root / "build").rglob("*-protocol.json")}
+            proc.checkpoints = [path.name for path in (root / 'build').rglob('*-time.txt')]
             calls = root / "calls.jsonl"
             return proc, [json.loads(line) for line in calls.read_text().splitlines()] if calls.exists() else []
+
+    def test_preinstalled_arm_installs_both_apks_before_select_and_never_gradle_connected(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", KUYIN_R22_APP_ONLY="true")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        direct = [i for i, (name, args) in enumerate(calls) if name == "adb" and "instrument" in args]
+        self.assertEqual(1, len(direct), "B must execute the exact App suite directly, after preinstallation")
+        first_select = next(i for i, (name, args) in enumerate(calls) if name == "adb" and "set" in args)
+        installs = [i for i, (name, args) in enumerate(calls) if name == "adb" and "install" in args]
+        self.assertEqual(2, len(installs))
+        self.assertTrue(all(i < first_select < direct[0] for i in installs))
+        self.assertFalse(any(name == "gradlew" and any("connectedDebugAndroidTest" in arg or ":installDebug" in arg for arg in args)
+                             for name, args in calls))
+
+    def test_fresh_device_package_absence_is_observed_without_aborting_install(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", KUYIN_R22_APP_ONLY="true", FAKE_REAL_PACKAGE_PATH="1")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        self.assertEqual(1, sum(name == "adb" and "instrument" in args for name, args in calls))
+
+    def test_direct_failure_is_classified_even_if_secondary_dump_fails(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", FAKE_APP_EXIT="7", FAKE_DUMP_EXIT="13")
+        self.assertNotEqual(0, proc.returncode)
+        evidence = proc.evidence.get("build/r22-preinstalled/app-protocol.json")
+        self.assertIsNotNone(evidence, "Primary JUnit failure must be durably parsed before secondary dumps")
+        result = json.loads(evidence)
+        self.assertEqual('FAIL', result['result'])
+        self.assertEqual(1, result['failed_tests'])
+
+    def test_legacy_final_package_absence_does_not_falsify_passing_junit(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="legacy", KUYIN_R22_APP_ONLY="true", FAKE_PACKAGE_REMOVED="1")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+
+    def test_installed_target_hash_mismatch_blocks_before_ime_selection(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", FAKE_INSTALLED_APK_HASH="0" * 64)
+        self.assertNotEqual(0, proc.returncode)
+        self.assertFalse(any(name == "adb" and ("set" in args or "enable" in args or "instrument" in args) for name, args in calls))
+
+    def test_app_only_control_rejects_user_switch_after_app(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="legacy", KUYIN_R22_APP_ONLY="true", FAKE_USER_SWITCH="after_app")
+        self.assertNotEqual(0, proc.returncode)
+        self.assertFalse(any(name == "gradlew" and ":acceptance-host:connectedDebugAndroidTest" in args for name, args in calls))
+        app = next(i for i, (name, args) in enumerate(calls) if name == 'gradlew' and ':app:connectedDebugAndroidTest' in args)
+        self.assertFalse(any(name == 'adb' and 'dumpsys' in args and ('input_method' in args or 'window' in args or 'service' in args)
+                             for name, args in calls[app+1:]), 'Wrong-user EXIT must not invoke client/global dumps')
+
+    def test_app_and_host_preselection_checkpoints_are_both_retained(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        self.assertIn('app-before-select-time.txt', proc.checkpoints)
+        self.assertIn('host-before-select-time.txt', proc.checkpoints)
+        self.assertEqual(3, sum(name == 'adb' and 'instrument' in args for name, args in calls))
+
+    def test_invalid_binding_arm_blocks_even_device_inventory(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="unsafe")
+        self.assertEqual(2, proc.returncode)
+        self.assertEqual([], calls)
+
+    def test_preinstalled_app_failure_preserves_failure_and_never_installs_host(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", FAKE_APP_EXIT="7")
+        self.assertEqual(2, proc.returncode, proc.stderr)
+        self.assertEqual(1, sum(name == "adb" and "instrument" in args for name, args in calls))
+        self.assertFalse(any("acceptance-host" in str(args) for name, args in calls if name == "adb" and "install" in args))
+
+    def test_preinstalled_path_refuses_physical_device(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", FAKE_QEMU="0")
+        self.assertEqual(2, proc.returncode)
+        self.assertFalse(any(name == "gradlew" or "install" in args or "instrument" in args or "set" in args for name, args in calls))
+
+    def test_binding_critical_window_never_full_dumps_client_input_method(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="legacy", KUYIN_R22_APP_ONLY="true")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        app = next(i for i, (name, args) in enumerate(calls) if name == "gradlew" and ":app:connectedDebugAndroidTest" in args)
+        full_dumps = [args for name, args in calls[:app] if name == "adb" and "dumpsys" in args and "input_method" in args and "--proto" not in args]
+        self.assertEqual([], full_dumps, "Full IMMS text dump can call client IMM.isActive/checkFocus")
+
+    def test_binding_diagnostics_include_package_process_and_imms_events(self):
+        proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="legacy", KUYIN_R22_APP_ONLY="true")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        event_calls = [args for name, args in calls if name == "adb" and "logcat" in args and "events" in args]
+        self.assertTrue(event_calls, "Package/process events must cover installation and instrumentation boundaries")
+        self.assertTrue(any("ActivityManager" in args and "InputMethodManagerService" in args and "InputMethodBindingController" in args
+                            for name, args in calls if name == "adb" and "logcat" in args))
 
     def test_reselects_product_between_both_complete_suites(self):
         proc, calls = self.run_fixture()
