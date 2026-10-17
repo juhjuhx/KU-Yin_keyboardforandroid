@@ -37,10 +37,12 @@ Interfaces: assess_h1(window, hierarchy, case_id)->dict；H1讀取H0同device/bo
 
 ### Task 3: 驗證／獨立review／一次CI／交接
 
-- [ ] 全Python、10contracts、docs/shell/YAML/JSON、protected source/archives/worktrees驗證。
-- [ ] fresh-context reviewer讀actualdiff/RED/raw與環境對照；重大finding修正有RED/GREEN。
-- [ ] local atomic commits／正常測試分支push，一次受控CI。H0/H1不通則停止，H2 NOT_EXECUTED；不盲retry。
-- [ ] 若健康才讓同次source/四APK受控A/B，分開H0/H1/H2與Host結論。
+- [x] 全Python、10contracts、docs/shell/YAML/JSON、protected source/archives/worktrees驗證。
+- [x] fresh-context reviewer讀actualdiff/RED/raw與環境對照；重大finding修正有RED/GREEN。
+- [x] local atomic commits／正常測試分支push，一次受控CI。H0/H1不通則停止，H2 NOT_EXECUTED；不盲retry。
+- [x] 若健康才讓同次source/四APK受控A/B，分開H0/H1/H2與Host結論。
 - [ ] canonical anchor／最終收據／handoff，無自動merge或release。
 
 實作判定：使用既有project plan與外部RUNNING_CONTEXT_ANCHOR保存狀態；沒有執行skill helper／私有workspace刪除。H1改用既有exported host，避免繞過debug Activity exported=false；代價是binding對照兩arm都新增相同host前置，須把時序confound明記，不能單因果宣稱。
+
+最終：CI39047679642 H0 INCONCLUSIVE，故H1/H2 NOT_EXECUTED，B skipped。Runtime review NEEDS_REVISION（OPEN P2 frozen guard），依使用者STOP只記錄，不修碼或重跑；source-only批准不推廣。Local181/CI181與10contracts PASS，buildtasks完成；JVM個別XML未封存count UNKNOWN。後續只有docs／保存收據收束，不開始下一slice。

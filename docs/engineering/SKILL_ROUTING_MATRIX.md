@@ -221,3 +221,9 @@ canonical using-superpowers目前是Personal Tool Master V3；不以舊plugin6.4
 | code-verification | local `/Users/huang/.codex/plugins/cache/openai-curated-remote/codex-engineering-guardrails/1.1.1/skills/code-verification/SKILL.md` | `4aab85003f547ac6e1ee12e3ceb3f89d5744af56f3b22a3643e545007474fc87` | R2.2 source/protocol/evidence verification | USED／current33與frozen26、fullacceptance與protocol、primarycause與dump狀態分層 |
 
 OCR本輪NOT_RUN，沒有重複既有被拒的provider probe；R2.1為BLOCKED_BY_APPROVAL_REVIEW，歷史401不能冒稱本輪fresh結果。official-code-review完整指定模型pipeline本輪未執行，不宣稱取得其APPROVE。獨立六檔source批准是PASS_FOR_BOUNDED_EXPERIMENT；runtime／根因／full acceptance需另核實際CI raw。無LSP/init/compact原生API，以source/compiler/static checks與external短anchor保存續作；不更改global agent、AutoPilot或model設定。
+
+## R2.3 Emulator health（2026-10-17起）
+
+using-superpowers→systematic-debugging→writing-plans／using-git-worktrees→test-driven-development／executing-plans→requesting-code-review／code-verification→verification-before-completion。實際路徑與SHA256存本輪外部01-skill-routing.json；source、環境兩份獨立review分開。結果見testing/R2_3_VALIDATION_MATRIX.md；不載無關UX技能。沒有LSP/init/compact API，採持久anchor，不宣稱已操作不存在的工具。
+
+R2.3結果：local/CI181 Python與10contracts PASS，source初審限定APPROVE；唯一CI39047679642 H0 INCONCLUSIVE，H1/H2未執行。fresh runtime獨立review NEEDS_REVISION（P2 frozen缺口），遵STOP只docs收束、不重跑，不把skills／unit成功冒充runtime。

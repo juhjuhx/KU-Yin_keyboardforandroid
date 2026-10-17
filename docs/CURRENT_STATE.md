@@ -44,6 +44,15 @@ B02/B03 native context與內部reset oracle不足、C nativelearning、C04真nul
 
 本輪local151 Python PASS／contracts10 PASS與六source固定hash已核。唯一paired run39005467151 exact3115002最終FAIL：A/B均exact5＝4PASS／1FAIL／0SKIP，原kt81first visibility斷言；Host33／matrix32與B01 NOT_TESTED。237source hashes一致，shared四APKguard及兩arm全部phase metadata相符；沒重跑。
 
-兩組在KU-Yin安裝前已可見SystemUI keyguard service ANR，失敗時windowfocus=false／IC0、after-focus show未觸發。舊R2.1則focus/IC1/show已具備，故本輪分類EMULATOR_ENVIRONMENT，不能解除原remote root。C不啟動，先需健康emulator前提調查。新runtime獨立review因quota未完成，不能宣稱APPROVE。
+兩組在KU-Yin安裝前已有SystemUI keyguard service ANR事件；A當下視窗可見、B當下隱藏，到before-app／失敗才可見（R2.3依raw勘誤）。失敗時windowfocus=false／IC0、after-focus show未觸發。舊R2.1則focus/IC1/show已具備，故本輪分類EMULATOR_ENVIRONMENT，不能解除原remote root。C不啟動，先需健康emulator前提調查。新runtime獨立review因quota未完成，不能宣稱APPROVE。
 
 原20工區／3指定凍結資產保持。main63c9e4a、PR12d6bf2Draft、PR10ea5HOLD、release不變；無product/JNI/data變動、實機／merge／release／newobserver／S2／M4。續作：[R2.2最終交接](testing/R2_2_FINAL_HANDOFF.md)、[逐界線裁定](testing/R2_2_RUNTIME_FINDINGS.md)、[驗證矩陣](testing/R2_2_VALIDATION_MATRIX.md)。
+
+
+## R2.3 emulator health（2026-10-18）
+
+隔離fix/r2-3-emulator-health，base1ef5ba4、runtime source5ef8a979850d1588d6be68aca103e12cb51f4a6d。新增H0唯讀三態／H1既有真editor gate、補binding job KVM權限；全部Android sources／JNI／pins／signing／user資料不變。local181Python、10contracts及獨立限定source APPROVE；CI39047679642同source181Python／contracts／JVMtasks／四APKbuild成功，但job最終FAIL。
+
+唯一fresh AVD H0=INCONCLUSIVE／exit3：第一次currentFocus=null，final取樣Launcher恢復；沒有觀測到SystemUI ANR，last-anr明示none。H0沒有用後次正常狀態覆寫初次原因，任何KU/hostinstall、H1／H2／App5／Host33／matrix32／B01均NOT_EXECUTED，B skipped。真KVMusable、boot38.428s仍不等於healthPASS，原ANR及remote根因未解。R2.2 B安裝前ANR window隱藏的勘誤已校canonical入口；原raw／舊工區保留。
+
+source239/239、artifact103檔及四APK workspace hashguards核對；本輪APK signer／JVM逐test XML未封存，不推測count/identity。21原工區與公開APK/v2/v3三指定資產保持。main63c9e4a、PR12Draft、PR10HOLD、release不變；實機NOT_TESTED／productionNOT_READY／S2NOT_STARTED／M4NOT_VALIDATED。入口[R2.3交接](testing/R2_3_FINAL_HANDOFF.md)與[驗證矩陣](testing/R2_3_VALIDATION_MATRIX.md)。runtime獨立review overall NEEDS_REVISION，另有OPEN P2：probe未明確拒displayFrozen=true，離線反例可得HEALTHY，本run沒有假PASS。下一最小工作是frozen guard與H0焦點readiness的有界唯讀觀測；本輪遵STOP，不改碼或再嘗試binding。
