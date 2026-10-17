@@ -37,3 +37,13 @@ main63c9e4ab8ad7e277013acb5d7cce99228ec1f827、PR10remote ea5c2b5 HOLD不變；D
 新B01 local App282／Host123／Python131／contracts10及Debug/instrumentation gates通過；獨立source批准僅供有限CI。run38825146067 attempt1在SDK NDK archive準備失敗，未跑測試；同SHA/設定/pin唯一重跑attempt2 App4PASS1firstVisibilityFAIL，Host/B01未執行；185source與完整protocol／五真failure dumps已核。show前focus/IC具備、timeout後remote method/session null；根因UNRESOLVED，不沿用舊early-show、不再retry。不得把compile或job綠燈算runtime。
 
 B02/B03 native context與內部reset oracle不足、C nativelearning、C04真nullIC、D17 callbackfalse/oneway契約詳[R2.1ledger](testing/R2_1_ACCEPTANCE_GAP_LEDGER.md)／[platform](testing/R2_1_ANDROID_PLATFORM_CONSTRAINTS.md)／[observer ADR](testing/R2_1_NATIVE_OBSERVABILITY_ADR.md)。新observer需另批准，未降scope、未去skip。Physical NOT_TESTED、productionNOT_READY、M4 NOT_VALIDATED／AIE-S2 NOT_STARTED；下一入口[R2.1handoff](testing/R2_1_FINAL_HANDOFF.md)。
+
+## R2.2 IME binding isolation（2026-10-17）
+
+隔離 `fix/r2-2-ime-binding`，source checkpoint `3115002da5fbb5e0344e6bb3b2068dc9c145801b`、base2b8e8e4；只改scripts/current協定manifest／fake tests／manual CI／文件，全部Android source與產品不變。source safety與current5/33/32 ownership限定審查已完成；原remote根因仍UNRESOLVED，未把採證改進當產品fix。
+
+本輪local151 Python PASS／contracts10 PASS與六source固定hash已核。唯一paired run39005467151 exact3115002最終FAIL：A/B均exact5＝4PASS／1FAIL／0SKIP，原kt81first visibility斷言；Host33／matrix32與B01 NOT_TESTED。237source hashes一致，shared四APKguard及兩arm全部phase metadata相符；沒重跑。
+
+兩組在KU-Yin安裝前已可見SystemUI keyguard service ANR，失敗時windowfocus=false／IC0、after-focus show未觸發。舊R2.1則focus/IC1/show已具備，故本輪分類EMULATOR_ENVIRONMENT，不能解除原remote root。C不啟動，先需健康emulator前提調查。新runtime獨立review因quota未完成，不能宣稱APPROVE。
+
+原20工區／3指定凍結資產保持。main63c9e4a、PR12d6bf2Draft、PR10ea5HOLD、release不變；無product/JNI/data變動、實機／merge／release／newobserver／S2／M4。續作：[R2.2最終交接](testing/R2_2_FINAL_HANDOFF.md)、[逐界線裁定](testing/R2_2_RUNTIME_FINDINGS.md)、[驗證矩陣](testing/R2_2_VALIDATION_MATRIX.md)。

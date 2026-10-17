@@ -1,13 +1,17 @@
 # KU-Yin 續作短入口
 
-2026-10-16，R2.1 bounded acceptance evidence closure。先讀[CURRENT_STATE](../CURRENT_STATE.md)、[ARCHITECTURE](../ARCHITECTURE.md)、[R2.1交接](../testing/R2_1_FINAL_HANDOFF.md)；原R1/R2 forensic不覆寫。
+2026-10-17，當前R2.2 IME remote-binding因果隔離。先讀[CURRENT_STATE](../CURRENT_STATE.md)、[ARCHITECTURE](../ARCHITECTURE.md)、[R2.2交接](../testing/R2_2_FINAL_HANDOFF.md)與[逐界線裁定](../testing/R2_2_RUNTIME_FINDINGS.md)，不重讀整批歷史。
 
-- main63c9e4ab8ad7e277013acb5d7cce99228ec1f827；PR12d6bf2a68f68fe6ea0bd4bbbf79016a863abb29d1仍Draft，PR10ea5c2b5b3404508c8ab6b0a69642b3a54a8cb565仍HOLD。PR10是PR12 ancestor0/14，patch已包含，不重複合併。release v0.2.0-aie.1/source2ce6810不變。
-- R2最終d6 normalCI38761725033 actualsynthetic3b5e0845c0c83d145a26aa18803ee9e0dc98a04e/tree同d6：App5PASS，Host33＝24PASS0FAIL9SKIP；matrix32＝23PASS9INCONCLUSIVE＋infra1PASS。原XML/lifecycle/protocol/owner已獨立核，不能從console41/33計數。CI blocking/App272PASS10nativeSKIP/Host107PASS；KSP既有背景error annotation未隱藏。
-- R2.1工區`.worktrees/r2-1-acceptance-evidence`、branch`test/r2-1-acceptance-evidence`，程式checkpointb1b5bf6b3939fef7e62893d833b0853e0a08ae7d；後續docsHEAD與runtime來源分開。只改Host test/sharedTest/test、既有manual geometry scope/script；App source/Host main/native/signing/data不動。
-- B01保留41鍵/ㄕㄖstrictpreedit/clear，新增P/L/P實際layout/兩width/IMEbounds、固定我candidate恰1commit、rotation零effects；每frame立即驗clip，coverage不足INCONCLUSIVE。local App282含hostJNI10、Host123、Python131、contracts10、四assemble通過。nativeJNI沿用R1hash，新publiccachepin3587ba3。
-- 有限38825146067 attempt1 setup-android解NDK ZipFileunknownarchive失敗，App/Host沒執行；唯一同SHA freshVM retry已通SDK，但App4PASS1firstVisibilityFAIL；Host/B01 NOT_TESTED。185source一致／App完整protocol／五真dump已核；show前focus/IC1，timeout remote-null，根因未定，停止retry/擴張。見R2_1_APP_BINDING_FAILURE，不把source批准當runtime。
-- B02/B03真editor可見契約完成但nativecontext缺口；NativeCase4 wrapper漏內部reset有High證明力問題，不是已確認產品defect。C01/2/3/5需live autoLearn＋provider/epoch；ctx0=false不得當disabled。C04 Hostnull不等於IMEcurrentnull，只有completed彙總/最後node0，policy未證。D17 API33 oneway丟hostboolean，原矩陣/同步研究scope需使用者決定。
-- [九gapledger](../testing/R2_1_ACCEPTANCE_GAP_LEDGER.md)、[native observer ADR](../testing/R2_1_NATIVE_OBSERVABILITY_ADR.md)、[platform constraints](../testing/R2_1_ANDROID_PLATFORM_CONSTRAINTS.md)為本輪精確入口。ADR PROPOSED，不改main/JNI、不讀真字典、不自動降scope。
-- 外部證據`/Users/huang/Desktop/KU-Yin-R2.1-Verification-2026-10-16/`的RUNNING_CONTEXT_ANCHOR.json／最終收據續作，不重讀全部historicaldocs。OCR1.13health被autoapproval拒絕未執行，歷史401非fresh；specified官方reviewpipeline未跑。
-- 不自動merge/publish、AIE-S2 NOT_STARTED／M4 NOT_VALIDATED，physicalNOT_TESTED／productionNOT_READY；當前已授權只完成B01最小切片與九gap裁定。
+- main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR12 `d6bf2a68f68fe6ea0bd4bbbf79016a863abb29d1`仍Draft，PR10 `ea5c2b5b3404508c8ab6b0a69642b3a54a8cb565`仍HOLD。release v0.2.0-aie.1/source2ce6810不變，不merge／release。
+- R2.2工區 `.worktrees/r2-2-ime-binding`、branch `fix/r2-2-ime-binding`、base `2b8e8e4efff73741319fb00daf4cb4e58101e4e8`；source commit `3115002da5fbb5e0344e6bb3b2068dc9c145801b`已正常push，僅六個scripts／tests／workflow檔。全部Android／JNI／pin／appID／signing／schema／frozen runner與manifest不動。產品source39acf96；文件HEAD與runtime source分開。
+- 原firstVisibility失敗run38825146067 attempt2仍有效：App4PASS1FAIL、focus/IC具備、timeout remote/session null，rootUNRESOLVED。normal am instrument也force-stop/restart target；AGP exactworker將target/test送installer，但configuration不是actual replacement proof。
+- 本輪fixed6files Python151PASS／contracts10、有效assertion RED、source/hashguard及獨立PASS_FOR_BOUNDED_EXPERIMENT。僅允許一次A/B；不是root／runtime／fullacceptance／merge批准。原20工區HEAD/status/diff/cached及公開AIEAPK/v2/v3三指定資產exacthash保存。
+- 唯一paired CI [39005467151](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39005467151) exact3115002；shared四APK一次建置，A original install-select-connected App-only，B exact App/AppTest安裝後select/direct instrumentation；B App5全通後才Host33／32case，再原B01。唯一run最終FAIL；A/B均exact5＝4PASS1FAIL0SKIP，原kt81firstvisibility；Host33／matrix32／B01未執行。237source核對及sharedAPKguard成功。不盲retry；C不啟動，因兩組install前已SystemUI ANR。
+- 關鍵時間窗採API33 server-only IMMS proto，fulltext dump會呼叫client checkFocus。proto無remote method/session欄位，缺bool不是false；currentuser0另明讀。primaryprotocol先記，secondarycapture錯誤分開；wronguser拒跨client採證。
+- external `/Users/huang/Desktop/KU-Yin-R2.2-Verification-2026-10-16/`，先讀RUNNING_CONTEXT_ANCHOR.json及latestCI收據。151／static source28、29／30，preservation36；watch33因本機networktimeout失敗，不是CIFAIL，已接回39同run。不得重跑另一workflow冒充此實驗。
+- R2/R2.1歷史見[R2.1交接](../testing/R2_1_FINAL_HANDOFF.md)。B02/B03 native context、C learning observer未批准；C04保留真nullIC，D17 oneway同步false不可造證。新observer／降acceptance scope需另決策。
+- Physical NOT_TESTED／production NOT_READY／M4 NOT_VALIDATED／AIE-S2 NOT_STARTED。OCR本輪NOT_RUN、R2.1 health被approvalreview拒未執行；歷史401非fresh。無LSP/init/compact API，不改AutoPilot/globalconfig。本輪已回收A/B raw及handoff。下一最小任務是健康emulator precondition／SystemUI ANR有限調查；先failclosed環境錯誤，不dismiss／clear／timeout補丁，再續原binding隔離。
+
+- 新raw在install前已有可見SystemUI ANR（keyguard service timeout），failure windowfocusfalse/IC0；與舊R2.1focus/IC1/show前提不同，分類EMULATOR_ENVIRONMENT，原remote根因UNRESOLVED。before-app selectedKU不是bound/session；B仍boundLatinIME。沒有rootfix RED/GREEN。
+- source safety／平台研究／current5/33/32契約md/json均已寫成並核hash，僅各自scope有效。新runtime獨立review因quota未完成，final gate OPEN；不重試相同額度或宣稱runtimeAPPROVE。
+- external40 exactCI metadata、41原252檔artifact、42完整joblog、44-analysis／兩組protocolreparse、45-artifacthashmanifest。A/B皆FAIL／原App重現表象但環境更早阻擋，不合併舊24PASS與本輪結果。最終docsHEAD／remote／保存收據見R2_2_FINAL_RECEIPT.json。
