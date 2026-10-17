@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 COMPONENT = "io.github.juhjuhx.kuyin/com.example.ime.KuYinInputMethodService"
 LATIN = "com.android.inputmethod.latin/.LatinIME"
 FAKE_TOOL = r'''#!/usr/bin/env python3
-import json, os, pathlib, sys, hashlib
+import json, os, pathlib, sys, hashlib, base64
 args = sys.argv[1:]
 name = pathlib.Path(sys.argv[0]).name
 root = pathlib.Path(os.environ["FAKE_ROOT"])
@@ -34,6 +34,38 @@ if name == "adb":
         switch = os.environ.get("FAKE_USER_SWITCH")
         changed = ((root / "app-ran").exists() and switch == "after_app") or ((root / "install-ran").exists() and switch == "during_install")
         print("5" if changed else "0")
+    elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "getprop", "sys.boot_completed"]:
+        print("1")
+    elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "getprop", "init.svc.bootanim"]:
+        print("stopped")
+    elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "cat", "/proc/sys/kernel/random/boot_id"]:
+        print("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+    elif os.environ.get("FAKE_R23") == "1" and args[:2] == ["shell", "getprop"]:
+        print("synthetic")
+    elif os.environ.get("FAKE_R23") == "1" and "screencap" in args:
+        sys.stdout.buffer.write(base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII='))
+    elif os.environ.get("FAKE_R23") == "1" and "uiautomator" in args:
+        pkg = 'io.github.juhjuhx.kuyin.acceptancehost'
+        ic = 'false' if os.environ.get('FAKE_NULL_IC') == '1' else 'true'
+        print(f'<hierarchy><node resource-id="{pkg}:id/editor" focused="true"/><node resource-id="{pkg}:id/case_id" text="R23-H1"/><node resource-id="{pkg}:id/input_connection_present" text="{ic}"/></hierarchy>')
+    elif os.environ.get("FAKE_R23") == "1" and args[:2] == ["shell", "pidof"]:
+        print("22")
+    elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "pm", "path", "android"]:
+        print("package:/system/framework/framework-res.apk")
+    elif os.environ.get("FAKE_R23") == "1" and "dumpsys" in args and "window" in args:
+        if 'displays' in args:
+            print("WINDOW MANAGER DISPLAY CONTENTS\n mCurrentFocus=Window{abc u0 io.github.juhjuhx.kuyin.acceptancehost/.AcceptanceEditorActivity}")
+        else:
+            print("WINDOW MANAGER WINDOWS (dumpsys window windows)")
+            print("  Window #0 Window{abc u0 io.github.juhjuhx.kuyin.acceptancehost/.AcceptanceEditorActivity}:\n    isVisible=true\n  mSystemBooted=true mDisplayEnabled=true")
+            if os.environ.get("FAKE_ANR") == "1":
+                print("  Window #1 Window{def u0 Application Not Responding: com.android.systemui}:\n    mPolicyVisibility=true isOnScreen=true\n    isVisible=true")
+    elif os.environ.get("FAKE_R23") == "1" and "lastanr" in args:
+        print("ACTIVITY MANAGER LAST ANR\n <no ANR has occurred since boot>")
+    elif os.environ.get("FAKE_R23") == "1" and "dumpsys" in args and "activity" in args:
+        print("ACTIVITY MANAGER ACTIVITIES (dumpsys activity activities)\n  RootTask #1")
+    elif os.environ.get("FAKE_R23") == "1" and "dumpsys" in args and "input_method" in args and "--proto" in args:
+        sys.stdout.buffer.write(b'\x1a\x08\x0a\x03ime\x80\x01\x01')
     elif "dumpsys" in args and "input_method" in args and "--proto" in args:
         sys.stdout.buffer.write(b'\x1a\x05\x0a\x03ime')
     elif "dumpsys" in args and (root / "app-ran").exists():
@@ -53,7 +85,7 @@ if name == "adb":
     elif args[:2] == ["shell", "sha256sum"]:
         print(os.environ.get("FAKE_INSTALLED_APK_HASH", hashlib.sha256((root/"app/build/outputs/apk/debug/app-debug.apk").read_bytes()).hexdigest()), args[2])
     elif args and args[0] == "install":
-        (root / "install-ran").write_text("executed")
+        if 'acceptance-host-debug.apk' not in args[-1]: (root / "install-ran").write_text("executed")
         print("Success")
     elif args[:3] == ["shell", "am", "instrument"]:
         manifest = json.loads((root / "scripts/r2_current_instrumentation_manifest.json").read_text())
@@ -111,7 +143,7 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
             (root / "app/build.gradle.kts").write_text('applicationId = "io.github.juhjuhx.kuyin"\n')
             (root / "scripts/bootstrap_native_deps.sh").write_text("#!/bin/sh\nexit 0\n")
             (root / "scripts/runtime_smoke.sh").write_bytes((ROOT / "scripts/runtime_smoke.sh").read_bytes())
-            for filename in ["r2_ci_protocol.py", "p1_acceptance_device.py", "r2_current_instrumentation_manifest.json"]:
+            for filename in ["r2_ci_protocol.py", "p1_acceptance_device.py", "r2_current_instrumentation_manifest.json"] + (["emulator_health.py"] if (ROOT / "scripts/emulator_health.py").exists() else []):
                 (root / "scripts" / filename).write_bytes((ROOT / "scripts" / filename).read_bytes())
             for target in (root / "bin/adb", root / "gradlew"):
                 target.write_text(FAKE_TOOL)
@@ -133,11 +165,32 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
                                   # Binding snapshots spawn many isolated fake Python/SDK tools; this is
                                   # only their host-process watchdog, never an Android UI timeout.
                                   env=env, capture_output=True, text=True,
-                                  timeout=30 if options.get("KUYIN_R22_BINDING_ARM") else 10)
+                                  timeout=30 if options.get("KUYIN_R22_BINDING_ARM") or options.get('KUYIN_R23_HEALTH') else 10)
             proc.evidence = {str(path.relative_to(root)): path.read_text() for path in (root / "build").rglob("*-protocol.json")}
+            proc.health = {str(path.relative_to(root)): json.loads(path.read_text()) for path in (root / 'build').rglob('result.json')}
             proc.checkpoints = [path.name for path in (root / 'build').rglob('*-time.txt')]
             calls = root / "calls.jsonl"
             return proc, [json.loads(line) for line in calls.read_text().splitlines()] if calls.exists() else []
+
+    def test_r23_blocking_system_anr_stops_before_any_install(self):
+        proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1", FAKE_ANR="1")
+        self.assertNotEqual(0, proc.returncode, "A blocking SystemUI ANR must stop the CI pipeline")
+        self.assertFalse(any(name == "gradlew" or (name == "adb" and any(a in args for a in ["install", "set", "enable", "instrument"])) for name, args in calls), "H0 failure must precede every APK install/IME mutation/test")
+        self.assertEqual('UNHEALTHY', proc.health['build/r2-runtime-evidence/h0/result.json']['status'])
+
+    def test_r23_healthy_editor_precedes_product_install_and_tests(self):
+        proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1")
+        self.assertEqual(0, proc.returncode, proc.stderr)
+        self.assertEqual('HEALTHY', proc.health['build/r2-runtime-evidence/h1/result.json']['status'])
+        editor = next(i for i, (_, args) in enumerate(calls) if 'start' in args)
+        product = next(i for i, (name, args) in enumerate(calls) if name == 'gradlew' and ':app:installDebug' in args)
+        self.assertLess(editor, product)
+
+    def test_r23_null_editor_connection_blocks_product_install_and_binding(self):
+        proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1", FAKE_NULL_IC="1")
+        self.assertNotEqual(0, proc.returncode)
+        self.assertEqual('INCONCLUSIVE', proc.health['build/r2-runtime-evidence/h1/result.json']['status'])
+        self.assertFalse(any(name == 'gradlew' or 'instrument' in args or 'set' in args or 'enable' in args for name, args in calls))
 
     def test_preinstalled_arm_installs_both_apks_before_select_and_never_gradle_connected(self):
         proc, calls = self.run_fixture(KUYIN_R22_BINDING_ARM="preinstalled", KUYIN_R22_APP_ONLY="true")

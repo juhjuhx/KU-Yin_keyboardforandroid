@@ -19,12 +19,30 @@ case "${KUYIN_R22_APP_ONLY:-false}" in
   true|false) ;;
   *) echo "Invalid App-only experiment flag" >&2; exit 2 ;;
 esac
-KUYIN_CI_SERIAL="$(command adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
+case "${KUYIN_R23_HEALTH:-false}" in
+  true|false) ;;
+  *) echo "Invalid TEST_ONLY health flag" >&2; exit 2 ;;
+esac
+ci_read_adb() {
+  if [[ "${KUYIN_R23_HEALTH:-false}" == true ]]; then
+    python3 - "$@" <<'PY'
+import subprocess, sys
+try:
+    raise SystemExit(subprocess.run(['adb', *sys.argv[1:]], timeout=5).returncode)
+except subprocess.TimeoutExpired:
+    print('R2.3 preflight ADB timeout; no health authorization', file=sys.stderr)
+    raise SystemExit(3)
+PY
+  else
+    command adb "$@"
+  fi
+}
+KUYIN_CI_SERIAL="$(ci_read_adb devices -l | awk 'NR > 1 && $2 == "device" {print $1}')"
 if [[ -z "$KUYIN_CI_SERIAL" || "$KUYIN_CI_SERIAL" == *$'\n'* || "$KUYIN_CI_SERIAL" != emulator-* ]]; then
   echo "Expected exactly one CI emulator; refusing ambiguous or physical target" >&2
   exit 2
 fi
-if [[ "$(command adb -s "$KUYIN_CI_SERIAL" shell getprop ro.kernel.qemu | tr -d '\r')" != "1" ]]; then
+if [[ "$(ci_read_adb -s "$KUYIN_CI_SERIAL" shell getprop ro.kernel.qemu | tr -d '\r')" != "1" ]]; then
   echo "Target is not an emulator; refusing device mutation" >&2
   exit 2
 fi
@@ -35,7 +53,7 @@ adb() { command adb -s "$KUYIN_CI_SERIAL" "$@"; }
 # Physical acceptance retains the separate P1-G preflight/restore runner.
 ensure_ci_user() {
   local actual
-  actual="$(adb shell am get-current-user | tr -d '\r')"
+  actual="$(ci_read_adb -s "$KUYIN_CI_SERIAL" shell am get-current-user | tr -d '\r')"
   if [[ "$actual" != "0" ]]; then
     echo "CI Android user changed or is unsupported: $actual; refusing mutation" >&2
     return 2
@@ -46,6 +64,15 @@ ensure_ci_user
 R2_EVIDENCE_DIR="build/r2-runtime-evidence"
 if [[ -n "${KUYIN_R22_BINDING_ARM:-}" ]]; then R2_EVIDENCE_DIR="build/r22-${KUYIN_R22_BINDING_ARM}"; fi
 mkdir -p "$R2_EVIDENCE_DIR"
+# H0 is read-only and precedes every install, bootstrap and IME mutation.
+# A failed or incomplete probe stops here, before the binding EXIT trap exists.
+if [[ "${KUYIN_R23_HEALTH:-false}" == true ]]; then
+  python3 scripts/emulator_health.py h0 --serial "$KUYIN_CI_SERIAL" --out "$R2_EVIDENCE_DIR/h0"
+  ensure_ci_user
+  adb install --user 0 -r -t acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk
+  python3 scripts/emulator_health.py h1 --serial "$KUYIN_CI_SERIAL" --out "$R2_EVIDENCE_DIR/h1" --h0 "$R2_EVIDENCE_DIR/h0/result.json"
+  ensure_ci_user
+fi
 HOST_TEST_ARGS=(--stacktrace)
 if [[ -n "${KUYIN_R22_BINDING_ARM:-}" ]]; then
   echo FINITE_BINDING_EXPERIMENT_NOT_ACCEPTANCE | tee "$R2_EVIDENCE_DIR/scope.txt"

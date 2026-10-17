@@ -107,12 +107,18 @@ jobs:
         with:
           packages: platform-tools ndk;28.2.13676358 cmake;3.22.1
       - uses: gradle/actions/setup-gradle@v6
+      - name: Enable KVM as in the successful R2 runtime job
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
       - name: Verify unchanged Android sources and build shared four APKs once
         run: |
           git diff --exit-code 2b8e8e4efff73741319fb00daf4cb4e58101e4e8 HEAD -- app/src acceptance-host/src app/build.gradle.kts acceptance-host/build.gradle.kts gradle scripts/bootstrap_native_deps.sh
-          python3 -m unittest scripts.tests.test_r2_ci_protocol -v
+          python3 -m unittest discover -s scripts/tests -v
+          for contract in scripts/check_*.py; do python3 "$contract"; done
           bash scripts/bootstrap_native_deps.sh
-          ./gradlew :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --stacktrace
+          ./gradlew :app:testDebugUnitTest :acceptance-host:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --stacktrace
           mkdir -p build/r22-shared
           sha256sum app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk > build/r22-shared/SHA256SUMS
           git rev-parse HEAD > build/r22-shared/source-sha.txt
@@ -134,6 +140,7 @@ jobs:
         env:
           KUYIN_R2_OBSERVER: 'true'
           KUYIN_R22_BINDING_ARM: legacy
+          KUYIN_R23_HEALTH: 'true'
           KUYIN_R22_APP_ONLY: 'true'
         with:
           api-level: 33
@@ -150,6 +157,14 @@ jobs:
         if: always() && steps.legacy.outcome != 'skipped'
         run: |
           sha256sum --check build/r22-shared/SHA256SUMS
+          # A failing binding may still be compared; unhealthy A must never start B.
+          python3 - <<'HEALTH'
+          import json, pathlib
+          for stage in ['h0', 'h1']:
+              value = json.loads(pathlib.Path('build/r22-legacy', stage, 'result.json').read_text())
+              if value['status'] != 'HEALTHY':
+                  raise SystemExit('R2.3 A health refused; B NOT_EXECUTED: ' + stage)
+          HEALTH
           mkdir -p build/r22-legacy
           if [ -d app/build/outputs/androidTest-results/connected ]; then cp -R app/build/outputs/androidTest-results/connected build/r22-legacy/app-connected-results; fi
       - name: B install target and test before IME selection then direct instrumentation
@@ -160,6 +175,7 @@ jobs:
         env:
           KUYIN_R2_OBSERVER: 'true'
           KUYIN_R22_BINDING_ARM: preinstalled
+          KUYIN_R23_HEALTH: 'true'
         with:
           api-level: 33
           target: default

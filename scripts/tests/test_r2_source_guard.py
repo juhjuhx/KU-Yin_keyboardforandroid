@@ -44,6 +44,23 @@ class R2SourceGuardTest(unittest.TestCase):
             return subprocess.run([sys.executable, "-c", program.replace(BASELINE, baseline)],
                                   cwd=root, capture_output=True, text=True, timeout=10)
 
+    def test_binding_comparison_requires_both_a_health_gates(self):
+        import json
+        lines = WORKFLOW.read_text().splitlines()
+        start = lines.index("          python3 - <<'HEALTH'") + 1
+        end = lines.index("          HEALTH", start)
+        program = textwrap.dedent("\n".join(lines[start:end]))
+        for h0, h1, success in [('HEALTHY', 'HEALTHY', True), ('UNHEALTHY', 'HEALTHY', False),
+                                ('HEALTHY', 'INCONCLUSIVE', False), ('MISSING', 'HEALTHY', False)]:
+            with self.subTest(h0=h0, h1=h1), tempfile.TemporaryDirectory() as tmp:
+                for stage, status in [('h0', h0), ('h1', h1)]:
+                    if status == 'MISSING': continue
+                    path = Path(tmp, 'build/r22-legacy', stage, 'result.json')
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(json.dumps({'status': status}))
+                proc = subprocess.run([sys.executable, '-c', program], cwd=tmp, capture_output=True)
+                self.assertEqual(success, proc.returncode == 0)
+
     def test_unchanged_source_is_accepted(self):
         result = self.run_guard()
         self.assertEqual(0, result.returncode, result.stderr)
