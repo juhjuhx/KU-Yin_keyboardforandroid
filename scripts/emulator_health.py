@@ -1,5 +1,6 @@
 """TEST_ONLY disposable-CI emulator health; no dictionary/settings access or repair."""
 import argparse
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -38,13 +39,19 @@ def alert_state(window):
     return unknown, visible
 
 
+def window_unfrozen(window):
+    """Only one explicit false is evidence; absent/unknown/conflicting is not."""
+    return (len(re.findall(r'\bmDisplayFrozen=', window)) == 1 and
+            re.findall(r'\bmDisplayFrozen=([^\s]+)', window) == ['false'])
+
+
 def complete_window(window):
-    """API33 full WMS dump: require windows, their visibility, footer and focus owner."""
+    """API33 WMS observation, not an atomic snapshot or continuous health proof."""
     if 'WINDOW MANAGER WINDOWS' not in window or re.search(SERVICE_ERROR, window, re.I): return False
     focus = re.findall(r'mCurrentFocus=(Window\{[^\n}]+\})', window)
     headers = re.findall(r'(?m)^\s*Window #(\d+) (Window\{[^\n}]+\}):', window)
     blocks = re.split(r'(?m)^\s*Window #\d+ ', window)[1:]
-    return (len(focus) == 1 and bool(headers) and
+    return (window_unfrozen(window) and len(focus) == 1 and bool(headers) and
             [int(index) for index, _ in headers] == list(range(len(headers))) and
             focus[0] in [title for _, title in headers] and
             'mSystemBooted=true mDisplayEnabled=true' in window and
@@ -94,6 +101,7 @@ def assess_h0(captures, serial):
             reasons.append('SERVICE_RESPONSE_UNVERIFIED:' + name)
     if not re.search(r'(?:RootTask|Task\{)', text('activity')): reasons.append('ACTIVITY_TREE_INCOMPLETE')
     if not complete_window(text('window')): reasons.append('WINDOW_INVENTORY_UNVERIFIED')
+    if not window_unfrozen(text('window')): reasons.append('DISPLAY_UNFROZEN_UNVERIFIED')
     for name in ['system_ui', 'system_server']:
         if not re.fullmatch(r'\d+(?:\s+\d+)*', text(name).strip()): reasons.append('PROCESS_UNVERIFIED:' + name)
     try:
@@ -144,13 +152,16 @@ class Capture:
     def run(self, name, args, *, binary=False, timeout=5):
         command = ['adb', '-s', self.serial, *args] if args[0] != 'devices' else ['adb', *args]
         (self.directory / (name + '-command.json')).write_text(json.dumps(command))
-        at = time.monotonic()
+        started_at_utc = datetime.now(timezone.utc).isoformat()
+        at = time.monotonic_ns()
         try:
             proc = subprocess.run(command, capture_output=True, timeout=timeout)
             rec = {'exit': proc.returncode, 'timed_out': False, 'stdout': proc.stdout, 'stderr': proc.stderr}
         except subprocess.TimeoutExpired as exc:
             rec = {'exit': None, 'timed_out': True, 'stdout': exc.stdout or b'', 'stderr': exc.stderr or b''}
-        rec['duration_ms'] = round((time.monotonic() - at) * 1000)
+        end = time.monotonic_ns()
+        rec.update(started_at_utc=started_at_utc, started_monotonic_ns=at,
+                   finished_monotonic_ns=end, duration_ms=round((end - at) / 1_000_000))
         self.records[name] = rec
         for key in ['stdout', 'stderr']:
             (self.directory / (name + '-' + key + ('.bin' if binary and key == 'stdout' else '.txt'))).write_bytes(rec[key])
@@ -183,7 +194,10 @@ class Capture:
         observation = {**windows, 'stdout': windows['stdout'] + '\n' + displays['stdout'],
                        'exit': 0 if windows['exit'] == 0 and displays['exit'] == 0 else 1,
                        'timed_out': windows['timed_out'] or displays['timed_out'],
-                       'derived_from': [name + '-windows', name + '-displays']}
+                       'derived_from': [name + '-windows', name + '-displays'],
+                       'atomic_snapshot': False,
+                       'finished_monotonic_ns': displays['finished_monotonic_ns'],
+                       'duration_ms': round((displays['finished_monotonic_ns'] - windows['started_monotonic_ns']) / 1_000_000)}
         (self.directory / (name + '-observation.txt')).write_text(observation['stdout'])
         self.records[name] = observation
         return observation
@@ -262,6 +276,15 @@ class Capture:
             focus = re.findall(r'mCurrentFocus=Window\{[^\n}]*\s(\S+/\S+)\}', window['stdout'])
             if focus not in [[HOST_COMPONENT], [HOST_PACKAGE + '/' + HOST_PACKAGE + '.AcceptanceEditorActivity']]:
                 reasons.append('FINAL_EDITOR_FOCUS_UNVERIFIED')
+        else:
+            # Two observations only. Never replace an initial failure with recovery.
+            verdict = {**verdict, 'readiness': {
+                'policy': 'INITIAL_AND_FINAL_UNFROZEN_NO_RETRY',
+                'atomic_snapshot': False, 'observations': ['window', 'final-window'],
+                'first_assessment': {'status': verdict['status'], 'reasons': list(verdict['reasons'])},
+                'time_bounds': {name: {key: self.records.get(name, {}).get(key)
+                                     for key in ['started_at_utc', 'started_monotonic_ns', 'finished_monotonic_ns']}
+                                for name in ['window', 'final-window']}}}
         return self.save({**verdict, **result(reasons, blockers)})
 
 

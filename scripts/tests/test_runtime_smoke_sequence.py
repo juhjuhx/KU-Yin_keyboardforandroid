@@ -57,7 +57,7 @@ if name == "adb":
             print("WINDOW MANAGER DISPLAY CONTENTS\n mCurrentFocus=Window{abc u0 io.github.juhjuhx.kuyin.acceptancehost/.AcceptanceEditorActivity}")
         else:
             print("WINDOW MANAGER WINDOWS (dumpsys window windows)")
-            print("  Window #0 Window{abc u0 io.github.juhjuhx.kuyin.acceptancehost/.AcceptanceEditorActivity}:\n    isVisible=true\n  mSystemBooted=true mDisplayEnabled=true")
+            print("  Window #0 Window{abc u0 io.github.juhjuhx.kuyin.acceptancehost/.AcceptanceEditorActivity}:\n    isVisible=true\n  mSystemBooted=true mDisplayEnabled=true\n  mDisplayFrozen=false windows=0")
             if os.environ.get("FAKE_ANR") == "1":
                 print("  Window #1 Window{def u0 Application Not Responding: com.android.systemui}:\n    mPolicyVisibility=true isOnScreen=true\n    isVisible=true")
     elif os.environ.get("FAKE_R23") == "1" and "lastanr" in args:

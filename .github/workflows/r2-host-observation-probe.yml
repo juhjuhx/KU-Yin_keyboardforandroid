@@ -13,14 +13,56 @@ on:
         description: 'Finite diagnostic scope; never full acceptance'
         type: choice
         default: sequence
-        options: [sequence, identity, geometry, binding]
+        options: [sequence, identity, geometry, binding, health]
 
 permissions:
   contents: read
 
 jobs:
+  health-only:
+    if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'health'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Verify protected Android source and health regression suite
+        run: |
+          git diff --exit-code 9622586acaa7e0b1335acee6b35d3b857bde7c20 HEAD -- app acceptance-host gradle scripts/runtime_smoke.sh scripts/bootstrap_native_deps.sh
+          python3 -m unittest discover -s scripts/tests -v
+          for contract in scripts/check_*.py; do python3 "$contract"; done
+          mkdir -p build/r231-health
+          git rev-parse HEAD > build/r231-health/source-sha.txt
+          sha256sum scripts/emulator_health.py scripts/r2_ci_protocol.py .github/workflows/r2-host-observation-probe.yml > build/r231-health/SHA256SUMS
+      - name: Enable existing disposable-emulator KVM permissions
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: H0 only before any product or host APK
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r231_health
+          emulator-port: 5554
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: python3 scripts/emulator_health.py h0 --serial emulator-5554 --out build/r231-health/h0
+      - name: Preserve raw H0 evidence even when refused
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r231-health-only
+          path: build/r231-health
+          if-no-files-found: error
+
   probe:
-    if: (github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')) && inputs.host_scope != 'binding'
+    if: (github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')) && inputs.host_scope != 'binding' && inputs.host_scope != 'health'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

@@ -12,7 +12,7 @@ PKG = 'io.github.juhjuhx.kuyin.acceptancehost'
 HOST = PKG + '/.AcceptanceEditorActivity'
 WINDOW = ('WINDOW MANAGER WINDOWS (dumpsys window)\n  mCurrentFocus=Window{abc u0 ' + HOST + '}\n'
           '  Window #0 Window{abc u0 ' + HOST + '}:\n    isVisible=true\n'
-          '  mSystemBooted=true mDisplayEnabled=true\n')
+          '  mSystemBooted=true mDisplayEnabled=true\n  mDisplayFrozen=false windows=0\n')
 VISIBLE = '\n  Window #1 Window{def u0 Application Not Responding: com.android.systemui}:\n    mPolicyVisibility=true\n    isVisible=true\n'
 HIDDEN = VISIBLE.replace('=true', '=false')
 XML = ('<hierarchy><node resource-id="' + PKG + ':id/editor" focused="true" />'
@@ -127,6 +127,100 @@ class EmulatorHealthPolicyTest(unittest.TestCase):
             self.assertNotEqual('HEALTHY', health.assess_h1(WINDOW, x, WINDOW, 'latin', 'latin')['status'])
 
 
+class CapturedWmsReadinessTest(unittest.TestCase):
+    """Exact CI raw; variations below are explicitly synthetic counterexamples."""
+    directory = Path(__file__).parent / 'fixtures/r23_wms'
+
+    def observation(self, prefix=''):
+        return ((self.directory / (prefix + 'window-windows-stdout.txt')).read_text() + '\n' +
+                (self.directory / (prefix + 'window-displays-stdout.txt')).read_text())
+
+    def test_captured_frozen_first_observation_is_rejected(self):
+        raw = self.observation()
+        self.assertIn('mDisplayFrozen=true', raw)
+        self.assertFalse(health.complete_window(raw))
+
+    def test_captured_final_unfrozen_inventory_is_accepted(self):
+        self.assertTrue(health.complete_window(self.observation('final-')))
+
+    def test_f1_real_final_inventory_with_only_frozen_boolean_changed_never_passes(self):
+        raw = self.observation('final-')
+        self.assertEqual(1, raw.count('mDisplayFrozen=false'))
+        counterexample = raw.replace('mDisplayFrozen=false', 'mDisplayFrozen=true')
+        f = fixture(); f['window']['stdout'] = counterexample
+        self.assertNotEqual('HEALTHY', health.assess_h0(f, 'emulator-5554')['status'],
+                            'F1: valid focus must not hide a frozen display')
+
+    def test_initial_frozen_raw_with_focus_restored_still_cannot_pass(self):
+        import re
+        raw = self.observation()
+        title = re.findall(r'Window #\d+ (Window\{[^\n}]+\}):', raw)[0]
+        counterexample = raw.replace('mCurrentFocus=null', 'mCurrentFocus=' + title)
+        self.assertIn('mDisplayFrozen=true', counterexample)
+        self.assertFalse(health.complete_window(counterexample))
+
+    def test_missing_unknown_conflicting_or_duplicate_state_fails_closed(self):
+        raw = self.observation('final-')
+        for state in ['', 'mDisplayFrozen=unknown', 'mDisplayFrozen=false\n mDisplayFrozen=true',
+                      'mDisplayFrozen=false\n mDisplayFrozen=false', 'mDisplayFrozen=falseish',
+                      'mDisplayFrozen=false\n mDisplayFrozen=', 'mDisplayFrozen=false\n mDisplayFrozen= true']:
+            with self.subTest(state=state):
+                f = fixture(); f['window']['stdout'] = raw.replace('mDisplayFrozen=false', state)
+                self.assertNotEqual('HEALTHY', health.assess_h0(f, 'emulator-5554')['status'])
+
+    def test_h1_also_rejects_a_frozen_bracketing_observation(self):
+        frozen = WINDOW.replace('mDisplayFrozen=false', 'mDisplayFrozen=true')
+        for before, after in [(frozen, WINDOW), (WINDOW, frozen)]:
+            self.assertNotEqual('HEALTHY', health.assess_h1(before, XML, after, 'latin', 'latin')['status'])
+
+    def test_raw_fixture_hashes_match_ci_provenance(self):
+        import hashlib
+        import json
+        manifest = json.loads((self.directory / 'provenance.json').read_text())
+        for name, entry in manifest['files'].items():
+            data = (self.directory / name).read_bytes()
+            self.assertEqual(entry['sha256'], hashlib.sha256(data).hexdigest())
+            self.assertEqual(entry['bytes'], len(data))
+
+    def finish_h0(self, initial, final):
+        import json
+        import subprocess
+        import tempfile
+        from unittest.mock import patch
+        def run(command, **kwargs):
+            args = command[3:]
+            if 'screencap' in args:
+                data = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')
+            elif 'get-current-user' in args: data = b'0\n'
+            elif '/proc/sys/kernel/random/boot_id' in args: data = b'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee\n'
+            elif 'window' in args:
+                data = '\n'.join(line for line in final.splitlines()
+                                 if ('mCurrentFocus=' in line) == ('displays' in args)).encode()
+            else: data = b'synthetic\n'
+            return subprocess.CompletedProcess(command, 0, data, b'')
+        with tempfile.TemporaryDirectory() as tmp, patch.object(health.subprocess, 'run', side_effect=run):
+            capture = health.Capture('emulator-5554', Path(tmp) / 'h0')
+            capture.records = fixture()
+            capture.records['window']['stdout'] = initial
+            code = capture.finish(health.assess_h0(capture.records, 'emulator-5554'))
+            return code, json.loads((Path(tmp) / 'h0/result.json').read_text())
+
+    def test_final_recovery_cannot_erase_first_frozen_failure(self):
+        code, value = self.finish_h0(WINDOW.replace('mDisplayFrozen=false', 'mDisplayFrozen=true'), WINDOW)
+        self.assertNotEqual(0, code)
+        self.assertIn('DISPLAY_UNFROZEN_UNVERIFIED', value['reasons'])
+        self.assertIn('readiness', value, 'The durable result must identify the original assessment')
+        self.assertEqual('INCONCLUSIVE', value['readiness']['first_assessment']['status'])
+        self.assertFalse(value['readiness']['atomic_snapshot'])
+        self.assertEqual(['window', 'final-window'], value['readiness']['observations'])
+
+    def test_final_frozen_observation_invalidates_initial_health(self):
+        code, value = self.finish_h0(WINDOW, WINDOW.replace('mDisplayFrozen=false', 'mDisplayFrozen=true'))
+        self.assertNotEqual(0, code)
+        self.assertEqual('INCONCLUSIVE', value['status'])
+        self.assertIn('FINAL_WINDOW_UNVERIFIED', value['reasons'])
+
+
 if __name__ == '__main__':
     unittest.main()
 
@@ -189,6 +283,28 @@ class EmulatorHealthCollectorTest(unittest.TestCase):
             self.assertEqual(0, capture.records['sample-windows']['exit'])
             self.assertEqual(17, capture.records['sample-displays']['exit'])
             self.assertNotEqual(0, observation['exit'])
+
+    def test_window_pair_records_nonatomic_time_bounds_and_raw_commands(self):
+        import datetime
+        import json
+        import subprocess
+        import tempfile
+        from unittest.mock import patch
+        with tempfile.TemporaryDirectory() as tmp, patch.object(health.subprocess, 'run',
+                return_value=subprocess.CompletedProcess([], 0, WINDOW.encode(), b'')):
+            capture = health.Capture('emulator-5554', Path(tmp) / 'capture')
+            observation = capture.window('sample')
+            capture.save(health.result([]))
+            records = json.loads((Path(tmp) / 'capture/commands.json').read_text())
+            for name in ['sample-windows', 'sample-displays']:
+                rec = records[name]
+                self.assertIsNotNone(datetime.datetime.fromisoformat(rec['started_at_utc']).tzinfo)
+                self.assertLessEqual(rec['started_monotonic_ns'], rec['finished_monotonic_ns'])
+            self.assertLessEqual(records['sample-windows']['finished_monotonic_ns'],
+                                 records['sample-displays']['started_monotonic_ns'])
+            self.assertFalse(observation['atomic_snapshot'])
+            self.assertEqual(records['sample-windows']['started_monotonic_ns'], observation['started_monotonic_ns'])
+            self.assertEqual(records['sample-displays']['finished_monotonic_ns'], observation['finished_monotonic_ns'])
 
     def test_magic_only_png_is_not_durable_screenshot_evidence(self):
         self.assertFalse(health.complete_png(b'\x89PNG\r\n\x1a\nsynthetic'))
