@@ -11,9 +11,9 @@ R3 `release/rc-closure-r3`／`.worktrees/r3-release-candidate` 起點 main `63c9
 ## Scope → implementation → test → independent review
 
 1. [x] 唯讀來源盤點、實際skills/tools與兩位orthogonal reviewer派工。ADB連線清單為空；physical NOT_TESTED。無INTERNET/camera/mic需求，沒有裝機。
-2. [ ] QR RED：現有Compose畫面的像素交ZXing獨立解碼，四個literal URL與UI copy/open assertions；先見有意義失敗，不把初始化/下載失敗當RED。
-3. [ ] QR GREEN：離線OpenCV BYTE/M產四PNG，完整4-module quiet zone、manifest/hash、test-only ZXing，替換假Canvas。沒有手機掃描證據前移除「可掃描」宣稱，保留官方網址copy/open及非背書文字。density/font/night與既有候選/Dachen/ACK回歸；不擴UI重設計。
-4. [ ] 獨立review R2/R231 lineage後才在隔離RC整合測試基礎設施，避免重複PR10/12；README PR18獨立審查，不擅改其分支或Windows PR13/14。
+2. [x] QR RED：現有Compose畫面的像素交ZXing獨立解碼，四個literal URL與UI copy/open assertions；先見有意義失敗，不把初始化/下載失敗當RED。
+3. [x] QR GREEN：離線OpenCV BYTE/M產四PNG，完整4-module quiet zone、manifest/hash、test-only ZXing，替換假Canvas。沒有手機掃描證據前移除「可掃描」宣稱，保留官方網址copy/open及非背書文字。density/font/night與既有候選/Dachen/ACK回歸；不擴UI重設計。
+4. [x] 已核對R2/R231 lineage，local QR commit `de2ac7d94e0a79f492d11ee165173e65b4562bd7`，再與e137正常merge至隔離RC `185a4e545bd2574ad773e255ea558e6be5f3ab0e`。main/GH PR10/12不動，不重複套patch。README PR18初審REQUEST_CHANGES（未實作鍵盤高度），分開處理；Windows PR13/14不在範圍。
 5. [ ] 最終candidate exact SHA：全Python/contracts/JVM/native/bootstrap/Debug/Host/instrumentation；fresh disposable H0→same-boot H1→H2/App5→Host33/32matrix→B01。使用既有runner，僅窄化經批准QR/version/test-dependency allowlist；保留原assertions/timeout/每層stop，不洗SKIP/INCONCLUSIVE。
 6. [ ] 本機可識別Debug測試APK（版本高於20003）；公鑰/版本/四ABI/assets/source provenance核對。正式release signing ownership未證、實機未有則SIGNING_GATE/RC_READY阻擋；不生隨機key、不卸載/清資料。
 7. [ ] Privacy/native license/source/relink材料、NOTICE導航、About/README、Issue19與handoff/validation/readiness；僅整合approved切片，final SHA gates，所有缺件逐案記錄。No unresolved High/Critical before publication。
@@ -29,3 +29,11 @@ R3 `release/rc-closure-r3`／`.worktrees/r3-release-candidate` 起點 main `63c9
 ## Context control
 
 從本ledger、R3_FINAL_HANDOFF、必要source和exact evidence續作；不重讀全部R1/R2。source review / runtime / physical / signing / legal 是不同gate，不能互相代替。Tool Master是真canonical using-superpowers skill，未發現另有可呼叫MCP Tool Master URI。OCR未送source至未批准provider，不偽報401 fresh check或APPROVE。
+
+## 2026-10-19 checkpoint
+
+- QR component final獨立SPEC/QUALITY PASS；17嚴格quiet-zone反例RED→18原斷言8/8GREEN，12圖完整矩形全白與整數模板另核對。舊07/09/11/14保留，不能以早期partial取代最後18。手機掃描/TalkBack仍NOT_TESTED。
+- CI/runtime source未動產品typing/JNI：H0 result hash、serial/user/boot跨transition守門；19兩fake-ADB真RED→20兩GREEN。新CI只允許固定QR product de2、R231 infra e137、composed JVM tests185；21批准QR被舊guard拒RED→22；25root-build/wrapper/JVM七反例RED→26補保護。
+- 對R3 PR停止重複的舊ungated實驗job（不是跳過App test）；必須另明確dispatch既有workflow的release-candidate入口，重新fresh H0→H1→H2/App5→Host33/32matrix→B01，不能沿用舊boot。23route RED→24GREEN。完整原assertions/source identities固定不變。
+- runtime/最終build尚未執行，CI/runner最後獨立review仍進行。正式key/持有者證明未取得；沒有手機；privacy D2D與native license/relink gate仍OPEN。NO_GO，不發Release。
+- 新外部evidence含兩位初審與QR final review。OCR未送source到未批准provider；初次review額度中斷保留，重置後恢復完成QR，不能冒稱當時已APPROVE。

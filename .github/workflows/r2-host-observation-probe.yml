@@ -13,7 +13,7 @@ on:
         description: 'Finite diagnostic scope; never full acceptance'
         type: choice
         default: sequence
-        options: [sequence, identity, geometry, binding, health]
+        options: [sequence, identity, geometry, binding, health, release-candidate]
 
 permissions:
   contents: read
@@ -62,7 +62,7 @@ jobs:
           if-no-files-found: error
 
   probe:
-    if: (github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')) && inputs.host_scope != 'binding' && inputs.host_scope != 'health'
+    if: (github.event_name == 'workflow_dispatch' || startsWith(github.head_ref, 'fix/r2-')) && inputs.host_scope != 'binding' && inputs.host_scope != 'health' && inputs.host_scope != 'release-candidate'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -247,4 +247,101 @@ jobs:
             build/r22-legacy
             build/r22-preinstalled
             build/r22-shared
+          if-no-files-found: error
+
+  release-candidate:
+    if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'release-candidate'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v5
+        with:
+          java-version: '21'
+          distribution: temurin
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools ndk;28.2.13676358 cmake;3.22.1
+      - uses: gradle/actions/setup-gradle@v6
+      - name: Verify approved RC source groups
+        shell: python
+        run: |
+          import hashlib, json, pathlib, subprocess
+          product = 'de2ac7d94e0a79f492d11ee165173e65b4562bd7'
+          infrastructure = 'e137e37594c04f8c0fd88c01ef911d1df9bcbc49'
+          combined_tests = '185a4e545bd2574ad773e255ea558e6be5f3ab0e'
+          groups = {
+              product: ['app/src/main', 'app/build.gradle.kts', 'LICENSE', 'NOTICE'],
+              combined_tests: ['app/src/test'],
+              infrastructure: ['acceptance-host/src/main', 'acceptance-host/build.gradle.kts',
+                  'app/src/debug', 'app/src/androidTest', 'acceptance-host/src/androidTest',
+                  'acceptance-host/src/sharedTest', 'acceptance-host/src/test',
+                  'build.gradle.kts', 'settings.gradle.kts', 'gradle.properties', 'gradlew', 'gradlew.bat',
+                  'gradle', 'scripts/bootstrap_native_deps.sh',
+                  'scripts/emulator_health.py', 'scripts/r2_ci_protocol.py',
+                  'scripts/p1_acceptance_device.py', 'scripts/p1_instrumentation_manifest.json',
+                  'scripts/r2_current_instrumentation_manifest.json']}
+          for baseline, paths in groups.items():
+              subprocess.run(['git', 'diff', '--exit-code', baseline, 'HEAD', '--', *paths], check=True)
+              subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--', *paths], check=True)
+              if subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard', '--', *paths]):
+                  raise SystemExit('Untracked protected source; no runtime authorization')
+          tracked = subprocess.check_output(['git', 'ls-files'], text=True).splitlines()
+          source = {'head': subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip(),
+                    'approved_product': product, 'infrastructure': infrastructure, 'combined_tests': combined_tests,
+                    'scope': 'CURRENT_RC_RUNTIME_NOT_PHYSICAL_OR_RELEASE_ACCEPTANCE',
+                    'files': {name: hashlib.sha256(pathlib.Path(name).read_bytes()).hexdigest()
+                              for name in tracked if name.startswith(('app/src/', 'acceptance-host/src/', 'scripts/', '.github/workflows/', 'gradle/'))
+                              or name in ['app/build.gradle.kts', 'acceptance-host/build.gradle.kts',
+                                          'build.gradle.kts', 'settings.gradle.kts', 'gradle.properties',
+                                          'gradlew', 'gradlew.bat', 'LICENSE', 'NOTICE']}}
+          output = pathlib.Path('build/r3-shared')
+          output.mkdir(parents=True, exist_ok=True)
+          (output / 'source-manifest.json').write_text(json.dumps(source, indent=2))
+      - name: Build current four APKs once and run fresh local gates
+        run: |
+          python3 -m unittest discover -s scripts/tests -v
+          for contract in scripts/check_*.py; do python3 "$contract"; done
+          bash scripts/bootstrap_native_deps.sh
+          ./gradlew :app:testDebugUnitTest --rerun :acceptance-host:testDebugUnitTest --rerun :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --stacktrace
+          sha256sum app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk > build/r3-shared/SHA256SUMS
+          git rev-parse HEAD > build/r3-shared/source-sha.txt
+      - name: Enable disposable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Fresh H0 then H1 then H2 App5 Host33 and B01 on the same boot
+        uses: reactivecircus/android-emulator-runner@v2
+        env:
+          KUYIN_R2_OBSERVER: 'true'
+          KUYIN_R22_BINDING_ARM: preinstalled
+          KUYIN_R23_HEALTH: 'true'
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r3_rc_closure
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: bash scripts/runtime_smoke.sh
+      - name: Verify four APK bytes remain unchanged
+        if: always()
+        run: sha256sum --check build/r3-shared/SHA256SUMS
+      - name: Preserve health refusals and every suite result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r3-rc-runtime-evidence
+          path: |
+            build/r3-shared
+            build/r22-preinstalled
+            app/build/test-results/testDebugUnitTest
+            acceptance-host/build/test-results/testDebugUnitTest
+            app/build/outputs/apk
+            acceptance-host/build/outputs/apk
           if-no-files-found: error

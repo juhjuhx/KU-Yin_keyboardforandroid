@@ -51,12 +51,48 @@ adb() { command adb -s "$KUYIN_CI_SERIAL" "$@"; }
 
 # TEST_ONLY: this orchestration owns a disposable, single-user CI emulator.
 # Physical acceptance retains the separate P1-G preflight/restore runner.
+R23_HEALTH_ESTABLISHED=false
+R23_H0_SHA=""
 ensure_ci_user() {
   local actual
   actual="$(ci_read_adb -s "$KUYIN_CI_SERIAL" shell am get-current-user | tr -d '\r')"
   if [[ "$actual" != "0" ]]; then
     echo "CI Android user changed or is unsupported: $actual; refusing mutation" >&2
     return 2
+  fi
+  if [[ "$R23_HEALTH_ESTABLISHED" == true ]]; then
+    local boot
+    boot="$(ci_read_adb -s "$KUYIN_CI_SERIAL" shell cat /proc/sys/kernel/random/boot_id | tr -d '\r')" || return 2
+    python3 - "$R2_EVIDENCE_DIR/h0/result.json" "$KUYIN_CI_SERIAL" "$actual" "$boot" "$R23_H0_SHA" <<'IDENTITY'
+import hashlib, json, pathlib, sys, uuid
+from datetime import datetime, timezone
+path = pathlib.Path(sys.argv[1])
+actual = dict(zip(['serial', 'user', 'boot_id'], sys.argv[2:5]))
+record = {'observed_at': datetime.now(timezone.utc).isoformat(), 'atomic_snapshot': False,
+          'actual': actual, 'expected': None, 'h0_sha256': sys.argv[5]}
+try:
+    raw = path.read_bytes()
+    prior = json.loads(raw)
+    record['expected'] = prior.get('identity')
+    valid = (hashlib.sha256(raw).hexdigest() == sys.argv[5] and prior.get('status') == 'HEALTHY'
+             and record['expected'] == actual and str(uuid.UUID(actual['boot_id'])) == actual['boot_id'])
+    record['result'] = 'PASS' if valid else 'FAIL'
+    with (path.parent.parent / 'identity-checks.jsonl').open('a') as log:
+        log.write(json.dumps(record) + '\n')
+except (OSError, ValueError, TypeError) as error:
+    valid = False
+    record.update(result='FAIL', error=type(error).__name__)
+if not valid:
+    try:
+        with (path.parent.parent / 'identity-first-failure.json').open('x') as evidence:
+            json.dump(record, evidence, indent=2)
+    except FileExistsError:
+        pass  # Original mismatch is immutable; EXIT diagnostics cannot replace it.
+    except OSError:
+        print('TEST_ONLY identity failure could not be persisted', file=sys.stderr)
+    print('TEST_ONLY H0/device/user/boot identity refused: ' + json.dumps(record), file=sys.stderr)
+    raise SystemExit(2)
+IDENTITY
   fi
 }
 ensure_ci_user
@@ -68,6 +104,12 @@ mkdir -p "$R2_EVIDENCE_DIR"
 # A failed or incomplete probe stops here, before the binding EXIT trap exists.
 if [[ "${KUYIN_R23_HEALTH:-false}" == true ]]; then
   python3 scripts/emulator_health.py h0 --serial "$KUYIN_CI_SERIAL" --out "$R2_EVIDENCE_DIR/h0"
+  R23_H0_SHA="$(python3 - "$R2_EVIDENCE_DIR/h0/result.json" <<'PIN'
+import hashlib, pathlib, sys
+print(hashlib.sha256(pathlib.Path(sys.argv[1]).read_bytes()).hexdigest())
+PIN
+  )"
+  R23_HEALTH_ESTABLISHED=true
   ensure_ci_user
   adb install --user 0 -r -t acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk
   python3 scripts/emulator_health.py h1 --serial "$KUYIN_CI_SERIAL" --out "$R2_EVIDENCE_DIR/h1" --h0 "$R2_EVIDENCE_DIR/h0/result.json"
@@ -177,7 +219,7 @@ on_exit() {
   set +e
   if [[ -n "${KUYIN_R22_BINDING_ARM:-}" ]] && ! ensure_ci_user; then
     evidence_status=2
-    echo USER_IDENTITY_CHANGED_FINAL_CAPTURE_SKIPPED > "$R2_EVIDENCE_DIR/final-capture-refused.txt"
+    echo CI_IDENTITY_UNVERIFIED_FINAL_CAPTURE_SKIPPED > "$R2_EVIDENCE_DIR/final-capture-refused.txt"
   else
     capture_r2 final
     evidence_status=$?

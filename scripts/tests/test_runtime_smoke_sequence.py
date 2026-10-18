@@ -39,7 +39,9 @@ if name == "adb":
     elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "getprop", "init.svc.bootanim"]:
         print("stopped")
     elif os.environ.get("FAKE_R23") == "1" and args == ["shell", "cat", "/proc/sys/kernel/random/boot_id"]:
-        print("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
+        switch = os.environ.get("FAKE_BOOT_SWITCH")
+        changed = ((root / "app-ran").exists() and switch == "after_app") or ((root / "install-ran").exists() and switch == "during_install")
+        print("bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee" if changed else "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee")
     elif os.environ.get("FAKE_R23") == "1" and args[:2] == ["shell", "getprop"]:
         print("synthetic")
     elif os.environ.get("FAKE_R23") == "1" and "screencap" in args:
@@ -169,6 +171,8 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
             proc.evidence = {str(path.relative_to(root)): path.read_text() for path in (root / "build").rglob("*-protocol.json")}
             proc.health = {str(path.relative_to(root)): json.loads(path.read_text()) for path in (root / 'build').rglob('result.json')}
             proc.checkpoints = [path.name for path in (root / 'build').rglob('*-time.txt')]
+            proc.identity_failures = {str(path.relative_to(root)): json.loads(path.read_text())
+                                      for path in (root / 'build').rglob('identity-first-failure.json')}
             calls = root / "calls.jsonl"
             return proc, [json.loads(line) for line in calls.read_text().splitlines()] if calls.exists() else []
 
@@ -185,6 +189,25 @@ class RuntimeSmokeSequenceTest(unittest.TestCase):
         editor = next(i for i, (_, args) in enumerate(calls) if 'start' in args)
         product = next(i for i, (name, args) in enumerate(calls) if name == 'gradlew' and ':app:installDebug' in args)
         self.assertLess(editor, product)
+
+    def test_r3_same_user_but_reboot_during_install_blocks_ime_selection(self):
+        proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1",
+            KUYIN_R22_BINDING_ARM="preinstalled", FAKE_BOOT_SWITCH="during_install")
+        self.assertNotEqual(0, proc.returncode, "A healthy H0/H1 from an earlier boot cannot authorize H2")
+        self.assertFalse(any(name == "adb" and any(value in args for value in ["set", "enable", "instrument"])
+                             for name, args in calls))
+        self.assertTrue(proc.identity_failures, "Keep durable first mismatch for recovery and diagnosis")
+
+    def test_r3_same_user_but_reboot_after_app_blocks_host_install_and_test(self):
+        proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1",
+            KUYIN_R22_BINDING_ARM="preinstalled", FAKE_BOOT_SWITCH="after_app")
+        self.assertNotEqual(0, proc.returncode)
+        app = next(i for i, (name, args) in enumerate(calls) if name == "adb" and "instrument" in args)
+        self.assertFalse(any(name == "gradlew" or (name == "adb" and any(value in args for value in ["install", "set", "enable", "instrument"]))
+                             for name, args in calls[app + 1:]))
+        failure = next(iter(proc.identity_failures.values()))
+        self.assertEqual("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee", failure["expected"]["boot_id"])
+        self.assertEqual("bbbbbbbb-bbbb-cccc-dddd-eeeeeeeeeeee", failure["actual"]["boot_id"])
 
     def test_r23_null_editor_connection_blocks_product_install_and_binding(self):
         proc, calls = self.run_fixture(KUYIN_R23_HEALTH="true", FAKE_R23="1", FAKE_NULL_IC="1")
