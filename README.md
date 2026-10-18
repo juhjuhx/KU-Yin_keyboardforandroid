@@ -33,14 +33,15 @@
 
 ## 目前狀態與已知限制
 
-截至 **2026-10-17**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
+截至 **2026-10-18**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
 
 - **公開 Alpha**：原 API 33 App 5 PASS；Host **15 PASS／9 FAIL／8 SKIP**（發布時基線）。
 - **R2 測試分支**：曾在 API 33 取得 App **5 PASS**、Host **24 PASS／9 SKIP**；24 項含一項測試基礎設施檢查，實際產品案例為 **23 PASS／9 INCONCLUSIVE**。不是 `main` 新版本的完整驗收。
 - **R2.1/R2.2 後續調查**：仍有 IME visibility/binding 阻擋。R2.2 A/B 都是 App **4 PASS／1 FAIL**，並在安裝 KU-Yin 前偵測到 **System UI ANR**；歷史 remote/session 根因仍 **UNRESOLVED**。
+- **R2.3.1 健康檢查分支**：已修復 frozen-display 解析缺陷；[health-only CI #39080190653](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39080190653) 為 H0 **HEALTHY**、Python **192 PASS**、contracts **10 PASS**。**未執行 H1／H2、App／Host 或新 APK 建置**；舊 H0 不可跨 Emulator boot 重用。
 - **實機與正式版**：AIE-S1 完整真機候選瀏覽、不同 OEM、TalkBack、學習清除、正式 release key、商店與穩定版均 **OPEN／NOT_READY**。
 
-請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。正式的 [Release readiness](docs/release/RELEASE_READINESS.md) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
+請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。**實驗性 runtime-smoke 仍有失敗紀錄**；請查看每個 job，而非只讀整體 Workflow 狀態。正式的 [Release readiness](docs/release/RELEASE_READINESS.md)、[RC 發布驗收追蹤 #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
 
 ## 隱私與安全
 
