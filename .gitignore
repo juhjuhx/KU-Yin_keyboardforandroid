@@ -27,6 +27,7 @@ app/src/main/assets/
 !app/src/main/assets/
 app/src/main/assets/*
 !app/src/main/assets/english/
+!app/src/main/assets/foundation_qr_manifest.json
 
 # macOS metadata
 .DS_Store

@@ -4,7 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -21,11 +22,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.imageResource
+import com.example.R
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -33,8 +38,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.security.MessageDigest
-import kotlin.math.abs
 
 data class OpenSourceFoundation(
     val id: String,
@@ -42,6 +45,7 @@ data class OpenSourceFoundation(
     val enName: String,
     val description: String,
     val donateUrl: String,
+    @DrawableRes val qrDrawableRes: Int,
     val badgeColor: Color,
     val impactTag: String
 )
@@ -53,6 +57,7 @@ val OPEN_SOURCE_FOUNDATIONS = listOf(
         enName = "Free Software Foundation (FSF)",
         description = "捍衛全球電腦使用者的四大軟體自由，維護 GNU 與自由開源體系發展。",
         donateUrl = "https://my.fsf.org/donate",
+        qrDrawableRes = R.drawable.foundation_qr_fsf,
         badgeColor = Color(0xFF15803D),
         impactTag = "自由軟體核心維護"
     ),
@@ -62,6 +67,7 @@ val OPEN_SOURCE_FOUNDATIONS = listOf(
         enName = "Apache Software Foundation (ASF)",
         description = "以「公益軟體」理念孵化維護全球逾 350 個頂級開源專案與基礎設施。",
         donateUrl = "https://donate.apache.org/",
+        qrDrawableRes = R.drawable.foundation_qr_asf,
         badgeColor = Color(0xFFC2410C),
         impactTag = "全球最大公共開源生態"
     ),
@@ -70,7 +76,8 @@ val OPEN_SOURCE_FOUNDATIONS = listOf(
         name = "開源倡議組織",
         enName = "Open Source Initiative (OSI)",
         description = "定義開源軟體標準 (OSD)，保護全球開源協議與社群知識共享授權。",
-        donateUrl = "https://opensource.org/donate",
+        donateUrl = "https://members.opensource.org/donate",
+        qrDrawableRes = R.drawable.foundation_qr_osi,
         badgeColor = Color(0xFF0369A1),
         impactTag = "開源標準定義者"
     ),
@@ -79,104 +86,12 @@ val OPEN_SOURCE_FOUNDATIONS = listOf(
         name = "電子前哨基金會",
         enName = "Electronic Frontier Foundation (EFF)",
         description = "保護數位世界的使用者隱私、言論自由與開源開發者合法權益。",
-        donateUrl = "https://eff.org/donate",
+        donateUrl = "https://supporters.eff.org/donate/donate",
+        qrDrawableRes = R.drawable.foundation_qr_eff,
         badgeColor = Color(0xFF7C3AED),
         impactTag = "數位人權與開源權益"
     )
 )
-
-/**
- * 繪製具備真實定位標 (Finder Patterns) 與資料模組的 QR Code Canvas
- */
-@Composable
-fun FoundationQrCodeCanvas(
-    url: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = Color.White,
-    moduleColor: Color = Color(0xFF0F172A)
-) {
-    val gridSize = 21 // 21x21 QR Code Version 1 模組網格
-    val grid = remember(url) {
-        val matrix = Array(gridSize) { BooleanArray(gridSize) { false } }
-
-        // 1. 定位標記 (Finder Patterns 7x7) 在三頂角
-        fun drawFinderPattern(startX: Int, startY: Int) {
-            for (r in 0 until 7) {
-                for (c in 0 until 7) {
-                    val isOuterBorder = r == 0 || r == 6 || c == 0 || c == 6
-                    val isInnerCore = r in 2..4 && c in 2..4
-                    matrix[startY + r][startX + c] = isOuterBorder || isInnerCore
-                }
-            }
-        }
-
-        drawFinderPattern(0, 0)
-        drawFinderPattern(gridSize - 7, 0)
-        drawFinderPattern(0, gridSize - 7)
-
-        // 2. 定時基準線 (Timing patterns)
-        for (i in 7 until gridSize - 7) {
-            matrix[6][i] = (i % 2 == 0)
-            matrix[i][6] = (i % 2 == 0)
-        }
-
-        // 3. 資料編碼模組 (基於 URL 生成確定性模組)
-        val hashBytes = try {
-            val md = MessageDigest.getInstance("SHA-256")
-            md.digest(url.toByteArray(Charsets.UTF_8))
-        } catch (_: Exception) {
-            ByteArray(32) { (it * 31 + url.length).toByte() }
-        }
-
-        var byteIdx = 0
-        var bitIdx = 0
-        for (r in 0 until gridSize) {
-            for (c in 0 until gridSize) {
-                // 跳過三個 8x8 Finder 與分隔區
-                val inTopLeft = r < 8 && c < 8
-                val inTopRight = r < 8 && c >= gridSize - 8
-                val inBottomLeft = r >= gridSize - 8 && c < 8
-                val onTiming = (r == 6 && c >= 8 && c < gridSize - 8) || (c == 6 && r >= 8 && r < gridSize - 8)
-
-                if (!inTopLeft && !inTopRight && !inBottomLeft && !onTiming) {
-                    val currentByte = hashBytes[byteIdx % hashBytes.size].toInt()
-                    val bit = (currentByte shr (bitIdx % 8)) and 1
-                    matrix[r][c] = (bit == 1)
-
-                    bitIdx++
-                    if (bitIdx % 8 == 0) {
-                        byteIdx++
-                    }
-                }
-            }
-        }
-
-        matrix
-    }
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(backgroundColor)
-            .padding(8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val cellSize = size.width / gridSize
-            for (r in 0 until gridSize) {
-                for (c in 0 until gridSize) {
-                    if (grid[r][c]) {
-                        drawRect(
-                            color = moduleColor,
-                            topLeft = Offset(c * cellSize, r * cellSize),
-                            size = Size(cellSize + 0.5f, cellSize + 0.5f)
-                        )
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun OpenSourceDonationCard(
@@ -253,7 +168,7 @@ fun OpenSourceDonationCard(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "本輸入法作者不收取任何個人贊助。若您肯定開源軟體價值，請點擊或掃描下方 QR Code 捐款至國際開源組織！",
+                        text = "捐款直接交予所選組織；本專案不收取款項，亦不代表組織背書。",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         lineHeight = 18.sp
@@ -349,7 +264,7 @@ fun OpenSourceDonationCard(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     // QR Code 呈現區
-                    Box(
+                    BoxWithConstraints(
                         modifier = Modifier
                             .size(150.dp)
                             .clip(RoundedCornerShape(12.dp))
@@ -358,18 +273,38 @@ fun OpenSourceDonationCard(
                             .testTag("qr_code_${foundation.id}"),
                         contentAlignment = Alignment.Center
                     ) {
-                        FoundationQrCodeCanvas(
-                            url = foundation.donateUrl,
-                            modifier = Modifier.size(134.dp)
+                        val image = ImageBitmap.imageResource(foundation.qrDrawableRes)
+                        // Generated assets have 8 source pixels per module (including quiet zone).
+                        // Keep module edges on integral display pixels instead of fractional resampling.
+                        val modules = image.width / 8
+                        val imageSize = with(LocalDensity.current) {
+                            // Preserve the original 8dp inset so the rounded frame never clips quiet-zone corners.
+                            val pixelsPerModule = ((maxWidth - 16.dp).toPx() / modules).toInt().coerceAtLeast(1)
+                            (pixelsPerModule * modules).toDp()
+                        }
+                        Image(
+                            bitmap = image,
+                            contentDescription = "${foundation.name}官方捐款網址 QR Code",
+                            modifier = Modifier.size(imageSize),
+                            contentScale = ContentScale.Fit,
+                            filterQuality = FilterQuality.None
                         )
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
-                        text = "📱 可使用另一支手機相機掃描上述 QR Code",
+                        text = "手機相機掃描尚未驗證；可複製或開啟官方網址。",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = foundation.donateUrl,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))

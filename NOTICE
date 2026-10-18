@@ -50,3 +50,13 @@ Data word.csv and tsi.csv explicitly identify LGPL-2.1-or-later and
 Copyright (c) 2025 libchewing Core Team. Original misc data is preserved.
 See docs/release/AIE_ALPHA_LICENSE_AND_BUILD.md and release source materials.
 No additional restriction forbids reverse engineering to debug LGPL changes.
+
+Foundation donation QR assets (R3)
+----------------------------------
+Project-generated offline QR PNGs encode public official HTTPS donation URLs;
+these are not foundation-provided artwork or an endorsement. No donations are
+collected by KU-Yin. Provenance and exact source hashes:
+docs/release/QR_PROVENANCE.md and app/src/main/assets/foundation_qr_manifest.json.
+Build-time OpenCV encoder: Apache-2.0; Python wrapper: MIT. Neither is bundled.
+ZXing core 3.5.3 (Apache-2.0) is an independent test-only decoder, not an APK
+runtime dependency. No external implementation source was copied for this fix.
