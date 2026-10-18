@@ -2,11 +2,15 @@ package io.github.juhjuhx.kuyin.acceptancehost
 
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
+import android.view.inputmethod.BaseInputConnection
+import android.view.accessibility.AccessibilityWindowInfo
 import androidx.test.core.app.ActivityScenario
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
@@ -34,6 +38,8 @@ internal class AcceptanceDriver(private val caseId: String) {
     private val context = instrumentation.targetContext
     private val device = UiDevice.getInstance(instrumentation)
     private var scenario: ActivityScenario<AcceptanceEditorActivity>? = null
+    private val externalUi = ExternalUiObservation(device)
+    private var observationDeadline: Long? = null
     val observations = JSONArray()
     var scope: String = "真 external editor metadata、可見軟鍵呈現與 action／newline／commit 增量。"
 
@@ -162,11 +168,13 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     private fun visibleMode(): VisibleKeyboardMode? {
+        val tree = captureUi().tree
+        fun has(label: String) = tree.textTargets(label).size == 1
         val modes = buildList {
-            if (hasText("EN") && hasText("?123") && hasText("空白 (一聲)")) add(VisibleKeyboardMode.ZHUYIN)
-            if (hasText("注音") && hasText("?123") && hasText("Space")) add(VisibleKeyboardMode.ENGLISH)
-            if (hasText("注音") && hasText("ABC") && hasText("空白")) add(VisibleKeyboardMode.SYMBOLS)
-            if (hasText("返回注音")) add(VisibleKeyboardMode.EMOJI)
+            if (has("EN") && has("?123") && has("空白 (一聲)")) add(VisibleKeyboardMode.ZHUYIN)
+            if (has("注音") && has("?123") && has("Space")) add(VisibleKeyboardMode.ENGLISH)
+            if (has("注音") && has("ABC") && has("空白")) add(VisibleKeyboardMode.SYMBOLS)
+            if (has("返回注音")) add(VisibleKeyboardMode.EMOJI)
         }
         return modes.singleOrNull()
     }
@@ -192,11 +200,18 @@ internal class AcceptanceDriver(private val caseId: String) {
     fun tapPhonetic(glyph: String) {
         val before = strictPreedit()?.text
         uniqueClickable("phonetic:$glyph") { clickableTexts(glyph, tokenMatch = true) }.click()
-        // 舊 chip 仍在畫面上時，不能立刻把它當作本次按鍵已完成的證據。
-        if (!poll { strictPreedit()?.text?.let { it != before } == true }) {
-            val actual = strictPreedit()?.text
+        var lastCompleteObservation: VisibleUiSnapshot? = null
+        if (!poll {
+            val tree = captureUi().tree
+            lastCompleteObservation = tree
+            tree.strictPreedit()?.text?.let { it != before } == true
+        }) {
+            // Diagnose the last completed immutable observation. Do not make an unguarded
+            // accessibility read after the deadline or mistake a partial tree for empty UI.
+            val tree = lastCompleteObservation ?: blocked("點擊 $glyph 後沒有完整 fresh UI observation；preedit timeout 原因未證明")
+            val actual = tree.strictPreedit()?.text
             if (actual != null) throw AssertionError("真可見按鍵 $glyph 未更新 preedit：$actual")
-            if (clickableDescriptions("清除").isEmpty()) throw AssertionError("真可見按鍵 $glyph 未建立組字 marker")
+            if (tree.descriptionTargets("清除").isEmpty()) throw AssertionError("真可見按鍵 $glyph 未建立組字 marker")
             blocked("點擊 $glyph 後未取得當次可辨識 preedit 變化")
         }
     }
@@ -226,29 +241,8 @@ internal class AcceptanceDriver(private val caseId: String) {
         return value
     }
 
-    private fun strictPreedit(): VisiblePreedit? {
-        val clear = clickableDescriptions("清除").singleOrNull() ?: return null
-        val clearBounds = clear.visibleBounds
-        var ancestor: UiObject2? = clear.parent
-        repeat(5) {
-            val subtree = ancestor ?: return null
-            if (subtree.applicationPackage != PRODUCT_PACKAGE) return null
-            val texts = descendants(subtree).filter { node ->
-                val text = node.text
-                val bounds = node.visibleBounds
-                !text.isNullOrBlank() && node.children.isEmpty() && clickableAncestor(node) == null &&
-                    bounds.width() > 0 && bounds.height() > 0 &&
-                    bounds.right <= clearBounds.left + 2 && verticalOverlap(bounds, clearBounds)
-            }.distinctBy { fingerprint(it) }
-            if (texts.size == 1) {
-                val preedit = texts.single()
-                return VisiblePreedit(checkNotNull(preedit.text).trim(), Rect(preedit.visibleBounds), Rect(clearBounds))
-            }
-            // 若 chip 層已有數個非 clickable 文字，不能挑一個猜測；更上層也不會較唯一。
-            if (texts.size > 1) return null
-            ancestor = subtree.parent
-        }
-        return null
+    private fun strictPreedit(): VisiblePreedit? = captureUi().tree.strictPreedit()?.let {
+        VisiblePreedit(it.text, it.bounds.toRect(), it.clearBounds.toRect())
     }
 
     fun clearComposition() {
@@ -258,7 +252,7 @@ internal class AcceptanceDriver(private val caseId: String) {
         if (!poll { clickableDescriptions("清除").isEmpty() }) blocked("clear 後組字 marker 未消失")
     }
 
-    private fun enterKey(case: EnterCase): UiObject2 {
+    private fun enterKey(case: EnterCase): VisibleTarget {
         val isAction = case.expectedActionId != null
         if (case.customPresentation && isAction && case.expectedLabel == "換行") {
             assertTrue("自訂『換行』action 不得使用 newline icon description", clickableDescriptions("換行").isEmpty())
@@ -303,18 +297,37 @@ internal class AcceptanceDriver(private val caseId: String) {
     fun assertCompositionEnter(case: EnterCase, performSecondEnter: Boolean = true) {
         awaitPreedit()
         val key = enterKey(case)
-        val before = snapshot()
+        val boundary = hostCompositionBoundary()
+        val before = boundary.editor
         observe("composition-enter-baseline", before)
         key.click()
         val after = awaitEditorEffect(before)
-        assertEquals("第一次 Enter 只完成組字，不派送 action", before.editorActionCount, after.editorActionCount)
-        assertEquals("第一次 Enter 不換行", before.newlineCount, after.newlineCount)
-        assertEquals("完成組字只 commitText 一次", before.commitCount + 1, after.commitCount)
-        assertTrue("完成組字必須送出非空文字", !after.lastCommitText.isNullOrEmpty())
-        assertEquals("實際文字應恰好附加當次 commit", before.currentText + after.lastCommitText, after.currentText)
+        assertCompositionCompletion(boundary, after)
         if (!poll { clickableDescriptions("清除").isEmpty() }) blocked("完成 Enter 後組字 marker 未消失")
-        observe("composition-enter-after", after)
+        assertCompositionCompletion(boundary, settledSnapshot())
+        val completedBoundary = hostCompositionBoundary()
+        assertCompositionCompletion(boundary, completedBoundary.editor)
+        assertEquals("完成 Enter 後真 host 不得保留 composing span start", -1, completedBoundary.start)
+        assertEquals("完成 Enter 後真 host 不得保留 composing span end", -1, completedBoundary.end)
+        assertEmptyComposition()
+        observe("composition-enter-after", completedBoundary.editor)
         if (performSecondEnter) assertEmptyEnter(case)
+    }
+
+    private fun hostCompositionBoundary(): EditorCompositionBoundary {
+        var result: EditorCompositionBoundary? = null
+        checkNotNull(scenario).onActivity { activity ->
+            val editor = activity.findViewById<RecordingEditText>(R.id.editor)
+            val text = editor.text
+            val current = activity.editorSnapshot
+            assertEquals("boundary 必須來自同次真 host Editable", current.currentText, text.toString())
+            result = EditorCompositionBoundary(current, BaseInputConnection.getComposingSpanStart(text),
+                BaseInputConnection.getComposingSpanEnd(text))
+        }
+        val boundary = checkNotNull(result)
+        observations.put(JSONObject().put("name", "actual-host-composition-boundary")
+            .put("revision", boundary.editor.revision).put("start", boundary.start).put("end", boundary.end))
+        return boundary
     }
 
     fun assertThreeLayoutEnter(case: EnterCase) {
@@ -376,7 +389,8 @@ internal class AcceptanceDriver(private val caseId: String) {
         }
     }
 
-    fun assertCanonicalDachenKeys() {
+    fun assertCanonicalDachenKeys(): List<UiBounds> {
+        val captured = captureUi()
         val rows = listOf(
             listOf("ㄅ" to "1", "ㄉ" to "2", "ˇ" to "3", "ˋ" to "4", "ㄓ" to "5", "ˊ" to "6", "˙" to "7", "ㄚ" to "8", "ㄞ" to "9", "ㄢ" to "0", "ㄦ" to "-"),
             listOf("ㄆ" to "q", "ㄊ" to "w", "ㄍ" to "e", "ㄐ" to "r", "ㄔ" to "t", "ㄗ" to "y", "ㄧ" to "u", "ㄛ" to "i", "ㄟ" to "o", "ㄣ" to "p"),
@@ -384,15 +398,22 @@ internal class AcceptanceDriver(private val caseId: String) {
             listOf("ㄈ" to "z", "ㄌ" to "x", "ㄏ" to "c", "ㄒ" to "v", "ㄖ" to "b", "ㄙ" to "n", "ㄩ" to "m", "ㄝ" to ",", "ㄡ" to ".", "ㄥ" to "/"),
         )
         val seenBounds = mutableSetOf<String>()
+        val keyBounds = mutableListOf<UiBounds>()
+        val keyEvidence = JSONArray()
         var priorRowY = -1
         for ((rowIndex, row) in rows.withIndex()) {
             var priorX = -1
             var rowY: Int? = null
             for ((glyph, hint) in row) {
-                val key = uniqueClickable("canonical:$glyph") { clickableTexts(glyph, tokenMatch = true) }
-                val texts = (listOf(key) + descendants(key)).mapNotNull { it.text }
+                val key = captured.targets(captured.tree.textTargets(glyph, tokenMatch = true)).singleOrNull()
+                    ?: blocked("canonical:$glyph 在當次完整 capture 缺少唯一可見按鍵")
+                assertTrue("canonical:$glyph 必須有 clickable hitbox", key.isClickable)
+                val texts = key.texts()
                 if (texts.none { semanticToken(it, hint) }) blocked("$glyph 的 ASCII 提示 $hint 無法由可見 hierarchy 唯一驗證")
                 val bounds = key.visibleBounds
+                keyBounds += UiBounds(bounds.left, bounds.top, bounds.right, bounds.bottom)
+                keyEvidence.put(JSONObject().put("glyph", glyph).put("ascii", hint)
+                    .put("bounds", JSONArray(listOf(bounds.left, bounds.top, bounds.right, bounds.bottom))))
                 assertTrue("41 glyph 不得重用同一 hitbox", seenBounds.add(bounds.toShortString()))
                 assertTrue("canonical 第 ${rowIndex + 1} 排需保持從左至右", bounds.centerX() > priorX)
                 if (rowY != null) assertEquals("同排鍵中心高度", rowY, bounds.centerY())
@@ -404,32 +425,146 @@ internal class AcceptanceDriver(private val caseId: String) {
         }
         assertEquals("canonical phonetic／tone 可見鍵數", 41, seenBounds.size)
         note("canonical-dachen", "41 unique hitboxes；四排順序與 ASCII hint 已核對；displayRotation=${device.displayRotation}")
+        observations.put(JSONObject().put("name", "canonical-hitboxes").put("keys", keyEvidence))
+        return keyBounds
     }
 
-    fun tapFirstVisibleCandidate() {
-        val preedit = awaitPreedit()
-        val candidates = clickableCandidates(preedit)
-        if (candidates.isEmpty()) blocked("沒有與 preedit chip 同列、且位於 chip 外的可見 CJK candidate")
-        val first = candidates.minBy { it.visibleBounds.left }
-        val text = first.text ?: descendants(first).mapNotNull { it.text }.singleOrNull()
-            ?: blocked("candidate 沒有可唯一辨識的文字")
-        val target = uniqueClickable("candidate:$text") {
-            clickableCandidates(preedit).filter { candidate ->
-                candidate.text == text || descendants(candidate).any { it.text == text }
+    /** TEST_ONLY: changes this fixture Activity's requested orientation, never global rotation settings. */
+    fun verifyDachenConfigurations(checkInput: AcceptanceDriver.(String) -> Unit) {
+        var originalRequest = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        checkNotNull(scenario).onActivity { originalRequest = it.requestedOrientation }
+        val frames = mutableListOf<DachenGeometryFrame>()
+        runCaseCleanup({
+            for ((name, request, expected) in listOf(
+                Triple("portrait", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT),
+                Triple("landscape", ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, Configuration.ORIENTATION_LANDSCAPE),
+                Triple("portrait-return", ActivityInfo.SCREEN_ORIENTATION_PORTRAIT, Configuration.ORIENTATION_PORTRAIT),
+            )) {
+                val beforeTransition = settledSnapshot()
+                observe("$name-before-transition", beforeTransition)
+                note("$name-preedit-before", strictPreedit()?.text.orEmpty())
+                checkNotNull(scenario).onActivity { it.requestedOrientation = request }
+                var orientation = Configuration.ORIENTATION_UNDEFINED
+                if (!poll {
+                    checkNotNull(scenario).onActivity { orientation = it.resources.configuration.orientation }
+                    orientation == expected
+                }) inconclusive("ORIENTATION_TRANSITION_UNOBSERVED", "Activity request=$request；actual orientation=$orientation")
+                assertSelectedIme()
+                // Do not recreate a missing keyboard or invent a new InputConnection.
+                awaitMode(VisibleKeyboardMode.ZHUYIN)
+                note("$name-preedit-after", strictPreedit()?.text.orEmpty())
+                requireNoRotationEffects(beforeTransition, settledSnapshot())
+                val epoch = geometryEpoch()
+                val keys = assertCanonicalDachenKeys()
+                val afterEpoch = geometryEpoch()
+                if (epoch != afterEpoch) inconclusive("GEOMETRY_EPOCH_CHANGED", "layout changed during the completed key capture")
+                val ime = Rect(epoch.ime.left, epoch.ime.top, epoch.ime.right, epoch.ime.bottom)
+                val frame = epoch.copy(keys = keys)
+                frames += frame
+                val geometry = JSONObject().put("name", "$name-geometry")
+                    .put("orientation", orientation).put("rotation", frame.rotation)
+                    .put("display", JSONArray(listOf(0, 0, frame.display.right, frame.display.bottom)))
+                    .put("ime_bounds", JSONArray(listOf(ime.left, ime.top, ime.right, ime.bottom)))
+                checkNotNull(scenario).onActivity { activity ->
+                    val decor = Rect().also { activity.window.decorView.getGlobalVisibleRect(it) }
+                    geometry.put("host_visible_bounds", JSONArray(listOf(decor.left, decor.top, decor.right, decor.bottom)))
+                        .put("width_dp", activity.resources.configuration.screenWidthDp)
+                        .put("height_dp", activity.resources.configuration.screenHeightDp)
+                        .put("density", activity.resources.displayMetrics.density)
+                }
+                observations.put(geometry)
+                requireDachenGeometryFrame(frame)
+                checkInput(name)
+                observe("$name-editor-result", settledSnapshot())
             }
-        }
-        note("visible-candidate-tap", text)
-        target.click()
-        settledSnapshot()
-        awaitPreedit()
+            requireDachenGeometryCoverage(frames)
+        }, {
+            checkNotNull(scenario).onActivity { it.requestedOrientation = originalRequest }
+            var restored = false
+            checkNotNull(scenario).onActivity { restored = it.requestedOrientation == originalRequest }
+            assertTrue("Host requestedOrientation 必須還原；不寫全域 rotation lock", restored)
+            note("orientation-request-restored", originalRequest.toString())
+        })
     }
 
-    private fun clickableCandidates(preedit: VisiblePreedit): List<UiObject2> =
-        distinctTargets(productObjects().filter { node ->
-            val text = node.text ?: return@filter false
-            CJK_WORD.matches(text) && verticalOverlap(node.visibleBounds, preedit.clearBounds) &&
-                node.visibleBounds.left >= preedit.clearBounds.right
-        }.mapNotNull { clickableAncestor(it) })
+    private fun geometryEpoch(): DachenGeometryFrame {
+        var orientation = Configuration.ORIENTATION_UNDEFINED
+        checkNotNull(scenario).onActivity { orientation = it.resources.configuration.orientation }
+        var imeBounds: Rect? = null
+        if (!poll {
+            val windows = instrumentation.uiAutomation.windows.filter { window ->
+                window.type == AccessibilityWindowInfo.TYPE_INPUT_METHOD &&
+                    window.root?.packageName?.toString() == PRODUCT_PACKAGE
+            }
+            imeBounds = windows.singleOrNull()?.let { window -> Rect().also(window::getBoundsInScreen) }
+            imeBounds?.let { it.width() > 0 && it.height() > 0 } == true
+        }) inconclusive("IME_WINDOW_BOUNDS_UNOBSERVABLE")
+        val ime = checkNotNull(imeBounds)
+        return DachenGeometryFrame(orientation, device.displayRotation,
+            UiBounds(0, 0, device.displayWidth, device.displayHeight),
+            UiBounds(ime.left, ime.top, ime.right, ime.bottom), emptyList())
+    }
+
+    fun observeCandidateSnapshot(name: String, expectedLabel: String) {
+        val captured = captureUi().tree
+        val preedit = captured.strictPreedit()
+        val candidates = if (preedit == null) emptyList() else captured.candidates(preedit)
+        observations.put(JSONObject().put("name", name)
+            .put("preedit", preedit?.text ?: JSONObject.NULL)
+            .put("candidate_count", candidates.size)
+            .put("expected_candidate_targets", JSONArray(candidates.filter {
+                captured.targetText(it) == expectedLabel
+            }.map { candidate ->
+                    val b = candidate.bounds
+                    JSONObject().put("label", expectedLabel)
+                        .put("bounds", JSONArray(listOf(b.left, b.top, b.right, b.bottom)))
+                })))
+    }
+
+    fun tapFirstVisibleCandidate(committedPrefix: String): String = completeCandidate(null) { committedPrefix + it }
+
+    fun tapCompletionCandidate(label: String, expectedEditorText: String) {
+        completeCandidate(label) { expectedEditorText }
+    }
+
+    private fun completeCandidate(label: String?, expectedText: (String) -> String): String {
+        awaitPreedit()
+        val before = snapshot()
+        val target = uniqueClickable("candidate:${label ?: "first-visible"}") {
+            val captured = captureUi()
+            val preedit = captured.tree.strictPreedit()
+            val candidates = if (preedit == null) emptyList() else captured.tree.candidates(preedit)
+            val matches = if (label != null) candidates.filter { captured.tree.targetText(it) == label }
+                else {
+                    val first = candidates.minWithOrNull(compareBy<VisibleUiNode> { it.bounds.top }.thenBy { it.bounds.left })
+                    candidates.filter { it.bounds == first?.bounds }
+                }
+            captured.targets(matches)
+        }
+        val selected = target.tree.targetText(target.node) ?: blocked("candidate 沒有唯一完整文字")
+        note("visible-candidate-tap", selected)
+        target.click()
+        val after = awaitEditorEffect(before)
+        assertCandidateCompletion(before, after, selected, expectedText(selected))
+        if (!poll { clickableDescriptions("清除").isEmpty() }) blocked("candidate completion 後組字 marker 未消失")
+        val settled = settledSnapshot()
+        assertCandidateCompletion(before, settled, selected, expectedText(selected))
+        assertEmptyComposition()
+        observe("completion-$selected", settled)
+        return selected
+    }
+
+    fun tapEnglishSoftKey(letter: String) {
+        val target = uniqueClickable("english-key:$letter") {
+            val captured = captureUi()
+            val top = captured.tree.keyboardTop()
+            captured.targets(if (top == null) emptyList() else captured.tree.textTargets(letter).filter { it.bounds.top >= top })
+        }
+        val before = snapshot().currentText
+        target.click()
+        if (!poll(timeoutMs = 8_000) { snapshot().currentText != before })
+            throw AssertionError("visible English key $letter did not update editor composition")
+    }
 
     private fun awaitEditorEffect(before: EditorSnapshot): EditorSnapshot {
         val changed = poll {
@@ -437,7 +572,7 @@ internal class AcceptanceDriver(private val caseId: String) {
             after.editorActionCount != before.editorActionCount || after.commitCount != before.commitCount ||
                 after.currentText != before.currentText || after.newlineCount != before.newlineCount
         }
-        assertTrue("可見軟 Enter 點擊後須有當次 editor effect", changed)
+        assertTrue("可見軟鍵點擊後須有當次 editor effect", changed)
         return settledSnapshot()
     }
 
@@ -457,96 +592,78 @@ internal class AcceptanceDriver(private val caseId: String) {
 
     fun close() {
         val active = scenario ?: return
+        externalUi.cleanupOwner(true)
         try {
-            clearComposition()
+            runCaseCleanup(::clearComposition) {
+                scenario = null
+                active.close()
+            }
         } finally {
             scenario = null
-            active.close()
+            externalUi.cleanupOwner(false)
         }
     }
 
-    private fun uniqueHost(id: String): UiObject2 = uniqueClickable("host:$id", requireClickable = false) {
-        device.findObjects(By.res(HOST_PACKAGE, id)).filter { visible(it) }
+    private fun uniqueHost(id: String): UiObject2 {
+        var matches = emptyList<UiObject2>()
+        if (!poll { matches = device.findObjects(By.res(HOST_PACKAGE, id)).filter {
+            it.visibleBounds.run { width() > 0 && height() > 0 }
+        }; matches.size == 1 }) blocked("host:$id 可見匹配數=${matches.size}，要求恰好 1")
+        return matches.single()
     }
 
-    private fun uniqueClickable(
-        label: String,
-        requireClickable: Boolean = true,
-        query: () -> List<UiObject2>,
-    ): UiObject2 {
-        var matches = emptyList<UiObject2>()
+    private fun uniqueClickable(label: String, query: () -> List<VisibleTarget>): VisibleTarget {
+        var matches = emptyList<VisibleTarget>()
         if (!poll { matches = query(); matches.size == 1 }) blocked("$label 可見匹配數=${matches.size}，要求恰好 1")
         val result = matches.single()
-        if (requireClickable && !result.isClickable) blocked("$label 沒有可辨識的 clickable hitbox")
+        if (!result.isClickable) blocked("$label 沒有可辨識的 clickable hitbox")
         return result
     }
 
-    private fun clickableTexts(label: String, tokenMatch: Boolean = false): List<UiObject2> =
-        distinctTargets(productObjects().filter { node ->
-            val text = node.text ?: return@filter false
-            text == label || (tokenMatch && semanticToken(text, label))
-        }.mapNotNull { clickableAncestor(it) })
-
-    private fun clickableDescriptions(label: String): List<UiObject2> =
-        distinctTargets(productObjects().filter { it.contentDescription == label }.mapNotNull { clickableAncestor(it) })
-
-    private fun hasText(label: String): Boolean = clickableTexts(label).size == 1
-
-    private fun productObjects(): List<UiObject2> = device.findObjects(By.pkg(PRODUCT_PACKAGE)).filter { visible(it) }
-
-    private fun visible(node: UiObject2): Boolean = node.visibleBounds.run { width() > 0 && height() > 0 }
-
-    private fun clickableAncestor(node: UiObject2): UiObject2? {
-        var current: UiObject2? = node
-        repeat(12) {
-            val value = current ?: return null
-            if (value.applicationPackage != PRODUCT_PACKAGE) return null
-            if (value.isClickable && visible(value)) return value
-            current = value.parent
-        }
-        return null
+    private fun clickableTexts(label: String, tokenMatch: Boolean = false): List<VisibleTarget> {
+        val captured = captureUi()
+        return captured.targets(captured.tree.textTargets(label, tokenMatch))
     }
 
-    private fun descendants(node: UiObject2): List<UiObject2> {
-        val result = mutableListOf<UiObject2>()
-        fun visit(parent: UiObject2, depth: Int) {
-            if (depth > 8 || result.size >= 500) return
-            for (child in parent.children) {
-                result += child
-                visit(child, depth + 1)
-            }
-        }
-        visit(node, 0)
-        return result
+    private fun clickableDescriptions(label: String): List<VisibleTarget> {
+        val captured = captureUi()
+        return captured.targets(captured.tree.descriptionTargets(label))
     }
 
-    private fun distinctTargets(nodes: List<UiObject2>): List<UiObject2> = nodes.distinctBy(::fingerprint)
-
-    private fun fingerprint(node: UiObject2): String =
-        "${node.applicationPackage}|${node.className}|${node.resourceName}|${node.visibleBounds.toShortString()}|${node.text}|${node.contentDescription}"
-
-    private fun semanticToken(text: String, token: String): Boolean =
-        text == token || text.split(Regex("[\\s,]+"), limit = 0).any { it == token } ||
-            // Compose 多 Text 合併通常以換行分隔；逗號 glyph 必須也能在獨立 line 被辨識。
-            text.lineSequence().any { it.trim() == token }
-
-    private fun verticalOverlap(first: Rect, second: Rect): Boolean =
-        first.top < second.bottom && second.top < first.bottom
+    private fun captureUi(): CapturedUi = try {
+        externalUi.capture(observationDeadline ?: (SystemClock.uptimeMillis() + UI_TIMEOUT_MS))
+    } catch (error: UiReadDeadline) {
+        if (error.suppressed.isNotEmpty()) throw error
+        if (observationDeadline != null) throw error
+        blocked("fresh UI observation 未在有界 deadline 完成；沒有使用部分或過時 observation 判定結果")
+    }
 
     private fun blocked(detail: String): Nothing = inconclusive("BLOCKED_SELECTOR", detail)
 
     private fun poll(timeoutMs: Long = UI_TIMEOUT_MS, predicate: () -> Boolean): Boolean {
-        val deadline = SystemClock.uptimeMillis() + timeoutMs
-        do {
-            try {
-                if (predicate()) return true
-            } catch (_: StaleObjectException) {
-                // 模式切換／Compose 動畫可能換 node；下一次重新 query，絕不使用舊座標。
-            }
-            val remaining = deadline - SystemClock.uptimeMillis()
-            if (remaining <= 0) return false
-            SystemClock.sleep(minOf(POLL_INTERVAL_MS, remaining))
-        } while (true)
+        val previous = observationDeadline
+        val deadline = minOf(previous ?: Long.MAX_VALUE, SystemClock.uptimeMillis() + timeoutMs)
+        observationDeadline = deadline
+        try {
+            do {
+                try {
+                    if (predicate()) return SystemClock.uptimeMillis() <= deadline
+                } catch (error: StaleObjectException) {
+                    // Host metadata read only; gestures are never executed in a predicate.
+                    if (!retryableScopedStale(error) { it is StaleObjectException }) throw error
+                } catch (error: UiReadDeadline) {
+                    if (error.suppressed.isNotEmpty()) throw error
+                    // A prior completed tree cannot diagnose the current preedit after an
+                    // unobservable tail. Preserve this read gap instead of asserting a decoder fault.
+                    blocked("fresh UI observation 未在當次 polling deadline 完成；timeout 根因未證明")
+                }
+                val remaining = deadline - SystemClock.uptimeMillis()
+                if (remaining <= 0) return false
+                SystemClock.sleep(minOf(POLL_INTERVAL_MS, remaining))
+            } while (true)
+        } finally {
+            observationDeadline = previous
+        }
     }
 
     fun evidence(reason: String?, error: Throwable?): JSONObject = JSONObject()
@@ -558,6 +675,7 @@ internal class AcceptanceDriver(private val caseId: String) {
         .put("error", error?.message ?: JSONObject.NULL)
         .put("error_details", error?.toFailureEvidence() ?: JSONObject.NULL)
         .put("observations", observations)
+        .put("ui_reads", externalUi.diagnostics())
 
     companion object {
         const val HOST_PACKAGE = "io.github.juhjuhx.kuyin.acceptancehost"
@@ -566,7 +684,6 @@ internal class AcceptanceDriver(private val caseId: String) {
         private const val SETTLE_TIMEOUT_MS = 2_000L
         private const val QUIET_WINDOW_MS = 300L
         private const val POLL_INTERVAL_MS = 50L
-        private val CJK_WORD = Regex("[一-鿿]+")
     }
 }
 
@@ -604,11 +721,7 @@ internal fun acceptanceCase(caseId: String, block: AcceptanceDriver.() -> Unit) 
         putString("stream", "P1_ACCEPTANCE_CASE=$envelope\n")
     }
     InstrumentationRegistry.getInstrumentation().sendStatus(2, status)
-    when (val error = failure) {
-        null -> Unit
-        is CaseInconclusive -> throw AssumptionViolatedException("$caseId RESULT=INCONCLUSIVE REASON=${error.reason}: ${error.message}", error)
-        else -> throw error
-    }
+    failure?.let { throw terminalCaseFailure(caseId, it) }
 }
 
 private fun EditorSnapshot.effectKey(): List<Any?> = listOf(

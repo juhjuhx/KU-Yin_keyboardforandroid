@@ -1,0 +1,26 @@
+{
+  "source_sha": "5ef8a979850d1588d6be68aca103e12cb51f4a6d",
+  "ci_run": 39047679642,
+  "job": 117439598233,
+  "artifact": "r22-binding-isolation/r22-legacy/h0",
+  "scope": "Synthetic disposable API33 emulator WMS only; not user device data",
+  "atomic_snapshot": false,
+  "files": {
+    "window-windows-stdout.txt": {
+      "sha256": "9023b50033bfdb4eef6e7b67f35f0d8ca29029ba192adcd17398a64198cfc175",
+      "bytes": 28329
+    },
+    "window-displays-stdout.txt": {
+      "sha256": "d6607a216a7baaa1de69c81b32bc3a0fead3e0be0f17392b358142cf72cebcb6",
+      "bytes": 15598
+    },
+    "final-window-windows-stdout.txt": {
+      "sha256": "509125f50bb845246c477e083288af5abfc30aa49c0db3abf14d4b1255ac5fac",
+      "bytes": 31306
+    },
+    "final-window-displays-stdout.txt": {
+      "sha256": "51e90b21af45469a89a5461d37ad8c889fdc1b6b642a28029b64c08a84ec7feb",
+      "bytes": 15734
+    }
+  }
+}

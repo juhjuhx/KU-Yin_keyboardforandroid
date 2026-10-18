@@ -2,6 +2,9 @@
 import copy
 import inspect
 import json
+import re
+import shutil
+import tempfile
 from pathlib import Path
 import unittest
 from test_p1_acceptance_device import device
@@ -9,6 +12,33 @@ from test_p1_acceptance_device import device
 MANIFEST_PATH = Path(__file__).resolve().parents[1] / 'p1_instrumentation_manifest.json'
 MANIFEST = json.loads(MANIFEST_PATH.read_text())
 HOST = MANIFEST['host']['tests']
+FIXTURES = Path(__file__).resolve().parent / 'fixtures'
+FROZEN_SOURCE_ROOT = FIXTURES / 'p1e-frozen-instrumentation'
+
+
+def assert_frozen_sources(test, root):
+    """Verify the exact historical bytes, never the evolving working-tree sources."""
+    for relative, digest in MANIFEST['source_sha256'].items():
+        source = root / relative
+        test.assertTrue(source.is_file(), f'missing frozen source: {relative}')
+        test.assertEqual(digest, device.sha256(source), relative)
+
+
+def current_test_identities(root):
+    """Fail closed if the explicitly inventoried Kotlin test syntax changes."""
+    identities = []
+    for source in sorted(root.rglob('*.kt')):
+        text = source.read_text()
+        annotations = re.findall(r'@Test\b', text)
+        if not annotations:
+            continue
+        packages = re.findall(r'^package\s+(\S+)\s*$', text, re.M)
+        owners = re.findall(r'^class\s+(\w+)\b', text, re.M)
+        methods = re.findall(r'@Test\s+fun\s+(\w+)\s*\(', text)
+        if len(packages) != 1 or len(owners) != 1 or len(methods) != len(annotations):
+            raise AssertionError(f'unrecognized instrumentation source structure: {source}')
+        identities.extend(f'{packages[0]}.{owners[0]}#{method}' for method in methods)
+    return identities
 
 def event(case, **extra):
     return {'case_id':case, 'result':'PASS', 'scope':'synthetic protocol only',
@@ -161,12 +191,45 @@ class ManifestIntegrityTests(unittest.TestCase):
                     s.execute('install')
                 self.assertEqual([],s.fake.mutations)
     def test_source_hashes_match_frozen_instrumentation_sources(self):
-        root=MANIFEST_PATH.parents[1]
-        for relative,digest in MANIFEST['source_sha256'].items():
-            source=root/relative
-            if not source.exists():
-                self.skipTest('portable source hash ledger; full source unavailable')
-            self.assertEqual(digest,device.sha256(source),relative)
+        assert_frozen_sources(self, FROZEN_SOURCE_ROOT)
+
+    def test_missing_frozen_source_is_failure_not_skip(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'frozen'
+            shutil.copytree(FROZEN_SOURCE_ROOT, root)
+            (root / next(iter(MANIFEST['source_sha256']))).unlink()
+            with self.assertRaisesRegex(AssertionError, 'missing frozen source'):
+                assert_frozen_sources(self, root)
+
+    def test_tampered_frozen_source_is_failure(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'frozen'
+            shutil.copytree(FROZEN_SOURCE_ROOT, root)
+            source = root / next(iter(MANIFEST['source_sha256']))
+            source.write_bytes(source.read_bytes() + b'\n// tampered\n')
+            with self.assertRaises(AssertionError):
+                assert_frozen_sources(self, root)
+
+    def test_current_instrumentation_has_exact_five_and_thirty_three_identities(self):
+        contract = json.loads((FIXTURES / 'current_instrumentation_identities.json').read_text())
+        for module, count in (('app', 5), ('acceptance-host', 33)):
+            with self.subTest(module=module):
+                expected = contract[module]['identities']
+                actual = current_test_identities(MANIFEST_PATH.parents[1] / module / 'src/androidTest')
+                self.assertEqual(count, contract[module]['expected_count'])
+                self.assertEqual(count, len(expected))
+                self.assertEqual(count, len(set(expected)))
+                self.assertEqual(count, len(actual))
+                self.assertEqual(count, len(set(actual)))
+                self.assertEqual(set(expected), set(actual))
+        self.assertTrue({t['identity'] for t in HOST}.issubset(contract['acceptance-host']['identities']))
+
+    def test_current_identity_reader_rejects_unsupported_annotation_shape(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / 'Test.kt').write_text('package example\nclass SampleTest {\n@Test(timeout=100) fun method() {}\n}\n')
+            with self.assertRaisesRegex(AssertionError, 'unrecognized'):
+                current_test_identities(root)
 
 class MalformedWireTests(unittest.TestCase):
     def test_malformed_control_lines_are_not_ignored(self):
