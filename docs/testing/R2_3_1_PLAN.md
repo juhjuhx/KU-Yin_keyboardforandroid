@@ -38,4 +38,4 @@ Spec：true/unknown/missing/conflicting 絕無 HEALTHY、first failure durable�
 
 不動舊工區／main／Release。放棄新 branch 或正常 revert 本切片；歷史 evidence 不改寫，CI 失敗不重試洗綠。
 
-5. [ ] 最後actual CI raw獨立review：reviewer遇額度限制，REVIEW_INCOMPLETE；作者重建已完成，不替代批准。H1/H2仍NOT_EXECUTED。
+5. [x] 最後actual CI raw獨立review：第一次額度中斷保留履歷；續作跨過恢復時段後完成，Spec/Quality PASS限H0；沒有重跑CI。H1/H2仍NOT_EXECUTED，下一階段須當次fresh H0且同boot。

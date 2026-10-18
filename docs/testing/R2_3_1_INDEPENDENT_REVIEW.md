@@ -20,4 +20,4 @@ Spec/quality PASS 只限 manual `workflow384024174 + 新 branch ref + host_scope
 
 ## Actual CI runtime 審查狀態
 
-CI39080190653 exactd26fb1b完成，作者下載raw並重建H0 HEALTHY、核對source三hash與initial/final時序；詳驗證矩陣。但最後指定read-only reviewer遭遇額度限制，沒有出具runtime報告：**REVIEW_INCOMPLETE**。兩份已完成source裁定不受影響，也不能冒用為這次runtime獨立批准。不得因CI job SUCCESS而恢復H1/H2、merge或宣稱release ready。
+CI39080190653 exactd26fb1b完成，作者下載raw並重建H0 HEALTHY、核對source三hash與initial/final時序；詳驗證矩陣。第一次指定read-only reviewer遭遇額度限制；使用者續作且已過恢復時間後完成限定raw核對：**Spec PASS／Quality PASS（僅H0兩次有界觀測）**。獨立確認IMMS wire、PM/AM/WMS/ANR、PNG／CRC、31命令與100份artifact，無未解重大finding。完整外部 `RUNTIME_EVIDENCE_INDEPENDENT_REVIEW.md` SHA256 `6afe38f9642556700f2287498039bd4252efcab37e030b759f659e9964eedcc9`；初次中斷保留於24狀態履歷。不得將此批准延伸至H1/H2、merge、physical或release；AVD已kill，未來H1須重新取得同boot的新鮮H0。

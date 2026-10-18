@@ -62,6 +62,6 @@ source239/239、artifact103檔及四APK workspace hashguards核對；本輪APK s
 
 隔離 `fix/r2-3-1-health-probe`，base9622586、runtime source `d26fb1b76e1f448f6004910b1189a513a13fc1a9`。F1/P2 frozen guard已以真raw單變數counterexample RED/GREEN及獨立oracle處置；unknown/缺失/空值/矛盾與重複不放行。H0 initial/final無retry、保留first assessment與ADB時間/raw/non-atomic metadata；不改Android/JNI/原Appvisibility assertions。
 
-唯一health-only CI39080190653 exactsource SUCCESS：Python192 PASS、10contracts PASS、H0 HEALTHY/exit0；initial/final均明確unfrozen／Launcherfocus、same user0/boot、lastanr none，沒有APK install或H1/H2/App/Host。這不證明原ANR／remote binding根因已解，也不把兩組WMS reads當atomic或持續健康。Local192 PASS/131.431s、10contracts；source與manual路由兩位限定review PASS。最後actual runtime獨立review遇額度限制，**REVIEW_INCOMPLETE**；作者raw重建不替代該批准。
+唯一health-only CI39080190653 exactsource SUCCESS：Python192 PASS、10contracts PASS、H0 HEALTHY/exit0；initial/final均明確unfrozen／Launcherfocus、same user0/boot、lastanr none，沒有APK install或H1/H2/App/Host。這不證明原ANR／remote binding根因已解，也不把兩組WMS reads當atomic或持續健康。Local192 PASS/131.431s、10contracts；source與manual路由兩位限定review PASS。最後actual runtime獨立review首次遇額度限制；使用者續作且過恢復時段後完成，**Spec/Quality PASS限H0**，獨立核100artifact／31命令、raw重建HEALTHY；原中斷履歷保留。
 
 只推送新branch，NO_PR（既有PR trigger會執行其他runtime）；main63c9e4a、PR10HOLD／PR12Draft／舊release不變。指定舊APK/v2/v3hash及原22工區HEAD/status/tracked diff保持；字典/Room/prefs不碰。H1/H2待另一明確階段，physical NOT_TESTED／production NOT_READY／M4 NOT_VALIDATED／S2 NOT_STARTED。R3 QR與watcher僅初審、未修；release/rc-closure-r3工區仍main63且clean。入口：[R2.3.1交接](testing/R2_3_1_FINAL_HANDOFF.md)／[驗證](testing/R2_3_1_VALIDATION_MATRIX.md)。

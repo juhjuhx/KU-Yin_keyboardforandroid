@@ -24,7 +24,7 @@ MAIN：`63c9e4ab8ad7e277013acb5d7cce99228ec1f827`。文件完成HEAD以外部 `R
 - initial UTC `2026-10-17T23:48:00.190249+00:00`、final `23:48:03.847835+00:00`，各唯一false／Launcher focus、same user0/boot；原始四WMS命令各exit0、no timeout。
 - 作者從raw重建initial HEALTHY，核final/PNG/identity/source三hash，31個capture command沒有install/select/instrumentation。current lastanr none，PNG為Launcher選單；不將其當真editor輸入證明。
 - Local最終Python192 PASS／131.431s、contracts10 PASS；兩位source reviewer限定PASS，完整規格/結果見[驗證矩陣](R2_3_1_VALIDATION_MATRIX.md)及[獨立source review](R2_3_1_INDEPENDENT_REVIEW.md)。
-- **INDEPENDENT_RUNTIME_REVIEW = REVIEW_INCOMPLETE**：指定reviewer於final raw審查時因額度限制失敗，沒有出具runtime批准。不換未批准provider，不盲retry；source-only PASS仍只限原scope。
+- **INDEPENDENT_RUNTIME_REVIEW = PASS（限定H0）**：第一次因額度中斷；使用者續作且已過provider提示恢復時間後，原reviewer完成raw獨立重建，100/100 artifact及31命令核實，Spec/Quality PASS。完整報告 `RUNTIME_EVIDENCE_INDEPENDENT_REVIEW.md`，SHA256 `6afe38f9642556700f2287498039bd4252efcab37e030b759f659e9964eedcc9`。這不是binding／physical／release批准；原中斷履歷保留，不換未批准provider或重跑CI。
 
 ## 保存／剩餘缺口
 
@@ -40,4 +40,4 @@ R3 mainline工區 `.worktrees/r3-release-candidate`、branch `release/rc-closure
 
 ## NEXT／STOP
 
-先補完這次CI raw的獨立審查，再在另一個明確批准的階段規劃H1／H2；不能直接重跑完整Binding A/B。R3 QR切片可獨立續作但不能將其當已完成。只讀本交接、anchor、具體source/evidence；無需再載入數百份歷史。外部evidence同驗證矩陣列目錄，下一命令為唯讀核 `19-ci-final-metadata.json`、`21-ci-artifacts/h0/` 與runtime source，不安裝任何APK。
+本次CI raw獨立審查已完成。下一步只能在另一個明確批准的階段規劃fresh H0→H1／H2，不能直接重跑完整Binding A/B。本次AVD已由action kill；新H1須與當次新H0同serial/user/boot_id，不能跨boot重用本次result。R3 QR切片可獨立續作但不能將其當已完成。只讀本交接、anchor、具體source/evidence；無需再載入數百份歷史。外部evidence同驗證矩陣列目錄，下一命令為唯讀核 `19-ci-final-metadata.json`、`21-ci-artifacts/h0/` 與runtime source，不安裝任何APK。
