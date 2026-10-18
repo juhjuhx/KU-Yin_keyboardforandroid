@@ -20,9 +20,9 @@ H0 不等待重試：一次 initial WMS pair，診斷後一次 final pair；每�
 ## TODO／gates
 
 1. [x] 真 raw fixtures + hash/provenance；frozen counterexample assertion RED 已記錄於外部 `02-frozen-red.log`。
-2. [ ] 最小 frozen guard、時間與 readiness evidence；focused 36 PASS；全 Python 修正後重跑中；10 contracts PASS。review另發現空值重複欄位，`10-review-empty-field-red.log`兩個subcase RED後，以欄位總數=1修正。
-3. [ ] Fresh-context source reviewer 重跑 F1 與負面 fixtures；無未解重大 finding 才提交。
-4. [ ] 一次 health-only CI：同 API33/default/x86_64/pixel7、現有 KVM/setup，不 build/install APK，不啟動 App/Host/binding。保留 exact SHA、raw/hash、review、最終三態；H1/H2 NOT_EXECUTED。
+2. [x] 最小 frozen guard、時間與 readiness evidence；focused36、修正後全Python192、10contracts PASS。review另發現空值重複欄位，`10-review-empty-field-red.log`兩個subcase RED後，以欄位總數=1修正。
+3. [x] Fresh-context source reviewer 重跑 F1 與負面 fixtures；無未解重大 finding 才提交。
+4. [x] 一次 health-only CI39080190653 exactd26fb1b、H0 HEALTHY／exit0：同 API33/default/x86_64/pixel7、現有 KVM/setup，不 build/install APK，不啟動 App/Host/binding。保留 exact SHA、raw/hash、review、最終三態；H1/H2 NOT_EXECUTED。
 
 共享介面：task1 raw windows → task2 `complete_window` → task3/4 actual collector。原 H1 使用同 parser，因此補 fixture 明確 false，不改真 editor assertions。使用已註冊 workflow ID `384024174` 的新 health scope；main 沒有該檔，既有 branch run 已建立註冊。舊 run 的 event=workflow_dispatch、source=5ef8a97；API確認workflow active。官方規則與路由獨立審查另列報告。
 
@@ -37,3 +37,5 @@ Spec：true/unknown/missing/conflicting 絕無 HEALTHY、first failure durable�
 ## Rollback
 
 不動舊工區／main／Release。放棄新 branch 或正常 revert 本切片；歷史 evidence 不改寫，CI 失敗不重試洗綠。
+
+5. [ ] 最後actual CI raw獨立review：reviewer遇額度限制，REVIEW_INCOMPLETE；作者重建已完成，不替代批准。H1/H2仍NOT_EXECUTED。

@@ -56,3 +56,12 @@ B02/B03 native context與內部reset oracle不足、C nativelearning、C04真nul
 唯一fresh AVD H0=INCONCLUSIVE／exit3：第一次currentFocus=null，final取樣Launcher恢復；沒有觀測到SystemUI ANR，last-anr明示none。H0沒有用後次正常狀態覆寫初次原因，任何KU/hostinstall、H1／H2／App5／Host33／matrix32／B01均NOT_EXECUTED，B skipped。真KVMusable、boot38.428s仍不等於healthPASS，原ANR及remote根因未解。R2.2 B安裝前ANR window隱藏的勘誤已校canonical入口；原raw／舊工區保留。
 
 source239/239、artifact103檔及四APK workspace hashguards核對；本輪APK signer／JVM逐test XML未封存，不推測count/identity。21原工區與公開APK/v2/v3三指定資產保持。main63c9e4a、PR12Draft、PR10HOLD、release不變；實機NOT_TESTED／productionNOT_READY／S2NOT_STARTED／M4NOT_VALIDATED。入口[R2.3交接](testing/R2_3_FINAL_HANDOFF.md)與[驗證矩陣](testing/R2_3_VALIDATION_MATRIX.md)。runtime獨立review overall NEEDS_REVISION，另有OPEN P2：probe未明確拒displayFrozen=true，離線反例可得HEALTHY，本run沒有假PASS。下一最小工作是frozen guard與H0焦點readiness的有界唯讀觀測；本輪遵STOP，不改碼或再嘗試binding。
+
+
+## R2.3.1 health probe correction（2026-10-18）
+
+隔離 `fix/r2-3-1-health-probe`，base9622586、runtime source `d26fb1b76e1f448f6004910b1189a513a13fc1a9`。F1/P2 frozen guard已以真raw單變數counterexample RED/GREEN及獨立oracle處置；unknown/缺失/空值/矛盾與重複不放行。H0 initial/final無retry、保留first assessment與ADB時間/raw/non-atomic metadata；不改Android/JNI/原Appvisibility assertions。
+
+唯一health-only CI39080190653 exactsource SUCCESS：Python192 PASS、10contracts PASS、H0 HEALTHY/exit0；initial/final均明確unfrozen／Launcherfocus、same user0/boot、lastanr none，沒有APK install或H1/H2/App/Host。這不證明原ANR／remote binding根因已解，也不把兩組WMS reads當atomic或持續健康。Local192 PASS/131.431s、10contracts；source與manual路由兩位限定review PASS。最後actual runtime獨立review遇額度限制，**REVIEW_INCOMPLETE**；作者raw重建不替代該批准。
+
+只推送新branch，NO_PR（既有PR trigger會執行其他runtime）；main63c9e4a、PR10HOLD／PR12Draft／舊release不變。指定舊APK/v2/v3hash及原22工區HEAD/status/tracked diff保持；字典/Room/prefs不碰。H1/H2待另一明確階段，physical NOT_TESTED／production NOT_READY／M4 NOT_VALIDATED／S2 NOT_STARTED。R3 QR與watcher僅初審、未修；release/rc-closure-r3工區仍main63且clean。入口：[R2.3.1交接](testing/R2_3_1_FINAL_HANDOFF.md)／[驗證](testing/R2_3_1_VALIDATION_MATRIX.md)。
