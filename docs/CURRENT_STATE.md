@@ -1,5 +1,20 @@
 # CURRENT_STATE
 
+## 當前：R3 RC closure（2026-10-19）
+
+本節為ACTIVE；以下R1/R2記錄是各自時間點歷史。main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`、公開Alpha/tag不變。隔離 `release/rc-closure-r3`，product QR commit `de2ac7d94e0a79f492d11ee165173e65b4562bd7`；整合R231後 build/runtime source `b98206267b3a65c452db1661bb3bae910ec61f6a`。後續文件HEAD不冒充新的runtime證據。
+
+- 已修捐贈假QR及OSI/EFF完整官方網址：標準離線PNG、完整quiet zone、8 focused tests及12 rendered captures；保留既有視覺、copy/open、直接交組織與無背書說明。手機scan／TalkBack未驗，UI明示。typing/session/JNI／native pins／Dachen geometry不動。
+- Fresh local：Python205 PASS／contracts10 PASS；App JVM290＝280PASS/10native-hostSKIP，Host JVM123PASS；四APK build exit0；新四ABIrelink `.text`／`.rodata`與本機APK相同，完整ELF／跨環境APK不宣稱相同。
+- 唯一CI [39152444358](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39152444358) exactb982／FAILURE：H0HEALTHY；H1INCONCLUSIVE／EDITOR_CAPTURE_UNVERIFIED，UI dump 3004ms timeout／無XML。H1before WMS frozen=true、after/finalfalse；深層根因UNRESOLVED。H2／產品install／App5／Host33/32case／B01 NOT_EXECUTED，未盲retry／改timeout／鬆assertions。
+- 新本機Debug20004／0.2.0-rc.1，SHA `c171a3455acb1cb4a3b16ca0eb65e483620c35a224a308f398ad65c1867f0416`，同舊Alpha cert46488…；CI使用不同cert，四APK／native完整bytes亦不同，分開保存，不能互換證據。
+- 實機／保資料update／完整UI／OEM D2D／fullerase／正式key custody／完整Rust runtime license subset仍OPEN。RC_READY=false、Stable=false、NO_GO、NOT_PUBLISHED。新source/relink包已備，不能代替法律或runtime gate。
+- PR10HOLD、PR12Draft、PR18Draft獨立review；不merge、不改舊Release、不啟S2/M4/ASR。下一最小任務：依H1raw隔離XML capture缺口，先因果／RED-GREEN再新runtime階段。
+
+續作只讀 [R3交接](release/R3_FINAL_HANDOFF.md)、[驗證矩陣](release/R3_RELEASE_VALIDATION_MATRIX.md)、[readiness](release/R3_RELEASE_READINESS.md)及必要source；歷史不要當目前PASS。
+
+## R1 起的歷史紀錄
+
 ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX與原Gitcommit。
 
 - 本輪起始GitHub main `a6a4c654845338521700121ac06586887d1ec085`；PR#8正常merge；tag `v0.2.0-aie.1`仍指 `2ce6810684fd65a65a3006a224dc786b1f3a5f62`。產品source39acf96；公開experimentalDebug APK20003/0.2.0-aie.1，SHAacdbacdfebcb897074807bc0746d26ecefbbd8a5f28b25f46aab929afb865634。R1不重做S0/S1、不發布新產品。

@@ -18,7 +18,7 @@
 - 深色模式、配色、候選字級、震動／音效設定、本機回饋及既有開源捐贈卡。
 - S0 停用不完整「重設學習」，明示不會刪資料；完整 learning erase 尚未支援。
 
-實機 30-case matrix、OEM／TalkBack、完整資料清除、正式簽章及商店發布仍 OPEN。此版本不是 production-ready；最新 emulator host為15PASS/9FAIL/8skip，fixture適配待完成；不能稱完整驗收通過。已知限制與 TODO 見 [發布交接](docs/release/AIE_ALPHA_HANDOFF.md)。
+實機30-case、OEM／TalkBack、完整資料清除、正式簽章與商店發布仍OPEN。公開Alpha的歷史host結果為15PASS/9FAIL/8SKIP；R3隔離候選的最新CI在H1證據擷取停止，App／Host未執行，不能稱完整驗收。[公開Alpha交接](docs/release/AIE_ALPHA_HANDOFF.md)與[未發布R3狀態](docs/release/R3_RELEASE_READINESS.md)分開記錄。
 
 ## 隱私與安全（程式實測）
 
@@ -51,7 +51,7 @@ Service 管 Android lifecycle／editor effects；session 是唯一組字 owner�
 
 ## 開源捐贈
 
-作者不收個人贊助。App 內開源捐贈卡提供 FSF／ASF／Open Source Initiative／EFF 捐款連結＋QR 風格圖（`OpenSourceDonationCard.kt`，Canvas 手繪 21×21 模組圖；**是否真可掃描待實機驗證**，驗過前請視為裝飾）。
+捐款直接交予 FSF／ASF／Open Source Initiative／EFF，本專案不收取款項，亦不代表組織背書。公開Alpha仍含舊裝飾圖，請使用官方網址的複製／開啟動作。未發布R3已改標準離線QR，四URL／畫面解碼與quiet zone測試完成，**手機相機尚未驗證**；來源與限制見[QR provenance](docs/release/QR_PROVENANCE.md)，不能將分支修正當成既有Release內容。
 
 ## 授權
 

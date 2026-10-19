@@ -1,11 +1,12 @@
 # KU-Yin 續作短入口
 
-2026-10-18，R2.3.1完成frozen parser修正及唯一health-only CI；停在H0，未恢復Binding。依序讀AGENTS → [CURRENT_STATE](../CURRENT_STATE.md) → [ARCHITECTURE](../ARCHITECTURE.md) → [R2.3.1 handoff](../testing/R2_3_1_FINAL_HANDOFF.md)／[validation](../testing/R2_3_1_VALIDATION_MATRIX.md)，再取具體source/raw，不重讀整批歷史。
+2026-10-19；R3停在證據／Release NO_GO。依序讀AGENTS → [CURRENT_STATE](../CURRENT_STATE.md)頂端 → [ARCHITECTURE](../ARCHITECTURE.md) → [R3_FINAL_HANDOFF](../release/R3_FINAL_HANDOFF.md)／[validation](../release/R3_RELEASE_VALIDATION_MATRIX.md)，再讀必要source/raw；不用重新讀全R1/R2。
 
-- main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR12d6bf2 Draft、PR10ea5HOLD；release v0.2.0-aie.1與舊APK不變。新工區 `.worktrees/r2-3-1-health-probe`、branch `fix/r2-3-1-health-probe`，base9622586、runtime source `d26fb1b76e1f448f6004910b1189a513a13fc1a9`；最終docs SHA看外部收據，不當新runtime source。
-- F1 CLOSED_WITH_EVIDENCE：raw只切frozen bool的舊版真RED；新guard要求唯一明確false，包含空值/矛盾/重複都拒。source兩位限定PASS，原始F1與額外empty-fieldfinding有獨立oracle。所有Android/JNI/pins/signing/App/Host assertions不變。
-- Local Python192 PASS、contracts10；CI39080190653同source Python192/10contracts、H0 HEALTHY/exit0。raw initial/final均false／Launcherfocus，same user0/boot，lastanr none；沒有APK install、H1/H2/App5/Host33/32-case/B01。不是原ANR或remote根因已修，不證持續健康/atomic。
-- **Actual runtime獨立review已完成，Spec/Quality PASS限H0**（初次額度中斷保留，續作恢復後完成）。下一明確階段才可fresh H0→H1/H2；本次AVD已kill，新H1須與新H0同serial/user/boot_id，不得跨boot沿用舊result。不要直接重啟完整Binding A/B或為綠燈retry。NO_PR：現有PR triggers會執行其他runtime。
-- 外部 `/Users/huang/Desktop/KU-Yin-R2.3.1-Health-Correction-2026-10-18-073541/`：先收據與RUNNING_CONTEXT_ANCHOR；19metadata／20joblog／21raw／22重建／23hash／24review中斷與完成履歷。31個ADB commands、100個artifactfiles；hosthelper版本診斷缺libpulse仍記exit127，host helper全命令時序尚非完整。
-- R3 `.worktrees/r3-release-candidate`／release/rc-closure-r3仍main63、clean；QR與watcher缺陷只有初審，未修、未產新APK、companion bundle路徑未提供。外部R3 checkpoint在 `/Users/huang/Desktop/KU-Yin-R3-Release-Closure-2026-10-18-073017/R3_CHECKPOINT.json`。不移植legacy/ASR/S2/M4；不merge/publish。
-- Physical NOT_TESTED／production NOT_READY。資料／22原工區與指定凍結資產保持。未呼叫不存在的LSP/init/compact；未改AutoPilot/全域設定。歷史R2.3原始hand off與review保留於Git，不競爭為當前狀態。
+- main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`；PR10HOLD、PR12Draft、PR18Draft獨立review；公開v0.2.0-aie.1／tag不動。隔離 `.worktrees/r3-release-candidate`／`release/rc-closure-r3`，QR de2ac7d、R231 e137 lineage、build/runtime source **b98206267b3a65c452db1661bb3bae910ec61f6a**；後續docs SHA用git核，不冒充新runtime source。
+- 已修假QR、官方URL、整數module/quietzone、未驗手機scan文字；typing/native/pins/41鍵/ACK不動。QR focused8/8、12rendered roundtrips；Python205、contracts10、App JVM280PASS/10SKIP、Host JVM123PASS、四APKbuild、四ABI fresh relink完成。native-host十SKIP非nativePASS。
+- 唯一CI [39152444358](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39152444358) exactb982／FAILURE：H0HEALTHY；H1INCONCLUSIVE/EDITOR_CAPTURE_UNVERIFIED，ui-0 dump3004ms timeout／無XML；before WMSfrozen=true，after/finalfalse。Host helper install1/launch1；**產品未install，H2/App5/Host33/32-case/B01未執行**。深層根因UNRESOLVED，不retry／加timeout／鬆assertions。
+- 本機Debug20004/0.2.0-rc.1，SHA c171a3455acb1cb4a3b16ca0eb65e483620c35a224a308f398ad65c1867f0416；同舊Debug cert46488…；CI cert02a1…且四native完整bytes不同，不能將CI當本機APK runtime證據。正式key custody未證、實機/QRscan/TalkBack/保資料更新未測，D2D/fullerase/license runtime subset OPEN；RC=false、Stable=false、NOT_PUBLISHED。
+- 新source/relink tarSHA00c43969da91acf24fd32874b6c5c00eaf2cdd46dc5ffaf775040b47cdebee09；4816 entries驗證，fresh link只證.text/.rodata，不證Rust重編／完整APK可重現／全面法律通過。
+- 外部 `/Users/huang/Desktop/KU-Yin-R3-RC-Closure-2026-10-18-205053/`：00原24工區／38remote／31build／32APK/XML／36CIraw／37relink／39archive／41preservation；independent source/runtime/artifact/material原報告保留；最後文件review因服務額度中斷REVIEW_INCOMPLETE，無整體APPROVE，勿盲retry。一般使用者只用candidate-artifacts內產品APK，三test-only APK不當產品散布。
+- 下一最小任務：讀36/h1/result＋commands＋ui-0與WMS，隔離H1 capture缺口，先因果/RED-GREEN；H1可信PASS後再提fresh runtime階段。不要自動merge#10/#12、建Release、實機install／清資料、改production/JNI或啟動S2/M4/ASR。
+- 沒有LSP/init/compact API；此anchor是持久續作入口，不是宣稱執行了不存在工具。OCR未向未批准provider上傳，無fresh401/APPROVE；未改AutoPilot／全域設定。

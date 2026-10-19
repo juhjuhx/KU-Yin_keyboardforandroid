@@ -25,4 +25,4 @@ R2／R231 僅在候選分支正常整合，沒有重複套用 PR10／12，也未
 
 外部 session：`KU-Yin-R3-RC-Closure-2026-10-18-205053/`。00/01為起始24工區／remote baseline，27是新的remote核對；07與17真RED，18最後QR8/8GREEN及12張畫面，QR_FINAL_INDEPENDENT_REVIEW限定元件PASS。沒有執行手機安裝／IME切換；ADB inventory空。
 
-新的 R3 H0/H1/H2、App5、Host33/32-case、B01仍需fresh CI。正式key/ownership、physical acceptance、phone QR scan、TalkBack、OEM D2D privacy、完整native licensing/relink驗證仍OPEN。預設 NO_GO；不新增或覆寫 Release/tag，不移植 ASR／S2／M4。
+後續fresh source `b98206267b3a65c452db1661bb3bae910ec61f6a` 已推送隔離branch；唯一CI39152444358 H0HEALTHY、H1INCONCLUSIVE，H2/App5/Host33/32-case/B01未執行。新本機Debug APK與source/relink材料已產生、四ABIrelink驗證完成；正式key/ownership、實機、QR手機scan、TalkBack、OEM D2D、完整native法律／runtime inventory仍OPEN。精確結果見[R3驗證矩陣](R3_RELEASE_VALIDATION_MATRIX.md)。NO_GO，不新增或覆寫Release/tag，不移植ASR／S2／M4。

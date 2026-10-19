@@ -227,3 +227,24 @@ OCR本輪NOT_RUN，沒有重複既有被拒的provider probe；R2.1為BLOCKED_BY
 using-superpowers→systematic-debugging→writing-plans／using-git-worktrees→test-driven-development／executing-plans→requesting-code-review／code-verification→verification-before-completion。實際路徑與SHA256存本輪外部01-skill-routing.json；source、環境兩份獨立review分開。結果見testing/R2_3_VALIDATION_MATRIX.md；不載無關UX技能。沒有LSP/init/compact API，採持久anchor，不宣稱已操作不存在的工具。
 
 R2.3結果：local/CI181 Python與10contracts PASS，source初審限定APPROVE；唯一CI39047679642 H0 INCONCLUSIVE，H1/H2未執行。fresh runtime獨立review NEEDS_REVISION（P2 frozen缺口），遵STOP只docs收束、不重跑，不把skills／unit成功冒充runtime。
+
+## R3 RC closure（2026-10-18～19）
+
+依scope選用，沒有全部Addy24或每phase固定數量的虛構執行。canonical using-superpowers為Personal Tool Master V3；未發現另有可呼叫Tool Master MCP。tools使用真exec/patch/web及獲授權唯讀reviewers；不對未批准OCR/provider上傳source，OCR=NOT_RUN（歷史401不當fresh結果）。Tool URI未由host提供，不捏造URI。外部02原route／40最終紀錄保留；沒有LSP/init/compact API，以compiler/checks與短anchor續作。
+
+| Skill | Actual path | SHA256 | Phase / state | Result |
+|---|---|---|---|---|
+| using-superpowers | `/Users/huang/.agents/skills/using-superpowers/SKILL.md` | `fa0fa16abfaf17198e5b60145a656b55b907f9160b5d378d4d207ab2287a72e7` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 實際metadata路由、Tool Route Packet、持久checkpoint；沒有獨立MCP Tool Master |
+| systematic-debugging | `/Users/huang/.agents/skills/systematic-debugging/SKILL.md` | `808fc5717aa88ad65efff312b11c186294d3e6ee301afb584e2f86599b137787` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | QR rendered反例、quiet-zone反例、H1首分歧與因果界線 |
+| test-driven-development | `/Users/huang/.agents/skills/test-driven-development/SKILL.md` | `64b03fce4aee5a97a93160cea8111f3ba13a17b7c001db4bd5836d67fd10705d` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 07/17/19/21/23/25有效RED→18/20/22/24/26GREEN |
+| code-work | `/Users/huang/.codex/plugins/cache/openai-curated-remote/codex-engineering-guardrails/1.1.1/skills/code-work/SKILL.md` | `a3727efa825ff26a2ce67ff60379ad0e3a4bfcfc498c3632514fd662e7a0f3a6` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 唯一writer隔離工區，產品只QR與版本，保全typing/native |
+| code-verification | `/Users/huang/.codex/plugins/cache/openai-curated-remote/codex-engineering-guardrails/1.1.1/skills/code-verification/SKILL.md` | `4aab85003f547ac6e1ee12e3ceb3f89d5744af56f3b22a3643e545007474fc87` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 205/10、JVM/XML、四APK、native/relink、CI/physical分層 |
+| verification-before-completion | `/Users/huang/.agents/skills/verification-before-completion/SKILL.md` | `2befe7fc55bcadaa3d97dd9e8efeb633d2561c0ebe74c5a8b17c4d9e7e4520b3` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 每gate先讀exit/raw/hash，H1未驗不推PASS |
+| requesting-code-review | `/Users/huang/.agents/skills/requesting-code-review/SKILL.md` | `cfcee1b06774e7c0517f1e09be1a11f2d5680257072723e709ddbcf7e08b795a` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 三個orthogonal唯讀角色；source/runtime/material scope分開 |
+| finishing-a-development-branch | `/Users/huang/.agents/skills/finishing-a-development-branch/SKILL.md` | `8db5a922b242dd4e1bf824cb91c13b3e8d8e8a86d6ceaf7f0774eb9cce909d65` | closeout／FOUND | 僅FOUND；未載入／未執行merge或cleanup |
+| accessibility | `/Users/huang/.codex/skills/fixing-accessibility/SKILL.md` | `e287c49df08ea27b9d67479ea57f9a70d01a0b4e3ea97df603f84974dbdd7154` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | QR labels／scaling／quietzone；web-specific規則不套Android，TalkBack未測 |
+| security-hardening | `/Users/huang/.agents/skills/addyosmani-security-and-hardening/SKILL.md` | `966cda61759b22683e57216a435baf4f586f4af48787db4e47cc66ee8830d164` | R3 audit/QR/TDD/runtime/review／USED_SCOPED | 產品權限、D2D、learning stores、敏感資料與signer邊界 |
+| addyosmani-documentation-and-adrs | `/Users/huang/.agents/skills/addyosmani-documentation-and-adrs/SKILL.md` | `3e161ec612a3f216ff3c5cfd498779ab23bb0d760150c8105f018c3ed63a4552` | R3 materials/docs/closeout／USED_SCOPED | canonical docs／provenance／NO_GO gate與精確下一步 |
+| addyosmani-shipping-and-launch | `/Users/huang/.agents/skills/addyosmani-shipping-and-launch/SKILL.md` | `9ef215b2c69d03b29dd9c804af51f57a8d7294da0e9a1097980805300c76de34` | R3 materials/docs/closeout／USED_SCOPED | 發布與實測分層；不適用web telemetry／marketing，不新增Release |
+
+獨立reviewers另實際用code-review-excellence；指定模型official-code-review完整pipeline不可用，未聲稱其APPROVE。所有review與runtime結果以[R3 review](../release/R3_INDEPENDENT_REVIEW.md)分scope裁定，元件PASS不是RC／實機PASS。

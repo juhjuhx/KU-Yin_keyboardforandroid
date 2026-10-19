@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "channel": "UNPUBLISHED_DEBUG_CANDIDATE",
+  "release_verdict": "NO_GO",
+  "source_sha": "b98206267b3a65c452db1661bb3bae910ec61f6a",
+  "documentation_sha": "Resolve via git log for this file; not a new runtime source",
+  "main_sha": "63c9e4ab8ad7e277013acb5d7cce99228ec1f827",
+  "version_name": "0.2.0-rc.1",
+  "version_code": 20004,
+  "application_id": "io.github.juhjuhx.kuyin",
+  "local_signer_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+  "signing_role": "existing local Debug; long-term Release key ownership NOT_PROVEN",
+  "artifacts": [
+    {
+      "file": "KU-Yin-0.2.0-rc.1-R3-debug.apk",
+      "bytes": 30371415,
+      "sha256": "c171a3455acb1cb4a3b16ca0eb65e483620c35a224a308f398ad65c1867f0416"
+    },
+    {
+      "file": "KU-Yin-v0.2.0-rc.1-R3-source-and-relink.tar.gz",
+      "bytes": 43017050,
+      "sha256": "00c43969da91acf24fd32874b6c5c00eaf2cdd46dc5ffaf775040b47cdebee09"
+    },
+    {
+      "file": "acceptance-host-debug-androidTest.apk",
+      "bytes": 1109212,
+      "sha256": "4692e1532a807813c6e6a9495680c442214d5302c97a51c59af9c99af019d035"
+    },
+    {
+      "file": "acceptance-host-debug.apk",
+      "bytes": 861628,
+      "sha256": "8e53e8933e1b436b3192dab4319a7da1fe58e98afba038447924f51e1481d829"
+    },
+    {
+      "file": "app-debug-androidTest.apk",
+      "bytes": 970016,
+      "sha256": "79a08adf589d609ec15ecbdb26ca42aefd0451be3c5d7e545d95cd038d7a770f"
+    }
+  ],
+  "abi": [
+    "armeabi-v7a",
+    "arm64-v8a",
+    "x86",
+    "x86_64"
+  ],
+  "native": {
+    "prebuilt": "3587ba3355711f0aca50136e787719f6562676b8",
+    "source": "a6a8fa4abd3f215e3ba89a7b61702eaf8ca68f5c",
+    "data": "ea74f76dd2548b1d65d0ff70c3ae66057a6ad97d",
+    "fresh_relink_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "text_rodata_equal_all_abis": true,
+    "complete_elf_identical": false,
+    "rust_source_rebuild": "NOT_EXECUTED"
+  },
+  "jvm": {
+    "app": {
+      "tests": 290,
+      "failures": 0,
+      "skips": 10,
+      "classes": 59,
+      "execution": "fresh Test task --rerun; see31 task output"
+    },
+    "acceptance-host": {
+      "tests": 123,
+      "failures": 0,
+      "skips": 0,
+      "classes": 9,
+      "execution": "fresh Test task --rerun; see31 task output"
+    }
+  },
+  "python": {
+    "passed": 205,
+    "scope": "host deterministic tests, not Android runtime"
+  },
+  "contracts": 10,
+  "ci": {
+    "url": "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39152444358",
+    "head_sha": "b98206267b3a65c452db1661bb3bae910ec61f6a",
+    "attempt": 1,
+    "conclusion": "failure",
+    "h0": "HEALTHY_BOUNDED",
+    "h1": "INCONCLUSIVE_EDITOR_CAPTURE_UNVERIFIED",
+    "h2": "NOT_EXECUTED",
+    "app5": "NOT_EXECUTED",
+    "host33_matrix32": "NOT_EXECUTED",
+    "b01": "NOT_EXECUTED",
+    "product_apk_sha256": "bb179c64a774ddab4728214e38926770e172c61ab75a8f0de03284be65d8d092",
+    "signer_sha256": "02a1b82be234d9e9b6fb71e55f96d582b3534768fa845f7499740f16b8959b69",
+    "local_apk_bytes_equal": false,
+    "local_native_complete_bytes_equal": false
+  },
+  "privacy": {
+    "product_internet_camera_mic": false,
+    "host_test_internet": true,
+    "d2d": "OPEN",
+    "full_learning_erase": "UNSUPPORTED"
+  },
+  "physical": "NOT_TESTED",
+  "qr_phone_scan": "NOT_TESTED",
+  "release_url": "NOT_PUBLISHED",
+  "cryptographically_signed_provenance": "NOT_PROVIDED; no approved Release/provenance signing key",
+  "evidence_session": "KU-Yin-R3-RC-Closure-2026-10-18-205053"
+}
