@@ -11,6 +11,8 @@ WORKFLOW = ROOT / '.github/workflows/r2-host-observation-probe.yml'
 QR = 'de2ac7d94e0a79f492d11ee165173e65b4562bd7'
 INFRA = 'e137e37594c04f8c0fd88c01ef911d1df9bcbc49'
 COMBINED = '185a4e545bd2574ad773e255ea558e6be5f3ab0e'
+RUNTIME = 'b98206267b3a65c452db1661bb3bae910ec61f6a'
+HEALTH = '97645c238dcecc43e677de625bf7049bd487d700'
 
 
 class R3SourceGuardTest(unittest.TestCase):
@@ -58,6 +60,7 @@ class R3SourceGuardTest(unittest.TestCase):
                 'gradlew': 'approved wrapper', 'gradlew.bat': 'approved Windows wrapper',
                 'gradle/libs.versions.toml': 'pinned test dependency 2.4.0',
                 'scripts/bootstrap_native_deps.sh': 'native pin unchanged',
+                'scripts/runtime_smoke.sh': 'approved H0 H1 and exact instrumentation sequence',
                 'scripts/emulator_health.py': 'frozen and unknown fail closed',
                 'scripts/r2_ci_protocol.py': 'strict protocol',
                 'scripts/p1_instrumentation_manifest.json': 'frozen manifest',
@@ -86,17 +89,20 @@ class R3SourceGuardTest(unittest.TestCase):
             qr_test.write_text('strict QR assertions')
             product = save('approved QR product')
             combined = save('approved combined test source', allow_empty=True)
+            (root / 'scripts/emulator_health.py').write_text('approved controlling terminal; strict oracle unchanged')
+            health = save('approved H1 capture correction')
+            runtime = save('approved runtime orchestration', allow_empty=True)
             if changed:
                 name, content = changed
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_text(content)
                 if commit: save('unreviewed change')
-            program = program.replace(QR, product).replace(INFRA, infrastructure).replace(COMBINED, combined).replace(
+            program = program.replace(QR, product).replace(INFRA, infrastructure).replace(COMBINED, combined).replace(RUNTIME, runtime).replace(HEALTH, health).replace(
                 '2b8e8e4efff73741319fb00daf4cb4e58101e4e8', infrastructure)
             return subprocess.run([*executable, program], cwd=root, capture_output=True, text=True, timeout=10)
 
-    def test_reviewed_qr_and_existing_test_infrastructure_are_accepted(self):
+    def test_reviewed_qr_and_h1_amendment_preserve_other_infrastructure(self):
         result = self.run_guard()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
 
@@ -138,6 +144,12 @@ class R3SourceGuardTest(unittest.TestCase):
                      'acceptance-host/src/test/ProtocolTest.kt']:
             with self.subTest(name=name):
                 self.assertNotEqual(0, self.run_guard((name, 'unreviewed build or weakened assertions')).returncode)
+
+    def test_unreviewed_runtime_orchestration_is_rejected(self):
+        self.assertNotEqual(0, self.run_guard(('scripts/runtime_smoke.sh', 'skip H1 and report PASS')).returncode)
+
+    def test_dirty_runtime_orchestration_is_rejected(self):
+        self.assertNotEqual(0, self.run_guard(('scripts/runtime_smoke.sh', 'dirty ordering'), commit=False).returncode)
 
 
 if __name__ == '__main__':
