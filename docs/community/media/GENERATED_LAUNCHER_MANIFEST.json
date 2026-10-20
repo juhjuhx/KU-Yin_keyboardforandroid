@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "classification": "REGENERATED_LEGACY_LAUNCHER_NOT_RECOVERED_ORIGINAL",
+  "authorized": "2026-10-21 user requested self-encoded generation because no original exists",
+  "baseline_git_sha": "8369da25fa54ab762dfceed457e71a08767a642e",
+  "generator": {
+    "path": "scripts/generate_launcher_assets.py",
+    "sha256": "f088a6f25d4e5180781e9f0af176aaddd8d5cd5bd4e1fec0078e200acebb3f13",
+    "Pillow": "12.2.0",
+    "libwebp": "1.6.0"
+  },
+  "sources": [
+    {
+      "path": "app/src/main/res/drawable/kuyin_zhuyin_icon_1789306106095.jpg",
+      "sha256": "382aa73288b0c3a2f30131ab3aeaffee41b9eae71e17ff832635937794472d38"
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "sha256": "4dd09bf6d02585e86519bf43452d3dc1b9b1e931dee7e95e7d5cdd9389442d4f"
+    },
+    {
+      "path": "app/src/main/res/drawable/ic_launcher_background.xml",
+      "sha256": "22ee1b9d96f85abdabb5e960bd56abe727bfd8075faf025b4947a2f23f710de3"
+    }
+  ],
+  "geometry": "existing 108dp background/66dp centered foreground, central72dp crop; circle mask for round fallback",
+  "outputs": [
+    {
+      "path": "app/src/main/res/mipmap-mdpi/ic_launcher.webp",
+      "pixels": [
+        48,
+        48
+      ],
+      "bytes": 2396,
+      "sha256": "1990b6644452d386aab6c82e5ed5aad451ab9fad1e0b85cff5a827ec5beebcc5",
+      "rgba_sha256": "447f2db3acf2cf47e39c43047c6f5b9ea9a5e59049783d53d26db6b78fec9dca"
+    },
+    {
+      "path": "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp",
+      "pixels": [
+        48,
+        48
+      ],
+      "bytes": 2992,
+      "sha256": "8ddc2d44feaaff146fbaabd650ee7b35da3a68e1f9b882f64d9f963c71e87127",
+      "rgba_sha256": "4c280d51017514f14c60e20d4385dc968959ec3888f1a79d74d6ef03d2a77d5f"
+    },
+    {
+      "path": "app/src/main/res/mipmap-hdpi/ic_launcher.webp",
+      "pixels": [
+        72,
+        72
+      ],
+      "bytes": 4312,
+      "sha256": "0275a9196b3877a5b0fc1f906b4d35d32c17e966e18b048a5f2f8b4a89e93544",
+      "rgba_sha256": "e803406c8b28021111851432fc3f292762dc2f9ff34dc75b444d80fdae55bf94"
+    },
+    {
+      "path": "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp",
+      "pixels": [
+        72,
+        72
+      ],
+      "bytes": 4954,
+      "sha256": "b4ab397e907fedb8c535b5f288c55ad33211ccde43cb1d9e6b4e8ce4c2034e73",
+      "rgba_sha256": "cb6e9b78bf35297f5c1267e6b3d2e48a07b2d8e66517b0aeb357137229a14e69"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xhdpi/ic_launcher.webp",
+      "pixels": [
+        96,
+        96
+      ],
+      "bytes": 6600,
+      "sha256": "ace3ef78fae1e57f4635c47d46b0b0289728514a8fba91008e4ed52467f867f9",
+      "rgba_sha256": "99147609c249cb00f02f47062d434e4fb76076d687f5c02588d991df5f8ca1da"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp",
+      "pixels": [
+        96,
+        96
+      ],
+      "bytes": 7560,
+      "sha256": "ffe068fc4a8b645a4b57f5117e63e9fbd95eec3869da5ece52a0d15816cce725",
+      "rgba_sha256": "9f819dd0702c3621118fc6ce9a20e2c26e61f8109f2b03dbccf3504ce5fdbb6e"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp",
+      "pixels": [
+        144,
+        144
+      ],
+      "bytes": 13410,
+      "sha256": "e5925a08549a92e6ee7471f733f2f52351c549636b95c737f601cbc006fdfef8",
+      "rgba_sha256": "ee7f9cb2716c687082788b237034cff1caa6275d84415d13121c948ef6a320d0"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp",
+      "pixels": [
+        144,
+        144
+      ],
+      "bytes": 14334,
+      "sha256": "a33d15339358cc768c39a6fa71999d6b0a7d4dbf3234a22fc561316854baa0f2",
+      "rgba_sha256": "8dc2ada641b1985467dc1ab0e15e12e5456bbdb3684eddf07a06a051c9bc0162"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
+      "pixels": [
+        192,
+        192
+      ],
+      "bytes": 23332,
+      "sha256": "233467c56b0ccf493ca370afca5e7e99fb26557f4f924407b24ec5729d8698d2",
+      "rgba_sha256": "9f918a4222959aa496f8f03c832c184611eeafc779231a83e12bdeae9f5d7fa1"
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp",
+      "pixels": [
+        192,
+        192
+      ],
+      "bytes": 23806,
+      "sha256": "3412e91132c06c5d0413aee958842bba01c064787b4bd75e5ac1595716bdf6f3",
+      "rgba_sha256": "2c914330151831316365f2daf6458bf6c12eb17736a95a374822fac9a6e2e14a"
+    }
+  ],
+  "historical_corruption": "ASSET_MANIFEST.json records original bytes; retained unchanged",
+  "rights": "Existing project foreground only; C2PA chain/complete rights review remains OPEN",
+  "device_icon_display": "NOT_TESTED",
+  "runtime_screenshots": false
+}

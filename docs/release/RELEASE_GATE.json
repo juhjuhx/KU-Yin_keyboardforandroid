@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "observed_on": "2026-10-21",
-  "main_source_sha": "575cc883288a920e7aba021fb8705f75f465e1c0",
+  "main_source_sha": "8369da25fa54ab762dfceed457e71a08767a642e",
   "r3_candidate_sha": "de2d9dfaa296a5cdeabde405d686720b615ce9e2",
   "r31_runtime_source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
   "r31_documents_sha": "6e4bcd772b800bf7ad98a2fbe02832a6517722ea",
@@ -18,7 +18,7 @@
     "r31_h1": "INCONCLUSIVE",
     "r31_h2": "NOT_EXECUTED",
     "main_app_instrumentation": {
-      "run": 39442957936,
+      "run": 39509158938,
       "pass": 5,
       "fail": 0,
       "skip": 0
@@ -33,12 +33,15 @@
     "m4": "NOT_VALIDATED",
     "aie_s2": "NOT_STARTED",
     "main_host_instrumentation": {
-      "run": 39442957936,
+      "run": 39509158938,
       "pass": 15,
       "fail": 9,
       "skip": 8
     },
-    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON"
+    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON",
+    "r32_launcher_complete_decode": "PASS_10_OF_10_SOURCE_ASSETS_ONLY",
+    "r32_launcher_device_display": "NOT_TESTED",
+    "greeting_test_png": "CORRUPT_UNRESOLVED"
   },
-  "scope": "No production/source/signing/artifact mutation; historical baseline CI is not final docs HEAD CI"
+  "scope": "R3.2 separate image branch; source asset decode is not Android/runtime/physical acceptance"
 }
