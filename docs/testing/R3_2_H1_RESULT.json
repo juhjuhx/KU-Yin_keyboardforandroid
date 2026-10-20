@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "baseline": "8369da25fa54ab762dfceed457e71a08767a642e",
+  "runtime_source_sha": "8acf4b24c63c8c8474e8ea95b50054977902ecaa",
+  "branch": "fix/r3-2-h1-runtime",
+  "ci_url": "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39514852906",
+  "ci_conclusion": "failure",
+  "helper_exit": 3,
+  "h0": "HEALTHY_BOUNDED_SINGLE_BOOT",
+  "h1": "INCONCLUSIVE",
+  "ui_dump": {
+    "duration_ms": 3007,
+    "timed_out": true,
+    "exit": null,
+    "complete_xml_received_ms": 2243,
+    "success_marker_received_ms": 2246,
+    "editor_focused": false,
+    "input_connection_present": true,
+    "null_root": false
+  },
+  "same_serial_user_boot": true,
+  "h2": "NOT_EXECUTED",
+  "app_host_b01": "NOT_EXECUTED",
+  "physical": "NOT_TESTED",
+  "root_cause": "UNRESOLVED",
+  "independent_source_review": "QUALITY_PASS_SPEC_PARTIAL",
+  "independent_fresh_ci_review": "H1_INCONCLUSIVE_CONFIRMED",
+  "product_changed": false,
+  "release": "NO_GO",
+  "raw_result_hashes": {
+    "h0/result.json": "f46f5243d6718c87c5e8cdb9dfe64e455b307c1cdb4c9feff8d74ef44b4b9e55",
+    "h1/result.json": "806f7fe44681fe87d3c9a66d88f30f57da645dfd0e58a0c1cbf1e60d2d4926eb",
+    "h1/commands.json": "90551a39c00f7d537eee9246246a34b0fd7ccfde91723af2aa2f2fcd016b877f",
+    "h1/ui-0-stdout.txt": "b12df9c70446f6dde896d6c0298b2b25ea4c91b01a962393ed9d00e47d6b8545"
+  }
+}

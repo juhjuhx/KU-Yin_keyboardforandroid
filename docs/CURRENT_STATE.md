@@ -1,3 +1,9 @@
+# R3.2 H1 診斷切片 — 2026-10-21
+
+基線main8369da25，runtime source8acf4b24，fresh CI39514852906：H0 HEALTHY；H1仍INCONCLUSIVE（XML完整但editor focused=false／command3007ms timeout）。H2/App/Host/B01未執行；沒有產品修復或新Release。見 [R3_2_H1_FINAL_HANDOFF](testing/R3_2_H1_FINAL_HANDOFF.md)。圖片獨立分支PR24 Draft，不能混成同一已驗收產品來源。以下保存前輪時間點。
+
+---
+
 # 當前事實 — 2026-10-21
 
 main 基線 `575cc883288a920e7aba021fb8705f75f465e1c0`；README／社群 PR18 已合併。已公開版本仍為 `v0.2.0-aie.1` Experimental Debug Alpha；PR20 Draft、RC 未發布，Release **NO_GO**。

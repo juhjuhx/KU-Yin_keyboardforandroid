@@ -1,3 +1,11 @@
+# R3.2 H1 續作入口
+
+只讀CURRENT_STATE、testing/R3_2_H1_FINAL_HANDOFF及必要raw；base main8369da25，A branch fix/r3-2-h1-runtime、code/runtime8acf4b24、CI39514852906。H0 HEALTHY；H1 INCONCLUSIVE：XML完整但editor focused=false及command3007ms timeout，原null未重現、因果UNRESOLVED。H2/App/Host/B01不執行、無產品/JNI修改、NO_GO。
+
+本機152 Python、10contracts；獨立source quality PASS限診斷／spec PARTIAL，fresh raw覆核維持H1未通過。下一步只讀本次raw，聚焦真實editor焦點及命令終止；不盲重跑、不加timeout。B圖片branch/PR24獨立，十icon與unit-render PNG修復不是Runtime驗收。舊工區/資料/簽章/Release保留。
+
+---
+
 # KU-Yin 續作短入口
 
 2026-10-21 publication closure。先讀 [CURRENT_STATE](../CURRENT_STATE.md)、[R3_FINAL_HANDOFF](../release/R3_FINAL_HANDOFF.md)、[PUBLICATION_VALIDATION](../release/PUBLICATION_VALIDATION.md) 與 [TODO_AND_GATES](../release/TODO_AND_GATES.md)，再讀必要 source；不用重載整段聊天或數百份 review。

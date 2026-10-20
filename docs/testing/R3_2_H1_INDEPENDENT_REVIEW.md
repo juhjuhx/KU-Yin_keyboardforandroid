@@ -15,3 +15,7 @@ Specification：**PARTIAL**，尚待exact source fresh H0→H1 CI原始證據。
 - 原PTY sandbox失敗與feab相同；允許PTY環境原37PASS。完整34的152PASS由主代理執行；reviewer未冒稱自己重跑全部。
 
 外部完整報告、原反例／補證／最終focused log均以SHA manifest保存。Reviewer未啟動ADB、CI、Gradle或改repository。Root仍須檢視fresh CI，不能只用此code review宣稱H1健康。
+
+## Fresh CI覆核
+
+同一Reviewer另讀CI39514852906 exact8acf source的raw／commands／XML／WMS／有限framework logs，確認H0 HEALTHY、H1 INCONCLUSIVE／exit3。XML雖完整，editor focused=false及程序timeout是獨立缺口；原Hcutout的null未復現，保持UNRESOLVED，不建議放行H2。Source三hash及CI四APK expected/observed一致；raw無四APK，僅manifest層證據。詳見最終handoff；完整報告另存外部。

@@ -33,3 +33,7 @@ opt-in `--output-timeline` 記錄UI dump stdout/stderr chunks的offset、bytes�
 - fresh全Python34：152PASS；全部10contracts27 PASS。無LSP工具，不冒稱執行；以Python編譯／實跑與獨立review覆核。
 
 CI與freshH0/H1結果見本分支最新handoff；未取得可信H1 PASS就停止，H2/App/Host仍NOT_EXECUTED，Release NO_GO。
+
+## Fresh有界觀察
+
+CI39514852906@8acf4b2：H0 HEALTHY、H1 INCONCLUSIVE。完整XML在2243ms到達，但editor focused=false且命令3007ms timeout；本次沒有null-root。Window/cutout/config於dump前後穩定，原假說未重現，不能宣稱修復。見 [最終handoff](R3_2_H1_FINAL_HANDOFF.md)。

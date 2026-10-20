@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "observed_on": "2026-10-21",
-  "main_source_sha": "575cc883288a920e7aba021fb8705f75f465e1c0",
+  "main_source_sha": "8369da25fa54ab762dfceed457e71a08767a642e",
   "r3_candidate_sha": "de2d9dfaa296a5cdeabde405d686720b615ce9e2",
   "r31_runtime_source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
   "r31_documents_sha": "6e4bcd772b800bf7ad98a2fbe02832a6517722ea",
@@ -38,7 +38,21 @@
       "fail": 9,
       "skip": 8
     },
-    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON"
+    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON",
+    "r32_h0": {
+      "run": 39514852906,
+      "result": "HEALTHY_SINGLE_BOUNDED_OBSERVATION"
+    },
+    "r32_h1": {
+      "run": 39514852906,
+      "result": "INCONCLUSIVE",
+      "reasons": [
+        "UI_DUMP_TIMEOUT_3007_MS",
+        "XML_EDITOR_FOCUSED_FALSE"
+      ]
+    },
+    "r32_h2": "NOT_EXECUTED"
   },
-  "scope": "No production/source/signing/artifact mutation; historical baseline CI is not final docs HEAD CI"
+  "scope": "R3.2 H1 diagnostic slice, no product fix; no-go gates remain blocking",
+  "r32_h1_runtime_source_sha": "8acf4b24c63c8c8474e8ea95b50054977902ecaa"
 }
