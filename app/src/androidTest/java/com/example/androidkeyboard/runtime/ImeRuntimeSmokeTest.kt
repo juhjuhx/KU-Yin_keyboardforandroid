@@ -1,6 +1,8 @@
 package com.example.androidkeyboard.runtime
 
 import android.os.ParcelFileDescriptor
+import android.content.Intent
+import android.content.ComponentName
 import android.os.SystemClock
 import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
@@ -67,13 +69,27 @@ class ImeRuntimeSmokeTest {
             selected.contains(appPackage) && selected.contains(PRODUCTION_IME_SERVICE),
         )
 
-        ActivityScenario.launch(ImeHostActivity::class.java).use { scenario ->
+        val intent = Intent.makeMainActivity(ComponentName(instrumentation.targetContext, ImeHostActivity::class.java))
+            .putExtra("KUYIN_R2_DIAGNOSTICS", R2ImeEvidence.enabled)
+        ActivityScenario.launch<ImeHostActivity>(intent).use { scenario ->
             scenario.onActivity { it.requestIme() }
-            assertTrue("KU-Yin input window should become visible", waitForImeVisible(scenario))
+            val firstVisible = waitForImeVisible(scenario)
+            withR2FailureEvidence({
+                scenario.onActivity { it.recordR2State("FIRST_VISIBILITY_OBSERVED") }
+                R2ImeEvidence.recordVisibility("first", firstVisible)
+            }) {
+                assertTrue("KU-Yin input window should become visible", firstVisible)
+            }
 
             scenario.recreate()
             scenario.onActivity { it.requestIme() }
-            assertTrue("KU-Yin should survive editor recreation", waitForImeVisible(scenario))
+            val recreatedVisible = waitForImeVisible(scenario)
+            withR2FailureEvidence({
+                scenario.onActivity { it.recordR2State("RECREATED_VISIBILITY_OBSERVED") }
+                R2ImeEvidence.recordVisibility("recreated", recreatedVisible)
+            }) {
+                assertTrue("KU-Yin should survive editor recreation", recreatedVisible)
+            }
         }
 
         val dump = shell("dumpsys input_method")

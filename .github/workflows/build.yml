@@ -135,4 +135,5 @@ jobs:
             acceptance-host/build/reports/androidTests/connected
             app/build/outputs/androidTest-results/connected
             acceptance-host/build/outputs/androidTest-results/connected
+            build/r2-runtime-evidence
           if-no-files-found: warn
