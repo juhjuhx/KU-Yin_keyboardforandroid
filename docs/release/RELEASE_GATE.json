@@ -41,7 +41,27 @@
     "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON",
     "r32_launcher_complete_decode": "PASS_10_OF_10_SOURCE_ASSETS_ONLY",
     "r32_launcher_device_display": "NOT_TESTED",
-    "greeting_test_png": "CORRUPT_UNRESOLVED"
+    "greeting_test_png": "PASS_RECORDED_JVM_RENDER_NOT_DEVICE_SCREENSHOT",
+    "r32_h0": {
+      "run": 39514852906,
+      "result": "HEALTHY_BOUNDED_SINGLE_BOOT"
+    },
+    "r32_h1": {
+      "run": 39514852906,
+      "result": "INCONCLUSIVE",
+      "reasons": [
+        "UI_DUMP_TIMEOUT_3007_MS",
+        "XML_EDITOR_FOCUSED_FALSE"
+      ]
+    },
+    "r32_h2": "NOT_EXECUTED",
+    "r32_image_source_review": "PASS_SCOPED",
+    "r32_image_python": {
+      "pass": 113,
+      "fail": 0,
+      "skip": 0
+    }
   },
-  "scope": "R3.2 separate image branch; source asset decode is not Android/runtime/physical acceptance"
+  "scope": "R3.2 separate image branch; source asset decode is not Android/runtime/physical acceptance",
+  "r32_h1_runtime_source_sha": "8acf4b24c63c8c8474e8ea95b50054977902ecaa"
 }

@@ -1,6 +1,6 @@
 # R3.2 圖片切片 — 2026-10-21
 
-本切片基線main8369da25，PR18／22已合併。CI39509158938最終blocking build PASS，experimental runtime FAIL：App5 PASS／Host15 PASS9 FAIL8 SKIP。圖片分支重新生成十個Launcher fallback並通過完整雙decoder與獨立複審；不是原件恢復、手機畫面或Runtime PASS。greeting PNG與真實操作截圖仍OPEN。驗證見 [R3_2_IMAGE_INTEGRITY](testing/R3_2_IMAGE_INTEGRITY.md)。PR20 Draft；RC／Stable NO_GO不變。以下保存前輪時間點。
+本切片基線main8369da25，PR18／22已合併。CI39509158938最終blocking build PASS，experimental runtime FAIL：App5 PASS／Host15 PASS9 FAIL8 SKIP。圖片分支重新生成十個Launcher fallback並通過完整雙decoder與獨立複審；不是原件恢復、手機畫面或Runtime PASS。greeting PNG已以原Roborazzi source重建；真實操作截圖仍OPEN。驗證見 [R3_2_IMAGE_INTEGRITY](testing/R3_2_IMAGE_INTEGRITY.md)。PR20 Draft；RC／Stable NO_GO不變。以下保存前輪時間點。
 
 ---
 

@@ -20,6 +20,6 @@
 
 Reviewer `/root/r32_b_patch_review` 直接讀實際diff／source／negative tests，重跑checker及三focused tests；初次兩P2修正後 follow-up 的 specification／engineering 均PASS。該裁定不涵蓋Android／裝置／全部repository。
 
-`app/src/test/screenshots/greeting.png` 尚未修復；不以繪圖程式生成假Roborazzi golden。現有JPG來源有生成式metadata，完整權利／C2PA鏈仍OPEN。核實手機Runtime宣傳截圖0；手機Launcher顯示NOT_TESTED。
+`app/src/test/screenshots/greeting.png` 已由既有 `GreetingScreenshotTest`／`recordRoborazziDebug` 實際record重建，原始損壞bytes仍保留；不是繪圖程式假造。PNG完整Pillow／FFmpeg解碼，1078×2399、無metadata；[test-render manifest](../community/media/ROBORAZZI_RENDER_MANIFEST.json) 記錄exact source／命令／雜湊。它是JVM單元測試render，不是實機／Emulator操作畫面。現有JPG來源有生成式metadata，完整權利／C2PA鏈仍OPEN。核實手機Runtime宣傳截圖0；手機Launcher顯示NOT_TESTED。
 
 回退僅需正常revert此圖片切片；不動舊Alpha／tag／APK。此修正不解除 H1、實機、簽章或license阻擋，RC／Stable仍 **NO_GO**。

@@ -58,3 +58,43 @@ class LauncherProvenanceRegressionTest(unittest.TestCase):
         with patch.object(assets, 'ROOT', target):
             self.assertTrue(any(r['problems'] for r in assets.inspect_all()),
                             'Full decoding alone cannot authenticate a mismatching provenance manifest')
+
+
+class RoborazziPngIntegrityTest(unittest.TestCase):
+    def test_greeting_unit_render_fully_decodes_with_pillow_and_ffmpeg(self):
+        import subprocess
+        import json
+        import hashlib
+        from PIL import Image
+        path = assets.ROOT / 'app/src/test/screenshots/greeting.png'
+        try:
+            with Image.open(path) as image:
+                image.load()
+                self.assertEqual('PNG', image.format)
+                width, height = image.size
+                metadata = list(image.info)
+        except OSError as error:
+            self.fail('Complete PNG decode failed: ' + str(error))
+        result = subprocess.run(['ffmpeg', '-v', 'error', '-xerror', '-err_detect', 'explode',
+                                 '-i', str(path), '-frames:v', '1', '-f', 'rawvideo',
+                                 '-pix_fmt', 'rgba', '-'], capture_output=True, timeout=10)
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual(width * height * 4, len(result.stdout))
+
+        manifest = json.loads((assets.ROOT / 'docs/community/media/ROBORAZZI_RENDER_MANIFEST.json').read_text())
+        self.assertEqual('ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT', manifest['classification'])
+        self.assertFalse(manifest['phone_runtime_evidence'])
+        self.assertEqual('app/src/test/screenshots/greeting.png', manifest['output']['path'])
+        self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), manifest['output']['sha256'])
+        self.assertEqual([width, height], manifest['output']['dimensions'])
+        self.assertEqual([], metadata)
+        self.assertEqual(metadata, manifest['output']['metadata_keys'])
+        expected_sources = {'app/src/test/java/com/example/GreetingScreenshotTest.kt',
+                            'app/src/main/java/com/example/MainActivity.kt',
+                            'app/build.gradle.kts', 'gradle/libs.versions.toml'}
+        names = [record['path'] for record in manifest['source_files']]
+        self.assertEqual(len(expected_sources), len(names))
+        self.assertEqual(expected_sources, set(names))  # No manifest path traversal.
+        for record in manifest['source_files']:
+            self.assertEqual(hashlib.sha256((assets.ROOT / record['path']).read_bytes()).hexdigest(),
+                             record['sha256'])

@@ -2,7 +2,7 @@
 
 main8369da25；兩隔離branch：fix/r3-2-image-integrity（十Launcher重新生成，manifest/雙decoder/112Python/11contracts/獨立review；Android與PR結果見最新R3_2_IMAGE_HANDOFF），fix/r3-2-h1-runtime（TEST_ONLY調查，非產品修復）。先讀CURRENT_STATE與各切片精確handoff，避免重做PR18/22文件。
 
-CI39509158938：App5 PASS，Host15PASS9FAIL8SKIP。H1原始null-root／3006ms timeout因果仍UNRESOLVED；不增加timeout、不弱化oracle、不在H1未通過時執行H2。核實Runtime宣傳圖0；greeting PNG未修。Release NO_GO；不碰其他工區、資料、簽章、oldAlpha、S2/M4。
+CI39509158938：App5 PASS，Host15PASS9FAIL8SKIP。H1原始null-root／3006ms timeout因果仍UNRESOLVED；不增加timeout、不弱化oracle、不在H1未通過時執行H2。核實Runtime宣傳圖0；greeting PNG已用既有Roborazzi重建，屬unit render。Release NO_GO；不碰其他工區、資料、簽章、oldAlpha、S2/M4。
 
 ---
 

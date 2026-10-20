@@ -6,7 +6,7 @@
 
 ## R3.2 Launcher 更新
 
-`ASSET_MANIFEST.json` 是保存的修正前證據，不代表本分支現有十個launcher。使用者授權重新編碼後，十個WebP改用現有adaptive原圖／XML生成，已完整解碼；來源見 [生成manifest](GENERATED_LAUNCHER_MANIFEST.json) 與 [鑑識manifest](R3_2_IMAGE_FORENSICS_MANIFEST.json)。greeting PNG仍損壞；這些資產都不是手機操作截圖。詳細 [工程驗證](../../testing/R3_2_IMAGE_INTEGRITY.md)。
+`ASSET_MANIFEST.json` 是保存的修正前證據，不代表本分支現有十個launcher。使用者授權重新編碼後，十個WebP改用現有adaptive原圖／XML生成，已完整解碼；來源見 [生成manifest](GENERATED_LAUNCHER_MANIFEST.json) 與 [鑑識manifest](R3_2_IMAGE_FORENSICS_MANIFEST.json)。greeting PNG亦由既有Roborazzi測試重建，見 [test-render manifest](ROBORAZZI_RENDER_MANIFEST.json)；這些資產都不是手機操作截圖。詳細 [工程驗證](../../testing/R3_2_IMAGE_INTEGRITY.md)。
 
 ## 待補的真實畫面
 
