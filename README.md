@@ -4,7 +4,7 @@
 
 **KU-Yin** 是以**台灣大千注音**為核心的離線 Android 開源輸入法。鍵盤介面使用 **Kotlin／Jetpack Compose**，中文解碼採 **libchewing（酷音）**，英文補全使用本機詞表。目標是讓注音組字、選字與候選翻頁更易用，同時保留清楚的資料權責、可維護的原生依賴及社群開發流程。
 
-[📦 下載 Alpha 與原始碼](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) · [🧭 架構](docs/ARCHITECTURE.md) · [📋 開發狀態](docs/CURRENT_STATE.md) · [🐛 問題回報](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues)
+[📦 下載 Alpha 與原始碼](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) · [🧭 架構](docs/ARCHITECTURE.md) · [📋 開發狀態](docs/CURRENT_STATE.md) · [📣 社群分享／測試邀請素材](docs/community/README.md) · [🐛 問題回報](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues)
 
 ## 功能
 
@@ -33,12 +33,13 @@
 
 ## 目前狀態與已知限制
 
-截至 **2026-10-18**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
+截至 **2026-10-20**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
 
 - **公開 Alpha**：原 API 33 App 5 PASS；Host **15 PASS／9 FAIL／8 SKIP**（發布時基線）。
 - **R2 測試分支**：曾在 API 33 取得 App **5 PASS**、Host **24 PASS／9 SKIP**；24 項含一項測試基礎設施檢查，實際產品案例為 **23 PASS／9 INCONCLUSIVE**。不是 `main` 新版本的完整驗收。
 - **R2.1/R2.2 後續調查**：仍有 IME visibility/binding 阻擋。R2.2 A/B 都是 App **4 PASS／1 FAIL**，並在安裝 KU-Yin 前偵測到 **System UI ANR**；歷史 remote/session 根因仍 **UNRESOLVED**。
 - **R2.3.1 健康檢查分支**：已修復 frozen-display 解析缺陷；[health-only CI #39080190653](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39080190653) 為 H0 **HEALTHY**、Python **192 PASS**、contracts **10 PASS**。**未執行 H1／H2、App／Host 或新 APK 建置**；舊 H0 不可跨 Emulator boot 重用。
+- **R3 候選／R3.1 隔離修正**：未發布的 `0.2.0-rc.1` 是 [Draft PR #20](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/20) 中的 Debug 測試建置；QR 改為標準圖片並通過離線解碼，但手機掃碼尚未測。[R3.1 CI #39426302308](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39426302308) 的 H0 HEALTHY、H1 INCONCLUSIVE（缺 XML／逾時）；H2、App／Host 與實機未執行，`RC_READY=false`。
 - **實機與正式版**：AIE-S1 完整真機候選瀏覽、不同 OEM、TalkBack、學習清除、正式 release key、商店與穩定版均 **OPEN／NOT_READY**。
 
 請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。**實驗性 runtime-smoke 仍有失敗紀錄**；請查看每個 job，而非只讀整體 Workflow 狀態。正式的 [Release readiness](docs/release/RELEASE_READINESS.md)、[RC 發布驗收追蹤 #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
@@ -102,12 +103,12 @@ KU-Yin 的核心技術建立在社群開源成果之上，特別感謝：
 - [Open Source Initiative（OSI）](https://members.opensource.org/donate)
 - [Electronic Frontier Foundation（EFF）](https://supporters.eff.org/donate/donate)
 
-**重要：** 目前 Alpha 的 App 內 QR 圖樣不是標準可解碼 QR；在修正並通過手機掃描驗證前，請使用上述連結或 App 的「複製網址／前往官方捐款」功能。捐款在公益組織網站直接完成，與 KU-Yin 作者沒有收款關係；列名亦不代表組織背書本專案。
+**重要：** 已公開 Alpha 的 App 內 QR 圖樣不是標準可解碼 QR；未發布的 R3 隔離分支雖已完成標準 QR 靜態解碼，仍未經手機實掃，也尚未合併／發布。請使用上述官方連結或 Alpha 的「複製網址／前往官方捐款」功能。捐款在公益組織網站直接完成，與 KU-Yin 作者沒有收款關係；列名亦不代表組織背書本專案。
 
 ## 參與開發與後續計畫
 
 歡迎回報注音鍵位、候選翻頁、跨 App 文字提交、英文補全、字級與裝置相容性。請提供 APK 版本、Android 版本、輸入欄位類型、合成文字的重現步驟、預期／實際行為；切勿附私人輸入或未清理的日誌。
 
-下一階段優先穩定 **Emulator 健康檢查、真機驗收、可掃描捐款 QR、介面可讀性、正式簽章與 GitHub Release 管理**。之後才研究候選順位（S2）、個人學習（S3）、自適應觸控（S4）、符號目錄（S5）與可能的本機 Whisper ASR 擴充；這些並非現有版的功能承諾。
+下一階段優先穩定 **Emulator H1/H2、真機驗收、QR 手機實掃、介面可讀性、正式簽章與 GitHub Release 管理**。之後才研究候選順位（S2）、個人學習（S3）、自適應觸控（S4）、符號目錄（S5）與可能的本機 Whisper ASR 擴充；這些並非現有版的功能承諾。
 
 > KU-Yin 是獨立社群專案；上游和公益組織的列名表示致謝或直接支持管道，不代表其贊助、認證或背書 KU-Yin。
