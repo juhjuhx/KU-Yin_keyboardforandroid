@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "observed_on": "2026-10-21",
+  "main_source_sha": "575cc883288a920e7aba021fb8705f75f465e1c0",
+  "r3_candidate_sha": "de2d9dfaa296a5cdeabde405d686720b615ce9e2",
+  "r31_runtime_source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+  "r31_documents_sha": "6e4bcd772b800bf7ad98a2fbe02832a6517722ea",
+  "release_verdict": "NO_GO",
+  "rc_ready": false,
+  "stable_ready": false,
+  "new_release_url": null,
+  "gates": {
+    "published_alpha_identity": "PASS",
+    "published_alpha_signature_integrity": "PASS",
+    "production_signing_custody": "BLOCKED",
+    "data_preserving_upgrade": "NOT_TESTED",
+    "r31_h0": "HEALTHY_SINGLE_BOOT_ONLY",
+    "r31_h1": "INCONCLUSIVE",
+    "r31_h2": "NOT_EXECUTED",
+    "main_app_instrumentation": {
+      "run": 39442957936,
+      "pass": 5,
+      "fail": 0,
+      "skip": 0
+    },
+    "candidate_app_host_runtime": "NOT_EXECUTED",
+    "physical_acceptance": "NOT_TESTED",
+    "qr_phone_scan": "NOT_TESTED",
+    "full_license_review": "OPEN",
+    "privacy_d2d": "OPEN",
+    "verified_public_runtime_screenshots": 0,
+    "social_style_approval": "PENDING",
+    "m4": "NOT_VALIDATED",
+    "aie_s2": "NOT_STARTED",
+    "main_host_instrumentation": {
+      "run": 39442957936,
+      "pass": 15,
+      "fail": 9,
+      "skip": 8
+    },
+    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON"
+  },
+  "scope": "No production/source/signing/artifact mutation; historical baseline CI is not final docs HEAD CI"
+}

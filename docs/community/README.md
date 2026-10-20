@@ -1,8 +1,8 @@
-# KU-Yin 社群發布包｜2026-10-20
+# KU-Yin 社群發布包｜2026-10-21
 
 此資料夾是 **公開實驗性 Alpha 的分享工具包**，不是下一版正式 Release 的發行證明。
 
-## 唯一可公開下載的版本
+## 目前建議下載的最新公開版本
 
 - 倉庫：https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 - 已公開 GitHub Pre-release：https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1
@@ -18,6 +18,8 @@ R3 的 `0.2.0-rc.1` APK 位於未合併的 [PR #20](https://github.com/juhjuhx/K
 - [ASSETS_AND_PRIVACY.md](ASSETS_AND_PRIVACY.md)：要實際拍攝的截圖分鏡、短影片腳本、比例、替代文字、匿名化檢查。
 - [RELEASE_AND_SOCIAL_CHECKLIST.md](RELEASE_AND_SOCIAL_CHECKLIST.md)：安全下載與 SHA256、自查清單、發文時序、錯誤回報。
 - [FAQ.md](FAQ.md)：可直接回覆留言的常見問題。
+
+文案、素材規格及流程分別以 POSTS_READY、ASSETS_AND_PRIVACY、RELEASE_AND_SOCIAL_CHECKLIST 為唯一維護入口；舊 launch-kit 與 posting checklist 僅保留相容導航。另見 [作品集](PORTFOLIO_CASE_STUDY.md)、[圖片分類](media/README.md) 與 [工程門檻](../release/TODO_AND_GATES.md)。倉庫仍保留歷史 Pre-release，「最新」不代表「唯一」。
 
 ## 官方介紹句
 

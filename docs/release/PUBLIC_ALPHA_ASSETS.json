@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "verified_on": "2026-10-21",
+  "release_url": "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1",
+  "channel": "EXPERIMENTAL_DEBUG_PRERELEASE",
+  "tag_source_sha": "2ce6810684fd65a65a3006a224dc786b1f3a5f62",
+  "product_source_sha": "39acf96c6cfc058106315f3553e1c8b88438f4f7",
+  "application_id": "io.github.juhjuhx.kuyin",
+  "version_name": "0.2.0-aie.1",
+  "version_code": 20003,
+  "signer_sha256": "46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94",
+  "signature_schemes_verified": {
+    "v1": false,
+    "v2": true,
+    "v3": false,
+    "v3_1": false,
+    "v4": false
+  },
+  "native_pins": {
+    "libchewing": "a6a8fa4abd3f215e3ba89a7b61702eaf8ca68f5c",
+    "prebuilt": "3587ba3355711f0aca50136e787719f6562676b8",
+    "prebuilder": "55e3c0877ba060bf6670120156eea61e4438797c",
+    "data": "ea74f76dd2548b1d65d0ff70c3ae66057a6ad97d"
+  },
+  "assets": [
+    {
+      "name": "CI-RUNTIME-STATUS.md",
+      "bytes": 1705,
+      "sha256": "c2baf5a54e79f62f2941ef8165a3a838413aa4d7c13a8ff30a2bbef817089645"
+    },
+    {
+      "name": "INDEPENDENT-REVIEW.md",
+      "bytes": 2228,
+      "sha256": "023ffc9830d025e77726fd6ce91aed3eb6972ebe33e0c87fb4846a04d1f601a1"
+    },
+    {
+      "name": "KU-Yin-AIE-S1-candidate-browser-debug.apk",
+      "bytes": 30364775,
+      "sha256": "acdbacdfebcb897074807bc0746d26ecefbbd8a5f28b25f46aab929afb865634"
+    },
+    {
+      "name": "KU-Yin-v0.2.0-aie.1-source-and-relink.tar.gz",
+      "bytes": 34766240,
+      "sha256": "5a6d5ce96bc93f3385473c952912ca266958a51a9acb127a2ba6ab2363877ab8"
+    },
+    {
+      "name": "MANUAL-DEVICE-CHECK.md",
+      "bytes": 1778,
+      "sha256": "4af915aff8030e64bc41f4ce9a7f3bc5ad4e203d73e117bbba40beb58c880228"
+    },
+    {
+      "name": "RELEASE-NOTES.md",
+      "bytes": 3060,
+      "sha256": "c5fdf34b12131e7d3a1ddb59381d34191935a33b7341c4e60d31d4a9d09a6787"
+    },
+    {
+      "name": "release-provenance.json",
+      "bytes": 4416,
+      "sha256": "961c7062b007630bdd6b729f1dda41f5ea313c773dd65660ed8db948e5270aa0"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 656,
+      "sha256": "4580dca62485e419a5394efca807f1d0bf86f7131cedafe299c1f11226c4f62b"
+    }
+  ],
+  "verification_scope": "Fresh download, byte identity, signature integrity; not new device/upgrade/rebuild/legal acceptance"
+}

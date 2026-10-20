@@ -1,13 +1,9 @@
 # KU-Yin 續作短入口
 
-2026-10-12 R1。只需先讀[CURRENT_STATE](../CURRENT_STATE.md)、[規範ARCHITECTURE](../ARCHITECTURE.md)、[FINAL_HANDOFF](../maintenance/FINAL_HANDOFF.md)與[VALIDATION_MATRIX](../maintenance/VALIDATION_MATRIX.md)，再按最小任務讀source；不重讀數百review。
+2026-10-21 publication closure。先讀 [CURRENT_STATE](../CURRENT_STATE.md)、[R3_FINAL_HANDOFF](../release/R3_FINAL_HANDOFF.md)、[PUBLICATION_VALIDATION](../release/PUBLICATION_VALIDATION.md) 與 [TODO_AND_GATES](../release/TODO_AND_GATES.md)，再讀必要 source；不用重載整段聊天或數百份 review。
 
-R1文件／doctor／CI PR #9正常merge `bf7c5d1d912d77ae8c6c7179d26d72bf835232bc`。文件交付後精確main在GitHub與外部`R1_FINAL_RECEIPT.json`；canonical本地checkout `.worktrees/mainline` branch main。原root與15原工區保持，新增共18；禁止reset／clean／prune。
+main575cc883；PR18 已合併。產品仍是 AIE-S1／公開 Debug Alpha20003，沒有新 RC。PR20 Draft、PR12 Draft、PR10 HOLD。main CI39442957936 App5 PASS／Host15 PASS9 FAIL8 SKIP。隔離 R3.1 runtime feab29f 的 H1 仍 null root／無 XML／3006ms timeout，H2 未執行；十份文件保存6e4bcd7 已推原分支。
 
-外部archive `/Users/huang/Desktop/KU-Yin-Engineering-Archive-2026-10-12/`：569baselinehash、4dirtyclone restore PASS，536refs／470copies；private data／keys excluded，DB不改，removed0。產品39acf96、tagv0.2.0-aie.1 source2ce6810、exactAPKacdbacdf…不變。
+文件／社群切片 branch docs/publication-closure-20261021，不改 Kotlin/JNI、pin、簽章、資料、工區或 frozen assets。來源與長短文見 community/README；13 圖分類完成，核實 Runtime 宣傳截圖0，圖卡方向待答。無社群代發。
 
-Host PR #10 **HOLD／未merge**。baseline fresh emulator App5PASS／Host15PASS9FAIL8SKIP；087adapter Host15PASS17SKIP；ea5c2b5 CI38254806233 App4PASS1FAIL（IME visibility :72），Host未跑。來源不改App，rootcauseUNKNOWN，不能用skips或workflowSUCCESS宣稱修好。新source測試詳見fixturebranch交接。
-
-NEXT：bounded test-infra定位IME visibility／完整capture成本，保留strict preedit與exact commit/action/newline，取得完整runtime再裁定PR10；不得盲retry、改assertions、清字典或新增decoder。True產品defect另isolatedfix。physical／OEM／TalkBack／erase／license／signing仍OPEN；productionNOT_READY、M4NOT_VALIDATED、S2未開始。
-
-Native production＋startupfallback；MainActivitytrial另dictionary；Englishoffline10k。scratch snapshotplan/generation/ref；nativeACK早於editorACK；fullresetunsupported；Roomfeedback v1。Supplemental native stress180s TIMEOUT不當PASS。TAUI／oldbranches KEEP待owner決策。無init/compact/LSP API；不改globalCodexconfig。
+RELEASE=NO_GO。下一最小 runtime 工作是既有 raw 的單因子 H1 假說與 meaningful RED；不盲重跑、不增加 timeout、不弱化 assertion。先 fresh same-boot H0/H1，再單獨批准階段的 H2/App/Host。實機、QR scan、更新保資料、D2D、key custody、完整 license review 仍 OPEN。不要動其他工區或 AutoPilot 設定；無 init/compact/LSP 專用 API，不冒稱調用。

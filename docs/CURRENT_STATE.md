@@ -1,3 +1,15 @@
+# 當前事實 — 2026-10-21
+
+main 基線 `575cc883288a920e7aba021fb8705f75f465e1c0`；README／社群 PR18 已合併。已公開版本仍為 `v0.2.0-aie.1` Experimental Debug Alpha；PR20 Draft、RC 未發布，Release **NO_GO**。
+
+本輪重新核對公開八資產、APK 20003／0.2.0-aie.1、Debug certificate、四 ABI 與 source/relink 雜湊。main CI39442957936 的 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；blocking build 成功不能掩蓋 experimental Runtime 失敗。
+
+R3.1 隔離分支 runtime feab29f：H0 HEALTHY、H1 INCONCLUSIVE／null root／逾時，H2 及產品 Runtime 未執行。文件保存 commit6e4bcd7 已推原分支；不是 main 的產品 patch。沒有經授權實機驗收，也沒有可核實公開操作截圖。
+
+只需續讀 [交接](release/R3_FINAL_HANDOFF.md)、[驗證](release/PUBLICATION_VALIDATION.md)、[TODO](release/TODO_AND_GATES.md)；架構仍以 [ARCHITECTURE](ARCHITECTURE.md) 為準。以下 R1 紀錄是歷史，不作當前 gate。
+
+---
+
 # CURRENT_STATE
 
 ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX與原Gitcommit。

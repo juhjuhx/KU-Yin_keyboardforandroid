@@ -7,12 +7,15 @@
 | 目的 | 輸出尺寸／格式 | 備註 |
 |---|---|---|
 | IG／Threads／FB 圖卡 | 1080 × 1350 PNG／JPEG | 五張直式輪播；重要文字留在安全區 |
+| 16:9 封面 | 1920 × 1080 PNG／WebP | 沿用同一視覺系統；方向待確認 |
 | IG Story／Reels | 1080 × 1920 MP4 | 真實手機錄影與完整標籤 |
 | Bilibili／YouTube 主片 | 1920 × 1080 MP4 | 30–60 秒、實際 APK 畫面 |
 | GitHub Social Preview | 1200 × 630 PNG | 使用真實品牌名稱，不偽造商店徽章 |
 | GitHub README 截圖 | PNG／WebP | 清晰且小容量；附替代文字 |
 
-以上僅為製作規格。尚未上傳影片、社群截圖或 Logo；請勿在 GitHub 或文案宣稱已有 demo 證據。
+以上僅為製作規格。倉庫已有品牌 JPG、launcher WebP 與測試 PNG，沒有已核實的鍵盤 Runtime 宣傳截圖。見 [圖片清單](media/ASSET_MANIFEST.json)，不可把 Logo 或單元測試圖當作打字證據。
+
+兩張品牌 JPG 含生成式 AI 來源文字；本輪未驗證 C2PA 簽章鏈或完整權利文件。十張 launcher WebP 與一張測試 PNG 無法由本輪 Pillow 解碼，Git blob 與本機位元組一致。保留原檔，不猜測修復，也不由此直接推論 APK 執行結果。
 
 ## 五張輪播分鏡與可貼上的文字
 
@@ -45,7 +48,8 @@
 - 不展示私人字典、Room 回饋、真實聯絡信箱、API 金鑰或未清理的 adb/logcat。
 - 上傳前看完整 MP4，逐影格抽查前後 3 秒及切場；檢查 EXIF／GPS metadata。
 - 若顯示 Debug 或系統安全警告，保留真實標籤，不剪掉警告冒充正式版。
-- 影片說明標註：APK 版本、Android 版本、手機型號（可選）、`Experimental Alpha`；不要冒稱跨機型驗收。
+- 內部來源紀錄必填：APK_SHA256、APK 版本、ANDROID_VERSION、DEVICE_MODEL、CAPTURE_TIME（含時區）、SCREENSHOT_SHA256、來源類型、匿名化方式及逐張 Reviewer。公開可用匿名裝置代號，內部保持可追溯；不得公開 serial 或私人輸入。
+- 移除 EXIF/GPS 後重新計算公開檔 SHA256，保留原始檔與公開檔的對照。影片標示版本及 Experimental Alpha，不冒稱跨機型驗收。
 
 ## 編輯與字幕後處理
 

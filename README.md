@@ -33,7 +33,7 @@
 
 ## 目前狀態與已知限制
 
-截至 **2026-10-20**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
+截至 **2026-10-21**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
 
 - **公開 Alpha**：原 API 33 App 5 PASS；Host **15 PASS／9 FAIL／8 SKIP**（發布時基線）。
 - **R2 測試分支**：曾在 API 33 取得 App **5 PASS**、Host **24 PASS／9 SKIP**；24 項含一項測試基礎設施檢查，實際產品案例為 **23 PASS／9 INCONCLUSIVE**。不是 `main` 新版本的完整驗收。
@@ -43,6 +43,10 @@
 - **實機與正式版**：AIE-S1 完整真機候選瀏覽、不同 OEM、TalkBack、學習清除、正式 release key、商店與穩定版均 **OPEN／NOT_READY**。
 
 請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。**實驗性 runtime-smoke 仍有失敗紀錄**；請查看每個 job，而非只讀整體 Workflow 狀態。正式的 [Release readiness](docs/release/RELEASE_READINESS.md)、[RC 發布驗收追蹤 #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
+
+## 實際畫面與最新證據
+
+目前沒有完成來源／隱私核驗的鍵盤操作截圖，因此這裡不以品牌圖或 Preview 代替。截圖與圖卡待辦見 [media 清單](docs/community/media/README.md)。最新 main [CI39442957936](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39442957936) XML 為 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；不能套用成未合併 RC 的 Runtime 通過。[本輪驗證](docs/release/PUBLICATION_VALIDATION.md) 分開記錄來源。
 
 ## 隱私與安全
 
