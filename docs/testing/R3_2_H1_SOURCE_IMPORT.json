@@ -1,0 +1,63 @@
+[
+  {
+    "path": "scripts/emulator_health.py",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "d9ba572a8a3d9824cf55806582a9f4734dcb7a4526662ea2e34473606a002413",
+    "bytes": 22329
+  },
+  {
+    "path": "scripts/r2_ci_protocol.py",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "cad27a0b95656fc4e377c5c0d16b775cdd6149d96d349f524e87c64ee1347d41",
+    "bytes": 4575
+  },
+  {
+    "path": "scripts/tests/test_emulator_health.py",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "3fda8e45e4f613461547c3ce6492578e703b8d7c097b7b1566c7c4e73861cf96",
+    "bytes": 22874
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/.gitattributes",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "753851dd2f6b225adfb8e6ea26d1c4e102d0085935e8b62a053bbc9a8e380869",
+    "bytes": 122
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/final-window-displays-stdout.txt",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "51e90b21af45469a89a5461d37ad8c889fdc1b6b642a28029b64c08a84ec7feb",
+    "bytes": 15734
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/final-window-windows-stdout.txt",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "509125f50bb845246c477e083288af5abfc30aa49c0db3abf14d4b1255ac5fac",
+    "bytes": 31306
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/provenance.json",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "2eed65734c87768b927e3fb62842df14db6b785a2e1c48356cbf1a9fe92c3e48",
+    "bytes": 892
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/window-displays-stdout.txt",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "d6607a216a7baaa1de69c81b32bc3a0fead3e0be0f17392b358142cf72cebcb6",
+    "bytes": 15598
+  },
+  {
+    "path": "scripts/tests/fixtures/r23_wms/window-windows-stdout.txt",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "9023b50033bfdb4eef6e7b67f35f0d8ca29029ba192adcd17398a64198cfc175",
+    "bytes": 28329
+  },
+  {
+    "path": "scripts/r2_current_instrumentation_manifest.json",
+    "source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
+    "sha256": "73000592370e43e1118e3259f464c03572c1c34b8149606e6b2017e08677cd5c",
+    "bytes": 10064,
+    "reason": "required import dependency; not a new acceptance claim"
+  }
+]

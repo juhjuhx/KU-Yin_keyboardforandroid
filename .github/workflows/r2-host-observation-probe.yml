@@ -1,0 +1,79 @@
+name: R3.2 Test-Only H0 H1 Timeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      host_scope:
+        description: 'Single bounded H0 then H1; no H2 or product tests'
+        type: choice
+        default: editor-health
+        options: [editor-health]
+
+permissions:
+  contents: read
+
+jobs:
+  editor-health:
+    if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'editor-health'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Verify unchanged APK inputs and fresh test infrastructure
+        run: |
+          mkdir -p build/r31-editor-health
+          git rev-parse HEAD > build/r31-editor-health/source-sha.txt
+          git diff --exit-code 8369da25fa54ab762dfceed457e71a08767a642e HEAD -- app acceptance-host gradle build.gradle.kts settings.gradle.kts gradle.properties gradlew gradlew.bat scripts/bootstrap_native_deps.sh scripts/runtime_smoke.sh LICENSE NOTICE > build/r31-editor-health/protected-source.diff
+          sha256sum scripts/emulator_health.py scripts/r2_ci_protocol.py .github/workflows/r2-host-observation-probe.yml > build/r31-editor-health/source-SHA256SUMS
+          python3 -m unittest discover -s scripts/tests -v > build/r31-editor-health/python.log 2>&1
+          for contract in scripts/check_*.py; do python3 "$contract"; done > build/r31-editor-health/contracts.log 2>&1
+      - name: Download immutable reference APKs without rebuilding
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh api repos/${GH_REPO}/actions/runs/39152444358 > build/r31-editor-health/reference-run.json
+          python3 -c 'import json; r=json.load(open("build/r31-editor-health/reference-run.json")); assert r["head_sha"] == "b98206267b3a65c452db1661bb3bae910ec61f6a"'
+          gh run download 39152444358 --name r3-rc-runtime-evidence --dir build/r31-reference
+      - name: Verify exact four reference APK identities
+        shell: python
+        run: |
+          import hashlib, json, pathlib
+          expected = {
+              'app/build/outputs/apk/debug/app-debug.apk': 'bb179c64a774ddab4728214e38926770e172c61ab75a8f0de03284be65d8d092',
+              'app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk': '7ac4a44577b674970d0822b23e2da6472ccfa7b694e536ed6dd384844d75b3ee',
+              'acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk': 'f264abb30c740665b1f56efe2a8b297a50860e337befde158548fe2fb4434f67',
+              'acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk': '099a23e6cac39482b9c881b27c6a54d0d00c6643d99a16e7aaf3a3c8e115e679'}
+          observed = {name: hashlib.sha256((pathlib.Path('build/r31-reference') / name).read_bytes()).hexdigest() for name in expected}
+          pathlib.Path('build/r31-editor-health/apk-identities.json').write_text(json.dumps({'reference_source': 'b98206267b3a65c452db1661bb3bae910ec61f6a', 'expected': expected, 'observed': observed}, indent=2))
+          assert observed == expected, 'Reference artifact changed; refuse installation'
+      - name: Enable disposable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: Fresh H0 then host-only H1; never H2 or product install
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          avd-name: r32_editor_health
+          emulator-port: 5554
+          force-avd-creation: true
+          disable-animations: true
+          disable-spellchecker: true
+          script: bash -euo pipefail -c 'python3 scripts/emulator_health.py h0 --serial emulator-5554 --out build/r31-editor-health/h0 && adb -s emulator-5554 install -r -t --user 0 build/r31-reference/acceptance-host/build/outputs/apk/debug/acceptance-host-debug.apk && python3 scripts/emulator_health.py h1 --serial emulator-5554 --out build/r31-editor-health/h1 --output-timeline --h0 build/r31-editor-health/h0/result.json'
+      - name: Preserve finite editor health evidence on every outcome
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: r31-editor-health
+          path: build/r31-editor-health
+          if-no-files-found: error
