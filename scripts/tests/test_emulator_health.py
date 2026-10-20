@@ -225,11 +225,13 @@ if __name__ == '__main__':
     unittest.main()
 
 class EmulatorHealthCollectorTest(unittest.TestCase):
-    def collect(self, *, bad_screen=False, switched_user=False, broken_evidence=False, final_window=None):
+    def collect(self, *, bad_screen=False, switched_user=False, broken_evidence=False, final_window=None,
+                real_terminal_dump=False):
         import json
         import subprocess
         import tempfile
         from unittest.mock import patch
+        real_run = subprocess.run
         self.calls = []
         def run(command, **kwargs):
             self.calls.append(command)
@@ -248,7 +250,59 @@ class EmulatorHealthCollectorTest(unittest.TestCase):
                 observation = final_window if final_window is not None and count > 4 else WINDOW
                 lines = observation.splitlines()
                 data = ('\n'.join(line for line in lines if ('mCurrentFocus=' in line) == ('displays' in args))).encode()
-            elif 'uiautomator' in args: data = XML.encode()
+            elif 'uiautomator' in args:
+                if not real_terminal_dump:
+                    data = XML.encode()
+                else:
+                    # AOSP raw shell has no controlling terminal. Exercise actual
+                    # FileWriter-like IO, rather than fabricate XML for every argv.
+                    import os
+                    import pty
+                    import select
+                    import signal
+                    import time
+                    child = [sys.executable, '-c', '''
+import sys
+try:
+    with open(sys.argv[1], 'w') as output:
+        output.write(sys.argv[2])
+except OSError:
+    pass  # AOSP dumper logs IOException but DumpCommand can still print its marker.
+print('UI hierchary dumped to: ' + sys.argv[1])
+''', args[-1], XML]
+                    if '-tt' not in args:
+                        return real_run(child, capture_output=True, start_new_session=True,
+                                        timeout=kwargs['timeout'])
+                    pid, master = pty.fork()
+                    if pid == 0:
+                        os.execv(child[0], child)
+                    status = None
+                    try:
+                        chunks = []
+                        deadline = time.monotonic() + kwargs['timeout']
+                        while time.monotonic() < deadline:
+                            if not select.select([master], [], [], 0.05)[0]:
+                                continue
+                            try:
+                                chunk = os.read(master, 4096)
+                            except OSError:
+                                break  # PTY EOF is EIO on Linux.
+                            if not chunk:
+                                break
+                            chunks.append(chunk)
+                        waited, status = os.waitpid(pid, os.WNOHANG)
+                        while waited != pid and time.monotonic() < deadline:
+                            time.sleep(0.005)
+                            waited, status = os.waitpid(pid, os.WNOHANG)
+                        if waited != pid:
+                            status = None
+                            raise subprocess.TimeoutExpired(child, kwargs['timeout'])
+                        data, code = b''.join(chunks), os.waitstatus_to_exitcode(status)
+                    finally:
+                        os.close(master)
+                        if status is None:
+                            os.kill(pid, signal.SIGKILL)
+                            os.waitpid(pid, 0)
             elif 'screencap' in args:
                 code = 13 if bad_screen else 0
                 data = base64.b64decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=')
@@ -327,6 +381,13 @@ class EmulatorHealthCollectorTest(unittest.TestCase):
         self.assertEqual(1, sum('start' in c for c in self.calls))
         self.assertFalse(any('install' in c or 'put' in c or 'enable' in c for c in self.calls))
         self.assertTrue(all(c[:3] == ['adb', '-s', 'emulator-5554'] or c == ['adb', 'devices', '-l'] for c in self.calls))
+
+    def test_h1_receives_real_xml_from_dump_terminal_not_just_success_marker(self):
+        code, result = self.collect(real_terminal_dump=True)
+        self.assertEqual(0, code, result)
+        self.assertEqual('HEALTHY', result['status'])
+        self.assertEqual(1, sum('uiautomator' in c for c in self.calls),
+                         'A ready synthetic editor must not need blind dump retries')
 
     def test_evidence_write_failure_stops_before_host_launch(self):
         self.collect(broken_evidence=True)

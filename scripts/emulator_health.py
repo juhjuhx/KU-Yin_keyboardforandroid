@@ -326,7 +326,10 @@ def collect_h1(serial, directory, h0):
             w1 = capture.window(f'window-before-{n}', timeout=min(3, remaining))
             remaining = deadline - time.monotonic()
             if remaining <= 0: break
-            xml = capture.run(f'ui-{n}', ['shell', 'uiautomator', 'dump', '/dev/tty'], timeout=min(3, remaining))
+            # DumpCommand writes XML to FileWriter(/dev/tty), not System.out.
+            # Noninteractive adb shell defaults to no controlling terminal.
+            # Force a PTY for this read only; retain the same timeout/strict oracle.
+            xml = capture.run(f'ui-{n}', ['shell', '-tt', 'uiautomator', 'dump', '/dev/tty'], timeout=min(3, remaining))
             remaining = deadline - time.monotonic()
             if remaining <= 0: break
             w2 = capture.window(f'window-after-{n}', timeout=min(3, remaining))
