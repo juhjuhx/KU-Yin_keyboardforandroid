@@ -248,3 +248,11 @@ R2.3結果：local/CI181 Python與10contracts PASS，source初審限定APPROVE�
 | addyosmani-shipping-and-launch | `/Users/huang/.agents/skills/addyosmani-shipping-and-launch/SKILL.md` | `9ef215b2c69d03b29dd9c804af51f57a8d7294da0e9a1097980805300c76de34` | R3 materials/docs/closeout／USED_SCOPED | 發布與實測分層；不適用web telemetry／marketing，不新增Release |
 
 獨立reviewers另實際用code-review-excellence；指定模型official-code-review完整pipeline不可用，未聲稱其APPROVE。所有review與runtime結果以[R3 review](../release/R3_INDEPENDENT_REVIEW.md)分scope裁定，元件PASS不是RC／實機PASS。
+
+## R3.1 H1 capture recovery（2026-10-20）
+
+本輪實際載入／按範圍使用 using-superpowers、systematic-debugging、test-driven-development、using-git-worktrees、writing-plans、requesting-code-review、verification-before-completion，實體皆 `/Users/huang/.agents/skills/<skill-name>/SKILL.md`；code-verification 為上表 codex-engineering-guardrails/1.1.1 同一路徑。各檔實際 SHA256、宿主工具、授權、gate與fallback保存於外部 `KU-Yin-R3.1-H1-Capture-20261019-211633/03-tool-route-packet.json`，不是宣稱所有 skills 已執行。
+
+輸出對應：隔離25th worktree、H1/helper與guard／finite-route有意義RED-GREEN、37/13/4 focused、10contracts、新exact feab29f CI212PASS、獨立整PR20/source/176raw審查。canonical Tool Master實為using-superpowers Personal Tool Master V3，無另外虛構MCP。工具為真exec/patch、唯讀官方來源查詢、獲授權reviewer與GH branch/manualCI；沒有source送未批准OCR、LSP/init/compact或AutoPilot設定操作。
+
+H1-only CI39426302308結果H0HEALTHY/H1INCONCLUSIVE；skills與測試來源PASS不能變成Android產品／physical PASS。平台reviewer後續quota中斷保留，未盲retry；另一位完成新source與runtime獨立核對，詳細範圍見[R3.1獨立審查](../release/R3_1_INDEPENDENT_REVIEW.md)。Release仍NO_GO。

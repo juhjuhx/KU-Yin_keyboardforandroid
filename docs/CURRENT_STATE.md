@@ -1,8 +1,21 @@
 # CURRENT_STATE
 
-## 當前：R3 RC closure（2026-10-19）
+## 當前：發佈文件收束／R3.1 checkpoint（2026-10-21）
 
-本節為ACTIVE；以下R1/R2記錄是各自時間點歷史。main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`、公開Alpha/tag不變。隔離 `release/rc-closure-r3`，product QR commit `de2ac7d94e0a79f492d11ee165173e65b4562bd7`；整合R231後 build/runtime source `b98206267b3a65c452db1661bb3bae910ec61f6a`。後續文件HEAD不冒充新的runtime證據。
+ACTIVE。GitHub main 已由 README／社群 PR18 更新為 `575cc883288a920e7aba021fb8705f75f465e1c0`，相對原63c9e4a僅README／community文件；公開 Alpha/tag 不變。隔離 `fix/r3-1-h1-capture`：H1 code `97645c238dcecc43e677de625bf7049bd487d700`，有限 CI source `feab29f53583c4bb8dfc4cffe13243a36a3e9d06`；不改產品/JNI、原 App/Host assertions、signing 或資料。
+
+- 原 H1 的 frozen-before 與 marker-only XML transport 分別記錄，不推定 freeze→timeout 單因。UIAutomator dump 只加控制終端 `shell -tt`；保留原 3s/10s、focus/IC/defaultIME/user/boot 與完整 XML gates。
+- 最終 regression 對原 source meaningful RED；本機 health37、guard13、有限 workflow route4、contracts10 PASS。獨立來源審查及子行程 timeout 清理有直接證據；不代表 Android H1 PASS。
+- 本機 full Python 保存結果遭 ENOSPC，未列 PASS。一次新 [H1-only CI39426302308](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39426302308) exact feab29f 最終 FAILURE：獨立執行完整 Python212／89.463s、contracts10與四APK/source guard PASS；H0 HEALTHY、H1 INCONCLUSIVE。ui-0有`-tt`但null root／無XML／3006ms timeout，after WMS frozen=true；原斷言fail closed，未重跑、未執行H2/產品/App/Host/B01。
+- RC source guard 新增 b982 runtime pin、單獨 97645c health pin，其他 infra e137 保留；actual guard exit0。整個 PR20 獨立 review 的 inherited prerelease/signing gate 缺口仍 OPEN。
+- 2026-10-21：磁碟已恢復約14GiB可用；未額外刪資料，不宣稱是本Agent釋出。十份原未提交文件已hash備份／還原驗證；fresh local Python212 PASS，原ENOSPC丟失結果仍不追認。歷史磁碟滿載的唯一目錄原因未能回溯證明。
+- 實機/QRscan/保資料更新/正式key custody/D2D/license gate未完，RC=false、Stable=false、NO_GO、NOT_PUBLISHED；PR18已合併，PR10 HOLD、PR12/20 不自動合併。
+
+續作入口：[R3.1交接](release/R3_1_FINAL_HANDOFF.md)、[根因](release/R3_1_ROOT_CAUSE.md)、[驗證](release/R3_1_RUNTIME_VALIDATION.md)。原Android根因仍UNRESOLVED；已依H1拒絕保存raw停止。下一最小工作是UIAutomator accessibility root與host window replacement的受控因果調查，不用health-only或歷史成功取代產品驗收。
+
+## R3 RC closure 歷史 checkpoint（2026-10-19）
+
+本節為HISTORICAL；以下R1/R2亦是各自時間點記錄。當時 main `63c9e4ab8ad7e277013acb5d7cce99228ec1f827`、公開Alpha/tag不變。隔離 `release/rc-closure-r3`，product QR commit `de2ac7d94e0a79f492d11ee165173e65b4562bd7`；整合R231後 build/runtime source `b98206267b3a65c452db1661bb3bae910ec61f6a`。後續文件HEAD不冒充新的runtime證據。
 
 - 已修捐贈假QR及OSI/EFF完整官方網址：標準離線PNG、完整quiet zone、8 focused tests及12 rendered captures；保留既有視覺、copy/open、直接交組織與無背書說明。手機scan／TalkBack未驗，UI明示。typing/session/JNI／native pins／Dachen geometry不動。
 - Fresh local：Python205 PASS／contracts10 PASS；App JVM290＝280PASS/10native-hostSKIP，Host JVM123PASS；四APK build exit0；新四ABIrelink `.text`／`.rodata`與本機APK相同，完整ELF／跨環境APK不宣稱相同。
