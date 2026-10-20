@@ -16,8 +16,8 @@ android {
     applicationId = "io.github.juhjuhx.kuyin"
     minSdk = 24
     targetSdk = 36
-    versionCode = 20003
-    versionName = "0.2.0-aie.1"
+    versionCode = 20004
+    versionName = "0.2.0-rc.1"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     externalNativeBuild {
@@ -108,6 +108,8 @@ dependencies {
   testImplementation(libs.roborazzi)
   testImplementation(libs.roborazzi.compose)
   testImplementation(libs.roborazzi.junit.rule)
+  // Independent QR oracle; excluded from production runtime/APK.
+  testImplementation("com.google.zxing:core:3.5.3")
   androidTestImplementation(platform(libs.androidx.compose.bom))
   androidTestImplementation(libs.androidx.compose.ui.test.junit4)
   androidTestImplementation(libs.androidx.espresso.core)

@@ -54,6 +54,8 @@ JVM → Debug APK → artifact). `runtime-smoke` is experimental
 (`continue-on-error: true`) and never counts as PASS. `prerelease.yml` is manual-only; a fresh CI debug key cannot update the
 published locally signed APK. Publish reviewed assets with source/relink materials; `upstream-watch.yml` only files review issues.
 
+R3隔離候選使用既有 `r2-host-observation-probe.yml` 的手動 `host_scope=release-candidate`，固定reviewed source與同boot H0→H1→H2／App5→Host33／32-case→B01。第一個未滿足gate立即停止。唯一run39152444358在H1 INCONCLUSIVE退出3；沒有產品／Host runtime PASS。詳[R3 validation](release/R3_RELEASE_VALIDATION_MATRIX.md)。不要為發布啟動未經簽章／source材料gates的legacy prerelease workflow。
+
 ## Contribution workflow
 
 Production behavior changes carry the narrowest regression test. Explain root

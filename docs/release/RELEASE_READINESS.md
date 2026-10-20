@@ -1,5 +1,11 @@
 # KU-Yin Release Readiness
 
+## 當前裁定：2026-10-19 R3
+
+**NO_GO／RC_READY=false／STABLE_READY=false**。公開v0.2.0-aie.1不變；未發布candidate source b982062，Debug20004／0.2.0-rc.1。QR元件已修，fresh local gates與材料完成，但唯一CI在H1INCONCLUSIVE停止；App／Host未執行，實機NOT_TESTED、正式signer／D2D／完整license inventory仍OPEN。精確來源、測試、artifact、待決策與下一步由[R3 readiness](R3_RELEASE_READINESS.md)／[驗證矩陣](R3_RELEASE_VALIDATION_MATRIX.md)／[交接](R3_FINAL_HANDOFF.md)維護。
+
+以下2026-10-12 Alpha表為**歷史gate基線**，不再以其舊QR／main／CI數字覆蓋R3目前事實。
+
 更新2026-10-12；PRODUCTION_RELEASE=NOT_READY；GitHub v0.2.0-aie.1 experimental prerelease已公開；詳見 AIE_ALPHA_HANDOFF.md。使用者回報P0基本中文可用；沒有完整physical matrix證據，也本輪只有新 AIE Debug 測試 artifact，沒有 Release artifact。
 
 | Gate | 狀態／直接證據 | 關閉條件 |

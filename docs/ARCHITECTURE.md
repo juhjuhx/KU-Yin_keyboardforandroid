@@ -19,6 +19,8 @@ Android Editor / EditorInfo / InputConnection
 
 MainActivity試打另用dictionary session，亦可寫fallbackprefs；未註冊的舊View shell並非production。所有Editor effects由service執行，native ACK与editor BooleanACK是不同層；不保證跨IPC exactly-once delivery。候選page totals是projection plans，不是全部unique字庫數。S0停用不完整reset，沒有完整erase。新ranking、TouchResolver、SymbolRepository、Rime及M4皆未實作。
 
+R3未發布分支b982062僅產品捐贈卡改標準離線QR、版本20004及test-only CI保全；上述typing/native/state ownership與Dachen geometry不變。ZXing僅JVM test，OpenCV僅離線asset tool，四APK不包含這兩者runtime。H0/H1健康probe及acceptance-host皆test infrastructure，不能畫成產品功能；實際runtime gate見[驗證矩陣](release/R3_RELEASE_VALIDATION_MATRIX.md)。
+
 ## 可導航的規範章節
 
 - [系統總覽](architecture/01-SYSTEM-OVERVIEW.md)

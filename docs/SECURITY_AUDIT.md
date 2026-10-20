@@ -16,7 +16,7 @@ ACTIVE source audit，R1基線a6a4c65。不是第三方certification，也沒有
 | Supply chain | immutableprebuilt/source pins、source/relinkrelease材料 | bootstrap不是Rust重編等價/完整LGPL法律review |
 | Release | 現有sameDebugsigner experimentalAlpha | productionkey未配置；manuallegacypublish須另hardening，禁止重簽替代 |
 
-compile/target SDK 36（minor1）/min24；version20003/0.2.0-aie.1，實際build身份見DEVELOPMENT與release交接。
+compile/target SDK36（minor1）/min24；公開Alpha仍20003／0.2.0-aie.1。R3未發布Debug為20004／0.2.0-rc.1，僅QR／test infrastructure變更，未改上述privacy／schema／native政策；產品無INTERNET／CAMERA／RECORD_AUDIO，Host instrumentation另含INTERNET，不能混稱四APK均無網路權限。獨立靜態與未關gate見[R3 review](release/R3_INDEPENDENT_REVIEW.md)及[readiness](release/R3_RELEASE_READINESS.md)。
 
 ## 正常資料流
 

@@ -1,0 +1,2 @@
+# Preserve the captured WMS stdout byte-for-byte, including its one trailing space.
+*-stdout.txt whitespace=-blank-at-eol

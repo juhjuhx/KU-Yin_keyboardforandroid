@@ -2,6 +2,8 @@
 
 本文件收錄主線化過程中的保留／刪除／新增決策，避免上下文超載與幻覺。程式狀態以碼為準；此處只記決策。
 
+**HISTORICAL**：以下為2026-09-20當時source／測試／未決狀態，非現行架構。當前以[ARCHITECTURE](ARCHITECTURE.md)、[CURRENT_STATE](CURRENT_STATE.md)為準。舊手繪QR已在未發布R3分支修正，見[QR provenance](release/QR_PROVENANCE.md)；不能將本文件「待換真QR／C4未切換」等歷史項目當成目前TODO。
+
 ## 必須留下來的檔案
 
 - `app/src/main/java/com/example/ime/**`：Compose 產品管線（service、engine、ui、settings、session 遷移層）。其中 `ime/session/`（C1–C3：`ComposeSession`、`ZhuyinDictionarySession`、`ChewingEngineSession`＋3 份合約測試）是 decoder 遷移的比較 harness，不可刪。

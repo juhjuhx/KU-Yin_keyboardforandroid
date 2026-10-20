@@ -88,6 +88,9 @@ jobs:
 
   runtime-smoke:
     name: runtime-smoke (experimental)
+    # R3 runs the complete original assertions through its explicit H0/H1-gated route.
+    # Do not additionally launch this historical ungated emulator sequence on its PR.
+    if: github.head_ref != 'release/rc-closure-r3'
     needs: build
     continue-on-error: true
     runs-on: ubuntu-latest
@@ -135,4 +138,5 @@ jobs:
             acceptance-host/build/reports/androidTests/connected
             app/build/outputs/androidTest-results/connected
             acceptance-host/build/outputs/androidTest-results/connected
+            build/r2-runtime-evidence
           if-no-files-found: warn

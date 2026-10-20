@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "generator": "scripts/generate_foundation_qr.py",
+  "generator_sha256": "66a519e2a44033a8b69347704583bcb51479a55c4448dff73a3b70cb6db4f2c6",
+  "encoder": {
+    "library": "OpenCV",
+    "version": "4.13.0",
+    "wheel": "opencv-python-headless==4.13.0.92",
+    "numpy": "2.4.6",
+    "upstream_license": "Apache-2.0",
+    "wrapper_license": "MIT"
+  },
+  "encoding": "BYTE",
+  "error_correction": "M",
+  "quiet_zone_modules": 4,
+  "pixels_per_module": 8,
+  "png_compression": 9,
+  "provenance": "Project-generated from public official URLs; not foundation-provided artwork or endorsement",
+  "hash_scope": "Source PNG bytes; Android resource packaging may transform PNG encoding",
+  "phone_camera_scan": "NOT_TESTED",
+  "foundations": [
+    {
+      "id": "fsf",
+      "url": "https://my.fsf.org/donate",
+      "drawable": "foundation_qr_fsf",
+      "source_path": "app/src/main/res/drawable-nodpi/foundation_qr_fsf.png",
+      "symbol_modules": 25,
+      "width_px": 264,
+      "height_px": 264,
+      "sha256": "3faf7c171e629a01933ff7025a97ee7b59d0dfe95e61dbf09e7f2797f90eb216"
+    },
+    {
+      "id": "asf",
+      "url": "https://donate.apache.org/",
+      "drawable": "foundation_qr_asf",
+      "source_path": "app/src/main/res/drawable-nodpi/foundation_qr_asf.png",
+      "symbol_modules": 25,
+      "width_px": 264,
+      "height_px": 264,
+      "sha256": "80326459abb4c6fdeba5b8f29c48d1b3b1a3c53132976d821cf32a92d6fc4eda"
+    },
+    {
+      "id": "osi",
+      "url": "https://members.opensource.org/donate",
+      "drawable": "foundation_qr_osi",
+      "source_path": "app/src/main/res/drawable-nodpi/foundation_qr_osi.png",
+      "symbol_modules": 29,
+      "width_px": 296,
+      "height_px": 296,
+      "sha256": "6bf833e81fbdd0a34709253f0863e87980f2acbf0affb35dd7d858edfcfab675"
+    },
+    {
+      "id": "eff",
+      "url": "https://supporters.eff.org/donate/donate",
+      "drawable": "foundation_qr_eff",
+      "source_path": "app/src/main/res/drawable-nodpi/foundation_qr_eff.png",
+      "symbol_modules": 29,
+      "width_px": 296,
+      "height_px": 296,
+      "sha256": "ce41c47fed93fad5fecca7c11ab2cc5c344c5261cfc3cf51c6c2f5ef2e4e28f4"
+    }
+  ]
+}
