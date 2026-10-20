@@ -1,3 +1,11 @@
+# Publication Gate — 2026-10-21
+
+**NO_GO／RC_READY=false／STABLE_READY=false**。現有 Alpha 保持原樣。當前 [機器門檻](RELEASE_GATE.json)、[驗證表](PUBLICATION_VALIDATION.md)、[安裝與更新](INSTALL_AND_UPGRADE.md)、[授權盤點](LICENSE_INVENTORY.md) 及 [下一步](TODO_AND_GATES.md) 為本輪權威；以下 2026-10-12 表格保留為歷史，不當新證據。
+
+main575 的 App5 PASS 只屬 CI39442957936，Host 仍9 FAIL／8 SKIP。R3.1 H1 未閉合；手機／QR scan／保資料更新／正式 key custody／完整 license review 未通過，不能建立新 RC。公開 Alpha 的簽章完整性已驗證，不等於 production signing 或手機驗收。
+
+---
+
 # KU-Yin Release Readiness
 
 更新2026-10-12；PRODUCTION_RELEASE=NOT_READY；GitHub v0.2.0-aie.1 experimental prerelease已公開；詳見 AIE_ALPHA_HANDOFF.md。使用者回報P0基本中文可用；沒有完整physical matrix證據，也本輪只有新 AIE Debug 測試 artifact，沒有 Release artifact。

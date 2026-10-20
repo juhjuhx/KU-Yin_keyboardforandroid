@@ -1,6 +1,6 @@
 # KU-Yin 酷音｜技術作品集與履歷材料
 
-> 發布資料基準：2026-10-20。**公開產品為 `v0.2.0-aie.1` Experimental Alpha；未合併的 R3 `0.2.0-rc.1` 尚未公開。** 本文描述的是專案架構與已有程式實作，不代表最新 RC 已完成實機驗收。
+> 發布資料基準：2026-10-21。**公開產品為 `v0.2.0-aie.1` Experimental Alpha；未合併的 R3 `0.2.0-rc.1` 尚未公開。** 本文描述的是專案架構與已有程式實作，不代表最新 RC 已完成實機驗收。
 
 ## 可公開的專案卡
 
@@ -99,7 +99,7 @@ CandidatePageSnapshot 回到 Compose 候選列與展開網格。Native startup f
 
 ## 下一個工程里程碑
 
-1. 確認 R3.1 本機 ENOSPC 的十份文件安全保存、提交與追蹤。
+1. R3.1 十份文件已保存、還原演練並提交至隔離分支；後續工程項目以 [TODO 與 gates](../release/TODO_AND_GATES.md) 為準。
 2. 根因定位 H1 UI XML capture，於可信新 boot 完成 H0→H1→H2。
 3. App／Host instrumentation 與 32-case matrix；B01 未完成案例獨立標示。
 4. 實機 30-case／QR 手機掃描／TalkBack／保資料更新。

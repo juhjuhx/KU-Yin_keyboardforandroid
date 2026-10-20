@@ -1,8 +1,8 @@
 # KU-Yin｜各平台可直接發布文案（Experimental Alpha）
 
-**素材來源日期：2026-10-20。發文前確認 [Release](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) 仍是公開最新版。** 以下文案全部指向已公開 Alpha；不可把 R3 Debug 候選改稱 Stable。
+**素材來源日期：2026-10-21。發文前確認 [Release](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) 仍是公開最新版。** 以下文案全部指向已公開 Alpha；不可把 R3 Debug 候選改稱 Stable。
 
-## Threads｜主貼（繁體中文）
+## Threads／Facebook 共用短版（繁體中文）
 
 我在做一套 Android 大千注音鍵盤：**KU-Yin 酷音** ⌨️
 
@@ -14,13 +14,13 @@ GitHub／下載：https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/
 
 感謝 libchewing 和其他開源社群的成果。測試請先用非敏感文字；有問題歡迎開 Issue。
 
-#KUYin #酷音 #大千注音 #注音輸入法 #Android #OpenSource #JetpackCompose
+#KUYin #開源
 
 ## Threads｜技術補充回覆（串文第二則）
 
 為什麼不直接用純 Kotlin 注音引擎？因為我希望保留成熟的 libchewing 解碼和詞庫，再把 Android 的鍵盤生命週期、候選快照、防止過期選字、InputConnection 寫入等問題處理清楚。架構與測試也全部放在 GitHub；JVM PASS 不等於手機 PASS，這部分仍在補齊。專案：https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-## Facebook｜社群長文（繁體中文）
+## Threads／Facebook 共用長版（繁體中文）
 
 【開源專案分享：KU-Yin 酷音 Android 大千注音鍵盤】⌨️
 
@@ -42,7 +42,7 @@ https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues
 
 歡迎分享你平常使用的注音輸入法、Android 機型，以及你最在意的鍵盤體驗。
 
-#KUYin #酷音 #開源軟體 #Android #大千注音 #Kotlin #libchewing
+#KUYin #Android
 
 ## Instagram｜貼文說明（繁體中文）
 
@@ -57,7 +57,7 @@ KU-Yin 酷音｜一套正在開發中的 Android 大千注音鍵盤 ⌨️
 
 圖片若為示意／設計稿必須另外註明；真機畫面才能標示「實際使用畫面」。
 
-#KUYin #Zhuyin #AndroidKeyboard #OpenSource #大千注音 #JetpackCompose #台灣開發
+#KUYin #大千注音
 
 ## Bilibili／B 站｜影片標題與簡體介紹
 
@@ -115,20 +115,14 @@ KU-Yin 酷音 ⌨️ 開源 Android 大千注音鍵盤。Kotlin + Jetpack Compos
 
 KU-Yin 酷音｜獨立開發與維護中的離線 Android 大千注音開源輸入法；整合 Kotlin、Jetpack Compose、C++ JNI／libchewing、候選快照與 Editor ACK 管理，建立 Native 依賴固定、CI 與測試追溯流程，已公開 Experimental Alpha。
 
-## 發布後可立即回覆的留言
+## IG 五張圖卡文字與 16:9 封面
 
-**Q：可以直接當主力鍵盤嗎？**
-A：目前仍是實驗性 Alpha；建議先用非敏感測試文字，主力使用前要考慮不同 Android／App 欄位可能的問題。完整實機驗收還沒完成。
+1. KU-Yin 酷音｜Android 大千注音開源鍵盤。Experimental Alpha，非穩定版。
+2. 注音組字與候選選字｜中文解碼使用 libchewing。無核實截圖時標示「功能介紹，非操作畫面」。
+3. 候選瀏覽｜單列、展開與翻頁已實作；完整手機驗收仍待補齊。
+4. 離線輸入｜Kotlin／Compose + JNI；英文使用本地字首補全，沒有雲端建議。
+5. 一起測試｜GitHub 原始碼、下載與 Issues；只用合成文字回報，感謝上游社群。
 
-**Q：支援 Whisper／AI 打字嗎？**
-A：現行 Android 版沒有 Whisper 或雲端 AI 建議；這是未來研究方向，不是已推出功能。
+16:9 封面共用第一張標題，副標為「實驗性 Alpha 開發紀錄」。版式方向待使用者確認，尚未製成圖片。比例及來源規格見 [素材規格](ASSETS_AND_PRIVACY.md)。
 
-**Q：為什麼沒上 Google Play？**
-A：現有公開版是 GitHub Experimental Alpha；正式簽章、裝置驗收與商店發行政策仍在準備。
-
-**Q：可以貢獻嗎？**
-A：歡迎從 GitHub Issues 回報可重現的操作問題；如要提交 PR，請先閱讀 CONTRIBUTING 與授權文件。
-
----
-
-本文中的下載、測試、技術與版本聲明基於 2026-10-20 的 GitHub 公開狀態。上線前若已有新 Release，必須重新核對連結與驗收證據後再改文案。
+常見留言統一使用 [FAQ](FAQ.md)。短／長版可跨 Threads 與 Facebook 共用，避免不同人設與重複維護。本包未代登入任何社群帳號或發文。

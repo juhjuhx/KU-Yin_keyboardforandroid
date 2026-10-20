@@ -22,8 +22,13 @@
 - [ ] QR：公開 Alpha 尚不是新版 R3 標準 QR；如果分享其畫面，說明原版只是 QR 風格圖。
 - [ ] 上游 [libchewing](https://codeberg.org/chewing/libchewing)、[fcitx5-android/prebuilt](https://github.com/fcitx5-android/prebuilt) 按直接依賴描述；FlorisBoard、HeliBoard 僅研究參考，不宣稱直接移植。
 
+## GitHub About 核對（2026-10-21）
+
+已讀回並保留，沒有覆寫：說明為「離線大千注音 Android 鍵盤（libchewing／Compose）；實驗性 Alpha，正式版與完整實機驗收尚未完成。」Topics 為 android、keyboard、libchewing、offline-first、zhuyin；Homepage 未設定。README 變更不會自動更新 About。
+
 ## C. 截圖、素材與版權
 
+- [ ] 每張畫面有 APK／裝置／時間／SHA256／匿名化與獨立檢查紀錄；見 [media](media/README.md)。缺圖保留 TODO。
 - [ ] 使用真實 UI 錄影／擷取，或清楚標示規劃示意圖；不得拿假的手機畫面當驗收證據。
 - [ ] 使用合成文字，遮蔽通知、姓名、帳號、聯絡資訊、鍵盤輸入、私有字典與裝置識別。
 - [ ] 圖卡／影片檢查大小、清晰度、字幕錯字及社群裁切。
