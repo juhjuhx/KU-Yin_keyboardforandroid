@@ -1,3 +1,9 @@
+# R3.3 checkpoint
+
+Remote main8369da25；本輪僅中央local workspace索引與TEST_ONLY host process/pipe診斷。原28工區/4dirty保全，新增一個隔離工區。先讀[Workspace handoff](maintenance/R3_3_WORKSPACE_HANDOFF.md)、[H1 evidence](testing/R3_3_H1_PROCESS_OBSERVATION.md)及Host triage matrix。獨立最終code review因quota未完成；不推送、不新CI、不合併。H1根因UNRESOLVED，H2未執行；既有Host15PASS9FAIL8SKIP保持原樣。RC/Stable NO_GO，沒有產品/JNI/資料/簽章/Release變更。下一步只審查完成新診斷diff和focused測試，再單次health-only H0/H1。
+
+---
+
 # R3.2 H1 診斷切片 — 2026-10-21
 
 基線main8369da25，runtime source8acf4b24，fresh CI39514852906：H0 HEALTHY；H1仍INCONCLUSIVE（XML完整但editor focused=false／command3007ms timeout）。H2/App/Host/B01未執行；沒有產品修復或新Release。見 [R3_2_H1_FINAL_HANDOFF](testing/R3_2_H1_FINAL_HANDOFF.md)。圖片獨立分支PR24 Draft，不能混成同一已驗收產品來源。以下保存前輪時間點。

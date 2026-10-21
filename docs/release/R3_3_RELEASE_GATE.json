@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "baseline_main": "8369da25fa54ab762dfceed457e71a08767a642e",
+  "code_base": "fab39196fdf3761d84839446c7a76c4361e9dea9",
+  "release_verdict": "NO_GO",
+  "rc_ready": false,
+  "stable_ready": false,
+  "h0_fresh": "NOT_EXECUTED",
+  "h1_fresh": "NOT_EXECUTED",
+  "h1_previous": "INCONCLUSIVE",
+  "h2": "NOT_EXECUTED",
+  "host_previous": {
+    "pass": 15,
+    "fail": 9,
+    "skip": 8,
+    "ci": 39515675883
+  },
+  "physical": "NOT_TESTED",
+  "review": "REVIEW_INCOMPLETE_QUOTA",
+  "pr20": "DRAFT_NO_INTEGRATION",
+  "pr24": "DRAFT_IMAGE_ONLY_REVIEW_SEPARATE",
+  "data_deleted": 0,
+  "release_mutated": false,
+  "next_action": "independent revised diagnostic review before one health-only CI"
+}

@@ -1,3 +1,9 @@
+# R3.3 最小續作入口
+
+Remote main8369da25；本輪僅中央local workspace索引與TEST_ONLY host process/pipe診斷。原28工區/4dirty保全，新增一個隔離工區。先讀[Workspace handoff](../maintenance/R3_3_WORKSPACE_HANDOFF.md)、[H1 evidence](../testing/R3_3_H1_PROCESS_OBSERVATION.md)及Host triage matrix。獨立最終code review因quota未完成；不推送、不新CI、不合併。H1根因UNRESOLVED，H2未執行；既有Host15PASS9FAIL8SKIP保持原樣。RC/Stable NO_GO，沒有產品/JNI/資料/簽章/Release變更。下一步只審查完成新診斷diff和focused測試，再單次health-only H0/H1。
+
+---
+
 # R3.2 H1 續作入口
 
 只讀CURRENT_STATE、testing/R3_2_H1_FINAL_HANDOFF及必要raw；base main8369da25，A branch fix/r3-2-h1-runtime、code/runtime8acf4b24、CI39514852906。H0 HEALTHY；H1 INCONCLUSIVE：XML完整但editor focused=false及command3007ms timeout，原null未重現、因果UNRESOLVED。H2/App/Host/B01不執行、無產品/JNI修改、NO_GO。

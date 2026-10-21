@@ -144,13 +144,15 @@ def assess_h1(window_before, hierarchy, window_after, selected_before, selected_
     return {**result(reasons, blockers), 'scope': 'H1_REAL_HOST_EDITOR_NOT_KUYIN_BINDING'}
 
 
-def observe_output(command, timeout, observations):
+def observe_output(command, timeout, observations, completion=None):
     """TEST_ONLY host receive times, not device event times or an atomic trace.
 
     Preserve stdout/stderr bytes and the existing timeout contract. Only the
     opt-in H1 UI dump uses this; verdict/oracle and command argv stay unchanged.
     """
     buffers = {'stdout': bytearray(), 'stderr': bytearray()}
+    eof = {'stdout': False, 'stderr': False}
+    completion = {} if completion is None else completion
     def retain(stream, data, *, after_timeout=False):
         observations.append({'stream': stream, 'offset': len(buffers[stream]), 'bytes': len(data),
                              'received_monotonic_ns': time.monotonic_ns(),
@@ -171,14 +173,27 @@ def observe_output(command, timeout, observations):
                     for key, _ in selector.select(remaining):
                         data = os.read(key.fd, 65536)
                         if not data:
+                            eof[key.data] = True
                             selector.unregister(key.fileobj)
                             continue
                         stream = key.data
                         retain(stream, data)
                 code = proc.wait(timeout=max(0, deadline - time.monotonic()))
         except subprocess.TimeoutExpired:
-            proc.kill()
+            # A direct child may already have exited while a descendant still
+            # holds its pipes open. These host observations are not guest exit
+            # evidence, and incomplete capture must remain a timeout.
+            code_before = proc.poll()
+            completion.update(child_pid=proc.pid, child_returncode_before_cleanup=code_before,
+                              pipe_eof_observed_before_cleanup=dict(eof),
+                              observed_monotonic_ns=time.monotonic_ns(),
+                              observed_at_utc=datetime.now(timezone.utc).isoformat(),
+                              cleanup_kill_attempted=code_before is None,
+                              scope='HOST_DIRECT_CHILD_AND_PIPE_OBSERVATIONS_NOT_ATOMIC_OR_GUEST_EXIT')
+            if code_before is None:
+                proc.kill()
             proc.wait()
+            completion['child_returncode_after_cleanup'] = proc.returncode
             # The reader may have been descheduled while the child wrote its
             # final bytes. Drain already-buffered bytes without waiting/retry;
             # timestamps after timeout remain explicitly distinguished.
@@ -195,6 +210,11 @@ def observe_output(command, timeout, observations):
                     retain(stream, data, after_timeout=True)
             raise subprocess.TimeoutExpired(command, timeout, output=bytes(buffers['stdout']),
                                             stderr=bytes(buffers['stderr'])) from None
+        completion.update(child_pid=proc.pid, child_returncode_before_cleanup=code,
+                          child_returncode_after_cleanup=code, pipe_eof_observed_before_cleanup=dict(eof),
+                          observed_monotonic_ns=time.monotonic_ns(),
+                          observed_at_utc=datetime.now(timezone.utc).isoformat(), cleanup_kill_attempted=False,
+                          scope='HOST_DIRECT_CHILD_AND_PIPE_OBSERVATIONS_NOT_ATOMIC_OR_GUEST_EXIT')
     return subprocess.CompletedProcess(command, code, bytes(buffers['stdout']), bytes(buffers['stderr']))
 
 
@@ -211,8 +231,9 @@ class Capture:
         started_at_utc = datetime.now(timezone.utc).isoformat()
         at = time.monotonic_ns()
         observations = []
+        completion = {}
         try:
-            proc = (observe_output(command, timeout, observations)
+            proc = (observe_output(command, timeout, observations, completion)
                     if self.output_timeline and name.startswith('ui-') else
                     subprocess.run(command, capture_output=True, timeout=timeout))
             rec = {'exit': proc.returncode, 'timed_out': False, 'stdout': proc.stdout, 'stderr': proc.stderr}
@@ -224,6 +245,7 @@ class Capture:
         if self.output_timeline and name.startswith('ui-'):
             rec['output_observations'] = observations
             rec['output_time_basis'] = 'HOST_PIPE_RECEIVE_NOT_GUEST_EVENT'
+            rec['process_completion'] = completion
         self.records[name] = rec
         for key in ['stdout', 'stderr']:
             (self.directory / (name + '-' + key + ('.bin' if binary and key == 'stdout' else '.txt'))).write_bytes(rec[key])
