@@ -2,7 +2,7 @@
 
 ## Source and scope
 
-Base main `5c7b22c2e58a08c6a7f18633aa2e0378b68ef418` (PR25 README/banner merged). Image source `43aff1d168ddc18d68229b52423aab99dd24c151`/PR24; merge-base8369da25. Normal no-commit/no-ff merge completed without conflict in an isolated integration worktree. Latest main changed onlyREADME,heroSVG,SOURCE; no intersection with PR24's27 files. README/banner retained byte-for-byte.
+Base main `5c7b22c2e58a08c6a7f18633aa2e0378b68ef418` (PR25 README/banner merged). Image source `43aff1d168ddc18d68229b52423aab99dd24c151`/PR24; merge-base8369da25. Normal no-commit/no-ff merge completed without conflict in an isolated integration worktree. Latest main changed onlyREADME,heroSVG,SOURCE; no intersection with PR24's27 files. Hero SVG/SOURCE retained byte-for-byte; README has one narrow status correction described below.
 
 Ten replacement Launcher WebP use existing1024x1024 project JPG and immutable adaptive108/66/72 geometry. Original corrupt bytes and original forensic manifest are retained in Git/evidence; no inverse encoding candidates adopted. New greeting PNG is1078x2399 Robolectric NativeGraphics/Roborazzi unit render, not phone screenshot. Source/output/asset hashes remain in GENERATED_LAUNCHER_MANIFEST and ROBORAZZI_RENDER_MANIFEST.
 

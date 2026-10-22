@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "observed_on": "2026-10-21",
+  "observed_on": "2026-10-23",
   "main_source_sha": "5c7b22c2e58a08c6a7f18633aa2e0378b68ef418",
   "r3_candidate_sha": "de2d9dfaa296a5cdeabde405d686720b615ce9e2",
   "r31_runtime_source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
@@ -61,7 +61,7 @@
       "fail": 0,
       "skip": 0
     },
-    "r34_image_review": "PASS_SCOPED_SOURCE_43aff1d_FINAL_INTEGRATION_REVIEW_PENDING",
+    "r34_image_review": "PASS_SCOPED_2c40b138_FINAL_CI_PENDING",
     "r34_image_ci": "SEE_PR24_EXACT_HEAD_CHECKS_NOT_ATTESTED_BY_JSON",
     "r34_health": {
       "run": 39734667334,
