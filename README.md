@@ -1,3 +1,5 @@
+![KU-Yin 酷音｜台灣注音鍵盤開源專案原創 Banner（品牌插畫、非操作截圖）](docs/community/media/kuyin-readme-hero.svg)
+
 # KU-Yin 酷音｜台灣大千注音 Android 鍵盤
 
 > **目前版本：實驗性 Alpha `0.2.0-aie.1`（Debug APK）**。已公開下載，但完整實機驗收、正式簽章與 Stable Release 尚未完成。請先閱讀下方「目前狀態與限制」。
@@ -5,6 +7,30 @@
 **KU-Yin** 是以**台灣大千注音**為核心的離線 Android 開源輸入法。鍵盤介面使用 **Kotlin／Jetpack Compose**，中文解碼採 **libchewing（酷音）**，英文補全使用本機詞表。目標是讓注音組字、選字與候選翻頁更易用，同時保留清楚的資料權責、可維護的原生依賴及社群開發流程。
 
 [📦 下載 Alpha 與原始碼](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) · [🧭 架構](docs/ARCHITECTURE.md) · [📋 開發狀態](docs/CURRENT_STATE.md) · [📣 社群分享／測試邀請素材](docs/community/README.md) · [🐛 問題回報](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues)
+
+## 三十秒認識 KU-Yin
+
+**對使用者：** 一套以台灣大千 41 鍵為中心的離線 Android 鍵盤，提供注音組字、可瀏覽的候選列與基本英文補全。現在公開的是可下載、但仍在實機相容性驗證中的 Experimental Alpha。
+
+**對開發者：** 它是一個處理真實 Android IME lifecycle、JNI/libchewing、候選身分、防重複 Editor commit，以及本機資料界線的開源工程專案；不是只有 UI Preview 的鍵盤 Demo。
+
+### 目前狀態（TUI 速覽）
+
+~~~text
+┌──────────────── KU-Yin / RELEASE BOARD ────────────────┐
+│ CHANNEL    Experimental Alpha   v0.2.0-aie.1 / 20003  │
+│ CHINESE    41-key Zhuyin        libchewing / JNI        │
+│ UI         Compose              Candidate row / grid   │
+│ ENGLISH    Offline prefix       ~10,000 words          │
+│ MAIN CI    Build SUCCESS        App 5 PASS             │
+│ HOST       15 PASS              9 FAIL / 8 SKIP        │
+│ H0 → H1    HEALTHY → INCONCLUSIVE (R3.2 isolated run)  │
+│ H2         NOT_EXECUTED         Device NOT_TESTED      │
+│ NEW RC     NO-GO                Stable NO-GO           │
+└────────────────────────────────────────────────────────┘
+~~~
+
+上方是**來源對應的測試摘要**，不是宣傳用的通過率。主線的 Host 九個 FAIL、八個 SKIP 仍待逐項閉合；R3.3 新診斷尚待獨立複審、未推送。詳見 [發布 Gate #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)。
 
 ## 功能
 
@@ -44,6 +70,15 @@
 
 請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。**實驗性 runtime-smoke 仍有失敗紀錄**；請查看每個 job，而非只讀整體 Workflow 狀態。正式的 [Release readiness](docs/release/RELEASE_READINESS.md)、[RC 發布驗收追蹤 #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
 
+### R3.2～R3.3 最新工程接續（新版本仍未發布）
+
+- **[圖片 PR #24](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/24)（Draft）：** 10 張 Launcher WebP 已由專案素材重新產生並通過限定範圍的完整性核驗；Roborazzi PNG 為測試 Render，不是實機截圖。**尚未併入 main 或舊 Alpha**。
+- **[圖片 CI #39515675883](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39515675883)：** Blocking Build 成功，App Instrumentation 5 PASS，Host Instrumentation **15 PASS／9 FAIL／8 SKIP**。Workflow 總結 Success 是因 Experimental Runtime 允許失敗，不能當 Runtime PASS。
+- **[H1 CI #39514852906](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39514852906)：** H0 有界 HEALTHY；H1 收到 XML 但 Editor focused=false，且擷取程序未自然結束，**INCONCLUSIVE**。H2 未執行。
+- **R3.3 Workspace：** 本地已完成中央索引，原 dirty 工區保護；新增診斷提交 **9ac52b5699aad874a3daa6d6ee950dabc4ce22e9** 尚未推送、最終獨立 Reviewer 未完成，故不可宣稱本輪 H1 修復已正式通過。
+
+**圖片聲明：** 頁首 SVG 是原創品牌示意，不是 Android 截圖；真正的鍵盤操作照片需要版本、裝置、截圖來源及匿名化審查，取得前不以 Robolectric／Roborazzi 畫面冒充。
+
 ## 實際畫面與最新證據
 
 目前沒有完成來源／隱私核驗的鍵盤操作截圖，因此這裡不以品牌圖或 Preview 代替。截圖與圖卡待辦見 [media 清單](docs/community/media/README.md)。最新 main [CI39442957936](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39442957936) XML 為 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；不能套用成未合併 RC 的 Runtime 通過。[本輪驗證](docs/release/PUBLICATION_VALIDATION.md) 分開記錄來源。
@@ -72,6 +107,64 @@ KuYinInputMethodService (IME lifecycle / editor policy / text effects)
 ```
 
 UI 只發送命令與呈現快照；文字提交由 Service 負責。候選預覽使用隔離的 scratch native context，避免破壞正在輸入的 live composition；Editor ACK 與 libchewing Native ACK 是不同的確認層。詳見 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
+
+## 為什麼採用這套架構？
+
+| 決策 | 理由 | 必須承擔的成本 |
+|---|---|---|
+| libchewing 而非從零開發注音引擎 | 重用成熟注音候選／組字能力 | 固定 Native 版本、JNI API 與來源授權維護 |
+| Kotlin + Compose | UI／候選狀態與外觀可清楚分層 | IME Window／焦點／無障礙需要實際 Android 驗證 |
+| 中文僅一個 Session owner | 避免多處狀態衝突或雙重提交 | 需要維持嚴格的 command／snapshot 邊界 |
+| Candidate generation + identity | 翻頁或組字後阻止過期候選被選中 | 候選 projection 與測試較複雜 |
+| Scratch Native Context | 只在隔離 context 做候選預覽，不修改 live composition | 可能帶來 Native replay／allocation 成本 |
+| Service 控管 Editor effects | UI 不直接寫字到別的 App，方便做 Enter／ACK 策略 | Android 回傳的 Boolean ACK 仍不等於跨 IPC exactly-once |
+| Offline-first | 不依賴 API 金鑰、遠端網路或雲端模型 | 本機字典、學習清除、備份／轉移責任仍需審查 |
+
+### 專案用到哪些語言與資料格式？
+
+| 範疇 | 技術／格式 |
+|---|---|
+| Android Service、輸入邏輯、UI | Kotlin、Android SDK、Jetpack Compose、Material 3 |
+| 中文 Native 解碼 | libchewing C API、JNI、C++17、NDK／CMake |
+| 編譯建置 | Gradle Wrapper 9.3.1、AGP 9.1.1、JDK 21、Kotlin 2.2.10 |
+| 正式 App 的最低／目標 API | Android minSdk 24、targetSdk 36 |
+| 資料／個人化 | Native userdict.dat、SharedPreferences、Room SQLite |
+| 字庫與英文來源 | pinned tsi.dat／word.dat／symbols.dat、離線 TSV |
+| 驗證 | Python contracts、JUnit、Robolectric／Roborazzi、UiAutomator、Android Instrumentation、JUnit XML |
+| 發行 | APK、SHA256SUMS、source-and-relink archive、GitHub Pre-release |
+
+Android 版本及 Native pin 可能隨正式 PR 更新，以 [DEVELOPMENT](docs/DEVELOPMENT.md)、[UPSTREAM](docs/UPSTREAM.md) 與最終發行的 Manifest 為準。
+
+### 上游 → KU-Yin → 下游
+
+~~~text
+ upstream / source of truth                    KU-Yin                         downstream
+ ──────────────────────────────                ─────────────────────────      ──────────────────────
+ libchewing + pinned native ABI archives ─┐
+ libchewing data + AOSP English TSV ───────┤→ JNI + Session + Compose IME ─┬→ Android APK / Tester
+ Android InputMethodService / Editor ──────┘                               ├→ Test receipts / CI
+                                                                          ├→ OSS source / relink
+                                                                          └→ Issues / downstream users
+~~~
+
+- **實際用到的上游：** [libchewing](https://codeberg.org/chewing/libchewing)、[fcitx5-android/prebuilt](https://github.com/fcitx5-android/prebuilt)、[libchewing-data](https://github.com/chewing/libchewing-data)、AOSP LatinIME、AndroidX／Compose。Native 預編譯來源 pin 是 **3587ba3355711f0aca50136e787719f6562676b8**，對應 libchewing source **a6a8fa4abd3f215e3ba89a7b61702eaf8ca68f5c**。
+- **下游交付：** Android 使用者測試 APK、可追溯 CI 收據、授權與重鏈結檔案、GitHub Issue／PR 交流。尚未宣稱存在正式插件 SDK。
+- **只用來研究：** Fcitx5 Android Framework、FlorisBoard、HeliBoard、OpenCC、Rime、Whisper。列為參考不代表已移植程式碼，更不代表上游背書本專案。
+- **更新方式：** upstream-watch 只比對／通知上游更新，不能直接替換 libchewing pin 或自動合併主線。
+
+## 我們從開發中學到了什麼？
+
+KU-Yin 的主要工程難題並不只是「把按鍵畫出來」，而是讓組字與候選在真實 Android 輸入欄位中保持一致：
+
+1. **先固定大千鍵位與 Decoder Session**：UI 的字元對應不能隨候選排序或畫面重組而改變；Native 開啟失敗才使用 fallback。
+2. **候選不是單純列表**：連續輸入與翻頁可能使舊選字位置失效，因此採用 provider／generation／selection identity 追蹤。
+3. **提交文字要區分多個確認邊界**：Android Editor 回報失敗不代表目標一定沒寫入；不可盲重送造成重複文字。Native ACK 不是 Editor ACK。
+4. **畫面能顯示 ≠ 輸入法可用**：MainActivity 試打、Compose 截圖與 App 測試不能代替 Host Editor 的焦點、Binding、InputConnection 實驗。
+5. **GitHub Release 不只是放 APK**：簽章、版本／更新相容、Native 來源、法律文件、用戶資料與可重現測試證據必須一致。
+
+因此專案目前保留 **Host 9 FAIL／8 SKIP、R3.2 H1 INCONCLUSIVE** 的真實狀態，並把 Release Gate 獨立管理，而非靠忽略實驗性 Runtime 失敗換取 CI 全綠。
+
+*關於最初的個人創作契機：這裡僅整理可由原始碼與工程記錄支持的動機與歷程；作者的生活經驗、使用偏好與故事可再由作者補上。*
 
 ## 本機建置
 
