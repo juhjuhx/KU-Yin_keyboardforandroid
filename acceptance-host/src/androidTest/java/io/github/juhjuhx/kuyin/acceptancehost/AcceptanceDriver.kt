@@ -409,7 +409,7 @@ internal class AcceptanceDriver(private val caseId: String) {
     fun tapFirstVisibleCandidate() {
         val preedit = awaitPreedit()
         val candidates = clickableCandidates(preedit)
-        if (candidates.isEmpty()) blocked("沒有與 preedit chip 同列、且位於 chip 外的可見 CJK candidate")
+        if (candidates.isEmpty()) blocked("沒有位於當次 header 下方、真鍵盤首排上方的可見 CJK candidate")
         val first = candidates.minBy { it.visibleBounds.left }
         val text = first.text ?: descendants(first).mapNotNull { it.text }.singleOrNull()
             ?: blocked("candidate 沒有可唯一辨識的文字")
@@ -424,12 +424,24 @@ internal class AcceptanceDriver(private val caseId: String) {
         awaitPreedit()
     }
 
-    private fun clickableCandidates(preedit: VisiblePreedit): List<UiObject2> =
-        distinctTargets(productObjects().filter { node ->
+    private fun clickableCandidates(preedit: VisiblePreedit): List<UiObject2> {
+        val keyboardTop = observedKeyboardTop() ?: return emptyList()
+        return distinctTargets(productObjects().filter { node ->
             val text = node.text ?: return@filter false
-            CJK_WORD.matches(text) && verticalOverlap(node.visibleBounds, preedit.clearBounds) &&
-                node.visibleBounds.left >= preedit.clearBounds.right
+            CJK_WORD.matches(text) && isInCandidateRegion(
+                node.visibleBounds.regionBounds(), preedit.clearBounds.regionBounds(), keyboardTop)
         }.mapNotNull { clickableAncestor(it) })
+    }
+
+    /** Two unique visible first-row keys anchor the actual keyboard, not a fixed dp height. */
+    internal fun observedKeyboardTop(): Int? = listOf("ㄅ" to "ㄉ", "q" to "w", "Q" to "W")
+        .mapNotNull { (first, second) ->
+            val a = clickableTexts(first, tokenMatch = true).singleOrNull()?.visibleBounds?.let(::Rect)
+                ?: return@mapNotNull null
+            val b = clickableTexts(second, tokenMatch = true).singleOrNull()?.visibleBounds?.let(::Rect)
+                ?: return@mapNotNull null
+            if (a.top == b.top && a.bottom == b.bottom && a.right <= b.left) a.top else null
+        }.distinct().singleOrNull()
 
     private fun awaitEditorEffect(before: EditorSnapshot): EditorSnapshot {
         val changed = poll {
@@ -569,6 +581,8 @@ internal class AcceptanceDriver(private val caseId: String) {
         private val CJK_WORD = Regex("[一-鿿]+")
     }
 }
+
+internal fun Rect.regionBounds(): CandidateRegionBounds = CandidateRegionBounds(left, top, right, bottom)
 
 /** 一個 case 只 emit 一個 envelope；JUnit skip 絕不能由此轉成 PASS。 */
 internal fun acceptanceCase(caseId: String, block: AcceptanceDriver.() -> Unit) {

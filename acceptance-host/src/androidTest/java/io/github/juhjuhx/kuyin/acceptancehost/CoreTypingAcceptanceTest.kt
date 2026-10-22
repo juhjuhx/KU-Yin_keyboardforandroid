@@ -60,8 +60,7 @@ private fun AcceptanceDriver.tapCompletionCandidate(label: String, expectedEdito
     val preedit = awaitPreedit()
     val target = p0SoftTarget(label) {
         val rect = it.visibleBounds
-        rect.top < preedit.clearBounds.bottom && rect.bottom > preedit.clearBounds.top &&
-            rect.left >= preedit.clearBounds.right
+        isInCandidateRegion(rect.regionBounds(), preedit.clearBounds.regionBounds(), observedKeyboardTop())
     }
     target.click()
     if (!p0Await {
