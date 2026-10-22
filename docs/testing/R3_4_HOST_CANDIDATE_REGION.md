@@ -10,7 +10,7 @@ incorrectly required candidates to overlap the header and be to its right.
 This patch only changes those two geometric eligibility predicates. A shared
 test-only bounds function accepts complete visible targets below the clear
 header and above the observed first keyboard row. Two unique first-row anchors
-(ㄅ/ㄉ or q/w, Q/W) establish that boundary; missing/ambiguous anchors fail closed.
+(ㄅ/ㄉ for the actually visible Zhuyin mode; q/w or Q/W only for English) establish that boundary; missing/ambiguous anchors fail closed.
 No fixed screen coordinates or dp height substitutes for real target identity.
 Existing exact label, package, clickable, uniqueness, strict preedit, editor
 text/commit/action, B02/B03 and D13/D14 final assertions remain unchanged.
@@ -19,7 +19,7 @@ text/commit/action, B02/B03 and D13/D14 final assertions remain unchanged.
 
 - Extracted legacy predicate (identical same-row rule) against eight literal,
   hand-checked geometry cases: 6 FAIL / 2 PASS / 0 errors. New region: 8 PASS.
-- Full Host JVM: 45 PASS / 0 FAIL / 0 SKIP. Host Debug and instrumentation APK
+- Full Host JVM: 51 PASS / 0 FAIL / 0 SKIP. Host Debug and instrumentation APK
   compile PASS. This is not Android execution.
 - Full Python initially: 109 tests, 1 failure from comparing current Host bytes
   against the frozen P1-E source hash. Original failure is retained externally.
@@ -47,3 +47,5 @@ Fresh commands: `:acceptance-host:testDebugUnitTest`,
 `:acceptance-host:assembleDebug`, `:acceptance-host:assembleDebugAndroidTest`,
 `python3 -m unittest discover -s scripts/tests -v`, all `scripts/check_*.py`,
 `git diff --check`. Exact logs/XML stay in the local R3.4 evidence session.
+
+Independent review rejected the first anchor implementation: Dachen q/w ASCII hints also formed a second-row pair. A new six-case anchor suite demonstrated 2 FAIL / 4 PASS against that reviewed rule; the correction restricts families by the existing visible-mode oracle. The final clickable ancestor bounds are checked, not just its text leaf. Final Host JVM51 PASS and both Host builds PASS; no Android execution claimed.

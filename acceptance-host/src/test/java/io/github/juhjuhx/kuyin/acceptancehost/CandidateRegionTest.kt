@@ -20,16 +20,16 @@ class CandidateRegionTest {
     @Test fun sameLabelKeyboardKeyIsNotACandidate() {
         assertFalse(isInCandidateRegion(CandidateRegionBounds(8, 196, 70, 244), clear, 196))
     }
-    @Test fun targetCrossingKeyboardBoundaryIsRejected() {
+    @Test fun clickableAncestorCrossingKeyboardBoundaryIsRejected() {
         assertFalse(isInCandidateRegion(CandidateRegionBounds(8, 150, 70, 220), clear, 196))
     }
     @Test fun missingKeyboardAnchorFailsClosed() {
-        assertFalse(isInCandidateRegion(CandidateRegionBounds(350, 110, 398, 140), clear, null))
+        assertFalse(isInCandidateRegion(CandidateRegionBounds(8, 150, 70, 194), clear, null))
     }
     @Test fun reversedHeaderKeyboardOrderFailsClosed() {
         assertFalse(isInCandidateRegion(CandidateRegionBounds(350, 110, 398, 140), clear, 90))
     }
     @Test fun zeroWidthTargetIsRejected() {
-        assertFalse(isInCandidateRegion(CandidateRegionBounds(350, 110, 350, 140), clear, 196))
+        assertFalse(isInCandidateRegion(CandidateRegionBounds(8, 150, 8, 194), clear, 196))
     }
 }

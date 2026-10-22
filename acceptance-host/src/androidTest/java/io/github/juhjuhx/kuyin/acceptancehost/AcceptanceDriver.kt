@@ -426,22 +426,21 @@ internal class AcceptanceDriver(private val caseId: String) {
 
     private fun clickableCandidates(preedit: VisiblePreedit): List<UiObject2> {
         val keyboardTop = observedKeyboardTop() ?: return emptyList()
-        return distinctTargets(productObjects().filter { node ->
-            val text = node.text ?: return@filter false
-            CJK_WORD.matches(text) && isInCandidateRegion(
-                node.visibleBounds.regionBounds(), preedit.clearBounds.regionBounds(), keyboardTop)
-        }.mapNotNull { clickableAncestor(it) })
+        return distinctTargets(productObjects().mapNotNull { node ->
+            val text = node.text ?: return@mapNotNull null
+            if (!CJK_WORD.matches(text)) return@mapNotNull null
+            val target = clickableAncestor(node) ?: return@mapNotNull null
+            target.takeIf { isInCandidateRegion(
+                it.visibleBounds.regionBounds(), preedit.clearBounds.regionBounds(), keyboardTop) }
+        })
     }
 
     /** Two unique visible first-row keys anchor the actual keyboard, not a fixed dp height. */
-    internal fun observedKeyboardTop(): Int? = listOf("ㄅ" to "ㄉ", "q" to "w", "Q" to "W")
-        .mapNotNull { (first, second) ->
-            val a = clickableTexts(first, tokenMatch = true).singleOrNull()?.visibleBounds?.let(::Rect)
-                ?: return@mapNotNull null
-            val b = clickableTexts(second, tokenMatch = true).singleOrNull()?.visibleBounds?.let(::Rect)
-                ?: return@mapNotNull null
-            if (a.top == b.top && a.bottom == b.bottom && a.right <= b.left) a.top else null
-        }.distinct().singleOrNull()
+    internal fun observedKeyboardTop(): Int? = firstKeyboardRowTop(when (visibleMode()) {
+        VisibleKeyboardMode.ZHUYIN -> CandidateKeyboardLayout.ZHUYIN
+        VisibleKeyboardMode.ENGLISH -> CandidateKeyboardLayout.ENGLISH
+        else -> null
+    }) { label -> clickableTexts(label, tokenMatch = true).map { it.visibleBounds.regionBounds() } }
 
     private fun awaitEditorEffect(before: EditorSnapshot): EditorSnapshot {
         val changed = poll {
