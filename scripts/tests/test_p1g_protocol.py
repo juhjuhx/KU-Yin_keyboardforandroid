@@ -9,6 +9,16 @@ from test_p1_acceptance_device import device
 MANIFEST_PATH = Path(__file__).resolve().parents[1] / 'p1_instrumentation_manifest.json'
 MANIFEST = json.loads(MANIFEST_PATH.read_text())
 HOST = MANIFEST['host']['tests']
+FROZEN_SOURCE_ROOT = Path(__file__).resolve().parent / 'fixtures' / 'p1e-frozen-instrumentation'
+
+
+def assert_frozen_sources(test, root):
+    """Verify exact historical bytes; current Host sources evolve independently."""
+    for relative, digest in MANIFEST['source_sha256'].items():
+        source = root / relative
+        test.assertTrue(source.is_file(), f'missing frozen source: {relative}')
+        test.assertEqual(digest, device.sha256(source), relative)
+
 
 def event(case, **extra):
     return {'case_id':case, 'result':'PASS', 'scope':'synthetic protocol only',
@@ -161,12 +171,28 @@ class ManifestIntegrityTests(unittest.TestCase):
                     s.execute('install')
                 self.assertEqual([],s.fake.mutations)
     def test_source_hashes_match_frozen_instrumentation_sources(self):
-        root=MANIFEST_PATH.parents[1]
-        for relative,digest in MANIFEST['source_sha256'].items():
-            source=root/relative
-            if not source.exists():
-                self.skipTest('portable source hash ledger; full source unavailable')
-            self.assertEqual(digest,device.sha256(source),relative)
+        assert_frozen_sources(self, FROZEN_SOURCE_ROOT)
+
+    def test_missing_frozen_source_is_failure_not_skip(self):
+        import tempfile
+        import shutil
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'frozen'
+            shutil.copytree(FROZEN_SOURCE_ROOT, root)
+            (root / next(iter(MANIFEST['source_sha256']))).unlink()
+            with self.assertRaisesRegex(AssertionError, 'missing frozen source'):
+                assert_frozen_sources(self, root)
+
+    def test_tampered_frozen_source_is_failure(self):
+        import tempfile
+        import shutil
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / 'frozen'
+            shutil.copytree(FROZEN_SOURCE_ROOT, root)
+            source = root / next(iter(MANIFEST['source_sha256']))
+            source.write_bytes(source.read_bytes() + b'\n// tampered\n')
+            with self.assertRaises(AssertionError):
+                assert_frozen_sources(self, root)
 
 class MalformedWireTests(unittest.TestCase):
     def test_malformed_control_lines_are_not_ignored(self):
