@@ -190,13 +190,16 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     fun tapPhonetic(glyph: String) {
-        val before = strictPreedit()?.text
+        var before: String? = null
+        poll { before = strictPreedit()?.text; true }
         uniqueClickable("phonetic:$glyph") { clickableTexts(glyph, tokenMatch = true) }.click()
         // 舊 chip 仍在畫面上時，不能立刻把它當作本次按鍵已完成的證據。
-        if (!poll { strictPreedit()?.text?.let { it != before } == true }) {
-            val actual = strictPreedit()?.text
+        var actual: String? = null
+        if (!poll { actual = strictPreedit()?.text; actual?.let { it != before } == true }) {
             if (actual != null) throw AssertionError("真可見按鍵 $glyph 未更新 preedit：$actual")
-            if (clickableDescriptions("清除").isEmpty()) throw AssertionError("真可見按鍵 $glyph 未建立組字 marker")
+            var noMarker = false
+            poll { noMarker = clickableDescriptions("清除").isEmpty(); true }
+            if (noMarker) throw AssertionError("真可見按鍵 $glyph 未建立組字 marker")
             blocked("點擊 $glyph 後未取得當次可辨識 preedit 變化")
         }
     }
@@ -252,7 +255,8 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     fun clearComposition() {
-        val clear = clickableDescriptions("清除")
+        var clear = emptyList<UiObject2>()
+        poll { clear = clickableDescriptions("清除"); true }
         if (clear.isEmpty()) return
         uniqueClickable("description:清除") { clickableDescriptions("清除") }.click()
         if (!poll { clickableDescriptions("清除").isEmpty() }) blocked("clear 後組字 marker 未消失")
@@ -482,13 +486,16 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     private fun clickableTexts(label: String, tokenMatch: Boolean = false): List<UiObject2> =
-        distinctTargets(productObjects().filter { node ->
+        distinctTargets(device.findObjects(
+            if (tokenMatch) By.pkg(PRODUCT_PACKAGE).textContains(label) else By.pkg(PRODUCT_PACKAGE).text(label)
+        ).filter { node ->
             val text = node.text ?: return@filter false
-            text == label || (tokenMatch && semanticToken(text, label))
+            visible(node) && (text == label || (tokenMatch && semanticToken(text, label)))
         }.mapNotNull { clickableAncestor(it) })
 
     private fun clickableDescriptions(label: String): List<UiObject2> =
-        distinctTargets(productObjects().filter { it.contentDescription == label }.mapNotNull { clickableAncestor(it) })
+        distinctTargets(device.findObjects(By.pkg(PRODUCT_PACKAGE).desc(label))
+            .filter { visible(it) }.mapNotNull { clickableAncestor(it) })
 
     private fun hasText(label: String): Boolean = clickableTexts(label).size == 1
 
@@ -537,14 +544,22 @@ internal class AcceptanceDriver(private val caseId: String) {
 
     private fun poll(timeoutMs: Long = UI_TIMEOUT_MS, predicate: () -> Boolean): Boolean {
         val deadline = SystemClock.uptimeMillis() + timeoutMs
+        var lastStale: StaleObjectException? = null
         do {
             try {
-                if (predicate()) return true
-            } catch (_: StaleObjectException) {
-                // 模式切換／Compose 動畫可能換 node；下一次重新 query，絕不使用舊座標。
+                val matched = predicate()
+                lastStale = null
+                if (matched) return true
+            } catch (error: StaleObjectException) {
+                // Discard the whole observation; requery inside the original bound.
+                // This never retries a click or accepts a partially inspected tree.
+                lastStale = error
             }
             val remaining = deadline - SystemClock.uptimeMillis()
-            if (remaining <= 0) return false
+            if (remaining <= 0) {
+                lastStale?.let { throw AssertionError("Accessibility node remained stale within ${timeoutMs}ms observation", it) }
+                return false
+            }
             SystemClock.sleep(minOf(POLL_INTERVAL_MS, remaining))
         } while (true)
     }
