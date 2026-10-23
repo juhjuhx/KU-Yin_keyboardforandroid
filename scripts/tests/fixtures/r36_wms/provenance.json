@@ -1,0 +1,23 @@
+{
+  "source_sha": "9ac52b5699aad874a3daa6d6ee950dabc4ce22e9",
+  "ci_run": 39734667334,
+  "privacy": "PRE_PRODUCT_SYNTHETIC_DISPOSABLE_EMULATOR_WINDOW_METADATA",
+  "files": {
+    "window-windows-stdout.txt": {
+      "sha256": "6898fed4c29f3fd03fab167062e7d83bc15758a3fa0ca7f30c6e7d29d9738778",
+      "bytes": 30854
+    },
+    "window-displays-stdout.txt": {
+      "sha256": "f9d7bd64a8c1d0d2fa3bf7e64230d3f4d7ec2eaa5e983fbdf85e6d4ca1b10337",
+      "bytes": 15480
+    },
+    "final-window-windows-stdout.txt": {
+      "sha256": "e08127ed33167bc3c60d8a3f9a6407b9749b8ead3d8c06590a419aeae411c776",
+      "bytes": 29122
+    },
+    "final-window-displays-stdout.txt": {
+      "sha256": "e282b9699a23d06a67617c3ffe23e352c0cd49b0eff9db1a8d21af240e550932",
+      "bytes": 16236
+    }
+  }
+}

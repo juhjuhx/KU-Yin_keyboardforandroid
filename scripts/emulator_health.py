@@ -46,6 +46,31 @@ def window_unfrozen(window):
             re.findall(r'\bmDisplayFrozen=([^\s]+)', window) == ['false'])
 
 
+def display_evidence(initial, final):
+    """TEST_ONLY facts from sequential dumps; never a health or causal oracle."""
+    def facts(window):
+        frozen = re.findall(r'\bmDisplayFrozen=([^\s]+)', window)
+        # The global summary owns the display rotation; per-window configs do not.
+        rotation = re.findall(r'(?m)^\s*mDisplayFrozen=[^\n]*?\bmRotation=(\d+)\b', window)
+        bounds = re.findall(r'(?m)^\s*mGlobalConfiguration=[^\n]*?\bmAppBounds=(Rect\([^\n)]*\)|null)', window)
+        changing = []
+        for block in re.split(r'(?m)^\s*Window #\d+ ', window)[1:]:
+            title = re.match(r'Window\{[^\n}]*? u\d+ (.+?)\}:', block)
+            if title and re.search(r'\bmOrientationChanging=true\b', block):
+                changing.append(title[1])
+        return {'frozen': frozen[0] if len(frozen) == 1 and frozen[0] in ['true', 'false'] else 'unknown',
+                'rotation': rotation[0] if len(rotation) == 1 else None,
+                'app_bounds': bounds[0] if len(bounds) == 1 else None,
+                'orientation_changing_windows': changing}
+    before, after = facts(initial), facts(final)
+    def changed(key):
+        return before[key] != after[key] if before[key] is not None and after[key] is not None else None
+    return {'initial': before, 'final': after, 'rotation_changed': changed('rotation'),
+            'app_bounds_changed': changed('app_bounds'), 'atomic_snapshot': False,
+            'clock_domain': 'HOST_OBSERVATION_BOUNDS_IN_READINESS_NOT_GUEST_EVENT_TIME',
+            'guest_event_time': 'MISSING', 'causal_verdict': 'UNRESOLVED'}
+
+
 def complete_window(window):
     """API33 WMS observation, not an atomic snapshot or continuous health proof."""
     if 'WINDOW MANAGER WINDOWS' not in window or re.search(SERVICE_ERROR, window, re.I): return False
@@ -362,7 +387,8 @@ class Capture:
                 reasons.append('FINAL_EDITOR_FOCUS_UNVERIFIED')
         else:
             # Two observations only. Never replace an initial failure with recovery.
-            verdict = {**verdict, 'readiness': {
+            verdict = {**verdict, 'display_evidence': display_evidence(
+                self.records['window']['stdout'], window['stdout']), 'readiness': {
                 'policy': 'INITIAL_AND_FINAL_UNFROZEN_NO_RETRY',
                 'atomic_snapshot': False, 'observations': ['window', 'final-window'],
                 'first_assessment': {'status': verdict['status'], 'reasons': list(verdict['reasons'])},

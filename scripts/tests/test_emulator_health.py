@@ -205,6 +205,38 @@ class CapturedWmsReadinessTest(unittest.TestCase):
             code = capture.finish(health.assess_h0(capture.records, 'emulator-5554'))
             return code, json.loads((Path(tmp) / 'h0/result.json').read_text())
 
+    def test_r36_raw_config_delta_is_retained_without_a_causal_or_rotation_claim(self):
+        directory = Path(__file__).parent / 'fixtures/r36_wms'
+        def raw(prefix):
+            return ((directory / (prefix + 'window-windows-stdout.txt')).read_text() + '\n' +
+                    (directory / (prefix + 'window-displays-stdout.txt')).read_text())
+        code, value = self.finish_h0(raw(''), raw('final-'))
+        self.assertEqual(3, code)
+        self.assertEqual('INCONCLUSIVE', value['status'])
+        facts = value.get('display_evidence')
+        self.assertIsInstance(facts, dict, 'Missing durable diagnostic evidence for the real frozen transition')
+        self.assertEqual('false', facts['initial']['frozen'])
+        self.assertEqual('true', facts['final']['frozen'])
+        self.assertEqual('0', facts['initial']['rotation'])
+        self.assertEqual('0', facts['final']['rotation'])
+        self.assertFalse(facts['rotation_changed'])
+        self.assertTrue(facts['app_bounds_changed'])
+        self.assertEqual(['NavigationBar0', 'StatusBar'], facts['final']['orientation_changing_windows'])
+        self.assertEqual('UNRESOLVED', facts['causal_verdict'])
+        self.assertEqual('MISSING', facts['guest_event_time'])
+        self.assertFalse(facts['atomic_snapshot'])
+
+    def test_r36_missing_or_conflicting_fields_are_unknown_not_false(self):
+        for state in ['', 'mDisplayFrozen=false\n mDisplayFrozen=true']:
+            with self.subTest(state=state):
+                _, value = self.finish_h0(WINDOW, WINDOW.replace('mDisplayFrozen=false', state))
+                facts = value.get('display_evidence')
+                self.assertIsInstance(facts, dict)
+                self.assertEqual('unknown', facts['final']['frozen'])
+                self.assertIsNone(facts['app_bounds_changed'])
+                self.assertIsNone(facts['rotation_changed'])
+                self.assertNotEqual('HEALTHY', value['status'])
+
     def test_final_recovery_cannot_erase_first_frozen_failure(self):
         code, value = self.finish_h0(WINDOW.replace('mDisplayFrozen=false', 'mDisplayFrozen=true'), WINDOW)
         self.assertNotEqual(0, code)

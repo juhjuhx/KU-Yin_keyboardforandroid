@@ -7,12 +7,59 @@ on:
         description: 'Single bounded H0 then H1; no H2 or product tests'
         type: choice
         default: editor-health
-        options: [editor-health]
+        options: [editor-health, display-health]
 
 permissions:
   contents: read
 
 jobs:
+  display-health:
+    if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'display-health'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          fetch-depth: 0
+      - name: Verify diagnostic source and unchanged protected product
+        run: |
+          mkdir -p build/r36-health
+          git rev-parse HEAD > build/r36-health/source-sha.txt
+          git diff --exit-code 9ac52b5699aad874a3daa6d6ee950dabc4ce22e9 HEAD -- app acceptance-host gradle build.gradle.kts settings.gradle.kts gradle.properties scripts/bootstrap_native_deps.sh scripts/runtime_smoke.sh LICENSE NOTICE > build/r36-health/protected-source.diff
+          python3 -B -m unittest discover -s scripts/tests -v > build/r36-health/python.log 2>&1
+          for contract in scripts/check_*.py; do python3 "$contract"; done > build/r36-health/contracts.log 2>&1
+      - name: Enable disposable emulator KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+      - name: One bounded health-only display observation
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
+        with:
+          api-level: 33
+          target: default
+          arch: x86_64
+          profile: pixel_7
+          emulator-build: 16428233
+          avd-name: r36_display_health
+          emulator-port: 5554
+          force-avd-creation: true
+          cores: 2
+          ram-size: 1536M
+          emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
+          disable-animations: true
+          disable-spellchecker: true
+          script: python3 -B scripts/r36_health_only.py --serial emulator-5554 --out build/r36-health/experiment
+      - name: Preserve first outcome and supplementary raw evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r36-health-only
+          path: build/r36-health
+          if-no-files-found: error
+
   editor-health:
     if: github.event_name == 'workflow_dispatch' && inputs.host_scope == 'editor-health'
     runs-on: ubuntu-latest
