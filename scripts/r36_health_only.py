@@ -31,8 +31,12 @@ def run_health(serial, directory):
                  '-b', 'main', '-b', 'system', '-b', 'crash', '-s', 'WindowManager',
                  'ActivityTaskManager', 'ActivityManager', 'DisplayManagerService',
                  'OverlayManager', 'ScreenDecorations', 'SystemUI', 'AndroidRuntime', 'Watchdog'])
-    observer.window('post-health-window')
+    post_window = observer.window('post-health-window')
     reasons = list(first['reasons'])
+    if not health.complete_window(post_window['stdout']):
+        reasons.append('POST_HEALTH_WINDOW_UNVERIFIED')
+    unknown, visible = health.alert_state(post_window['stdout'])
+    reasons.extend(unknown)
     if first['status'] != 'HEALTHY' and not reasons:
         reasons.append('ORIGINAL_H0_NOT_HEALTHY')
     if any(v['exit'] != 0 or v['timed_out'] for v in observer.records.values()):
@@ -41,7 +45,7 @@ def run_health(serial, directory):
             observer.records['final-boot-id']['stdout'].strip() != identity['boot_id'] or
             first.get('identity') != identity):
         reasons.append('DEVICE_IDENTITY_CHANGED')
-    verdict = {**health.result(reasons, ['ORIGINAL_H0_UNHEALTHY'] if first['status'] == 'UNHEALTHY' else []),
+    verdict = {**health.result(reasons, (['ORIGINAL_H0_UNHEALTHY'] if first['status'] == 'UNHEALTHY' else []) + visible),
                'identity': identity, 'original_h0_status': first['status'], 'original_h0_exit': code,
                'original_result_sha256': hashlib.sha256((directory / 'h0/result.json').read_bytes()).hexdigest(),
                'scope': 'ONE_HEALTH_ONLY_EXPERIMENT_NO_INSTALL_NO_H1_H2',

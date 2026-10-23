@@ -8,11 +8,11 @@ import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import r36_health_only as probe
-from test_emulator_health import WINDOW
+from test_emulator_health import WINDOW, VISIBLE
 
 
 class OneHealthObservationTest(unittest.TestCase):
-    def execute(self, *, h0_status='INCONCLUSIVE', final_user='0'):
+    def execute(self, *, h0_status='INCONCLUSIVE', final_user='0', post_window=WINDOW):
         calls, runs = [], []
         identity = {'serial': 'emulator-5554', 'user': '0', 'boot_id': 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'}
         def command(argv, **kwargs):
@@ -22,7 +22,10 @@ class OneHealthObservationTest(unittest.TestCase):
             elif 'get-current-user' in argv: data = ('0' if sum('get-current-user' in c for c in calls) == 1 else final_user) + '\n'
             elif 'ro.kernel.qemu' in argv: data = '1\n'
             elif '/proc/sys/kernel/random/boot_id' in argv: data = identity['boot_id'] + '\n'
-            elif 'window' in argv: data = WINDOW
+            elif 'window' in argv:
+                # Match the real separate WMS windows/displays command interface.
+                data = '\n'.join(line for line in post_window.splitlines()
+                                 if ('mCurrentFocus=' in line) == ('displays' in argv))
             else: data = 'synthetic\n'
             return subprocess.CompletedProcess(argv, 0, data.encode(), b'')
         def h0(serial, directory):
@@ -53,3 +56,18 @@ class OneHealthObservationTest(unittest.TestCase):
         code, result, _, _ = self.execute(h0_status='HEALTHY', final_user='10')
         self.assertEqual(3, code)
         self.assertIn('DEVICE_IDENTITY_CHANGED', result['reasons'])
+
+    def test_frozen_or_missing_post_window_does_not_label_the_whole_experiment_healthy(self):
+        for post in [WINDOW.replace('mDisplayFrozen=false', 'mDisplayFrozen=true'), '']:
+            with self.subTest(post=post):
+                code, result, _, runs = self.execute(h0_status='HEALTHY', post_window=post)
+                self.assertEqual(3, code, 'Later contradictory observation must remain visible')
+                self.assertEqual('HEALTHY', result['original_h0_status'])
+                self.assertIn('POST_HEALTH_WINDOW_UNVERIFIED', result['reasons'])
+                self.assertEqual(1, len(runs))
+
+    def test_later_visible_system_anr_is_not_a_healthy_experiment(self):
+        code, result, _, _ = self.execute(h0_status='HEALTHY', post_window=WINDOW + VISIBLE)
+        self.assertEqual(2, code)
+        self.assertEqual('HEALTHY', result['original_h0_status'])
+        self.assertIn('BLOCKING_SYSTEM_ALERT', result['reasons'])
