@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "issue": 23,
+  "baseline_source_sha": "8369da25fa54ab762dfceed457e71a08767a642e",
+  "public_alpha_apk_sha256": "acdbacdfebcb897074807bc0746d26ecefbbd8a5f28b25f46aab929afb865634",
+  "first_corrupt_commit": "7960d858caa84ca7f447edae2683f58c1633db33",
+  "originals": [
+    {
+      "path": "app/src/main/res/mipmap-hdpi/ic_launcher.webp",
+      "sha256": "99221f2905af79868986b0dd1701ea91a5387146ba701c18b2ee2252a67be481",
+      "bytes": 2096
+    },
+    {
+      "path": "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp",
+      "sha256": "7c93f81de792b7216b0db55c1471abe5fccbbcde8278a25264d83ebf8464f498",
+      "bytes": 4305
+    },
+    {
+      "path": "app/src/main/res/mipmap-mdpi/ic_launcher.webp",
+      "sha256": "b9089fe59f9049e993f92646161e0723496224a44436a2500087e2d05409e8f7",
+      "bytes": 1485
+    },
+    {
+      "path": "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp",
+      "sha256": "943bd647827e0e7f0fa51be8164f9f1835202d90af6d95ffae44dbb094f44060",
+      "bytes": 2634
+    },
+    {
+      "path": "app/src/main/res/mipmap-xhdpi/ic_launcher.webp",
+      "sha256": "b3a0802c4fc82b3fd796cc2d57c0c1ea93e64fdfc46aab1e74a0bfa45fcef4f4",
+      "bytes": 2854
+    },
+    {
+      "path": "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp",
+      "sha256": "2df674233ecc4e9fe6c8d4dfceb6c3257995e6613b0447b93c4a4893ff61c675",
+      "bytes": 5934
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp",
+      "sha256": "b479b07551ee8fd8ba4f96dc0e5d34ae675d485d8a341c369443b397a2defdbf",
+      "bytes": 4360
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp",
+      "sha256": "cb1b8197fa5009f511a5e9aea71e2eff952355cadaf776a83ab99db28fadb24f",
+      "bytes": 8887
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
+      "sha256": "fe039e8aff6718652748d5d2daa5743cbf38759392a7feb723e7c032349b6e81",
+      "bytes": 5743
+    },
+    {
+      "path": "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp",
+      "sha256": "4d95c8cb035a1827eef9c0cf065e4be0f8fc0b86d6c420e9f3bccc366fba921d",
+      "bytes": 11709
+    },
+    {
+      "path": "app/src/test/screenshots/greeting.png",
+      "sha256": "08b77a026d9f6bc52b9404021e164eaf16d033701ddc0cdb1caabe6f5e7ed01b",
+      "bytes": 2868
+    }
+  ],
+  "findings": {
+    "source_equals_published_apk_launcher_bytes": true,
+    "utf8_to_latin1_roundtrip_possible": 11,
+    "reverse_candidates_strictly_decodable_launcher": 4,
+    "reverse_candidates_not_safe_originals": true,
+    "unmodified_original_search_candidates": 66,
+    "decodable_original_search_results": 0,
+    "exact_corrupting_tool": "UNKNOWN"
+  },
+  "retention": "Original Git objects and external evidence preserved; no inverse candidate imported",
+  "action": "User authorized independently encoded replacements from existing adaptive icon sources",
+  "greeting_png": "UNRESOLVED_NOT_RUNTIME_SCREENSHOT",
+  "new_outputs_manifest": "GENERATED_LAUNCHER_MANIFEST.json"
+}

@@ -14,6 +14,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Install launcher validation decoders
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y webp ffmpeg
+
+      - name: Install asset regression Python dependency
+        run: python3 -m pip install --disable-pip-version-check Pillow==12.2.0
+
+      - name: Validate complete launcher resources
+        run: python3 scripts/check_launcher_assets.py
+
       - name: Run Python infrastructure regressions
         run: python3 -m unittest discover -s scripts/tests -v
 

@@ -1,0 +1,48 @@
+{
+  "schema": 1,
+  "classification": "ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT",
+  "source_commit": "545210bc1cf8801f6b0c5d0a5d4d976b93ada7fc",
+  "source_files": [
+    {
+      "path": "app/src/test/java/com/example/GreetingScreenshotTest.kt",
+      "sha256": "97affd471f4505f140442175e9319bae4e2a932c56a52bc75857751888cfdafa"
+    },
+    {
+      "path": "app/src/main/java/com/example/MainActivity.kt",
+      "sha256": "31a82b59d32b644c74f4b855d80de2c7afd3b18d10d42f2601a8baca38abe94f"
+    },
+    {
+      "path": "app/build.gradle.kts",
+      "sha256": "c61ca4a38bbe2ca993ed5a0107e41e6c69df17dfa937e4b6f7d09be46bd984e7"
+    },
+    {
+      "path": "gradle/libs.versions.toml",
+      "sha256": "214259b8d7058f497231297ea91a5a57f4bbb22b9ca58278534507ee5491b3a8"
+    }
+  ],
+  "command": "./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --stacktrace",
+  "exit": 0,
+  "environment": {
+    "JDK": "21",
+    "Roborazzi": "1.59.0",
+    "Robolectric": "4.16.1",
+    "test_sdk": 36,
+    "configuration": "Robolectric NativeGraphics / Pixel8 test config; JVM, no Android device"
+  },
+  "output": {
+    "path": "app/src/test/screenshots/greeting.png",
+    "bytes": 213041,
+    "sha256": "7e2d041612e35cfb47db4308824072faab18a55c89a977bff7b23742be9476a9",
+    "dimensions": [
+      1078,
+      2399
+    ],
+    "metadata_keys": []
+  },
+  "replaced_original": {
+    "git_source": "8369da25fa54ab762dfceed457e71a08767a642e",
+    "sha256": "08b77a026d9f6bc52b9404021e164eaf16d033701ddc0cdb1caabe6f5e7ed01b"
+  },
+  "phone_runtime_evidence": false,
+  "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata"
+}

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "observed_on": "2026-10-21",
-  "main_source_sha": "575cc883288a920e7aba021fb8705f75f465e1c0",
+  "observed_on": "2026-10-23",
+  "main_source_sha": "5c7b22c2e58a08c6a7f18633aa2e0378b68ef418",
   "r3_candidate_sha": "de2d9dfaa296a5cdeabde405d686720b615ce9e2",
   "r31_runtime_source_sha": "feab29f53583c4bb8dfc4cffe13243a36a3e9d06",
   "r31_documents_sha": "6e4bcd772b800bf7ad98a2fbe02832a6517722ea",
@@ -18,7 +18,7 @@
     "r31_h1": "INCONCLUSIVE",
     "r31_h2": "NOT_EXECUTED",
     "main_app_instrumentation": {
-      "run": 39442957936,
+      "run": 39509158938,
       "pass": 5,
       "fail": 0,
       "skip": 0
@@ -29,16 +29,49 @@
     "full_license_review": "OPEN",
     "privacy_d2d": "OPEN",
     "verified_public_runtime_screenshots": 0,
-    "social_style_approval": "PENDING",
+    "social_style_approval": "APPROVED_REUSE_PR25_ORIGINAL_SVG",
     "m4": "NOT_VALIDATED",
     "aie_s2": "NOT_STARTED",
     "main_host_instrumentation": {
-      "run": 39442957936,
+      "run": 39509158938,
       "pass": 15,
       "fail": 9,
       "skip": 8
     },
-    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON"
+    "legacy_publisher_gate_enforcement": "OPEN_NOT_ENFORCED_BY_JSON",
+    "r32_launcher_complete_decode": "PASS_10_OF_10_SOURCE_ASSETS_ONLY",
+    "r32_launcher_device_display": "NOT_TESTED",
+    "greeting_test_png": "PASS_RECORDED_JVM_RENDER_NOT_DEVICE_SCREENSHOT",
+    "r32_h0": {
+      "run": 39514852906,
+      "result": "HEALTHY_BOUNDED_SINGLE_BOOT"
+    },
+    "r32_h1": {
+      "run": 39514852906,
+      "result": "INCONCLUSIVE",
+      "reasons": [
+        "UI_DUMP_TIMEOUT_3007_MS",
+        "XML_EDITOR_FOCUSED_FALSE"
+      ]
+    },
+    "r32_h2": "NOT_EXECUTED",
+    "r32_image_source_review": "PASS_SCOPED",
+    "r32_image_python": {
+      "pass": 113,
+      "fail": 0,
+      "skip": 0
+    },
+    "r34_image_review": "PASS_SCOPED_2c40b138_FINAL_CI_PENDING",
+    "r34_image_ci": "SEE_PR24_EXACT_HEAD_CHECKS_NOT_ATTESTED_BY_JSON",
+    "r34_health": {
+      "run": 39734667334,
+      "source_sha": "9ac52b5699aad874a3daa6d6ee950dabc4ce22e9",
+      "h0": "INCONCLUSIVE_FINAL_WINDOW_UNVERIFIED_FROZEN",
+      "h1": "NOT_EXECUTED",
+      "h2": "NOT_EXECUTED",
+      "blind_retries": 0
+    }
   },
-  "scope": "No production/source/signing/artifact mutation; historical baseline CI is not final docs HEAD CI"
+  "scope": "R3.4 image-only latest-main integration; no product/runtime/release acceptance",
+  "r32_h1_runtime_source_sha": "8acf4b24c63c8c8474e8ea95b50054977902ecaa"
 }

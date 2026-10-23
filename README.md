@@ -72,7 +72,7 @@
 
 ### R3.2～R3.3 最新工程接續（新版本仍未發布）
 
-- **[圖片 PR #24](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/24)（Draft）：** 10 張 Launcher WebP 已由專案素材重新產生並通過限定範圍的完整性核驗；Roborazzi PNG 為測試 Render，不是實機截圖。**尚未併入 main 或舊 Alpha**。
+- **[圖片修復 PR #24](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/24)：** 10 張 Launcher WebP 已由專案素材重新產生並通過限定範圍的完整性核驗；Roborazzi PNG 為測試 Render，不是實機截圖。公開舊 Alpha 不包含這次修復；main 整合狀態與 exact-source CI 以 PR24 為準。
 - **[圖片 CI #39515675883](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39515675883)：** Blocking Build 成功，App Instrumentation 5 PASS，Host Instrumentation **15 PASS／9 FAIL／8 SKIP**。Workflow 總結 Success 是因 Experimental Runtime 允許失敗，不能當 Runtime PASS。
 - **[H1 CI #39514852906](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39514852906)：** H0 有界 HEALTHY；H1 收到 XML 但 Editor focused=false，且擷取程序未自然結束，**INCONCLUSIVE**。H2 未執行。
 - **R3.3 Workspace：** 本地已完成中央索引，原 dirty 工區保護；新增診斷提交 **9ac52b5699aad874a3daa6d6ee950dabc4ce22e9** 尚未推送、最終獨立 Reviewer 未完成，故不可宣稱本輪 H1 修復已正式通過。

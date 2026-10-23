@@ -4,6 +4,10 @@
 
 [ASSET_MANIFEST.json](ASSET_MANIFEST.json) 列出 main 基線 13 張圖片的來源、大小、SHA256 與解碼結果：兩張品牌 JPG、十張 launcher WebP、一張單元測試 PNG。品牌 JPG 不是鍵盤操作截圖；生成式來源標記及權利文件仍待確認。其餘 11 張無法由 Pillow 解碼，保留原檔與 Git 證據，不猜測修復或推論產品已損壞。
 
+## R3.2 Launcher 更新
+
+`ASSET_MANIFEST.json` 是保存的修正前證據，不代表本分支現有十個launcher。使用者授權重新編碼後，十個WebP改用現有adaptive原圖／XML生成，已完整解碼；來源見 [生成manifest](GENERATED_LAUNCHER_MANIFEST.json) 與 [鑑識manifest](R3_2_IMAGE_FORENSICS_MANIFEST.json)。greeting PNG亦由既有Roborazzi測試重建，見 [test-render manifest](ROBORAZZI_RENDER_MANIFEST.json)；這些資產都不是手機操作截圖。詳細 [工程驗證](../../testing/R3_2_IMAGE_INTEGRITY.md)。
+
 ## 待補的真實畫面
 
 - [ ] 大千注音鍵盤／合成文字組字與候選列。

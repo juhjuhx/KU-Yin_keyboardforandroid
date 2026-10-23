@@ -1,3 +1,17 @@
+# R3.4 圖資整合與 Runtime 門檻
+
+基線main5c7b22c（PR25 README／原創SVG已合併），圖片source43aff1d。十Launcher及RoborazziPNG完整解碼、113Python／11contracts fresh PASS；圖片是source／unit-render證據，不是手機截圖。圖片切片獨立review PASS_SCOPED；最新整合CI與維護者決定見PR24。產品／QR PR20仍Draft，沒有改Kotlin/JNI、native pin、版本、資料或簽章；舊Alpha原樣保留。
+
+R3.3 diagnostic9ac52b5 fresh獨立spec/engineering PASS並推送；唯一health-only CI39734667334最終H0 INCONCLUSIVE／FINAL_WINDOW_UNVERIFIED（初始unfrozen，final frozen）。H1／H2未執行，不盲retry。Host舊CI39515675883的15PASS9FAIL8SKIP仍未閉合，不能稱圖片build等於Runtime PASS。Physical NOT_TESTED；RC／Stable NO_GO。見 [R3.4圖片整合](testing/R3_4_IMAGE_INTEGRATION.md)。
+
+---
+
+# R3.2 圖片切片 — 2026-10-21
+
+本切片基線main8369da25，PR18／22已合併。CI39509158938最終blocking build PASS，experimental runtime FAIL：App5 PASS／Host15 PASS9 FAIL8 SKIP。圖片分支重新生成十個Launcher fallback並通過完整雙decoder與獨立複審；不是原件恢復、手機畫面或Runtime PASS。greeting PNG已以原Roborazzi source重建；真實操作截圖仍OPEN。驗證見 [R3_2_IMAGE_INTEGRITY](testing/R3_2_IMAGE_INTEGRITY.md)。PR20 Draft；RC／Stable NO_GO不變。以下保存前輪時間點。
+
+---
+
 # 當前事實 — 2026-10-21
 
 main 基線 `575cc883288a920e7aba021fb8705f75f465e1c0`；README／社群 PR18 已合併。已公開版本仍為 `v0.2.0-aie.1` Experimental Debug Alpha；PR20 Draft、RC 未發布，Release **NO_GO**。
