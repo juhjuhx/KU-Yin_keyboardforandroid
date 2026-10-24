@@ -9,3 +9,11 @@ R3.7數字是歷史；本輪新鮮驗證以PR exacthead、Actions job及中央�
 編譯／lint／CI最終結果需附exacthead收據後才能merge；Workflow總結不代替每個job。本輪不dispatchrun_runtime，不執行Emulator或實機；H0仍INCONCLUSIVE、H1/H2未執行、Host歷史15/9/8。10個native opt-in JVM SKIP不能當Native Runtime PASS。
 
 最終GitHub CI、merge SHA與來源manifest由Issue19及FINAL_AGENT_HANDOFF連接；不在本文件預填未存在的未來merge SHA。
+
+## 新鮮Gradle／Lint裁定
+
+stack91f4940：App JVM265 total＝255PASS/10SKIP/0FAIL；Host57PASS/0SKIP。兩模組Debug及instrumentation assemble完成。聚合Gradle **exit1**：App lint4 errors/77warnings，Host lint0errors/6warnings。
+
+4項：FeedbackHelper.kt:38/:41 MissingPermission(VIBRATE)、KuYinInputMethodService.kt:92 MissingSuperCall、values-night/themes.xml:16 NewApi(API27/min24)。app tree對main未改，屬既有source在本輪首次直接驗證出的阻擋；不新增suppress/baseline、不改visibility或權限湊綠。先前offline lint元件缺快取已正常解析，不能拿setup failure代替這次真lint FAIL。
+
+CI新增獨立blocking lint job，保留完整report；--continue只讓兩模組都分析，最終失敗退出碼保留。新增job的policy負例有RED→GREEN。最終Reviewer在額度中斷前未核准最後delta：**REVIEW_INCOMPLETE，僅Draft PR，不合併main**。原143/127等最終數量以該來源fresh收據為準，不把舊141/126混作新結果。

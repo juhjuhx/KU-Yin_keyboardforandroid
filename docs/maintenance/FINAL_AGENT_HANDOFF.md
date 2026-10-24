@@ -28,3 +28,6 @@ python3 tools/kuyin_workspace.py resume-plan
 ```
 
 Source/security/license/test/repo/archive對照見本目錄FINAL_*。本輪以正常開源維護為出口；未完工作進Issue與MAINTENANCE_BACKLOG，不再無限開新R系列。
+
+## R3.8 合併停止點
+本候選僅Draft：新鮮App lint4 errors/77warnings（兩個VIBRATE、MissingSuperCall、API27屬性）未處置，且最後獨立審查因額度中斷而REVIEW_INCOMPLETE。ENGINEERING_CLOSURE=PARTIAL_BLOCKED，不能宣稱已合併或全部完成；main實際SHA看GitHub。此候選的LICENSE/CI修正尚未合併時，不能套用為main已修復。

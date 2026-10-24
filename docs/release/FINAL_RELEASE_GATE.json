@@ -23,5 +23,12 @@
     "signing custody and data-preserving upgrade",
     "learning erase/D2D/Room delete ACK",
     "current complete source/relink/license/media provenance"
-  ]
+  ],
+  "engineering_closure": "PARTIAL_BLOCKED",
+  "merge_allowed": false,
+  "review": "REVIEW_INCOMPLETE",
+  "app_lint": {
+    "errors": 4,
+    "warnings": 77
+  }
 }

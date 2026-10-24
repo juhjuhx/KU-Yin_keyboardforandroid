@@ -33,6 +33,14 @@ class ReleasePolicyTest(unittest.TestCase):
         self.assertNotEqual('true', runtime.get('continue-on-error', 'false'))
         self.assertEqual({'contents': 'read'}, w['permissions'])
 
+    def test_android_lint_is_an_explicit_blocking_ci_job(self):
+        jobs = workflow('build.yml')['jobs']
+        self.assertIn('lint', jobs)
+        self.assertNotEqual('true', jobs['lint'].get('continue-on-error', 'false'))
+        commands = '\n'.join(step.get('run', '') for step in jobs['lint']['steps'])
+        self.assertIn(':app:lintDebug', commands)
+        self.assertIn(':acceptance-host:lintDebug', commands)
+
     def test_all_external_actions_are_immutable_commits(self):
         for file in (ROOT / '.github/workflows').glob('*.yml'):
             w = workflow(file.name)
