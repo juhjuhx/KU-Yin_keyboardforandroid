@@ -115,6 +115,32 @@ jobs:
           path: app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
 
+  lint:
+    name: Android lint (blocking)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with: {fetch-depth: 0, persist-credentials: false}
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {java-version: "21", distribution: "temurin"}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with:
+          packages: platform-tools ndk;28.2.13676358 cmake;3.22.1
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+      - name: Bootstrap pinned native dependencies
+        run: bash scripts/bootstrap_native_deps.sh
+      - name: Lint both modules; --continue retains the failing exit status
+        run: ./gradlew :app:lintDebug :acceptance-host:lintDebug --continue --stacktrace
+      - name: Preserve lint findings
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: android-lint-report
+          path: |
+            app/build/reports/lint-results-debug.*
+            acceptance-host/build/reports/lint-results-debug.*
+          if-no-files-found: warn
+
   runtime-smoke:
     name: runtime-smoke (experimental)
     needs: build

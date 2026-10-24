@@ -13,3 +13,5 @@
 |Main保護/供應鏈驗證|維護工作|記錄required checks；Actions/wrapper pins以外尚需dependency verification/SBOM/重建等價|
 
 PR20、PR27各自Draft/HOLD。PR10/12不因本輪接近收尾就自動merge；Windows voice13/14獨立。未批准S2/S3/S4/S5、M4、Whisper或Rime移植。
+
+本輪新增明確工程阻擋：App lint4 errors/77warnings。先按MissingPermission、MissingSuperCall、NewApi逐項設最小RED/處置，尤其onEvaluateInputViewShown不得為消除lint隨意改IME visibility。最後獨立review尚未完成，Draft不能merge。

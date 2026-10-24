@@ -23,3 +23,6 @@ R3.8從main `2a2181e023e0dee0ddff98681e374df10cd5fa8f`建立最小工程整合�
 已知產品缺口：Android12+ OEM D2D排除政策、Room刪除成功ACK、品牌JPG權利來源、實機QR掃描、正式簽章及保資料升級。均未被JVM/文件工作關閉。
 
 最終命令、SHA、CI及工程裁定：[FINAL_AGENT_HANDOFF](maintenance/FINAL_AGENT_HANDOFF.md)、[測試報告](maintenance/FINAL_TEST_REPORT.md)、[機器Gate](release/FINAL_RELEASE_GATE.json)。
+
+## R3.8 合併停止點
+本候選僅Draft：新鮮App lint4 errors/77warnings（兩個VIBRATE、MissingSuperCall、API27屬性）未處置，且最後獨立審查因額度中斷而REVIEW_INCOMPLETE。ENGINEERING_CLOSURE=PARTIAL_BLOCKED，不能宣稱已合併或全部完成；main實際SHA看GitHub。此候選的LICENSE/CI修正尚未合併時，不能套用為main已修復。
