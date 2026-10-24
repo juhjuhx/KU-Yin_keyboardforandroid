@@ -22,3 +22,9 @@ Production IME：KuYinInputMethodService → ComposeDecoderSession → ChewingEn
 保留使用者dirty/untracked、歷史工區與exactrelease資產。禁止無授權reset/clean/force/historyrewrite/清userdata；清理先manifest、backup及restoreproof。資料來源/pin/ABI/appID/signature不能漂移；外部code/data需licenseprovenance。不得新增networktyping、releasecontentlogs或telemetry。敏感editor不學習；fulllearningerase暫不支援。
 
 新產品功能、decoder/privacy/license/UIgeometry/release決策需要明確scope；任務授權正常doc/tool治理PR不需再重問。M4/S2不因本輪收束自動開始。
+
+## R3.8 維護與發行邊界
+
+先讀docs/maintenance/FINAL_AGENT_HANDOFF.md與MAINTENANCE_BACKLOG；本機可選$HOME/KU-Yin-Workspace/00-Control-Center/START_HERE.md，不依賴聊天記憶。只讀狀態入口不會授權新的Emulator、功能、清資料或Release。
+
+CI手動Alpha僅產生TEST_ONLY artifact；Runtime明確opt-in，失敗不得當PASS。原P1 frozen manifest對應6595b684的Git物件，當前test source另有ledger；不可改舊APK/manifest湊GREEN。保留原App/Host assertions；只在exacthead fresh CI與獨立review後合併範圍內工程PR。

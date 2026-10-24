@@ -42,3 +42,20 @@ Recovery branch 最终以 squash merge 进入 `main`，建立 `v0.1.0-alpha` pre
 - **ChatGPT / GPT-5.6 Sol**：forensic review、P0–R4 recovery、TDD contracts、CI/native/security/docs/release consolidation。
 
 AI 项目记录代表工具输出曾实质影响仓库，不把 AI 系统视作人类 GitHub identity、法律作者或版权主体。代码与 commit history 仍是最终事实来源。
+
+## R3.8 校正後的工程時間線
+
+以下補充早期快照，現在production UI是Compose；前文View/Canvas描述是當時版本，不是目前規範。
+
+|階段|來源與結果|證據邊界|
+|---|---|---|
+|Google AI Studio／local donor|早期原型與設計材料，後續逐檔鑑別/保留；不是canonical產品來源|歷史資料/本機donor，不能按檔名當可用APK|
+|Compose／C4 native切換|建立Compose呈現、session與libchewing C ABI/JNI管線；歷史C4仍有dirty參考|當前owner以ARCHITECTURE及Git source為準|
+|P0-R|產品9f5db676；修復無聲調候選、continuous composition、editor effects及English MVP；使用者回報基本可打字|不是完整30case physical acceptance|
+|AIE-S0/S1|產品39acf96；停用不完整reset、單列/展開候選與受保護scratch分頁|排名/觸控/完整erase仍未實作|
+|R1–R3.4|主線文件/保全、Host及IME健康診斷；Launcher/README/Banner獨立整合|編譯與圖片不等於Runtime|
+|R3.5|本機中央Workspace、verified archive與agent接續；保護dirty與private資料|不公開整個控制中心|
+|R3.6/3.7|676f127 healthCI、Guard aa1bf875；offline ccb2811及Host22c2d66的RED/GREEN|RRO caller/freeze root未定；9Runtime FAIL未重驗|
+|R3.8|從main2a2181e最小整合test/security/CI/docs，原commit另保存；轉維護清單|沒有新功能/RC/Stable，公開Alpha不變|
+
+Codex協調來源、TDD、整合與收據；OpenCode/DSH/Hermes等工具的作用依當時實際handoff記錄，不能因名稱就假定本輪被執行。Agent不是法律作者、上游或基金會的背書者。

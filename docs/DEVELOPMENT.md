@@ -49,10 +49,13 @@ home-grown Kotlin parser — behavior belongs in JVM tests.
 
 ## CI
 
-`.github/workflows/build.yml` is blocking (Python infrastructure regressions + all 10 contracts → toolchain → bootstrap →
-JVM → Debug APK → artifact). `runtime-smoke` is experimental
-(`continue-on-error: true`) and never counts as PASS. `prerelease.yml` is manual-only; a fresh CI debug key cannot update the
-published locally signed APK. Publish reviewed assets with source/relink materials; `upstream-watch.yml` only files review issues.
+`.github/workflows/build.yml` 的unit/build為blocking：全部Python、contracts（既有10＋Launcher與secrets）、固定native bootstrap、JVM與Debug。驗證Python依賴：`python3 -m pip install -r requirements-verification.txt`。安全tripwire：`python3 scripts/check_repository_secrets.py`；維護者可用`--history`唯讀檢查reachable Git blobs，輸出不含憑證值；不是完整credential certification。
+
+Runtime只在workflow_dispatch明確run_runtime=true時執行；一旦執行，失敗不忽略。PR的Runtime SKIPPED是未執行，不是PASS。prerelease.yml雖保留檔名，現在只上傳TEST_ONLY Alpha artifact，contentsread，沒有gh release/create/tag寫入。公開Alpha及其source/relink不變。
+
+checkout完整history用於凍結6595b684來源ledger。scripts/p1_instrumentation_manifest.json仍描述原5/26 frozen suite；當前Host測試來源另見docs/testing/R3_8_INSTRUMENTATION_SOURCES.json，不能把current helper編譯結果冒稱原四APK。
+
+Actions commit與wrapper SHA來源見docs/security/BUILD_INPUT_PINS.json。依賴驗證metadata、完整新二進位SBOM/重鏈結重建等價仍需後續審查；固定版本不是漏洞保證。
 
 ## Contribution workflow
 

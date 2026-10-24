@@ -50,3 +50,18 @@ Data word.csv and tsi.csv explicitly identify LGPL-2.1-or-later and
 Copyright (c) 2025 libchewing Core Team. Original misc data is preserved.
 See docs/release/AIE_ALPHA_LICENSE_AND_BUILD.md and release source materials.
 No additional restriction forbids reverse engineering to debug LGPL changes.
+
+R3.8 license-document correction
+--------------------------------
+The repository's existing LGPL 2.1 choice is unchanged. LICENSE is restored verbatim
+from SPDX license-list-data revision 31ba1a50e5397e00a304dbadc76531740e89ee48
+(text/LGPL-2.1-only.txt), SHA256
+5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2.
+Earlier repository text and the frozen Alpha KU-Yin license copy contain substantive
+wording differences. Historical assets are not overwritten; see the maintenance
+license report for the erratum and unresolved distribution requirements. This
+correction does not relicense third-party components or certify future binaries.
+
+Verification-only Python tooling uses Pillow (HPND-family, exact distribution
+terms apply) and PyYAML (MIT); neither is bundled into the Android runtime APK.
+GitHub Actions and build tools are recorded separately from production libraries.
