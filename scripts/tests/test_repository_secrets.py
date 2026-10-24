@@ -55,6 +55,30 @@ class RepositorySecretsTest(unittest.TestCase):
             git('rm', 'release.jks');git('commit', '-qm', 'remove private alias')
             self.assertTrue(any(x['path'] == 'release.jks' for x in scan_repository(root, history=True)['findings']))
 
+    def test_history_includes_private_paths_created_and_removed_only_in_merges(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            def git(*args): return subprocess.check_output(['git', *args], cwd=root, stderr=subprocess.DEVNULL)
+            git('init', '-q');git('config', 'user.name', 'Synthetic');git('config', 'user.email', 'fixture@example.invalid')
+            (root / 'aaa-safe.txt').write_text('same synthetic bytes')
+            git('add', '.');git('commit', '-qm', 'root')
+            main = git('branch', '--show-current').decode().strip()
+            for index in range(2):
+                branch = 'side' + str(index)
+                git('switch', '-qc', branch)
+                (root / (branch + '.txt')).write_text('side')
+                git('add', '.');git('commit', '-qm', 'side')
+                git('switch', '-q', main)
+                (root / ('main' + str(index) + '.txt')).write_text('main')
+                git('add', '.');git('commit', '-qm', 'main')
+                git('merge', '--no-commit', '--no-ff', branch)
+                if index == 0:
+                    (root / 'release.jks').write_text('same synthetic bytes');git('add', 'release.jks')
+                else: git('rm', 'release.jks')
+                git('commit', '-qm', 'merge-only path change')
+            self.assertFalse((root / 'release.jks').exists())
+            self.assertTrue(any(x['path'] == 'release.jks' for x in scan_repository(root, history=True)['findings']))
+
     def test_tracked_keystore_is_blocked_without_reading_its_contents(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory);subprocess.run(['git', 'init', '-q'], cwd=root, check=True)
