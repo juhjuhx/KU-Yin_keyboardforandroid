@@ -38,7 +38,7 @@ Source-grounded owner/介面/資料/error/storage/tests逐章列出；fresh檢�
 
 ## 工程與發行控制面（R3.8）
 
-acceptance-host只作真Views editor／immutable recorder和test-only observer；canonical Driver在JVM中同源staging，非第二個IME owner。離線H0規格僅解析合成/保存觀察，不是Android初始化完成API。GitHub CI的unit/build、手動Runtime及公開Release互相分層；TEST_ONLY artifact不通過手機或簽章Gate。
+acceptance-host只作真Views editor／immutable recorder和test-only observer；canonical Driver在JVM中同源staging，非第二個IME owner。離線H0規格由獨立stacked PR提出，未合併前不作main功能；它僅解析合成/保存觀察，不是Android初始化完成API。GitHub CI的unit/build、手動Runtime及公開Release互相分層；TEST_ONLY artifact不通過手機或簽章Gate。
 
 現行技術責任：Kotlin/Compose呈現與session；C++ JNI管理native handle；libchewing提供現有C ABI decoder；Gradle/NDK/CMake固定建置鏈。上游Rust實作經prebuilt靜態連結，不代表KU-Yin另交付通用Rust runtime、ASR或新framework。Rime/Fcitx5 framework/Whisper屬研究/未來，不是production dependencies。
 

@@ -62,7 +62,7 @@ def scan_repository(root, history=False):
     else:
         # rev-list --objects emits one representative path per blob. Inspect
         # changed paths separately so a private alias cannot hide behind a safe name.
-        history_paths = git(root, 'log', '--all', '--root', '--format=', '--name-only', '--no-renames', '-z')
+        history_paths = git(root, 'log', '--all', '--root', '--format=', '--name-only', '--no-renames', '-m', '-z')
         for raw in set(history_paths.split(b'\0')):
             name = raw.decode('utf-8', errors='replace').strip('\n')
             if name and private_path(name): findings.append({'path': name, 'rule': 'PRIVATE_HISTORICAL_FILENAME'})
