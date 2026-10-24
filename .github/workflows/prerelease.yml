@@ -23,6 +23,10 @@ jobs:
         uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
       - name: Bootstrap pinned native dependencies
         run: bash scripts/bootstrap_native_deps.sh
+      - name: Install launcher validation decoders
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y webp ffmpeg
       - name: Install verification dependencies
         run: python3 -m pip install Pillow==12.2.0 PyYAML==6.0.3
       - name: Validate infrastructure and contracts
