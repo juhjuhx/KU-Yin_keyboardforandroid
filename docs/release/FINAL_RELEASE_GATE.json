@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "engineering_scope": "R38_TEST_SECURITY_DOC_INTEGRATION",
+  "baseline_main": "2a2181e023e0dee0ddff98681e374df10cd5fa8f",
+  "experimental_alpha": "AVAILABLE",
+  "rc_ready": false,
+  "stable_ready": false,
+  "new_release": "NOT_PUBLISHED",
+  "h0": "INCONCLUSIVE",
+  "h1": "NOT_EXECUTED",
+  "h2": "NOT_EXECUTED",
+  "host_runtime": {
+    "provenance": "HISTORICAL_CI39882220869",
+    "pass": 15,
+    "fail": 9,
+    "skip": 8
+  },
+  "physical": "NOT_TESTED",
+  "blockers": [
+    "RRO caller/root and genuine completion observer",
+    "Host Runtime9FAIL8SKIP",
+    "authorized physical/QR/accessibility acceptance",
+    "signing custody and data-preserving upgrade",
+    "learning erase/D2D/Room delete ACK",
+    "current complete source/relink/license/media provenance"
+  ]
+}

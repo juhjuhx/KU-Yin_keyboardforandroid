@@ -1,6 +1,6 @@
 # KU-Yin Architecture
 
-NORMATIVE；更新2026-10-12 R1。唯一現行架構入口，依main實作校正。歴史D2.5/C4與futureAIEproposal不能覆蓋此入口。產品source `39acf96c6cfc058106315f3553e1c8b88438f4f7` 已在main；本次深讀基線 `a6a4c654845338521700121ac06586887d1ec085`。
+NORMATIVE；R3.8校正（產品架構未改）。唯一現行架構入口，依main實作校正。歴史D2.5/C4與futureAIEproposal不能覆蓋此入口。產品source `39acf96c6cfc058106315f3553e1c8b88438f4f7` 已在main；本次深讀基線 `a6a4c654845338521700121ac06586887d1ec085`。
 
 ```text
 Android Editor / EditorInfo / InputConnection
@@ -35,3 +35,11 @@ MainActivity試打另用dictionary session，亦可寫fallbackprefs；未註冊�
 ## 證據與限制
 
 Source-grounded owner/介面/資料/error/storage/tests逐章列出；fresh檢查在[Validation matrix](maintenance/VALIDATION_MATRIX.md)，資料政策在[Storage inventory](maintenance/DATA_STORAGE_INVENTORY.md)，future只看[Roadmap](roadmap/AIE_V1_ROADMAP.md)。本轮文檔與診斷收束不能解除實機、OEM、native erase、production signing/release gates。
+
+## 工程與發行控制面（R3.8）
+
+acceptance-host只作真Views editor／immutable recorder和test-only observer；canonical Driver在JVM中同源staging，非第二個IME owner。離線H0規格僅解析合成/保存觀察，不是Android初始化完成API。GitHub CI的unit/build、手動Runtime及公開Release互相分層；TEST_ONLY artifact不通過手機或簽章Gate。
+
+現行技術責任：Kotlin/Compose呈現與session；C++ JNI管理native handle；libchewing提供現有C ABI decoder；Gradle/NDK/CMake固定建置鏈。上游Rust實作經prebuilt靜態連結，不代表KU-Yin另交付通用Rust runtime、ASR或新framework。Rime/Fcitx5 framework/Whisper屬研究/未來，不是production dependencies。
+
+已知D2D、Room刪除ACK與完整erase限制見FINAL_SECURITY_AUDIT及資料庫章；本輪不改schema、storage或輸入核心。

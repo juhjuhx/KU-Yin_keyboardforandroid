@@ -1,3 +1,5 @@
+> HISTORICAL R1 RECEIPT. 當前入口：[FINAL_AGENT_HANDOFF](FINAL_AGENT_HANDOFF.md)。以下保留原始歷史，不作新鮮證據。
+
 # KU-Yin R1 主線收束交接
 
 ## 來源與工程裁定

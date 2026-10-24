@@ -1,0 +1,11 @@
+# Final Test Report — R3.8
+
+R3.7數字是歷史；本輪新鮮驗證以PR exacthead、Actions job及中央收據為準。main-based Host來源來自22c2d66；readiness等價移植有單獨審查，不整包merge舊Guard/R2。
+
+已取得本機行為證據：release policy5項先5 assertion RED再GREEN；secret scanner6項含history alias與.env負例RED→GREEN；合併來源Python141項PASS；readiness16項GREEN。原Driver的20項/13FAIL RED及Host57GREEN屬R3.7歷史，需本輪重新執行才可列fresh。
+
+整合首次全套122項含1 frozen/current ledgerFAIL及2 fake-tool10s逾時，收據保留；不增加timeout、未改該fake fixture。隔離相同fixture3項7.173s通過，之後序列化全套141項12.531s通過；未證明特定host resource是根因，不稱flaky修復。Frozen manifest未改，現在核對6595b684 immutable Git blobs，current test來源另列R3_8_INSTRUMENTATION_SOURCES.json；CI須完整history。
+
+編譯／lint／CI最終結果需附exacthead收據後才能merge；Workflow總結不代替每個job。本輪不dispatchrun_runtime，不執行Emulator或實機；H0仍INCONCLUSIVE、H1/H2未執行、Host歷史15/9/8。10個native opt-in JVM SKIP不能當Native Runtime PASS。
+
+最終GitHub CI、merge SHA與來源manifest由Issue19及FINAL_AGENT_HANDOFF連接；不在本文件預填未存在的未來merge SHA。
