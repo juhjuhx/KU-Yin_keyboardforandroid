@@ -1,0 +1,36 @@
+name: Windows voice prototype contracts
+
+on:
+  push:
+    branches:
+      - 'feat/windows-voice-assessment-*'
+    paths:
+      - 'tools/windows-voice/**'
+      - '.github/workflows/voice-windows.yml'
+  pull_request:
+    paths:
+      - 'tools/windows-voice/**'
+      - '.github/workflows/voice-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contracts:
+    name: Pure contracts (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile module and tests
+        run: python -m compileall -q tools/windows-voice
+      - name: Run voice contracts
+        run: python -m unittest discover -s tools/windows-voice/tests -v
