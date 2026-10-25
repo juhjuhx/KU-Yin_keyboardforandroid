@@ -90,6 +90,9 @@ class KuYinInputMethodService : InputMethodService() {
      * 強制回傳 true，防止 Android 系統在偵測到模擬器或實體電腦鍵盤時自動隱藏軟體虛擬鍵盤。
      */
     override fun onEvaluateInputViewShown(): Boolean {
+        // Honor the platform callback contract while retaining KU-Yin's
+        // existing always-show policy, including with a hardware keyboard.
+        super.onEvaluateInputViewShown()
         return true
     }
 

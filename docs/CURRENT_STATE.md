@@ -24,5 +24,8 @@ R3.8從main `2a2181e023e0dee0ddff98681e374df10cd5fa8f`建立最小工程整合�
 
 最終命令、SHA、CI及工程裁定：[FINAL_AGENT_HANDOFF](maintenance/FINAL_AGENT_HANDOFF.md)、[測試報告](maintenance/FINAL_TEST_REPORT.md)、[機器Gate](release/FINAL_RELEASE_GATE.json)。
 
-## R3.8 合併停止點
-本候選僅Draft：新鮮App lint4 errors/77warnings（兩個VIBRATE、MissingSuperCall、API27屬性）未處置，且最後獨立審查因額度中斷而REVIEW_INCOMPLETE。ENGINEERING_CLOSURE=PARTIAL_BLOCKED，不能宣稱已合併或全部完成；main實際SHA看GitHub。此候選的LICENSE/CI修正尚未合併時，不能套用為main已修復。
+## R3.8 合併停止點與Issue31候選
+
+PR28@ea3fdb24的CI40103973292為Build PASS、blocking AppLint4 errors/80warnings、Runtime SKIPPED；獨立最終審查已完成限定規格，但工程PARTIAL_BLOCKED，不批准merge。上述歷史失敗不能被下一個分支的本機結果覆蓋。
+
+Issue31另有隔離候選：刪除未用direct-Vibrator fallback並要求View、不新增權限；super呼叫後仍return true；完整night-v27資源分版。focused12例、全量App267PASS/10SKIP及Host57PASS、127Python/12contracts、編譯與雙Lint0errors已通過；exact commit CI仍須另外核對。詳見[平台契約與證據](testing/ISSUE31_PLATFORM_CONTRACTS.md)。不宣稱main已修復，不自動合併產品維護PR。Runtime／實機／簽章／隱私／授權完整Gate仍NO_GO。
