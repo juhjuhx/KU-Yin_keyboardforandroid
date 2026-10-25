@@ -1,0 +1,47 @@
+{
+  "actions": [
+    {
+      "repository": "actions/checkout",
+      "tag": "v6",
+      "commit": "d23441a48e516b6c34aea4fa41551a30e30af803"
+    },
+    {
+      "repository": "actions/setup-java",
+      "tag": "v5",
+      "commit": "b6effb05e454b25005698d916606bdc6ffcbf961"
+    },
+    {
+      "repository": "android-actions/setup-android",
+      "tag": "v3",
+      "commit": "9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407"
+    },
+    {
+      "repository": "gradle/actions",
+      "tag": "v6",
+      "commit": "3f5f9adaf7d9fecd50b5935e54106014257a94e6"
+    },
+    {
+      "repository": "actions/upload-artifact",
+      "tag": "v4",
+      "commit": "ea165f8d65b6e75b540449e92b4886f43607fa02"
+    },
+    {
+      "repository": "reactivecircus/android-emulator-runner",
+      "tag": "v2",
+      "commit": "a421e43855164a8197daf9d8d40fe71c6996bb0d"
+    }
+  ],
+  "gradle_wrapper": {
+    "version": "9.3.1",
+    "sha256": "b266d5ff6b90eada6dc3b20cb090e3731302e553a27c5d3e4df1f0d76beaff06",
+    "source": "https://services.gradle.org/distributions/gradle-9.3.1-bin.zip.sha256"
+  },
+  "license": {
+    "source_revision": "31ba1a50e5397e00a304dbadc76531740e89ee48",
+    "url": "https://raw.githubusercontent.com/spdx/license-list-data/31ba1a50e5397e00a304dbadc76531740e89ee48/text/LGPL-2.1-only.txt",
+    "sha256": "5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2",
+    "bytes": 26001,
+    "choice": "existing LGPL2.1 unchanged; standard text restoration"
+  },
+  "transport": "verifiedTLS macOS curl; Python3.14 local CA setup unavailable, TLS not disabled"
+}

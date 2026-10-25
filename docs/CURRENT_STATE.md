@@ -1,45 +1,33 @@
-# R3.4 圖資整合與 Runtime 門檻
+# KU-Yin 當前狀態
 
-基線main5c7b22c（PR25 README／原創SVG已合併），圖片source43aff1d。十Launcher及RoborazziPNG完整解碼、113Python／11contracts fresh PASS；圖片是source／unit-render證據，不是手機截圖。圖片切片獨立review PASS_SCOPED；最新整合CI與維護者決定見PR24。產品／QR PR20仍Draft，沒有改Kotlin/JNI、native pin、版本、資料或簽章；舊Alpha原樣保留。
+權威：實際Git/source/當次CI優先；架構見[ARCHITECTURE](ARCHITECTURE.md)，未來工作見[維護清單](maintenance/MAINTENANCE_BACKLOG.md)。先前R1–R3.4逐輪狀態保存在Git歷史，不能當新證據。
 
-R3.3 diagnostic9ac52b5 fresh獨立spec/engineering PASS並推送；唯一health-only CI39734667334最終H0 INCONCLUSIVE／FINAL_WINDOW_UNVERIFIED（初始unfrozen，final frozen）。H1／H2未執行，不盲retry。Host舊CI39515675883的15PASS9FAIL8SKIP仍未閉合，不能稱圖片build等於Runtime PASS。Physical NOT_TESTED；RC／Stable NO_GO。見 [R3.4圖片整合](testing/R3_4_IMAGE_INTEGRATION.md)。
+## 工程來源與產品
 
----
+R3.8從main `2a2181e023e0dee0ddff98681e374df10cd5fa8f`建立最小工程整合。R3.7原始readiness `ccb281138e4939bbe58c5a35735b18978cb705f0`、Host `22c2d66900547a9cd8a6ecfc1aa7410fe4faf73e`已保留並推至獨立分支。Host的strict preedit、candidate/editor/exactly-once assertions不變；新JVM observer測試不證Runtime。Readiness是另外審查的OFFLINE_SPECIFICATION_ONLY模型，不能放行裝置。
 
-# R3.2 圖片切片 — 2026-10-21
+產品仍為Kotlin／Jetpack Compose／JNI C++／固定libchewing；P0-R基本打字有使用者回報，S1候選列/展開/頁面已實作。未實作AIE-S2排名、TouchResolver、完整learning erase、Whisper runtime或新Rime/Fcitx框架。S0完整reset仍停用。
 
-本切片基線main8369da25，PR18／22已合併。CI39509158938最終blocking build PASS，experimental runtime FAIL：App5 PASS／Host15 PASS9 FAIL8 SKIP。圖片分支重新生成十個Launcher fallback並通過完整雙decoder與獨立複審；不是原件恢復、手機畫面或Runtime PASS。greeting PNG已以原Roborazzi source重建；真實操作截圖仍OPEN。驗證見 [R3_2_IMAGE_INTEGRITY](testing/R3_2_IMAGE_INTEGRITY.md)。PR20 Draft；RC／Stable NO_GO不變。以下保存前輪時間點。
+## Runtime與發布
 
----
+- H0：CI39957438988、source676f127，INCONCLUSIVE；Pixel7 RRO caller／Freeze root仍UNRESOLVED。
+- H1/H2：NOT_EXECUTED。本輪不以收尾為由重跑Emulator。
+- Host：歷史main CI39882220869為15 PASS／9 FAIL／8 SKIP；新observer JVM不能改判。
+- 實機：NOT_TESTED；新RC／Stable：NO_GO。PR20、PR27各自Draft/HOLD，不整包自動合併。
+- 唯一公開版本：[v0.2.0-aie.1 Experimental Alpha](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1)，Debug20003／0.2.0-aie.1，八資產及tag不變。
 
-# 當前事實 — 2026-10-21
+## 本輪安全處置
 
-main 基線 `575cc883288a920e7aba021fb8705f75f465e1c0`；README／社群 PR18 已合併。已公開版本仍為 `v0.2.0-aie.1` Experimental Debug Alpha；PR20 Draft、RC 未發布，Release **NO_GO**。
+手動prerelease workflow改成只建CI測試artifact，contents:read，不能發布/改tag。Runtime只有明確manual opt-in才執行，執行失敗不再以continue-on-error掩蓋。Actions固定commit、wrapper加官方SHA。根LICENSE復原標準LGPL2.1，既有授權選擇不變；舊包異文及新二進位完整source/relink仍須處置。
 
-本輪重新核對公開八資產、APK 20003／0.2.0-aie.1、Debug certificate、四 ABI 與 source/relink 雜湊。main CI39442957936 的 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；blocking build 成功不能掩蓋 experimental Runtime 失敗。
+已知產品缺口：Android12+ OEM D2D排除政策、Room刪除成功ACK、品牌JPG權利來源、實機QR掃描、正式簽章及保資料升級。均未被JVM/文件工作關閉。
 
-R3.1 隔離分支 runtime feab29f：H0 HEALTHY、H1 INCONCLUSIVE／null root／逾時，H2 及產品 Runtime 未執行。文件保存 commit6e4bcd7 已推原分支；不是 main 的產品 patch。沒有經授權實機驗收，也沒有可核實公開操作截圖。
+最終命令、SHA、CI及工程裁定：[FINAL_AGENT_HANDOFF](maintenance/FINAL_AGENT_HANDOFF.md)、[測試報告](maintenance/FINAL_TEST_REPORT.md)、[機器Gate](release/FINAL_RELEASE_GATE.json)。
 
-只需續讀 [交接](release/R3_FINAL_HANDOFF.md)、[驗證](release/PUBLICATION_VALIDATION.md)、[TODO](release/TODO_AND_GATES.md)；架構仍以 [ARCHITECTURE](ARCHITECTURE.md) 為準。以下 R1 紀錄是歷史，不作當前 gate。
+## R3.8 工程整合與證據權威
 
----
+使用者已批准限定的PR28＋PR34工程整合：Test Infrastructure、Build/CI Security、Documentation及Issue31 Product Maintenance。原提交ancestry保留；PR29 readiness仍是獨立OFFLINE_SPECIFICATION_ONLY切片，PR20／27不納入。整合分支為`integrate/r38-issue31-engineering`，是否已合併及最終SHA須核對[Issue31](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/31)所連結的整合PR與exact-head checks，不從本文件推定。
 
-# CURRENT_STATE
+Issue31移除沒有production caller的direct-Vibrator fallback並要求View，不新增權限；super呼叫後仍return true，保留always-show政策；night-v27保留完整等值style。不改Dachen、candidate／decoder、orderedCommits／Editor ACK、JNI、版本或簽章。回歸範圍見[平台契約](testing/ISSUE31_PLATFORM_CONTRACTS.md)。
 
-ACTIVE；更新2026-10-12 R1。只記目前事實，歷史測試見review/INDEX與原Gitcommit。
-
-- 本輪起始GitHub main `a6a4c654845338521700121ac06586887d1ec085`；PR#8正常merge；tag `v0.2.0-aie.1`仍指 `2ce6810684fd65a65a3006a224dc786b1f3a5f62`。產品source39acf96；公開experimentalDebug APK20003/0.2.0-aie.1，SHAacdbacdfebcb897074807bc0746d26ecefbbd8a5f28b25f46aab929afb865634。R1不重做S0/S1、不發布新產品。
-- Chinese為native production/startup fallback；P0基本中文WORKS_ON_USER_DEVICE（使用者回報，非全matrix）；Englishoffline10kMVP。
-- S0完整reset disabled/unsupported、零資料刪除；S1單列橫捲＋展開grid、scratchplanpaging、snapshotguard。ranking/touch/catalog/S2未實作，M4 NOT_VALIDATED。
-- 歷史CI38164320915 blockingPASS，API33x86_64 app5/5；host32=15PASS/9FAIL/8SKIP。fixturegeometry/stale與舊B契約需隔離adapter，timeout根因不能全數推定產品。新的結果僅登記maintenance/VALIDATION_MATRIX.md。
-- Full physical acceptance OPEN；production NOT_READY，缺正式keystore BLOCKED_BY_SIGNING；erase/migration/OEM/TalkBack/license runtimeinventory仍OPEN。
-- R1在隔離chore/mainline-consolidation-r1：來源/工作樹資料盤點、verified外部backup、規範架構10章、文件權威/data政策、doctor小修。Hostadapter另fix/r1-host-fixture-adapter，不改product、不清資料。
-- 最新進度／最終SHA/PR/測試：[FINAL_HANDOFF](maintenance/FINAL_HANDOFF.md)，fresh/historical分層：[VALIDATION_MATRIX](maintenance/VALIDATION_MATRIX.md)。
-
-## R1 收束與尚未合併的驗收修正
-
-2026-10-12：文件／doctor／CI治理 PR #9 正常合併 `bf7c5d1d912d77ae8c6c7179d26d72bf835232bc`；產品 source、native pin、簽章與資料 schema 不變。`.worktrees/mainline` 持有 local main，已正常fast-forward；原15工區及4dirty保留，18工區總數含本輪3個。
-
-本輪 fresh baseline emulator run38224799842：App5PASS；Host15PASS／9FAIL／8SKIP。隔離 Host PR #10 未合併：087ff39 run38225649247 Host15PASS／17SKIP；ea5c2b5 run38254806233 blocking buildPASS，但App runtime4PASS／1FAIL（input window visibility），Host未執行。根因UNKNOWN，不能稱emulator flaky或由fixture造成；不跳過App層、不盲retry、不改產品／visibility assertion。Host adapter後續device-free成本修正另列local證據，仍須完整新runtime gate。
-
-詳見[本輪驗證](maintenance/VALIDATION_MATRIX.md)與[交接](maintenance/FINAL_HANDOFF.md)。Physical OPEN／Production NOT_READY／M4 NOT_VALIDATED／S2 NOT_STARTED不變。
+證據分層：PR28@ea3fdb24的CI40103973292為Build PASS、blocking AppLint4 errors/80warnings；此歷史FAIL不改判。PR34@ea186d7的CI40148115742為Build／Lint PASS、127 Python、App267 PASS/10 SKIP、Host57 PASS，Runtime SKIPPED；它仍不能替代新整合HEAD的CI。本次隔離工區的Python127／12contracts通過，但冷建置exit124，不能列為全套本機PASS。整合只在新鮮必要CI與完整diff獨立審查皆通過後正常merge；編譯／JVM不證Runtime或實機。舊停止收據保存在FINAL_TEST_REPORT與Gate的historical_receipts。

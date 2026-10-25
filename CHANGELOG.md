@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased — R3.8 engineering closure
+
+- Bound Host accessibility observations and preserve primary/cleanup errors; no click retries or weakened product assertions.
+- Keep offline H0 readiness separate from Android health evidence.
+- Make manual Alpha CI artifact-only; separate opt-in Runtime failure from build success. Pin Actions and wrapper checksum, add redacted credential tripwire.
+- Restore standard LGPL2.1 document without changing the existing license choice. Preserve all frozen Alpha assets.
+- Consolidate current docs, provenance and maintenance backlog. No new RC/Stable or typing feature.
+
+
 ## [0.1.2-alpha] - 2026-09-13
 
 ### P0 real-device fixes

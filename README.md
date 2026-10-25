@@ -24,13 +24,13 @@
 │ ENGLISH    Offline prefix       ~10,000 words          │
 │ MAIN CI    Build SUCCESS        App 5 PASS             │
 │ HOST       15 PASS              9 FAIL / 8 SKIP        │
-│ H0 → H1    HEALTHY → INCONCLUSIVE (R3.2 isolated run)  │
+│ H0 / H1    INCONCLUSIVE / NOT_EXECUTED (latest health) │
 │ H2         NOT_EXECUTED         Device NOT_TESTED      │
 │ NEW RC     NO-GO                Stable NO-GO           │
 └────────────────────────────────────────────────────────┘
 ~~~
 
-上方是**來源對應的測試摘要**，不是宣傳用的通過率。主線的 Host 九個 FAIL、八個 SKIP 仍待逐項閉合；R3.3 新診斷尚待獨立複審、未推送。詳見 [發布 Gate #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)。
+上方是**來源對應的測試摘要**，不是宣傳用的通過率。Host 九個歷史 FAIL、八個 SKIP 仍待 Runtime 閉合；R3.7 observer 的 JVM 修正與離線 readiness 規格另有證據，不能當作裝置通過。詳見 [發布 Gate #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)。
 
 ## 功能
 
@@ -59,7 +59,7 @@
 
 ## 目前狀態與已知限制
 
-截至 **2026-10-21**，公開 Alpha 與後續尚未合併的測試分支必須分別看待：
+以下保留各輪**歷史來源**；最新工程狀態以 [CURRENT_STATE](docs/CURRENT_STATE.md) 與 [維護交接](docs/maintenance/FINAL_AGENT_HANDOFF.md) 為準。公開 Alpha 與後續測試分支必須分別看待：
 
 - **公開 Alpha**：原 API 33 App 5 PASS；Host **15 PASS／9 FAIL／8 SKIP**（發布時基線）。
 - **R2 測試分支**：曾在 API 33 取得 App **5 PASS**、Host **24 PASS／9 SKIP**；24 項含一項測試基礎設施檢查，實際產品案例為 **23 PASS／9 INCONCLUSIVE**。不是 `main` 新版本的完整驗收。
@@ -70,18 +70,26 @@
 
 請勿把 CI 編譯成功、模擬器局部成功或使用者基本打字回報當作整套功能通過。**實驗性 runtime-smoke 仍有失敗紀錄**；請查看每個 job，而非只讀整體 Workflow 狀態。正式的 [Release readiness](docs/release/RELEASE_READINESS.md)、[RC 發布驗收追蹤 #19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19) 與 [AIE Roadmap](docs/roadmap/AIE_V1_ROADMAP.md) 仍是工作基礎。
 
-### R3.2～R3.3 最新工程接續（新版本仍未發布）
+### R3.2～R3.3 歷史工程接續（非當前 Gate）
 
 - **[圖片修復 PR #24](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/24)：** 10 張 Launcher WebP 已由專案素材重新產生並通過限定範圍的完整性核驗；Roborazzi PNG 為測試 Render，不是實機截圖。公開舊 Alpha 不包含這次修復；main 整合狀態與 exact-source CI 以 PR24 為準。
 - **[圖片 CI #39515675883](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39515675883)：** Blocking Build 成功，App Instrumentation 5 PASS，Host Instrumentation **15 PASS／9 FAIL／8 SKIP**。Workflow 總結 Success 是因 Experimental Runtime 允許失敗，不能當 Runtime PASS。
 - **[H1 CI #39514852906](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39514852906)：** H0 有界 HEALTHY；H1 收到 XML 但 Editor focused=false，且擷取程序未自然結束，**INCONCLUSIVE**。H2 未執行。
-- **R3.3 Workspace：** 本地已完成中央索引，原 dirty 工區保護；新增診斷提交 **9ac52b5699aad874a3daa6d6ee950dabc4ce22e9** 尚未推送、最終獨立 Reviewer 未完成，故不可宣稱本輪 H1 修復已正式通過。
+- **R3.3 Workspace：** 當時本地已完成中央索引，原 dirty 工區保護；新增診斷提交 **9ac52b5699aad874a3daa6d6ee950dabc4ce22e9** 其後已完成限定診斷複審及推送；H1 並未因此取得 Runtime PASS。
 
 **圖片聲明：** 頁首 SVG 是原創品牌示意，不是 Android 截圖；真正的鍵盤操作照片需要版本、裝置、截圖來源及匿名化審查，取得前不以 Robolectric／Roborazzi 畫面冒充。
 
 ## 實際畫面與最新證據
 
-目前沒有完成來源／隱私核驗的鍵盤操作截圖，因此這裡不以品牌圖或 Preview 代替。截圖與圖卡待辦見 [media 清單](docs/community/media/README.md)。最新 main [CI39442957936](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39442957936) XML 為 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；不能套用成未合併 RC 的 Runtime 通過。[本輪驗證](docs/release/PUBLICATION_VALIDATION.md) 分開記錄來源。
+目前沒有完成來源／隱私核驗的鍵盤操作截圖，因此這裡不以品牌圖或 Preview 代替。截圖與圖卡待辦見 [media 清單](docs/community/media/README.md)。歷史 main [CI39442957936](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/39442957936) XML 為 App5 PASS、Host15 PASS／9 FAIL／8 SKIP；不能套用成未合併 RC 的 Runtime 通過。[本輪驗證](docs/release/PUBLICATION_VALIDATION.md) 分開記錄來源。
+
+## R3.8 工程維護模式
+
+保留既有鍵盤、Banner、原創Icon、開源致謝與基金會支持入口。工程變更只處理測試observer、來源/授權完整性、CI權限與文件；沒有新增輸入法功能，也沒有新Release。
+
+- [安全審查](docs/maintenance/FINAL_SECURITY_AUDIT.md)／[授權報告](docs/maintenance/FINAL_LICENSE_REPORT.md)／[Known Issues與維護清單](docs/maintenance/MAINTENANCE_BACKLOG.md)。
+- 手動Alpha workflow僅產生**TEST_ONLY CI artifact**，不建立GitHub Release；CI Debug憑證不能保證更新公開Alpha。RC／Stable需要另外驗證及批准。
+- 根LICENSE已校正為標準LGPL2.1文字；舊Alpha封包保留原bytes，已知授權文件異文另列更正事項，不宣稱全套散布義務已完成。
 
 ## 隱私與安全
 

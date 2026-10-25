@@ -161,12 +161,22 @@ class ManifestIntegrityTests(unittest.TestCase):
                     s.execute('install')
                 self.assertEqual([],s.fake.mutations)
     def test_source_hashes_match_frozen_instrumentation_sources(self):
+        import hashlib
+        import subprocess
         root=MANIFEST_PATH.parents[1]
+        # Frozen binaries belong to the pinned historical Git source, not a
+        # newly edited Host observer. Full source CI fetches that history.
         for relative,digest in MANIFEST['source_sha256'].items():
-            source=root/relative
-            if not source.exists():
-                self.skipTest('portable source hash ledger; full source unavailable')
-            self.assertEqual(digest,device.sha256(source),relative)
+            raw=subprocess.check_output(['git','show',MANIFEST['fixture_source_sha']+':'+relative],cwd=root)
+            self.assertEqual(digest,hashlib.sha256(raw).hexdigest(),relative)
+
+    def test_current_instrumentation_source_ledger_is_independent_from_frozen_package(self):
+        root=MANIFEST_PATH.parents[1]
+        current=json.loads((root/'docs/testing/R3_8_INSTRUMENTATION_SOURCES.json').read_text())
+        self.assertEqual('CURRENT_TEST_SOURCE_NOT_FROZEN_APK',current['scope'])
+        self.assertEqual(device.sha256(MANIFEST_PATH),current['frozen_manifest_sha256'])
+        for relative,digest in current['source_sha256'].items():
+            self.assertEqual(digest,device.sha256(root/relative),relative)
 
 class MalformedWireTests(unittest.TestCase):
     def test_malformed_control_lines_are_not_ignored(self):

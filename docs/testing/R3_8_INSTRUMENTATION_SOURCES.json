@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "scope": "CURRENT_TEST_SOURCE_NOT_FROZEN_APK",
+  "frozen_fixture_source": "6595b68403232187eba4d9ec10c7f0689c2b5b61",
+  "frozen_manifest_sha256": "ccb2d32d62dd1aea5d84db2b7d53853c108b0f4dff99727dbe9d6c916fc9e8de",
+  "source_sha256": {
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceDriver.kt": "6d0247c0c77f026efe33d1c3583fa11b9e918329c929ef7e45e9eaedd7f3cc9d",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/CoreTypingAcceptanceTest.kt": "dc468e03128b4723f31c1ab7d8978045aa4cf5bc9cb28cb3ae584d04bfd22133",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/DachenAcceptanceTest.kt": "9b5528f76bee247a444d11da043d61b956ce98490bf20fe0287ea7a82308f2c0",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/EditorActionAcceptanceTest.kt": "290275b9cc757cd59b7dae4f602ae64b885a9cbcc10f1153717bb2c0f91c473e",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/NonTextEditorAcceptanceTest.kt": "8f0bb92c386c741c408d4f7577e253edf16fd8843d717425f22b246d348ef303",
+    "acceptance-host/src/sharedTest/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceMatrix.kt": "a45224632b02db46a866345f9dcbfff69e4d88839e52841d7eb69e6f42c2caed",
+    "acceptance-host/src/sharedTest/java/io/github/juhjuhx/kuyin/acceptancehost/CaseFailurePolicy.kt": "e29ce80fd7f7cad041dfdb98418913e6249d24026a819bba7cbaa0ededbaa3e8",
+    "app/src/androidTest/java/com/example/ExampleInstrumentedTest.kt": "c6ef958cafb00dbec798a71f5be604e9cf56189676312bea40f63dd07ca0d674",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/ContinuousSentenceTest.kt": "7e4325abe522d818b65d9155465c7e1314db20d89c9b769ae68c9a4ba6e3aef1",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/ImeRuntimeSmokeTest.kt": "cfe4daf9e27f638d5a5eea4ffdecc06593f6d0b743185f6fa491cf5eb795d14e",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/NativeCase4Test.kt": "971aa6aa65cea72114d9a738190d955fd7ef3749f1dc9d9d846d0643af11d94e"
+  },
+  "runtime_verdict": "NOT_TESTED_BY_THIS_LEDGER"
+}

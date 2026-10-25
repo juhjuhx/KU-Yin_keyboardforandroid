@@ -54,3 +54,9 @@ Conventional Commit 风格推荐：`fix(input): ...`、`test(session): ...`、`d
 修改 Python 工具時執行 `python3 -m unittest discover -s scripts/tests -v`。CI runtime smoke 只操作隔離 emulator；實機必須依對應版本 runbook 保存與還原狀態。
 
 發布 exact APK 時一併提供 source/relink materials、license notices、SHA256、signer及版本資訊。不得以不同 Debug key 的 CI APK替代既有可更新檔案，不提交私鑰、個人字典或裝置狀態。Compile／fake ADB／Robolectric／實機證據分開說明；Alpha不代表production ready。
+
+## 正常維護模式（R3.8）
+
+從最新main開單一用途分支。先看MAINTENANCE_BACKLOG與當前source；歷史green不是新證據。新測試/CI修正使用RED/GREEN並保留既有assertions。執行Python全套、scripts/check_*.py、相關JVM/build及lint，區分PASS/FAIL/SKIP/NOT_TESTED。
+
+不需要keystore就能貢獻；assembleRelease缺既有簽章時標BLOCKED_BY_SIGNING，不自行產key、不卸載清資料。授權新upstream code/data需逐檔provenance與license；不將GPL參考實作直接拷入。Runtime/實機/Release都需要各自的明確計畫及批准。
