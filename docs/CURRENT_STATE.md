@@ -24,8 +24,10 @@ R3.8從main `2a2181e023e0dee0ddff98681e374df10cd5fa8f`建立最小工程整合�
 
 最終命令、SHA、CI及工程裁定：[FINAL_AGENT_HANDOFF](maintenance/FINAL_AGENT_HANDOFF.md)、[測試報告](maintenance/FINAL_TEST_REPORT.md)、[機器Gate](release/FINAL_RELEASE_GATE.json)。
 
-## R3.8 合併停止點與Issue31候選
+## R3.8 工程整合與證據權威
 
-PR28@ea3fdb24的CI40103973292為Build PASS、blocking AppLint4 errors/80warnings、Runtime SKIPPED；獨立最終審查已完成限定規格，但工程PARTIAL_BLOCKED，不批准merge。上述歷史失敗不能被下一個分支的本機結果覆蓋。
+使用者已批准限定的PR28＋PR34工程整合：Test Infrastructure、Build/CI Security、Documentation及Issue31 Product Maintenance。原提交ancestry保留；PR29 readiness仍是獨立OFFLINE_SPECIFICATION_ONLY切片，PR20／27不納入。整合分支為`integrate/r38-issue31-engineering`，是否已合併及最終SHA須核對[Issue31](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/31)所連結的整合PR與exact-head checks，不從本文件推定。
 
-Issue31另有隔離候選：刪除未用direct-Vibrator fallback並要求View、不新增權限；super呼叫後仍return true；完整night-v27資源分版。focused12例、全量App267PASS/10SKIP及Host57PASS、127Python/12contracts、編譯與雙Lint0errors已通過；exact commit CI仍須另外核對。詳見[平台契約與證據](testing/ISSUE31_PLATFORM_CONTRACTS.md)。不宣稱main已修復，不自動合併產品維護PR。Runtime／實機／簽章／隱私／授權完整Gate仍NO_GO。
+Issue31移除沒有production caller的direct-Vibrator fallback並要求View，不新增權限；super呼叫後仍return true，保留always-show政策；night-v27保留完整等值style。不改Dachen、candidate／decoder、orderedCommits／Editor ACK、JNI、版本或簽章。回歸範圍見[平台契約](testing/ISSUE31_PLATFORM_CONTRACTS.md)。
+
+證據分層：PR28@ea3fdb24的CI40103973292為Build PASS、blocking AppLint4 errors/80warnings；此歷史FAIL不改判。PR34@ea186d7的CI40148115742為Build／Lint PASS、127 Python、App267 PASS/10 SKIP、Host57 PASS，Runtime SKIPPED；它仍不能替代新整合HEAD的CI。本次隔離工區的Python127／12contracts通過，但冷建置exit124，不能列為全套本機PASS。整合只在新鮮必要CI與完整diff獨立審查皆通過後正常merge；編譯／JVM不證Runtime或實機。舊停止收據保存在FINAL_TEST_REPORT與Gate的historical_receipts。

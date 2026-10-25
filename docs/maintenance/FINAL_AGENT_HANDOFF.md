@@ -4,7 +4,7 @@
 
 先讀AGENTS → CURRENT_STATE → 本檔 → MAINTENANCE_BACKLOG，再核對git status/HEAD/origin/main及PR/Actions。最新來源由GitHub actual refs和Issue19的收束收據決定，不假定文件內未來merge SHA。
 
-本輪允許：test infrastructure、安全CI、標準授權文字、文件與增量Workspace整理。App Kotlin/JNI/native pins/applicationId/version/簽章/使用者資料不變。原始ccb2811與22c2d66另推送保存；從main2a2181e移植必要小切片，不整包merge舊分支。
+本輪允許：test infrastructure、安全CI、標準授權文字、文件，以及另獲明確批准的Issue31最小平台契約維護。App Kotlin僅該Issue切片；JNI/native pins/applicationId/version/簽章/使用者資料不變。原始ccb2811與22c2d66另推送保存；從main2a2181e移植必要小切片，不整包merge舊分支。
 
 ## 固定產品門檻
 
@@ -29,5 +29,11 @@ python3 tools/kuyin_workspace.py resume-plan
 
 Source/security/license/test/repo/archive對照見本目錄FINAL_*。本輪以正常開源維護為出口；未完工作進Issue與MAINTENANCE_BACKLOG，不再無限開新R系列。
 
-## R3.8 合併停止點
+## 歷史停止點（PR28@ea3fdb24，非新的整合裁定）
 本候選僅Draft：新鮮App lint4 errors/77warnings（兩個VIBRATE、MissingSuperCall、API27屬性）未處置，且最後獨立審查因額度中斷而REVIEW_INCOMPLETE。ENGINEERING_CLOSURE=PARTIAL_BLOCKED，不能宣稱已合併或全部完成；main實際SHA看GitHub。此候選的LICENSE/CI修正尚未合併時，不能套用為main已修復。
+
+## Issue31整合接續
+
+已批准PR28＋PR34，沿用六個原始提交；`integrate/r38-issue31-engineering`只另補文件的歷史／當前標示。完整main→integration diff及exact-head CI／Reviewer receipt才是正常merge依據。[Issue31](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/31)連結最終整合PR與結果。本機全新工區冷建置觸及15分鐘上限（exit124），保留日誌；不改timeout或測試oracle，也不冒稱全套本機通過。
+
+PR29四個離線readiness檔案保持獨立HEAD與diff；合併後可在確認差異不變時retarget至main，不自動整合。原PR28／34分支保留，不force-push。原PR20／27及Alpha八資產不變。Runtime／實機／新Release門檻仍未通過。
