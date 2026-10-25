@@ -14,4 +14,6 @@
 
 PR20、PR27各自Draft/HOLD。PR10/12不因本輪接近收尾就自動merge；Windows voice13/14獨立。未批准S2/S3/S4/S5、M4、Whisper或Rime移植。
 
-本輪新增明確工程阻擋：App lint4 errors/77warnings。先按MissingPermission、MissingSuperCall、NewApi逐項設最小RED/處置，尤其onEvaluateInputViewShown不得為消除lint隨意改IME visibility。最後獨立review尚未完成，Draft不能merge。
+**歷史停止收據（PR28@ea3fdb24，本機結果）**：App lint4 errors/77warnings。先按MissingPermission、MissingSuperCall、NewApi逐項設最小RED/處置，尤其onEvaluateInputViewShown不得為消除lint隨意改IME visibility。最後獨立review尚未完成，Draft不能merge。
+
+上述是Issue31修正前的歷史，不作新的整合merge裁定。當前限定工程整合的exact HEAD、CI及獨立審查見[Issue31](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/31)與所連結的PR；Runtime／實機及新Release門檻仍未閉合。
