@@ -1,6 +1,6 @@
 # KU-Yin 社群素材與短片前處理
 
-**狀態：SHOTLIST_READY／MEDIA_NOT_CAPTURED。** 這是攝製規格，不是已完成的手機畫面。沒有真實 APK 截圖時，不得使用設計圖、AI 示意圖當作已驗收的鍵盤錄影。
+**狀態：BRAND_PACKAGE_READY／RUNTIME_CAPTURE_BLOCKED。** [七組品牌成品](media/social/README.md)與來源 manifest 已備妥；以下操作影片仍是攝製規格，不是已完成的手機畫面。沒有真實 APK 截圖時，不得使用設計圖、AI 示意圖當作已驗收的鍵盤錄影。
 
 ## 建議交付格式
 
@@ -8,12 +8,13 @@
 |---|---|---|
 | IG／Threads／FB 圖卡 | 1080 × 1350 PNG／JPEG | 五張直式輪播；重要文字留在安全區 |
 | 16:9 封面 | 1920 × 1080 PNG／WebP | R3.4 已指定沿用 PR25 原創 SVG 視覺 |
-| IG Story／Reels | 1080 × 1920 MP4 | 真實手機錄影與完整標籤 |
+| IG Story | 1080 × 1920 PNG 已備 | 品牌圖；不是操作影片 |
+| Reels | 1080 × 1920 MP4 待拍 | 真實手機錄影與完整標籤 |
 | Bilibili／YouTube 主片 | 1920 × 1080 MP4 | 30–60 秒、實際 APK 畫面 |
 | GitHub Social Preview | 1200 × 630 PNG | 使用真實品牌名稱，不偽造商店徽章 |
 | GitHub README 截圖 | PNG／WebP | 清晰且小容量；附替代文字 |
 
-以上僅為製作規格。倉庫已有品牌 JPG、launcher WebP 與測試 PNG，沒有已核實的鍵盤 Runtime 宣傳截圖。見 [圖片清單](media/ASSET_MANIFEST.json)，不可把 Logo 或單元測試圖當作打字證據。
+靜態圖卡／Story／封面已依指定尺寸輸出；影片與 GitHub Social Preview 尺寸仍是製作規格。倉庫另有品牌 JPG、launcher WebP 與測試 PNG，沒有已核實的鍵盤 Runtime 宣傳截圖。見 [圖片清單](media/ASSET_MANIFEST.json)，不可把 Logo 或單元測試圖當作打字證據。
 
 兩張品牌 JPG 含生成式 AI 來源文字；C2PA 簽章鏈與完整權利文件仍未驗證。**修正前鑑識基線**的十張 launcher WebP 與測試 PNG 無法完整解碼，舊 bytes／manifest 保留於 Git 與外部證據。R3.2 圖片 source43aff1d 已另行生成十張 Launcher，並以原 Roborazzi 測試重建 PNG；R3.4 fresh scoped review 確認可完整解碼。新 PNG 是 JVM unit render，並非手機操作截圖；圖片修復不代表 Runtime 或公開 Alpha 的 bytes 已更新。見 [整合驗證](../testing/R3_4_IMAGE_INTEGRATION.md)。
 

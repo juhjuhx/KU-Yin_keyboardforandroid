@@ -14,7 +14,7 @@ R3.8從main `2a2181e023e0dee0ddff98681e374df10cd5fa8f`建立最小工程整合�
 - H1/H2：NOT_EXECUTED。本輪不以收尾為由重跑Emulator。
 - Host：歷史main CI39882220869為15 PASS／9 FAIL／8 SKIP；新observer JVM不能改判。
 - 實機：NOT_TESTED；新RC／Stable：NO_GO。PR20、PR27各自Draft/HOLD，不整包自動合併。
-- 唯一公開版本：[v0.2.0-aie.1 Experimental Alpha](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1)，Debug20003／0.2.0-aie.1，八資產及tag不變。
+- 最新公開版本：[v0.2.0-aie.1 Experimental Alpha](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1)，Debug20003／0.2.0-aie.1，八資產及tag不變。
 
 ## 本輪安全處置
 

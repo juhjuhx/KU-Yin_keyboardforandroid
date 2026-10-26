@@ -1,0 +1,92 @@
+{
+  "schema": 1,
+  "source_commit_baseline": "08e4f69820e2ac9631f9fb1de7153824956d8f77",
+  "public_release": "v0.2.0-aie.1",
+  "hero_source": "../kuyin-readme-hero.svg",
+  "hero_sha256": "3a2ed0bb7eff8ac1f00635dd7607aa58f38fce26b4f584e67fb04d4bc6955219",
+  "generator": "scripts/generate_publication_media.py",
+  "renderer": "rsvg-convert version 2.63.2\n\nlibraries used:\n  cairo 1.18.6\n  pango 1.58.2\n  harfbuzz 14.5.0\n  fontconfig 2.18.3",
+  "fonts": "system fallback only; no font binaries distributed; PNG pixel identity depends on rendering environment",
+  "origin": "original KU-Yin SVG geometry reused unchanged; new vector typography/layout; no third-party screenshot or foundation logo",
+  "license": "repository LGPL-2.1 applies to original vector sources; inherited hero source declaration; not store media-rights certification",
+  "screenshot_count": 0,
+  "assets": [
+    {
+      "id": "cover-portrait",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1350,
+      "svg": "cover-portrait.svg",
+      "png": "cover-portrait.png",
+      "svg_sha256": "8bde3903055b4ab652715155f7bcd1c8cc73175953290bedd8ecc8fde6cb074a",
+      "png_sha256": "3ab29084d87272e18a37663512610de11f636201985df356b7842e5a2af0964a",
+      "alt": "KU-Yin 酷音：把日常注音輸入做成開源工程；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "story",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1920,
+      "svg": "story.svg",
+      "png": "story.png",
+      "svg_sha256": "ab84aac2f9c11500a58bd51e4ff6412b65f0f55e2f5d94446e3091ed12cec9d6",
+      "png_sha256": "1efecfbd80e6a92d45fb564e96c99577498c78c17a4321ac287bcaa5eb11ba71",
+      "alt": "KU-Yin 酷音：KU-Yin 酷音一起測試與維護；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "cover-landscape",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1920,
+      "height": 1080,
+      "svg": "cover-landscape.svg",
+      "png": "cover-landscape.png",
+      "svg_sha256": "612613db89bb3d69ba58180eebe03c65fee8e979a0775565e96b5ad6a5527e0f",
+      "png_sha256": "04d81372b84d003eb1231ac378c083b0ad4792c48275012a331298902c477bab",
+      "alt": "KU-Yin 酷音：一套可以持續維護的Android 注音鍵盤；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "02-candidates",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1350,
+      "svg": "02-candidates.svg",
+      "png": "02-candidates.png",
+      "svg_sha256": "51a652d0b7499357fcefafcb827b5f8eb75c813cf36731ea3c0329125b02cb8a",
+      "png_sha256": "cc779c0d36d2dc37142cef8b8908632e838629d57343feb25b6af2d285971d4e",
+      "alt": "KU-Yin 酷音：候選瀏覽不只是一排文字；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "03-architecture",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1350,
+      "svg": "03-architecture.svg",
+      "png": "03-architecture.png",
+      "svg_sha256": "91c9db8e1b8fa60435177cb7b4b5a8f997400163328d1d8a65ee1b2afd4070e1",
+      "png_sha256": "dd5e1332b3312665a7f607d6038323a41ba3b59bbbcf4d16af44e1de4da7c603",
+      "alt": "KU-Yin 酷音：分清組字、畫面與編輯器寫入；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "04-offline",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1350,
+      "svg": "04-offline.svg",
+      "png": "04-offline.png",
+      "svg_sha256": "b004607f40aa37768b286f7d408bf545460d128dc063c85b02fd16a35545e8dc",
+      "png_sha256": "f73879dd49789dedb9800d9c41c04ef9b7d3d912895a9987000217dacf8df8a0",
+      "alt": "KU-Yin 酷音：核心輸入在本機資料責任要清楚；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    },
+    {
+      "id": "05-maintenance",
+      "category": "BRAND_RENDER_NOT_RUNTIME",
+      "width": 1080,
+      "height": 1350,
+      "svg": "05-maintenance.svg",
+      "png": "05-maintenance.png",
+      "svg_sha256": "04e6058792173ecbdda8fad0d92d72cd46d07fb95fa000a3ec7f716e2628b6b4",
+      "png_sha256": "4ee01a35e9f90eb36acfb800a63ca96e337e6a5769818418ef9ab0604ada18f2",
+      "alt": "KU-Yin 酷音：讓問題能重現讓來源能追溯；品牌／技術示意，非操作截圖；Experimental Alpha。"
+    }
+  ]
+}

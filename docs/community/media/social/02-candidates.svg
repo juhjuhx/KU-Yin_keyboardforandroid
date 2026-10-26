@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='utf-8'?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-labelledby="social-title social-desc"><title id="social-title">KU-Yin 酷音｜候選瀏覽不只是一排文字</title><desc id="social-desc">原創品牌與技術介紹，非Android操作截圖。Experimental Alpha，尚未完成完整實機驗收。</desc><rect width="1080" height="1350" fill="#fbf9f4" /><rect x="0" y="0" width="18" height="1350" fill="#165950" /><svg width="936" height="263.25" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc" x="72" y="72">
+<title id="title">KU-Yin 酷音 — Taiwan Zhuyin Android Keyboard</title>
+<desc id="desc">Original graphic illustration for the project README, not a screenshot of the application. Four stylized Zhuyin keycaps accompany the offline Android keyboard title.</desc>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#101e35" /><stop offset=".56" stop-color="#123749" /><stop offset="1" stop-color="#17615d" /></linearGradient>
+<linearGradient id="keys" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#f5faf8" /><stop offset="1" stop-color="#d6eae5" /></linearGradient>
+<filter id="s" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#051725" flood-opacity=".37" /></filter>
+<pattern id="grid" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M36 0H0V36" fill="none" stroke="#ffffff" stroke-opacity=".065" /></pattern>
+</defs>
+<rect width="1280" height="360" rx="26" fill="url(#bg)" />
+<rect width="1280" height="360" rx="26" fill="url(#grid)" />
+<circle cx="1165" cy="55" r="250" fill="none" stroke="#8de1c8" stroke-opacity=".18" stroke-width="2" />
+<circle cx="1165" cy="55" r="185" fill="none" stroke="#8de1c8" stroke-opacity=".12" stroke-width="2" />
+<path d="M0 315 C140 245 260 390 420 320 S750 275 900 340 S1170 280 1280 305" stroke="#8de1c8" stroke-opacity=".15" fill="none" stroke-width="2" />
+<g transform="translate(72 74)" filter="url(#s)">
+<rect x="0" y="0" width="92" height="92" rx="20" fill="url(#keys)" />
+<rect x="108" y="0" width="92" height="92" rx="20" fill="url(#keys)" />
+<rect x="0" y="108" width="92" height="92" rx="20" fill="url(#keys)" />
+<rect x="108" y="108" width="92" height="92" rx="20" fill="#94deca" />
+<g font-size="56" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" font-weight="700" fill="#153c47" text-anchor="middle">
+<text x="46" y="64">ㄅ</text><text x="154" y="64">ㄆ</text><text x="46" y="171">ㄇ</text><text x="154" y="171">ㄈ</text>
+</g>
+</g>
+<g transform="translate(352 60)" font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif">
+<text x="0" y="62" fill="#ffffff" font-size="68" font-weight="800" letter-spacing="1">KU-Yin</text>
+<text x="326" y="62" fill="#a8eddb" font-size="52" font-weight="700">酷音</text>
+<rect x="0" y="88" width="530" height="2" fill="#9ee9d4" opacity=".45" />
+<text x="0" y="137" font-size="29" fill="#d8f3ed" font-weight="500">台灣大千注音 · Android 開源鍵盤</text>
+<text x="0" y="183" font-size="21" fill="#b2d6d0">libchewing  /  Kotlin  /  Jetpack Compose</text>
+<rect x="0" y="209" rx="13" width="278" height="37" fill="#e3f5ee" />
+<text x="16" y="235" font-size="17" font-weight="700" fill="#164c48">OFFLINE-FIRST</text>
+<text x="175" y="235" font-size="17" fill="#164c48"> · ALPHA</text>
+</g>
+<text x="1210" y="326" fill="#c0f1de" text-anchor="end" font-size="14" font-family="sans-serif" letter-spacing="1.5">OPEN SOURCE · BUILD IN PUBLIC</text>
+</svg><g font-family="'Noto Sans TC','PingFang TC','Microsoft JhengHei',sans-serif" fill="#153f3b"><text x="72" y="455" font-size="78" font-weight="800">候選瀏覽</text><text x="72" y="554.84" font-size="78" font-weight="800">不只是一排文字</text><circle cx="81" cy="707.6800000000001" r="7" fill="#9b8bb8" /><text x="106" y="719.6800000000001" font-size="36" fill="#315951">單列捲動、展開與上下頁</text><circle cx="81" cy="781.6800000000001" r="7" fill="#9b8bb8" /><text x="106" y="793.6800000000001" font-size="36" fill="#315951">用快照身分防止過期選取</text><circle cx="81" cy="855.6800000000001" r="7" fill="#9b8bb8" /><text x="106" y="867.6800000000001" font-size="36" fill="#315951">功能介紹；手機驗收待補</text><text x="72" y="1233" font-size="27" font-weight="700">github.com/juhjuhx/KU-Yin_keyboardforandroid</text><text x="72" y="1283" font-size="23" fill="#5c5569">品牌／技術介紹 · 非操作截圖 · v0.2.0-aie.1 Alpha</text></g><rect x="72" y="1175" width="936" height="2" fill="#d6cfe4" /></svg>
