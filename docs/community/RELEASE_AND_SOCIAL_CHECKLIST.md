@@ -22,11 +22,13 @@
 - [ ] QR：公開 Alpha 尚不是新版 R3 標準 QR；如果分享其畫面，說明原版只是 QR 風格圖。
 - [ ] 上游 [libchewing](https://codeberg.org/chewing/libchewing)、[fcitx5-android/prebuilt](https://github.com/fcitx5-android/prebuilt) 按直接依賴描述；FlorisBoard、HeliBoard 僅研究參考，不宣稱直接移植。
 
-## GitHub About 核對（2026-10-21）
+## GitHub About 核對（歷史紀錄：2026-10-21）
 
 已讀回並保留，沒有覆寫：說明為「離線大千注音 Android 鍵盤（libchewing／Compose）；實驗性 Alpha，正式版與完整實機驗收尚未完成。」Topics 為 android、keyboard、libchewing、offline-first、zhuyin；Homepage 未設定。README 變更不會自動更新 About。
 
 ## C. 截圖、素材與版權
+
+本輪七組品牌圖／來源 manifest 與共用貼文已備，見 [社群包](media/social/README.md)。平台帳號未授權代發，SOCIAL_POSTED=false；Runtime Gallery 仍 BLOCKED。
 
 - [ ] 每張畫面有 APK／裝置／時間／SHA256／匿名化與獨立檢查紀錄；見 [media](media/README.md)。缺圖保留 TODO。
 - [ ] 使用真實 UI 錄影／擷取，或清楚標示規劃示意圖；不得拿假的手機畫面當驗收證據。
@@ -39,7 +41,7 @@
 
 1. 更新 GitHub README 與文件連結；檢查文件-only PR 的 diff、CI、正確連結，再合併。
 2. GitHub README／Release 與 Issue 回報入口核對後，先發 Threads（短）與 Facebook（長）。
-3. 具備真實、匿名化的畫面後，再發 IG 輪播、Reels、B 站影片及 LinkedIn。
+3. 品牌圖卡可搭配明確的非操作畫面標示分享；Reels／操作影片待真實匿名化畫面。不得把尚未拍攝的畫面寫成已完成。
 4. 保留發文 URL 與日期在私人追蹤表，定期整理有價值的 Issue；避免無授權蒐集測試者個資。
 5. R3／R3.1 直到 H1/H2/App/Host、實機、更新、正式簽章和隱私授權 gates 結束前，維持 `NO_GO`，不要以社群流量施壓發布未驗證版本。
 

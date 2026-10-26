@@ -1,128 +1,86 @@
-# KU-Yin｜各平台可直接發布文案（Experimental Alpha）
+# KU-Yin 社群共用文案｜Experimental Alpha
 
-**素材來源日期：2026-10-21。發文前確認 [Release](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1) 仍是公開最新版。** 以下文案全部指向已公開 Alpha；不可把 R3 Debug 候選改稱 Stable。
+這是可直接取用的文案，尚未代登入或發布私人社群。公開下載仍是[v0.2.0-aie.1](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1)，新main的CI產物不是新版Release。品牌圖與真實截圖各有來源標示。
 
-## Threads／Facebook 共用短版（繁體中文）
+## Threads／Facebook 共用短版
 
-我在做一套 Android 大千注音鍵盤：**KU-Yin 酷音** ⌨️
+把一套 Android 大千注音鍵盤整理成開源專案：KU-Yin 酷音。
 
-開源、離線，以 Kotlin／Jetpack Compose 做介面，透過 JNI 整合 libchewing。現在有注音組字、選字、候選橫向瀏覽／展開翻頁，以及離線英文補全。
+用 Kotlin／Compose 做介面，透過 JNI 整合 libchewing，已有注音組字、候選展開與翻頁、英文離線字首補全。現在可下載的是 Experimental Alpha，還不是穩定版，完整手機與不同 App 驗收仍在補。
 
-已公開 **Experimental Alpha**，還不是穩定版；完整實機與不同手機相容性正在補驗。想找願意一起測試、回報問題的 Android／注音使用者。
+這次主要整理來源、建置、文件和測試，沒有把新功能一次塞進去。想一起測試的話，請先用合成文字；有問題附機型、版本和重現步驟，別貼私人輸入。
 
-GitHub／下載：https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1
+原始碼／下載：
+https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-感謝 libchewing 和其他開源社群的成果。測試請先用非敏感文字；有問題歡迎開 Issue。
+## Threads／Facebook 共用長版
 
-#KUYin #開源
+最近把 KU-Yin 酷音整理到可以持續公開維護的狀態。它是一套以台灣大千注音為核心的 Android 開源鍵盤，想處理的是日常組字、選字和跨 App 寫入的基本體驗。
 
-## Threads｜技術補充回覆（串文第二則）
+中文採用 libchewing，介面是 Kotlin／Jetpack Compose，英文則用固定的本機詞表做字首補全。候選可橫向瀏覽、展開與翻頁；這些都有原始碼與分層測試，但不表示每一款手機都已驗收。
 
-為什麼不直接用純 Kotlin 注音引擎？因為我希望保留成熟的 libchewing 解碼和詞庫，再把 Android 的鍵盤生命週期、候選快照、防止過期選字、InputConnection 寫入等問題處理清楚。架構與測試也全部放在 GitHub；JVM PASS 不等於手機 PASS，這部分仍在補齊。專案：https://github.com/juhjuhx/KU-Yin_keyboardforandroid
+過程裡最花時間的，不只是把按鍵畫出來。候選翻頁後，舊的點選位置不能寫錯字；Native 組字與 Android 編輯器的確認也不是同一件事。後來把 Session、候選快照和 Editor effects 的責任分開，再用獨立審查、CI和來源收據逐項核對。
 
-## Threads／Facebook 共用長版（繁體中文）
+目前公開的是 Debug 簽章的 Experimental Alpha。新main完成了一輪平台契約、測試工具和CI安全維護，但完整Runtime、實機、正式簽章及保資料更新仍未閉合，所以沒有把工程綠燈當成新版穩定發行。
 
-【開源專案分享：KU-Yin 酷音 Android 大千注音鍵盤】⌨️
+核心輸入在本機執行；這也不代表沒有個人學習資料，或已完成所有備份／清除政策。這些限制都放進文件，避免只把好看的測試數字放在首頁。
 
-最近把自己在做的 Android 輸入法整理到能公開邀請測試的階段。這套專案叫 **KU-Yin 酷音**，目標是以台灣大千注音為核心，做一個可以持續維護、能明確追溯上游來源的開源鍵盤。
+感謝 libchewing、Fcitx5 Android prebuilt、AOSP 和其他開源社群的累積。接下來先進入維護模式，依能重現的Issue處理問題。歡迎Android與注音使用者一起測試，分享機型、欄位類型、預期與實際結果。
 
-目前已有的功能包括：大千注音組字與候選選字、候選橫向捲動與展開／翻頁、基本英文 QWERTY 和離線字首補全，以及主題、字級與基本符號／Emoji。
+專案／下載：https://github.com/juhjuhx/KU-Yin_keyboardforandroid
+回報：https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues
 
-技術上使用 Kotlin、Jetpack Compose、JNI、libchewing。鍵盤核心輸入不依賴網路，專案也保留了固定 Native 上游版本、原始碼與建置文件。
+## Instagram 圖說
 
-這裡先說清楚：**目前公開的是 Debug 簽章的 Experimental Alpha，不是已完整驗收的穩定版。** 不同手機、輸入欄位、橫直螢幕與更新保留資料仍在測試，所以建議先用備用裝置或非敏感文字試用，並不要因簽章錯誤而直接卸載、清資料。
+KU-Yin 酷音，一套開源 Android 大千注音鍵盤。
 
-📦 專案、下載及來源材料：
-https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1
+注音組字與候選瀏覽使用 libchewing，介面是 Kotlin／Compose，英文提供離線字首補全。現在是 Experimental Alpha，完整手機驗收與正式更新流程仍待完成。
 
-🐛 問題回報：
-https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues
+這組圖是品牌／技術介紹，不是操作截圖。目前尚無已核實操作畫面；取得核驗後才放入GitHub Gallery並逐張標明來源；不拿Preview冒充手機結果。
 
-特別感謝 libchewing、Fcitx5 for Android 等自由軟體社群長期累積的技術。未來會先完成實機驗收、穩定性與發行工程，再逐步研究個人化候選、觸控修正等功能。
+原始碼、下載、已知限制與Issues都在：
+github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-歡迎分享你平常使用的注音輸入法、Android 機型，以及你最在意的鍵盤體驗。
+#KUYin #開源 #大千注音
 
-#KUYin #Android
+## 小紅書簡體版
 
-## Instagram｜貼文說明（繁體中文）
+把一个 Android 注音键盘整理成了开源项目：KU-Yin 酷音。
 
-KU-Yin 酷音｜一套正在開發中的 Android 大千注音鍵盤 ⌨️
+主要面向使用台湾大千注音的朋友。中文采用 libchewing，界面用 Kotlin / Jetpack Compose，支持候选展开、翻页和本地英文前缀补全。
 
-用 Jetpack Compose 做 UI，整合 libchewing 處理中文輸入，具備候選瀏覽、離線英文補全與基本符號。把輸入法當成值得長期維護的開源產品慢慢完成。
+目前公开的是 Experimental Alpha / Debug APK，不是稳定版，也没有宣称所有手机都能正常使用。最近的工作重点是来源、测试、CI和文档收束；完整真机、更新保留数据、备份与清除政策仍有待验证。
 
-🧪 現在開放 **Experimental Alpha** 測試，不是 Stable；不同裝置與完整輸入情境仍需驗收。
+图卡是品牌和技术说明，不是手机操作截图。项目里的真实截图会单独标设备、APK和来源。
 
-📍GitHub：github.com/juhjuhx/KU-Yin_keyboardforandroid
-📦 下載：個人檔案連結可放 GitHub Releases 的 v0.2.0-aie.1
+代码、下载、问题反馈：
+https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-圖片若為示意／設計稿必須另外註明；真機畫面才能標示「實際使用畫面」。
+## Bilibili 開發紀錄
 
-#KUYin #大千注音
-
-## Bilibili／B 站｜影片標題與簡體介紹
-
-**标题：** 我在做一个开源 Android 注音键盘：KU-Yin 酷音｜libchewing + Jetpack Compose｜实验性 Alpha
+**标题：** 一个开源 Android 注音键盘怎样从原型走到可维护的 Alpha｜KU-Yin
 
 **简介：**
+KU-Yin 使用 Kotlin / Jetpack Compose、C++ JNI 和 libchewing，把中文组字、候选浏览与Android编辑器写入分层。英文是本机词表的前缀补全，不是云端AI。
 
-KU-Yin 是我正在开发的开源 Android 大千注音输入法，使用 Kotlin / Jetpack Compose 构建键盘界面，通过 JNI 集成 libchewing 作为中文解码器。已实现注音组字、候选选择、横向浏览与展开翻页，以及本地英文前缀补全。
+这个开发记录会讲原型、Compose迁移、Native解码、候选快照，以及为什么“CI通过”不等于“手机验收通过”。当前公开的仍是 Experimental Alpha，完整Runtime和真机验收未完成。
 
-目前公开的是 **Experimental Alpha / Debug APK，不是稳定版**。R3 候选版本还在 Android IME 运行环境和真机验收阶段，暂不对外发布。视频如果展示实际操作，会注明设备、Android 版本和 APK 版本；如果只是代码/Compose Preview，也会清楚标示。
+如果展示真实操作，画面会标注设备、版本、APK SHA与来源。品牌图、代码图与测试渲染会另行标识。
 
-项目源码、安装包、校验值与上游致谢：
-https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1
+项目与下载：https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-欢迎交流 Android IME、中文输入法、JNI/libchewing、Jetpack Compose 和开源维护。请勿在公开 Issue 上传真实输入内容或私人日志。
+## 開源／Codex 社團技術介紹
 
-**标签：** Android、开源、输入法、注音、Kotlin、Jetpack Compose、libchewing、软件开发
+分享一個 Android IME 工程案例：KU-Yin 酷音。Compose UI只派發命令與呈現候選快照，中文Session接JNI/libchewing，Service集中處理Editor effects與ACK。英文使用固定10,000詞離線prefix lookup。
 
-## LinkedIn｜English technical portfolio
+AI Agent參與來源追查、實作、TDD與獨立審查；每個結論仍要對應Git/source、原始XML與測試層，不能把多個分支的歷史結果拼成一個PASS。現在main的JVM／build／lint已通過，Emulator health與完整Host Runtime仍有缺口；公開版是Experimental Alpha。
 
-**KU-Yin: building an open-source Android Zhuyin keyboard.**
+若對IME lifecycle、candidate identity、InputConnection、Native licensing或Agent接續有興趣，架構與維護記錄在repo。歡迎具體review和可重現Issue，不需要提供私人輸入內容。
 
-I have been developing KU-Yin, an offline-first Taiwanese Dachen Zhuyin input method for Android. It combines a Kotlin/Jetpack Compose interface with the libchewing native decoder through a C++ JNI layer.
+https://github.com/juhjuhx/KU-Yin_keyboardforandroid
 
-The engineering work goes beyond the visual keyboard: IME lifecycle management, candidate pagination and snapshot identity, editor commit/acknowledgment handling, pinned native dependencies, source provenance, and a multi-layer test harness.
+## 素材與使用方式
 
-An **experimental debug-signed Alpha** is available on GitHub for early feedback. Full physical-device, accessibility, upgrade, and release-signing validation remain open, so this is not a production-stable launch announcement.
+[五張圖卡／Story／16:9封面](media/social/README.md)共用同一視覺系統；主封面直接當第1張，不另複製。每張Alt／來源／SHA見social manifest。舊launch-kit和posting checklist只保留導航，不另維護第二套文案。
 
-Source and Alpha release:
-https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1
-
-Thanks to the libchewing and broader open-source communities for the upstream foundations.
-
-#AndroidDevelopment #Kotlin #JetpackCompose #OpenSource #JNI #InputMethod
-
-## GitHub Discussion｜英文技術公告
-
-**Title:** KU-Yin Android keyboard — experimental Alpha feedback welcome
-
-KU-Yin is an open-source, offline-first Dachen Zhuyin input method for Android, using Jetpack Compose and the pinned libchewing decoder via JNI.
-
-The current public build is [v0.2.0-aie.1 Experimental Alpha](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1). It includes native Zhuyin composition, paginated candidate browsing, offline English prefix completion, and basic symbols.
-
-This build is debug-signed and **not production-stable**. Full device/OEM/accessibility and data-preserving upgrade checks are ongoing. Please test with synthetic, non-sensitive text only.
-
-To report an issue, include: the exact APK version, device/OEM, Android version, type of editor, steps to reproduce, expected result, and actual result. Exclude personal typing content, private dictionaries, passwords, and unredacted logs.
-
-Issues: https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues
-
-## X／Mastodon｜短版
-
-KU-Yin 酷音 ⌨️ 開源 Android 大千注音鍵盤。Kotlin + Jetpack Compose UI、JNI + libchewing 中文解碼；具候選翻頁與離線英文補全。已公開實驗性 Alpha，完整真機驗收仍在進行。源碼／測試版：https://github.com/juhjuhx/KU-Yin_keyboardforandroid/releases/tag/v0.2.0-aie.1 #OpenSource #Android #Zhuyin
-
-## 履歷／作品集一句話
-
-KU-Yin 酷音｜獨立開發與維護中的離線 Android 大千注音開源輸入法；整合 Kotlin、Jetpack Compose、C++ JNI／libchewing、候選快照與 Editor ACK 管理，建立 Native 依賴固定、CI 與測試追溯流程，已公開 Experimental Alpha。
-
-## IG 五張圖卡文字與 16:9 封面
-
-1. KU-Yin 酷音｜Android 大千注音開源鍵盤。Experimental Alpha，非穩定版。
-2. 注音組字與候選選字｜中文解碼使用 libchewing。無核實截圖時標示「功能介紹，非操作畫面」。
-3. 候選瀏覽｜單列、展開與翻頁已實作；完整手機驗收仍待補齊。
-4. 離線輸入｜Kotlin／Compose + JNI；英文使用本地字首補全，沒有雲端建議。
-5. 一起測試｜GitHub 原始碼、下載與 Issues；只用合成文字回報，感謝上游社群。
-
-16:9 封面共用第一張標題，副標為「實驗性 Alpha 開發紀錄」。版式方向待使用者確認，尚未製成圖片。比例及來源規格見 [素材規格](ASSETS_AND_PRIVACY.md)。
-
-常見留言統一使用 [FAQ](FAQ.md)。短／長版可跨 Threads 與 Facebook 共用，避免不同人設與重複維護。本包未代登入任何社群帳號或發文。
+[FAQ](FAQ.md) · [素材與隱私](ASSETS_AND_PRIVACY.md) · [發文核對](RELEASE_AND_SOCIAL_CHECKLIST.md)

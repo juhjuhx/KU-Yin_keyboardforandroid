@@ -59,3 +59,9 @@ AI 项目记录代表工具输出曾实质影响仓库，不把 AI 系统视作�
 |R3.8|從main2a2181e最小整合test/security/CI/docs，原commit另保存；轉維護清單|沒有新功能/RC/Stable，公開Alpha不變|
 
 Codex協調來源、TDD、整合與收據；OpenCode/DSH/Hermes等工具的作用依當時實際handoff記錄，不能因名稱就假定本輪被執行。Agent不是法律作者、上游或基金會的背書者。
+
+## 公開入口與維護模式收束
+
+Issue31由PR35整合至main08e4後，README整理為下載、實際能力、架構、來源與限制入口；原創SVG延伸為五張圖卡、Story與橫式封面，全部明列品牌介紹而非操作截圖。六份舊草稿與歷史桌面證據由本機Workspace保全，不能視為新產品來源。
+
+這次公開頁面整理沒有重寫中文核心，也沒有發布新RC／Stable。公開Alpha與新main、JVM／CI與Runtime／實機、原生學習與尚未支援的完整清除繼續分開記錄。後續轉為有重現步驟、限定scope及獨立審查的日常開源維護。

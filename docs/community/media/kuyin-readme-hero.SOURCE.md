@@ -12,3 +12,7 @@
 - Verification: render and verify SVG on GitHub README, dark/light modes and mobile view before describing the display as verified. Do not use a Roborazzi render or generated illustration as a real app screenshot.
 
 Product PNG/JPG/icon changes belong to [separate PR #24](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/24); do not replace the existing launcher icons as part of this documentation change.
+
+## 2026-10-26 排版校正
+
+保留原創幾何／配色／識別，只將OFFLINE-FIRST／ALPHA標籤底框由229擴為278個SVG單位，避免文字溢出背景；舊版bytes保存在Git。新增社群版型以本圖為來源，分類為BRAND_RENDER而非操作截圖，見social/ASSET_LICENSE_MANIFEST.json。

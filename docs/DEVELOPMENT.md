@@ -69,3 +69,7 @@ swaps, or refactors into one PR.
 Launcher fallback 現由既有 adaptive foreground／background 程式生成。開發用 generator 需要 Pillow12.2.0／libwebp1.6.0；`python3 scripts/generate_launcher_assets.py` 會更新十個 density/round WebP 與來源 manifest，不改 adaptive XML／原圖。
 
 `python3 scripts/check_launcher_assets.py` 使用 `dwebp` 與 `ffmpeg` 完整解碼、RIFF framing及各DPI尺寸檢查；本機需先安裝這兩工具與 `Pillow==12.2.0`（geometry regression載入generator）；CI在Python regressions前明確安裝三者。全部 `check_*.py` 現含這項新gate，不再只有原十項。詳細限制見 `docs/testing/R3_2_IMAGE_INTEGRITY.md`，這不是手機icon顯示或Runtime截圖驗收。
+
+## 社群向量素材
+
+`python3 scripts/generate_publication_media.py`使用`rsvg-convert`匯出原創品牌SVG／PNG，尺寸與SHA在social manifest；它不產生操作截圖。字型採本機fallback，不隨App散布；不同render環境不保證PNG逐byte重現。

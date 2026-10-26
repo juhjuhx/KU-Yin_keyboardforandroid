@@ -1,20 +1,28 @@
-# 圖片來源與待補畫面
+# 圖片來源與 Gallery
 
-2026-10-21：**已核實 Runtime 宣傳截圖 0 張，社群成品圖卡 0 張**。本目錄先保存來源分類，不放假手機畫面。
+## 當前公開素材
 
-[ASSET_MANIFEST.json](ASSET_MANIFEST.json) 列出 main 基線 13 張圖片的來源、大小、SHA256 與解碼結果：兩張品牌 JPG、十張 launcher WebP、一張單元測試 PNG。品牌 JPG 不是鍵盤操作截圖；生成式來源標記及權利文件仍待確認。其餘 11 張無法由 Pillow 解碼，保留原檔與 Git 證據，不猜測修復或推論產品已損壞。
+- **Runtime 鍵盤／設定截圖：0 張，BLOCKED。** 沒有完成 APK、裝置與隱私來源核驗的操作畫面。
+- **品牌／技術介紹：7 組 SVG＋PNG**，包含五張 1080×1350 圖卡、1080×1920 Story 及 1920×1080 封面。封面兼作圖卡第一張，不重複保存。
+- [原創 Hero](kuyin-readme-hero.svg)／[來源說明](kuyin-readme-hero.SOURCE.md)；[社群包與 Alt Text](social/README.md)／[資產權利與 SHA manifest](social/ASSET_LICENSE_MANIFEST.json)。這些是品牌排版，不是手機畫面。
 
-## R3.2 Launcher 更新
+品牌包沿用既有原創矢量幾何，以深青綠、暖白、淡紫編排；使用系統字型呈現，沒有另打包字型檔。原有兩張品牌 JPG 的生成式來源標記、C2PA 鏈及完整權利仍待核對，這次不重用作新封面。
 
-`ASSET_MANIFEST.json` 是保存的修正前證據，不代表本分支現有十個launcher。使用者授權重新編碼後，十個WebP改用現有adaptive原圖／XML生成，已完整解碼；來源見 [生成manifest](GENERATED_LAUNCHER_MANIFEST.json) 與 [鑑識manifest](R3_2_IMAGE_FORENSICS_MANIFEST.json)。greeting PNG亦由既有Roborazzi測試重建，見 [test-render manifest](ROBORAZZI_RENDER_MANIFEST.json)；這些資產都不是手機操作截圖。詳細 [工程驗證](../../testing/R3_2_IMAGE_INTEGRITY.md)。
+## Launcher 與歷史鑑識
 
-## 待補的真實畫面
+[ASSET_MANIFEST.json](ASSET_MANIFEST.json) 保存**修正前**十三張圖片的 SHA／來源與解碼證據，不代表目前圖片仍損壞，也不應覆寫成新的鑑識結果。
 
-- [ ] 大千注音鍵盤／合成文字組字與候選列。
-- [ ] 候選展開、翻頁及非首屏選字。
-- [ ] 英文輸入與離線補全。
-- [ ] 設定或關於頁。
+十張 Launcher WebP 已於 PR24 修復並合併；來源是已有 adaptive 圖形／XML 經程式生成，見 [生成 manifest](GENERATED_LAUNCHER_MANIFEST.json)、[鑑識 manifest](R3_2_IMAGE_FORENSICS_MANIFEST.json) 及 [整合驗證](../../testing/R3_4_IMAGE_INTEGRATION.md)。[greeting PNG](ROBORAZZI_RENDER_MANIFEST.json) 由 Roborazzi 重建，是 JVM 測試渲染。以上均非 Runtime 截圖，亦未改動既有 Alpha APK。
 
-先取得裝置與安裝授權，使用 exact 公開 Alpha APK。逐張保存 APK SHA、Android 版本、裝置型號、擷取時間、公開圖片 SHA、匿名化對照與獨立審查；完整規格見 [素材與隱私](../ASSETS_AND_PRIVACY.md)。未知來源不可補填猜測值。
+## 待補的操作畫面
 
-4:5 五張圖卡與 16:9 封面共用現有識別；版式方向正在等待使用者確認。文字已在 [POSTS_READY](../POSTS_READY.md) 備妥。README 日後只引用通過來源／隱私審查的相對圖片路徑，附替代文字及版本。
+|畫面|狀態／必要來源|
+|---|---|
+|大千41鍵、組字、候選列|BLOCKED；exact APK＋真實 IME 視窗與軟鍵操作|
+|展開、上下頁、非首屏選字|BLOCKED；候選身分與實際 editor 文字證據|
+|英文補全|BLOCKED；實際 English session|
+|設定／啟用頁|BLOCKED；健康且經授權的裝置／Emulator|
+
+本輪僅作 read-only ADB inventory：未發現實體手機；既有 API36 Emulator 的有界觀察未能證實完整健康條件及可拋棄性，故未安裝 KU-Yin、未切換 IME、未取圖。這不是新的 H0／H1／H2 驗收。
+
+後續須逐張保存 APK SHA、source commit、Android 版本／裝置、擷取時間、公開圖片 SHA、匿名化方式和 Reviewer；規格見 [素材與隱私](../ASSETS_AND_PRIVACY.md)。Preview、Roborazzi、品牌圖和技術示意必須各自標明，不能補位冒充 Gallery。

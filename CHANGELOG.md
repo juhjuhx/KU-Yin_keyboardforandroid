@@ -1,5 +1,9 @@
 # Changelog
 
+## 未發行：公開文件與素材收束
+
+README重新區分公開Alpha／main／Draft；原Hero僅修標籤底框溢出。新增同一視覺系統的七個唯一社群版型與來源／Alt／SHA，更新維護文案與Gallery證據限制；沒有產品功能、版本、簽章或舊Release變更。
+
 ## Unreleased — R3.8 engineering closure
 
 - Bound Host accessibility observations and preserve primary/cleanup errors; no click retries or weakened product assertions.
