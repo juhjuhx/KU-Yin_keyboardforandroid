@@ -27,7 +27,7 @@ KU-Yin 使用 Kotlin／Jetpack Compose 呈現介面，透過 C++ JNI 整合 libc
 3. 安裝後開啟 KU-Yin，依系統設定啟用／選取輸入法；保留原鍵盤，先在非敏感欄位用合成文字試用。
 4. 若出現簽章不符或降版錯誤，請停止並回報。**不要為了安裝而卸載、清資料或刪除個人字典。**
 
-自編與 CI 的 Debug 憑證可能不同，不能保證更新既有 Alpha；CI artifact 標記為 TEST_ONLY，不是可無損升級的正式安裝包。歷史 Alpha／舊 tag 保留，最新不代表唯一。
+自編與 CI 的 Debug 憑證可能不同，不能保證更新既有 Alpha；CI artifact 標記為 TEST_ONLY，不是可無損升級的正式安裝包。歷史 Alpha／舊 tag 保留，最新不代表唯一。簽章調查與保資料更新條件見[更新相容性](docs/release/APK_UPDATE_COMPATIBILITY.md)。
 
 ## 真實畫面與 Gallery
 
