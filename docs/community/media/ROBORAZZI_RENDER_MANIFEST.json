@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "classification": "ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT",
-  "source_commit": "545210bc1cf8801f6b0c5d0a5d4d976b93ada7fc",
+  "source_commit": "36ac154c72d26e65e5f619f1e1b2095e560e3ba8",
   "source_files": [
     {
       "path": "app/src/test/java/com/example/GreetingScreenshotTest.kt",
@@ -13,21 +13,22 @@
     },
     {
       "path": "app/build.gradle.kts",
-      "sha256": "c61ca4a38bbe2ca993ed5a0107e41e6c69df17dfa937e4b6f7d09be46bd984e7"
+      "sha256": "6a4aed0549ee4fe0cf79de6bbdb3ecae065e0059fdaad147c75396276ec555bb"
     },
     {
       "path": "gradle/libs.versions.toml",
       "sha256": "214259b8d7058f497231297ea91a5a57f4bbb22b9ca58278534507ee5491b3a8"
     }
   ],
-  "command": "./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --stacktrace",
+  "command": "./gradlew --no-daemon --max-workers=2 --no-parallel --no-build-cache --rerun-tasks :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest",
   "exit": 0,
   "environment": {
     "JDK": "21",
     "Roborazzi": "1.59.0",
     "Robolectric": "4.16.1",
     "test_sdk": 36,
-    "configuration": "Robolectric NativeGraphics / Pixel8 test config; JVM, no Android device"
+    "configuration": "Robolectric NativeGraphics / Pixel8 test config; JVM, no Android device",
+    "host": "macOS arm64; JDK21; JVM synthetic render, not Android Runtime"
   },
   "output": {
     "path": "app/src/test/screenshots/greeting.png",
@@ -44,5 +45,7 @@
     "sha256": "08b77a026d9f6bc52b9404021e164eaf16d033701ddc0cdb1caabe6f5e7ed01b"
   },
   "phone_runtime_evidence": false,
-  "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata"
+  "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata",
+  "previous_render_source_commit": "545210bc1cf8801f6b0c5d0a5d4d976b93ada7fc",
+  "regeneration_reason": "F2 version metadata changes app/build.gradle.kts source digest; actual record task exit0, no test weakening"
 }
