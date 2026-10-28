@@ -14,6 +14,7 @@ import com.example.checkIsImeSelected
 import com.example.feedback.data.AppDatabase
 import com.example.feedback.data.FeedbackEntity
 import com.example.feedback.data.FeedbackRepository
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,18 +22,23 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-class FeedbackViewModel(application: Application) : AndroidViewModel(application) {
-
+class FeedbackViewModel(
+    application: Application,
     private val repository: FeedbackRepository
+) : AndroidViewModel(application) {
+
+    // Retain the Application-only constructor used by AndroidViewModelFactory.
+    constructor(application: Application) : this(
+        application, FeedbackRepository(AppDatabase.getDatabase(application).feedbackDao())
+    )
+
+    private var deletionInProgress = false
     val filterCategory = MutableStateFlow("ALL")
 
     val allFeedback: StateFlow<List<FeedbackEntity>>
     val filteredFeedback: StateFlow<List<FeedbackEntity>>
 
     init {
-        val dao = AppDatabase.getDatabase(application).feedbackDao()
-        repository = FeedbackRepository(dao)
-
         allFeedback = repository.allFeedback.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -106,15 +112,41 @@ class FeedbackViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun deleteFeedback(id: Int) {
-        viewModelScope.launch {
-            repository.deleteFeedbackById(id)
-        }
+    fun deleteFeedback(id: Int, onSuccess: () -> Unit, onError: (String) -> Unit) {
+        deleteWithAcknowledgment({ repository.deleteFeedbackById(id) }, onSuccess, onError)
     }
 
-    fun clearAllFeedback() {
+    fun clearAllFeedback(onSuccess: () -> Unit, onError: (String) -> Unit) {
+        deleteWithAcknowledgment({ repository.clearAllFeedback() }, onSuccess, onError)
+    }
+
+    private fun deleteWithAcknowledgment(
+        operation: suspend () -> Unit,
+        onSuccess: () -> Unit,
+        onError: (String) -> Unit
+    ) {
+        // UI calls are on Main. Reject overlapping intents explicitly; never silently drop them.
+        if (deletionInProgress) {
+            onError("正在刪除，請稍候再試")
+            return
+        }
+        deletionInProgress = true
         viewModelScope.launch {
-            repository.clearAllFeedback()
+            try {
+                try {
+                    operation()
+                } catch (cancelled: CancellationException) {
+                    throw cancelled
+                } catch (_: Exception) {
+                    // Do not expose feedback contents or database paths in an error message.
+                    onError("刪除失敗，請稍後再試")
+                    return@launch
+                }
+                // The callback is outside the DAO catch: a UI error is not a database failure.
+                onSuccess()
+            } finally {
+                deletionInProgress = false
+            }
         }
     }
 
