@@ -61,6 +61,32 @@ class AcceptanceEditorActivity : Activity() {
         }
     }
 
+    /** TEST_ONLY read-only booleans; never dump editor text or request/change focus. */
+    override fun dump(prefix: String, fd: java.io.FileDescriptor?, writer: java.io.PrintWriter,
+                      args: Array<out String>?) {
+        if (args?.contentEquals(arrayOf("--kuyin-focus")) != true) {
+            super.dump(prefix, fd, writer, args)
+            return
+        }
+        val node = editor.createAccessibilityNodeInfo()
+        try {
+            writer.println(prefix + "KUYIN_FOCUS_TEST_ONLY")
+            writer.println(prefix + "editor_is_focused=${editor.isFocused}")
+            writer.println(prefix + "editor_has_focus=${editor.hasFocus()}")
+            writer.println(prefix + "window_has_focus=${hasWindowFocus()}")
+            writer.println(prefix + "editor_window_has_focus=${editor.hasWindowFocus()}")
+            writer.println(prefix + "editor_attached=${editor.isAttachedToWindow}")
+            writer.println(prefix + "editor_focusable_in_touch_mode=${editor.isFocusableInTouchMode}")
+            writer.println(prefix + "root_focus_is_editor=${window.decorView.findFocus() === editor}")
+            writer.println(prefix + "node_input_focused=${node.isFocused}")
+            writer.println(prefix + "node_accessibility_focused=${node.isAccessibilityFocused}")
+            writer.println(prefix + "last_recorded_connection_present=${recorder.snapshot.finalMetadata?.inputConnectionPresent}")
+        } finally {
+            @Suppress("DEPRECATION")
+            node.recycle()
+        }
+    }
+
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         render()
