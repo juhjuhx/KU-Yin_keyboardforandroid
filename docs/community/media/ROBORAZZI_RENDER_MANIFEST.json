@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "classification": "ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT",
-  "source_commit": "66f3e38814555229d813f0f2272a2c0cd9b8d632",
+  "source_commit": "3c1b334fc5dfc849c3d8047bc8270cd0c03b9914",
   "source_files": [
     {
       "path": "app/src/test/java/com/example/GreetingScreenshotTest.kt",
@@ -13,7 +13,7 @@
     },
     {
       "path": "app/build.gradle.kts",
-      "sha256": "c61ca4a38bbe2ca993ed5a0107e41e6c69df17dfa937e4b6f7d09be46bd984e7"
+      "sha256": "ff565ef6c7d7faf2173e50b05cda5bc71058ddb4290c470b8fa58a93d35d9bd4"
     },
     {
       "path": "gradle/libs.versions.toml",
@@ -45,5 +45,5 @@
   },
   "phone_runtime_evidence": false,
   "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata",
-  "provenance_note": "F3 Room: actual record CI40609940884 at evidence source66f3e38 (only extra workflow vs product4c92899); source hashes verified, PNG unchanged."
+  "provenance_note": "F3 QR+merged Room: real record CI40611116129 at evidence source3c1b334 (only extra workflow vs product31e62a7); source hashes verified, PNG unchanged."
 }
