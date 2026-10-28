@@ -42,4 +42,4 @@ acceptance-host只作真Views editor／immutable recorder和test-only observer�
 
 現行技術責任：Kotlin/Compose呈現與session；C++ JNI管理native handle；libchewing提供現有C ABI decoder；Gradle/NDK/CMake固定建置鏈。上游Rust實作經prebuilt靜態連結，不代表KU-Yin另交付通用Rust runtime、ASR或新framework。Rime/Fcitx5 framework/Whisper屬研究/未來，不是production dependencies。
 
-已知D2D、Room刪除ACK與完整erase限制見FINAL_SECURITY_AUDIT及資料庫章；本輪不改schema、storage或輸入核心。
+Room feedback 刪除由 ViewModel single-flight 執行 Repository／DAO，完成後 callback 成功；例外回報失敗，取消仍傳遞（PR40）。沒有 schema／storage／輸入核心變更。D2D／完整 erase 限制仍見安全審查與資料庫章；PR41 只允許偏好的政策候選仍為 Draft，不能當成 main 已交付。

@@ -26,6 +26,6 @@ KU-Yin 是输入法，可能接触密码、私人通信与其他高敏感文字�
 
 ## R3.8 審查與已知限制
 
-見docs/maintenance/FINAL_SECURITY_AUDIT.md。Password/sensitive editor政策與native noBackupFilesDir已有實作，但Android12+ OEM D2D不因allowBackup=false自動驗收；Room回饋刪除UI尚缺DAO完成ACK；完整learning erase仍未支援。請勿提交實際使用者輸入、私人字典、回饋email、keys或未遮蔽日誌。
+見docs/maintenance/FINAL_SECURITY_AUDIT.md。Password/sensitive editor政策與native noBackupFilesDir已有實作，但Android12+ OEM D2D不因allowBackup=false自動驗收；main 的 Room 回饋刪除 UI 已在 DAO 成功後才顯示成功（PR40），公開 Alpha 尚未包含；完整learning erase仍未支援。請勿提交實際使用者輸入、私人字典、回饋email、keys或未遮蔽日誌。
 
 本輪只合併測試/CI/授權文字/文件範圍。偵測到credential候選時停止相關遠端寫入，私下評估撤銷；scanner不會以網路試用憑證，也不輸出secret bytes。

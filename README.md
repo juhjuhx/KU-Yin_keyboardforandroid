@@ -122,11 +122,11 @@ APK位於`app/build/outputs/apk/debug/app-debug.apk`。bootstrap會重建其cach
 
 產品Manifest不請求INTERNET，中文解碼與英文補全在本機執行；使用者仍可主動開啟外站或分享回饋。Native live context可學習，敏感欄位依EditorPolicy限制；不能宣稱完全不保存輸入資料。
 
-原生userdict位於私有`noBackupFilesDir`，排除Auto Backup不是額外加密；偏好／Room的Android12+ OEM裝置轉移與刪除ACK仍待驗。完整「重設學習」已停用並如實顯示不支援，沒有假裝刪除成功。
+原生userdict位於私有`noBackupFilesDir`，排除Auto Backup不是額外加密；偏好／Room的Android12+ OEM裝置轉移仍待驗；當前 main 已修正回饋刪除 ACK，公開 Alpha 尚未包含。完整「重設學習」已停用並如實顯示不支援，沒有假裝刪除成功。
 
 PR35整合基線[main CI40220470281](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions/runs/40220470281)：Python127、contracts12、App JVM267 PASS/10 native SKIP、Host JVM57 PASS，Build／Lint PASS，**Runtime SKIPPED**。這是固定來源的工程證據；新文件版本以[Actions](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/actions)與[當前狀態](docs/CURRENT_STATE.md)為準。
 
-H0仍INCONCLUSIVE，H1/H2未執行；Host Runtime歷史15 PASS/9 FAIL/8 SKIP，實機未驗收。正式簽章、保資料升級、QR手機掃描、完整source/relink與媒體權利等仍OPEN；**新RC／Stable NO_GO**。詳見[發行門檻](docs/release/RELEASE_READINESS.md)與[Issue19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)。
+最新限定 Emulator H0 為 HEALTHY，H1 因焦點證據不足為 INCONCLUSIVE，H2 未執行；Host Runtime歷史15 PASS/9 FAIL/8 SKIP，實機未驗收。正式簽章、保資料升級、QR手機掃描、完整source/relink與媒體權利等仍OPEN；**新RC／Stable NO_GO**。詳見[發行門檻](docs/release/RELEASE_READINESS.md)與[Issue19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)。
 
 ## 參與維護與直接支持開源
 
@@ -136,4 +136,4 @@ H0仍INCONCLUSIVE，H1/H2未執行；Host Runtime歷史15 PASS/9 FAIL/8 SKIP，�
 
 開發者不收個人贊助；願意支持自由軟體與數位權利，可直接使用基金會官方連結：[FSF](https://my.fsf.org/donate)、[ASF](https://donate.apache.org/)、[OSI](https://members.opensource.org/donate)、[EFF](https://supporters.eff.org/donate/donate)。
 
-已公開Alpha及當前main的舊App內QR圖樣不是標準可解碼QR；PR20有未合併修正，手機實掃仍未驗。請使用上列連結或App的複製／開啟網址功能。捐款直接在機構網站完成；上游及基金會列名是致謝，不代表贊助、認證或背書。
+公開 Alpha 的舊 App 內 QR 圖樣不是標準可解碼 QR；當前 main 已透過 PR42 修正並通過離線解碼，尚未發布，手機實掃仍未驗。請使用上列連結或App的複製／開啟網址功能。捐款直接在機構網站完成；上游及基金會列名是致謝，不代表贊助、認證或背書。

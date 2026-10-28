@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "engineering_scope": "R38_PR28_PR34_ISSUE31_MAINTENANCE",
-  "baseline_main": "2a2181e023e0dee0ddff98681e374df10cd5fa8f",
+  "engineering_scope": "F3_ROOM_ACK_QR_MAINLINE_MAINTENANCE",
+  "baseline_main": "8a4890254df8e10235e2efeab05193c2f793aee4",
   "experimental_alpha": "AVAILABLE",
   "rc_ready": false,
   "stable_ready": false,
   "new_release": "NOT_PUBLISHED",
-  "h0": "INCONCLUSIVE",
-  "h1": "NOT_EXECUTED",
+  "h0": "HEALTHY_BOUNDED_CI40613937769",
+  "h1": "INCONCLUSIVE_EDITOR_FOCUS",
   "h2": "NOT_EXECUTED",
   "host_runtime": {
     "provenance": "HISTORICAL_CI39882220869",
@@ -21,7 +21,7 @@
     "Host Runtime9FAIL8SKIP",
     "authorized physical/QR/accessibility acceptance",
     "signing custody and data-preserving upgrade",
-    "learning erase/D2D/Room delete ACK",
+    "learning erase/D2D/OEM and upgrade data acceptance",
     "current complete source/relink/license/media provenance"
   ],
   "historical_receipts": [
@@ -44,6 +44,20 @@
         "errors": 4,
         "warnings": 77
       }
+    },
+    {
+      "evidence_class": "HISTORICAL_R38_GATE",
+      "h0": "INCONCLUSIVE",
+      "h1": "NOT_EXECUTED",
+      "h2": "NOT_EXECUTED",
+      "blockers": [
+        "RRO caller/root and genuine completion observer",
+        "Host Runtime9FAIL8SKIP",
+        "authorized physical/QR/accessibility acceptance",
+        "signing custody and data-preserving upgrade",
+        "learning erase/D2D/Room delete ACK",
+        "current complete source/relink/license/media provenance"
+      ]
     }
   ],
   "engineering_integration": {
@@ -64,5 +78,19 @@
     ],
     "local_cold_build": "SOURCE_ea186d7_EXIT124_TIME_BOUND; not a complete local PASS",
     "evidence_entry": "https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/31"
+  },
+  "f3": {
+    "room_pr": 40,
+    "room_merge": "8015ead30c0eb8d434cd81d1c01191e199b01a4c",
+    "qr_pr": 42,
+    "qr_merge": "8a4890254df8e10235e2efeab05193c2f793aee4",
+    "main_ci": 40612611342,
+    "main_ci_scope": "Build/Lint PASS; Runtime SKIPPED",
+    "health_source": "98cc3d05621b24d6c7e535ea2ffae17ff3072082",
+    "health_ci": 40613937769,
+    "product_installed_in_health_run": false,
+    "d2d_pr": 41,
+    "d2d_status": "DRAFT_NOT_MERGED",
+    "publication_authorized": false
   }
 }
