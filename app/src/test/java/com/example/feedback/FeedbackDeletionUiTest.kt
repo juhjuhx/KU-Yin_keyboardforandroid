@@ -25,7 +25,7 @@ import org.robolectric.annotation.Config
 class FeedbackDeletionUiTest {
     @get:Rule val rule = createComposeRule()
 
-    private fun showHistory(): CompletableDeferred<Unit> {
+    private fun showHistory(failure: Exception? = null): CompletableDeferred<Unit> {
         val app = ApplicationProvider.getApplicationContext<Application>()
         val dao = AppDatabase.getDatabase(app).feedbackDao()
         runBlocking {
@@ -40,10 +40,12 @@ class FeedbackDeletionUiTest {
         val delayedDao = object : FeedbackDao by dao {
             override suspend fun deleteFeedbackById(id: Int) {
                 release.await()
+                failure?.let { throw it }
                 dao.deleteFeedbackById(id)
             }
             override suspend fun clearAllFeedback() {
                 release.await()
+                failure?.let { throw it }
                 dao.clearAllFeedback()
             }
         }
@@ -65,6 +67,8 @@ class FeedbackDeletionUiTest {
         } finally {
             release.complete(Unit)
         }
+        rule.waitUntil { rule.onAllNodesWithText("synthetic-delete").fetchSemanticsNodes().isEmpty() }
+        rule.onNodeWithText("已刪除該筆回饋").assertExists()
     }
 
     @Test fun `clear all does not announce success before DAO completion`() {
@@ -77,5 +81,26 @@ class FeedbackDeletionUiTest {
         } finally {
             release.complete(Unit)
         }
+        rule.waitUntil { rule.onAllNodesWithText("synthetic-delete").fetchSemanticsNodes().isEmpty() }
+        rule.onNodeWithText("已清空所有回饋紀錄").assertExists()
     }
+    @Test fun `single database failure keeps list and never displays success`() {
+        val release = showHistory(IllegalStateException("synthetic fault"))
+        rule.onNodeWithContentDescription("刪除此筆回饋").performClick()
+        release.complete(Unit)
+        rule.waitUntil { rule.onAllNodesWithText("刪除失敗，請稍後再試").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("已刪除該筆回饋").assertDoesNotExist()
+        rule.onNodeWithText("synthetic-delete").assertExists()
+    }
+
+    @Test fun `clear database failure keeps list and never displays success`() {
+        val release = showHistory(IllegalStateException("synthetic fault"))
+        rule.onNodeWithText("清空全部").performClick()
+        rule.onNodeWithText("確定清空").performClick()
+        release.complete(Unit)
+        rule.waitUntil { rule.onAllNodesWithText("刪除失敗，請稍後再試").fetchSemanticsNodes().isNotEmpty() }
+        rule.onNodeWithText("已清空所有回饋紀錄").assertDoesNotExist()
+        rule.onNodeWithText("synthetic-delete").assertExists()
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.feedback
 
 import android.app.Application
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.test.core.app.ApplicationProvider
 import com.example.feedback.data.FeedbackDao
@@ -62,22 +63,22 @@ class FeedbackDeletionAckTest {
         ApplicationProvider.getApplicationContext(), FeedbackRepository(dao)
     ).also { models += it }
 
-    @Test fun `single success follows completion once and duplicate pending taps are ignored`() = runTest(dispatcher) {
+    @Test fun `single success follows completion once and duplicate pending taps receive busy feedback`() = runTest(dispatcher) {
         val dao = FaultDao(); val vm = model(dao); val events = mutableListOf<String>()
-        repeat(2) { vm.deleteFeedback(1, { events += "success" }, { events += "failure" }) }
+        repeat(2) { vm.deleteFeedback(1, { events += "success" }, { events += it }) }
         runCurrent()
-        assertEquals(1, dao.calls); assertTrue(events.isEmpty()); assertEquals(listOf(1, 2), dao.rows.value)
+        assertEquals(1, dao.calls); assertEquals(listOf("正在刪除，請稍候再試"), events); assertEquals(listOf(1, 2), dao.rows.value)
         dao.release.complete(Unit); runCurrent()
-        assertEquals(listOf("success"), events); assertEquals(listOf(2), dao.rows.value)
+        assertEquals(listOf("正在刪除，請稍候再試", "success"), events); assertEquals(listOf(2), dao.rows.value)
     }
 
     @Test fun `clear success follows completion once and does not overlap single deletion`() = runTest(dispatcher) {
         val dao = FaultDao(); val vm = model(dao); val events = mutableListOf<String>()
-        repeat(2) { vm.clearAllFeedback({ events += "clear" }, { events += "failure" }) }
-        vm.deleteFeedback(1, { events += "single" }, { events += "failure" })
-        runCurrent(); assertTrue(events.isEmpty()); assertEquals(1, dao.calls)
+        repeat(2) { vm.clearAllFeedback({ events += "clear" }, { events += it }) }
+        vm.deleteFeedback(1, { events += "single" }, { events += it })
+        runCurrent(); assertEquals(listOf("正在刪除，請稍候再試", "正在刪除，請稍候再試"), events); assertEquals(1, dao.calls)
         dao.release.complete(Unit); runCurrent()
-        assertEquals(listOf("clear"), events); assertTrue(dao.rows.value.isEmpty())
+        assertEquals(listOf("正在刪除，請稍候再試", "正在刪除，請稍候再試", "clear"), events); assertTrue(dao.rows.value.isEmpty())
     }
 
     @Test fun `single failure preserves list reports no success and permits explicit retry`() = runTest(dispatcher) {
@@ -110,7 +111,18 @@ class FeedbackDeletionAckTest {
         assertEquals(listOf("success"), events)
     }
 
-    @Test fun `Application only constructor remains available to Android factory`() {
-        assertNotNull(FeedbackViewModel::class.java.getConstructor(Application::class.java))
+    @Test fun `actual scope cancellation cannot acknowledge or delete pending rows`() = runTest(dispatcher) {
+        val dao = FaultDao(); val vm = model(dao); val events = mutableListOf<String>()
+        vm.deleteFeedback(1, { events += "success" }, { events += "failure" }); runCurrent()
+        vm.viewModelScope.cancel(); runCurrent()
+        dao.release.complete(Unit); runCurrent()
+        assertTrue(events.isEmpty()); assertEquals(listOf(1, 2), dao.rows.value)
+    }
+
+    @Test fun `Application only constructor works through Android factory`() {
+        val app = ApplicationProvider.getApplicationContext<Application>()
+        val vm = ViewModelProvider.AndroidViewModelFactory.getInstance(app).create(FeedbackViewModel::class.java)
+        models += vm
+        assertNotNull(vm)
     }
 }
