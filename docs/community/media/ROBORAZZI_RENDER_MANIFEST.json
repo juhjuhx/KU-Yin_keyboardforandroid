@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "classification": "ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT",
-  "source_commit": "545210bc1cf8801f6b0c5d0a5d4d976b93ada7fc",
+  "source_commit": "66f3e38814555229d813f0f2272a2c0cd9b8d632",
   "source_files": [
     {
       "path": "app/src/test/java/com/example/GreetingScreenshotTest.kt",
@@ -9,7 +9,7 @@
     },
     {
       "path": "app/src/main/java/com/example/MainActivity.kt",
-      "sha256": "31a82b59d32b644c74f4b855d80de2c7afd3b18d10d42f2601a8baca38abe94f"
+      "sha256": "798cb69251bdea13b9aec680208f539a72ec44af1863e06510a416e1f7553dcb"
     },
     {
       "path": "app/build.gradle.kts",
@@ -20,14 +20,14 @@
       "sha256": "214259b8d7058f497231297ea91a5a57f4bbb22b9ca58278534507ee5491b3a8"
     }
   ],
-  "command": "./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --stacktrace",
+  "command": "./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --no-build-cache --rerun-tasks --stacktrace",
   "exit": 0,
   "environment": {
     "JDK": "21",
     "Roborazzi": "1.59.0",
     "Robolectric": "4.16.1",
     "test_sdk": 36,
-    "configuration": "Robolectric NativeGraphics / Pixel8 test config; JVM, no Android device"
+    "configuration": "Ubuntu GitHub runner / Robolectric NativeGraphics / Pixel8 JVM test config; no Android device"
   },
   "output": {
     "path": "app/src/test/screenshots/greeting.png",
@@ -44,5 +44,6 @@
     "sha256": "08b77a026d9f6bc52b9404021e164eaf16d033701ddc0cdb1caabe6f5e7ed01b"
   },
   "phone_runtime_evidence": false,
-  "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata"
+  "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata",
+  "provenance_note": "F3 Room: actual record CI40609940884 at evidence source66f3e38 (only extra workflow vs product4c92899); source hashes verified, PNG unchanged."
 }
