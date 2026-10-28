@@ -14,8 +14,10 @@ jobs:
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
         with: {java-version: '21', distribution: temurin}
       - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
-        with: {packages: 'platform-tools ndk;28.2.13676358 cmake;3.22.1'}
+        with: {packages: 'platform-tools build-tools;36.0.0 ndk;28.2.13676358 cmake;3.22.1'}
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+      - name: APK identity parser regression
+        run: python3 -B .github/f3/test_apk_identity.py -v
       - run: bash scripts/bootstrap_native_deps.sh
       - name: Real version-bound record
         run: ./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --no-build-cache --rerun-tasks --stacktrace

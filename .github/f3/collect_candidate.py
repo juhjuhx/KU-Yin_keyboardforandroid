@@ -9,6 +9,7 @@ import subprocess
 import sys
 import zipfile
 import uuid
+from apk_identity import signer_certificate, package_header
 
 root = Path.cwd()
 assert os.environ.get('GITHUB_REPOSITORY') == 'juhjuhx/KU-Yin_keyboardforandroid'
@@ -25,9 +26,8 @@ out.mkdir(exist_ok=False)
 native = out/'native'
 native.mkdir()
 sdk = Path(os.environ['ANDROID_HOME'])
-tools = sorted((sdk/'build-tools').glob('*/aapt'))
-assert tools
-buildtools = tools[-1].parent
+buildtools = sdk/'build-tools/36.0.0'
+assert all((buildtools/tool).is_file() for tool in ['aapt','apksigner','zipalign'])
 ndk = sdk/'ndk/28.2.13676358'
 llvm = ndk/'toolchains/llvm/prebuilt/linux-x86_64/bin'
 sha = lambda data: hashlib.sha256(data).hexdigest()
@@ -50,18 +50,21 @@ for label, relative in {
     'host_test': 'acceptance-host/build/outputs/apk/androidTest/debug/acceptance-host-debug-androidTest.apk',
 }.items():
     src = root/relative
-    signing = cmd([buildtools/'apksigner', 'verify', '--verbose', '--print-certs', src])
+    signing = cmd([buildtools/'apksigner', 'verify', '--min-sdk-version', '24', '--verbose', '--print-certs', src])
     badging = cmd([buildtools/'aapt', 'dump', 'badging', src])
+    # Keep actual SDK output even when a later identity assertion fails.
+    put('probes/'+label+'.json', json.dumps(dict(signing=signing, badging=badging), indent=2).encode())
     assert signing['exit'] == badging['exit'] == 0
-    certs = re.findall(r'Signer #\d+ certificate SHA-256 digest: ([0-9a-fA-F:]+)', signing['stdout'])
-    assert len(certs) == 1
-    package = re.search(r"package: name='([^']+)' versionCode='([^']+)' versionName='([^']*)'", badging['stdout'])
-    assert package
+    certificate = signer_certificate(signing['stdout'])
+    package = package_header(badging['stdout'])
+    expected_packages = dict(app='io.github.juhjuhx.kuyin', app_test='io.github.juhjuhx.kuyin.test',
+                             host='io.github.juhjuhx.kuyin.acceptancehost', host_test='io.github.juhjuhx.kuyin.acceptancehost.test')
+    assert package['package'] == expected_packages[label]
     data = src.read_bytes()
     with zipfile.ZipFile(src) as z: assert z.testzip() is None
     dest = 'KU-Yin-0.2.0-f3.1-test-v20006-CI-debug.apk' if label == 'app' else label+'.apk'
-    apks[label] = dict(**put(dest, data), package=package[1], code=package[2], name=package[3],
-                       signer_sha256=certs[0].replace(':','').lower(), signing=signing, badging=badging)
+    apks[label] = dict(**put(dest, data), **package,
+                       signer_sha256=certificate, signing=signing, badging=badging)
 app = apks['app']
 min_sdk = re.search(r"sdkVersion:'(\d+)'", app['badging']['stdout'])
 target_sdk = re.search(r"targetSdkVersion:'(\d+)'", app['badging']['stdout'])
