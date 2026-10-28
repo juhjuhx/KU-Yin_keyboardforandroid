@@ -1,0 +1,23 @@
+import groovy.json.JsonOutput
+import java.security.MessageDigest
+
+gradle.projectsEvaluated {
+    def app = gradle.rootProject.project(':app')
+    app.tasks.register('f3RuntimeInventory') {
+        doLast {
+            def config = app.configurations.getByName('debugRuntimeClasspath')
+            def artifacts = config.resolvedConfiguration.resolvedArtifacts.collect { artifact ->
+                def id = artifact.moduleVersion.id
+                [group: id.group, name: id.name, version: id.version,
+                 classifier: artifact.classifier, extension: artifact.extension,
+                 filename: artifact.file.name,
+                 sha256: MessageDigest.getInstance('SHA-256').digest(artifact.file.bytes).encodeHex().toString()]
+            }
+            def output = new File(gradle.rootProject.projectDir, 'runtime-artifacts.json')
+            output.text = JsonOutput.prettyPrint(JsonOutput.toJson(
+                [source: System.getenv('GITHUB_SHA'), configuration: 'debugRuntimeClasspath',
+                 scope: 'Resolved runtime artifacts, not proof every class reaches DEX; licenses not certified',
+                 artifacts: artifacts])) + '\n'
+        }
+    }
+}

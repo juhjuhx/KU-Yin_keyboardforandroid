@@ -1,0 +1,64 @@
+name: F3 fresh integrated candidate evidence
+on:
+  push:
+    branches: [evidence/f3-candidate-build]
+permissions:
+  contents: read
+jobs:
+  candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with: {fetch-depth: 0, persist-credentials: false}
+      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
+        with: {java-version: '21', distribution: temurin}
+      - uses: android-actions/setup-android@9fc6c4e9069bf8d3d10b2204b1fb8f6ef7065407
+        with: {packages: 'platform-tools ndk;28.2.13676358 cmake;3.22.1'}
+      - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
+      - run: bash scripts/bootstrap_native_deps.sh
+      - name: Real version-bound record
+        run: ./gradlew :app:recordRoborazziDebug --tests com.example.GreetingScreenshotTest --no-build-cache --rerun-tasks --stacktrace
+      - name: Bind successful record with explicit metadata-only patch
+        run: python3 .github/f3/bind_render.py
+      - name: Install existing verification tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y webp ffmpeg
+          python3 -m pip install Pillow==12.2.0 PyYAML==6.0.3
+      - name: Fresh Python and all contracts including secrets
+        run: |
+          python3 -m unittest discover -s scripts/tests -v
+          for check in scripts/check_*.py; do python3 "$check"; done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: f3-candidate-render-evidence
+          path: |
+            render-evidence.json
+            render-metadata.patch
+            docs/community/media/ROBORAZZI_RENDER_MANIFEST.json
+            app/src/test/screenshots/greeting.png
+            app/build/test-results/testDebugUnitTest/
+          if-no-files-found: error
+      - name: Fresh full unit build lint and instrumentation compile
+        run: ./gradlew :app:testDebugUnitTest :acceptance-host:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest :app:lintDebug :acceptance-host:lintDebug --no-build-cache --rerun-tasks --max-workers=2 --stacktrace
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: f3-candidate-fresh-reports
+          path: |
+            app/build/test-results/testDebugUnitTest/
+            acceptance-host/build/test-results/testDebugUnitTest/
+            app/build/reports/lint-results-debug.xml
+            acceptance-host/build/reports/lint-results-debug.xml
+          if-no-files-found: warn
+      - name: Inventory resolved runtime artifacts (not a license approval)
+        run: ./gradlew -I .github/f3/inventory.init.gradle :app:f3RuntimeInventory --no-configuration-cache --stacktrace
+      - name: Verify actual CI artifacts and fresh native relink
+        run: python3 .github/f3/collect_candidate.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: f3-integrated-CI-TEST-ONLY
+          path: dist/
+          if-no-files-found: warn
