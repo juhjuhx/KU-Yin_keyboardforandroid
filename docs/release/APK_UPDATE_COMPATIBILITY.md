@@ -32,3 +32,9 @@ APK v3 proof-of-rotation 自 Android9/API28 提供。KU-Yin 支援 API24，不�
 官方來源：[Android app signing](https://developer.android.com/studio/publish/app-signing)、[AOSP v3](https://source.android.com/docs/security/features/apksigning/v3)、[apksigner](https://developer.android.com/tools/apksigner)。
 
 下一步：[受控手機驗收手冊](DEVICE_ACCEPTANCE_F1.md)。新 Experimental／RC／Stable仍為 NO_GO。
+
+## F2 補充：已驗證原 key 簽署的本機候選
+
+F1的「尚未簽署新候選」是當時收據；F2已從main57fbe7f的隔離來源`41fd130ccdd4a505622c8292f9d16c250ce96b03`建置`20005 / 0.2.0-f2.1-test`。直接apksigner驗證單一v2 signer為`46488e99373f3c1af0c630642f2d9ec459b8db671391f3ad817efb3aae99da94`，與公開Alpha一致，且code高於20003；APK SHA256為`8f67e381193c7284b04906e24ff14a736adb7c8cc90d0b8a8b0df2131bdbb10d`。
+
+這項證據關閉「原key能否簽署新包」的缺口，沒有證明保資料更新、Runtime、實機或正式key custody。候選只在本機保留TEST_ONLY，來源見[Draft PR38](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/pull/38)及[候選交接](F2_ARTIFACT_HANDOFF.md)。不提供新公開Release，也不把CI自動生成的Debug APK當作此原簽章包。完整動態驗收以[Issue19](https://github.com/juhjuhx/KU-Yin_keyboardforandroid/issues/19)所連結的來源與收據為準，不能從簽署成功推定通過。
