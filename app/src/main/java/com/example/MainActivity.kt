@@ -721,12 +721,17 @@ fun KuYinSetupScreen(
                 onSelectFilter = { feedbackViewModel.setFilter(it) },
                 onSelectFeedback = { selectedDetailFeedback = it },
                 onDeleteFeedback = { id ->
-                    feedbackViewModel.deleteFeedback(id)
-                    snackbarMessage = "已刪除該筆回饋"
+                    feedbackViewModel.deleteFeedback(
+                        id,
+                        onSuccess = { snackbarMessage = "已刪除該筆回饋" },
+                        onError = { snackbarMessage = it }
+                    )
                 },
                 onClearAll = {
-                    feedbackViewModel.clearAllFeedback()
-                    snackbarMessage = "已清空所有回饋紀錄"
+                    feedbackViewModel.clearAllFeedback(
+                        onSuccess = { snackbarMessage = "已清空所有回饋紀錄" },
+                        onError = { snackbarMessage = it }
+                    )
                 },
                 onDismiss = { showFeedbackHistoryDialog = false }
             )
