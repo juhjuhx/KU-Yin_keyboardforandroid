@@ -65,3 +65,13 @@ correction does not relicense third-party components or certify future binaries.
 Verification-only Python tooling uses Pillow (HPND-family, exact distribution
 terms apply) and PyYAML (MIT); neither is bundled into the Android runtime APK.
 GitHub Actions and build tools are recorded separately from production libraries.
+
+Foundation donation QR assets (F3)
+---------------------------------
+Project-generated offline QR PNGs encode the existing public official HTTPS
+URLs. These are not foundation-provided artwork or endorsement; KU-Yin does
+not collect donations. Exact generator, input URLs and source PNG hashes:
+docs/release/QR_PROVENANCE.md and app/src/main/assets/foundation_qr_manifest.json.
+Offline tooling: OpenCV encoder (Apache-2.0), opencv-python wrapper (MIT),
+NumPy (BSD-3-Clause). None is bundled in the Android runtime. ZXing core 3.5.3
+(Apache-2.0) is an independent test-only decoder, not an APK runtime library.
