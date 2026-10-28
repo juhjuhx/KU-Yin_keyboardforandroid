@@ -125,8 +125,11 @@ class FeedbackViewModel(
         onSuccess: () -> Unit,
         onError: (String) -> Unit
     ) {
-        // UI calls are on Main; serialize pending deletes instead of duplicating ACKs.
-        if (deletionInProgress) return
+        // UI calls are on Main. Reject overlapping intents explicitly; never silently drop them.
+        if (deletionInProgress) {
+            onError("正在刪除，請稍候再試")
+            return
+        }
         deletionInProgress = true
         viewModelScope.launch {
             try {
