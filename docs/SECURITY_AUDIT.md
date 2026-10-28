@@ -11,7 +11,7 @@ ACTIVE source audit，R1基線a6a4c65。不是第三方certification，也沒有
 | Content logging | native僅init/loaderror；syntheticprobe不編入product | R1不保存私人trace；敏感writefailure顯示遮蔽 |
 | Composition/effect | snapshot stale guard、ordered effects、falseACK禁止重送 | nativeACK早於editorACK；無跨storetransaction/end-to-end exactlyonce保証 |
 | Reset | disabled/unsupported、no deletion | S0已關誤導入口；fullerase仍OPEN，不再稱現行假成功HIGH |
-| Room | feedback v1，email/description/metadata local | 無migration/TTL/quota；share JSON控制字元escape不足、UI無DBdeleteACK，待獨立產品修正 |
+| Room | feedback v1，email/description/metadata local | 無migration/TTL/quota；share JSON控制字元escape不足、main PR40 已補 DAO 完成／失敗 ACK；公開 Alpha 尚未包含，OEM／升級資料驗收仍待補 |
 | System dict | installer只驗非空 | 無assetrevision/hash/update gate；未稱現有字典已損毀 |
 | Supply chain | immutableprebuilt/source pins、source/relinkrelease材料 | bootstrap不是Rust重編等價/完整LGPL法律review |
 | Release | 現有sameDebugsigner experimentalAlpha | productionkey未配置；manuallegacypublish須另hardening，禁止重簽替代 |
@@ -24,6 +24,6 @@ EditorInfo→service policy→Chinese session/native live與scratch候選→Comp
 
 ## 本輪已確認、未擴大修正的議題
 
-來源：`app/src/main/res/xml/data_extraction_rules.xml`；`feedback/data/FeedbackEntity.kt` escapeJson；`feedback/ui/FeedbackDialogs.kt`版本1.0.0與Issue URL；`MainActivity.kt`feedback成功訊息；`LibChewingDataInstaller.kt`非空跳過。維持ledger於maintenance/INDEPENDENT_REVIEW，不在文檔治理中改product/schema或做data deletion。
+來源：`app/src/main/res/xml/data_extraction_rules.xml`；`feedback/data/FeedbackEntity.kt` escapeJson；`feedback/ui/FeedbackDialogs.kt`版本1.0.0與Issue URL；`MainActivity.kt`feedback成功訊息已在PR40修正（歷史缺口關閉）；`LibChewingDataInstaller.kt`非空跳過。維持ledger於maintenance/INDEPENDENT_REVIEW，不在文檔治理中改product/schema或做data deletion。
 
 官方語義參考：[Android Auto Backup](https://developer.android.com/identity/data/autobackup)。這是source/contract推論，不是已測OEM傳輸。歷史exactP1/AIE APK權限觀察見release/AIE_ALPHA_HANDOFF與review；app-definedsignatureDYNAMIC_RECEIVER permission不代表INTERNET。
