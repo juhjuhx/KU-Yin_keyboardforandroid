@@ -47,12 +47,7 @@ class FeedbackDeletionUiTest {
                 dao.clearAllFeedback()
             }
         }
-        val vm = FeedbackViewModel(app)
-        // Baseline has no injection constructor. Test-only seam to reproduce its actual UI flow.
-        FeedbackViewModel::class.java.getDeclaredField("repository").apply {
-            isAccessible = true
-            set(vm, FeedbackRepository(delayedDao))
-        }
+        val vm = FeedbackViewModel(app, FeedbackRepository(delayedDao))
         rule.setContent { MyApplicationTheme { KuYinSetupScreen(feedbackViewModel = vm) } }
         rule.onNode(SemanticsMatcher.keyIsDefined(SemanticsProperties.VerticalScrollAxisRange))
             .performScrollToNode(hasTestTag("btn_open_feedback_history"))
