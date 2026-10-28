@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "classification": "ROBORAZZI_UNIT_TEST_RENDER_NOT_DEVICE_SCREENSHOT",
-  "source_commit": "3c1b334fc5dfc849c3d8047bc8270cd0c03b9914",
+  "source_commit": "3ef9d5485aae933483e07e13febb984c101a0bdd",
   "source_files": [
     {
       "path": "app/src/test/java/com/example/GreetingScreenshotTest.kt",
@@ -13,7 +13,7 @@
     },
     {
       "path": "app/build.gradle.kts",
-      "sha256": "ff565ef6c7d7faf2173e50b05cda5bc71058ddb4290c470b8fa58a93d35d9bd4"
+      "sha256": "e0d7e102486328d18855e19789a9448ae1bad8228974a90f8e095cf749a08318"
     },
     {
       "path": "gradle/libs.versions.toml",
@@ -45,5 +45,5 @@
   },
   "phone_runtime_evidence": false,
   "privacy": "Isolated Robolectric synthetic setup state; no private typing/notifications; no image metadata",
-  "provenance_note": "F3 QR+merged Room: real record CI40611116129 at evidence source3c1b334 (only extra workflow vs product31e62a7); source hashes verified, PNG unchanged."
+  "provenance_note": "F3 20006: real CI record before verification. This generated metadata-only patch must be reviewed and committed before final clean-head CI."
 }

@@ -16,8 +16,8 @@ android {
     applicationId = "io.github.juhjuhx.kuyin"
     minSdk = 24
     targetSdk = 36
-    versionCode = 20003
-    versionName = "0.2.0-aie.1"
+    versionCode = 20006
+    versionName = "0.2.0-f3.1-test"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     externalNativeBuild {
