@@ -140,6 +140,9 @@ try:
     save('FOCUS_CALLBACK_TRACE.json', dict(status='OBSERVED',data=parse_trace(trace['stdout'])))
 except ValueError as exc:
     save('FOCUS_CALLBACK_TRACE.json',dict(status='INCONCLUSIVE',reason=str(exc)))
+# Geometry evidence is independent of the unchanged H1 result, never a replacement oracle.
+layout = command(['adb','-s',serial,'shell','dumpsys','activity',h.HOST_COMPONENT,'--kuyin-layout-trace'], timeout=1)
+save('LAYOUT_TRACE_RAW.json', layout)
 h1_raw = (out/'H1/result.json').read_bytes()
 h1 = json.loads(h1_raw)
 h1_post = {key: adb(*args) for key, args in {

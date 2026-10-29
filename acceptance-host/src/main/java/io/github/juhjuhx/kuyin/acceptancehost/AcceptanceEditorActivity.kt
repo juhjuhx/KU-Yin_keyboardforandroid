@@ -64,6 +64,12 @@ class AcceptanceEditorActivity : Activity() {
     /** TEST_ONLY read-only booleans; never dump editor text or request/change focus. */
     override fun dump(prefix: String, fd: java.io.FileDescriptor?, writer: java.io.PrintWriter,
                       args: Array<out String>?) {
+        if (args?.contentEquals(arrayOf("--kuyin-layout-trace")) == true) {
+            writer.println(prefix + "KUYIN_LAYOUT_BEGIN")
+            writer.println(prefix + editor.layoutTraceSnapshot().toString())
+            writer.println(prefix + "KUYIN_LAYOUT_END")
+            return
+        }
         if (args?.contentEquals(arrayOf("--kuyin-focus-trace")) == true) {
             writer.println(prefix + "KUYIN_FOCUS_TRACE_BEGIN")
             writer.println(prefix + "event=FOCUS_LOSS_CALLBACK")

@@ -1,7 +1,7 @@
 name: F4 single bounded focus observation
 on:
   push:
-    branches: [evidence/f4-focus-loss-trace]
+    branches: [evidence/p0-layout-receiver]
 permissions:
   contents: read
 jobs:
