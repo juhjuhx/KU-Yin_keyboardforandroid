@@ -1,4 +1,4 @@
-"""TEST_ONLY F4 disposable-GitHub-runner H0 -> real Host H1. No product install."""
+"""TEST_ONLY disposable GitHub H0 -> real Host H1; product continuation only with P0_FULL_RUNTIME=true."""
 from pathlib import Path
 import datetime
 import hashlib

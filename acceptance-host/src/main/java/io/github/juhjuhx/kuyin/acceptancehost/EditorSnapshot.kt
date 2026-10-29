@@ -19,6 +19,9 @@ data class EditorSnapshot(
     val commitCount: Int = 0,
     val lastCommitText: String? = null,
     val revision: Int = 0,
+    val composingStart: Int = -1,
+    val composingEnd: Int = -1,
+    val lastCommitAccepted: Boolean? = null,
 ) {
     val newlineCount: Int get() = currentText.count { it == '\n' }
 }

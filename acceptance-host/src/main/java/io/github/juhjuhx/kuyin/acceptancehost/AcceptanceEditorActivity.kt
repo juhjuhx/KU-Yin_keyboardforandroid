@@ -17,7 +17,10 @@ class AcceptanceEditorActivity : Activity() {
     private lateinit var editor: RecordingEditText
     private val diagnostics = mutableMapOf<Int, TextView>()
     private var imeVisibility = "UNAVAILABLE_API_24_29"
-    val editorSnapshot: EditorSnapshot get() = recorder.snapshot
+    val editorSnapshot: EditorSnapshot get() = recorder.snapshot.copy(
+        composingStart = android.view.inputmethod.BaseInputConnection.getComposingSpanStart(editor.text),
+        composingEnd = android.view.inputmethod.BaseInputConnection.getComposingSpanEnd(editor.text),
+    )
     private val focusRecovery = TransientContentFocusRecovery()
     private var focusResumed = false
     private var focusEpoch = 0L

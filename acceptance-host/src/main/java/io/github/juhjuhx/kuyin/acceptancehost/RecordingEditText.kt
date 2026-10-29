@@ -79,7 +79,7 @@ class RecordingEditText(
 
             override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
                 val result = super.commitText(text, newCursorPosition)
-                recorder.recordCommit(text?.toString().orEmpty())
+                recorder.recordCommit(text?.toString().orEmpty(), result)
                 return result
             }
         }

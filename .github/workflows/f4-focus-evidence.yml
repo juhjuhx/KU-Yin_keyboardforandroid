@@ -1,4 +1,4 @@
-name: F4 single bounded focus observation
+name: P0 bounded health and IME runtime evidence
 on:
   push:
     branches: [evidence/p0-full-runtime]
@@ -14,7 +14,7 @@ jobs:
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961
         with: {java-version: '21', distribution: temurin}
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
-      - name: Build real Host Editor only
+      - name: Build pinned product and synthetic Host instrumentation
         run: |
           bash scripts/bootstrap_native_deps.sh
           ./gradlew :acceptance-host:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --no-build-cache --stacktrace
@@ -35,7 +35,7 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: Fresh Pixel 2 API33 H0 then H1 once
+      - name: Fresh Pixel 2 API33 H0 then H1 before App and Host runtime
         uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
         with:
           api-level: 33
