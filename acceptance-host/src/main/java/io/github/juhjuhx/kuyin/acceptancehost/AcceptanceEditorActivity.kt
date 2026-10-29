@@ -17,7 +17,37 @@ class AcceptanceEditorActivity : Activity() {
     private lateinit var editor: RecordingEditText
     private val diagnostics = mutableMapOf<Int, TextView>()
     private var imeVisibility = "UNAVAILABLE_API_24_29"
-    val editorSnapshot: EditorSnapshot get() = recorder.snapshot
+    val editorSnapshot: EditorSnapshot get() = recorder.snapshot.copy(
+        composingStart = android.view.inputmethod.BaseInputConnection.getComposingSpanStart(editor.text),
+        composingEnd = android.view.inputmethod.BaseInputConnection.getComposingSpanEnd(editor.text),
+    )
+    private val focusRecovery = TransientContentFocusRecovery()
+    private var focusResumed = false
+    private var focusEpoch = 0L
+    private var contentView: View? = null
+    var focusRecoveryAttemptCount = 0
+        private set
+    private val contentResizeListener = View.OnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+        val content = contentView
+        if (content?.isAttachedToWindow != true || !editor.isAttachedToWindow) {
+            focusRecovery.cancel()
+            return@OnLayoutChangeListener
+        }
+        if (focusRecovery.layout(content != null && content.width > 0 && content.height > 0,
+                editor.width > 0 && editor.height > 0, focusResumed, hasWindowFocus(),
+                window.decorView.findFocus()?.let { it !== editor } == true, editor.isFocused)) {
+            focusRecoveryAttemptCount += 1
+            editor.requestFocus()
+        }
+    }
+
+    private val editorAttachmentListener = object : View.OnAttachStateChangeListener {
+        override fun onViewAttachedToWindow(v: View) = Unit
+        override fun onViewDetachedFromWindow(v: View) {
+            focusEpoch += 1
+            focusRecovery.cancel()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +71,15 @@ class AcceptanceEditorActivity : Activity() {
         }
         root.addView(ScrollView(this).apply { addView(rows) }, LinearLayout.LayoutParams(-1, 0, 1f))
         setContentView(root)
+        contentView = findViewById(android.R.id.content)
+        contentView?.addOnLayoutChangeListener(contentResizeListener)
+        editor.addOnAttachStateChangeListener(editorAttachmentListener)
+        editor.onFocusChangeListener = View.OnFocusChangeListener { _, focused ->
+            val content = contentView
+            focusRecovery.focusChanged(focused,
+                content != null && content.width > 0 && content.height > 0,
+                focusResumed, hasWindowFocus())
+        }
         if (Build.VERSION.SDK_INT >= 30) {
             root.setOnApplyWindowInsetsListener { _: View, insets: WindowInsets ->
                 imeVisibility = insets.isVisible(WindowInsets.Type.ime()).toString()
@@ -53,11 +92,85 @@ class AcceptanceEditorActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
+        focusResumed = true
+        val epoch = ++focusEpoch
         editor.post {
-            if (!isFinishing) {
+            if (!isFinishing && focusResumed && epoch == focusEpoch) {
                 editor.requestFocus()
                 getSystemService(InputMethodManager::class.java).showSoftInput(editor, InputMethodManager.SHOW_IMPLICIT)
             }
+        }
+    }
+
+    override fun onPause() {
+        focusResumed = false
+        focusEpoch += 1
+        focusRecovery.cancel()
+        super.onPause()
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (!hasFocus) {
+            focusRecovery.cancel()
+        } else if (::editor.isInitialized) {
+            val content = contentView
+            focusRecovery.focusChanged(editor.isFocused,
+                content != null && content.width > 0 && content.height > 0,
+                focusResumed, true)
+        }
+    }
+
+    override fun onDestroy() {
+        contentView?.removeOnLayoutChangeListener(contentResizeListener)
+        editor.removeOnAttachStateChangeListener(editorAttachmentListener)
+        focusEpoch += 1
+        focusRecovery.cancel()
+        super.onDestroy()
+    }
+
+    /** TEST_ONLY read-only booleans; never dump editor text or request/change focus. */
+    override fun dump(prefix: String, fd: java.io.FileDescriptor?, writer: java.io.PrintWriter,
+                      args: Array<out String>?) {
+        if (args?.contentEquals(arrayOf("--kuyin-layout-trace")) == true) {
+            writer.println(prefix + "KUYIN_LAYOUT_BEGIN")
+            writer.println(prefix + editor.layoutTraceSnapshot().put("recovery_attempts", focusRecoveryAttemptCount)
+                .put("recovery_pending", focusRecovery.pending).toString())
+            writer.println(prefix + "KUYIN_LAYOUT_END")
+            return
+        }
+        if (args?.contentEquals(arrayOf("--kuyin-focus-trace")) == true) {
+            writer.println(prefix + "KUYIN_FOCUS_TRACE_BEGIN")
+            writer.println(prefix + "event=FOCUS_LOSS_CALLBACK")
+            writer.println(prefix + "loss_count=${editor.focusLossCount}")
+            writer.println(prefix + "first_elapsed_ns=${editor.firstFocusLoss?.elapsedNanos}")
+            writer.println(prefix + "last_elapsed_ns=${editor.lastFocusLoss?.elapsedNanos}")
+            editor.firstFocusLoss?.frames?.forEach { writer.println(prefix + "first_frame=$it") }
+            editor.lastFocusLoss?.frames?.forEach { writer.println(prefix + "last_frame=$it") }
+            writer.println(prefix + "KUYIN_FOCUS_TRACE_END")
+            return
+        }
+        if (args?.contentEquals(arrayOf("--kuyin-focus")) != true) {
+            super.dump(prefix, fd, writer, args)
+            return
+        }
+        val node = editor.createAccessibilityNodeInfo()
+        try {
+            writer.println(prefix + "KUYIN_FOCUS_TEST_ONLY")
+            writer.println(prefix + "editor_is_focused=${editor.isFocused}")
+            writer.println(prefix + "editor_has_focus=${editor.hasFocus()}")
+            writer.println(prefix + "window_has_focus=${hasWindowFocus()}")
+            writer.println(prefix + "editor_window_has_focus=${editor.hasWindowFocus()}")
+            writer.println(prefix + "editor_attached=${editor.isAttachedToWindow}")
+            writer.println(prefix + "editor_focusable_in_touch_mode=${editor.isFocusableInTouchMode}")
+            writer.println(prefix + "root_focus_is_editor=${window.decorView.findFocus() === editor}")
+            writer.println(prefix + "node_input_focused=${node.isFocused}")
+            writer.println(prefix + "node_accessibility_focused=${node.isAccessibilityFocused}")
+            writer.println(prefix + "last_recorded_connection_present=${recorder.snapshot.finalMetadata?.inputConnectionPresent}")
+            writer.println(prefix + "KUYIN_FOCUS_END")
+        } finally {
+            @Suppress("DEPRECATION")
+            node.recycle()
         }
     }
 

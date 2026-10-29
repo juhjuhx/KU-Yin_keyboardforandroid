@@ -1,0 +1,308 @@
+{
+  "schema": 1,
+  "source_sha": "RUNTIME_GITHUB_SHA",
+  "note": "Current source owns 32 functional Host methods. R2-only StaleUiObjectIdentityRegressionTest was never present on main; not removed/skip-converted. Original frozen P1 manifest unchanged. Runtime source comes from GITHUB_SHA.",
+  "app": {
+    "expected_count": 5,
+    "allow_skips": false,
+    "tests": [
+      {
+        "identity": "com.example.ExampleInstrumentedTest#useAppContext",
+        "cases": []
+      },
+      {
+        "identity": "com.example.androidkeyboard.runtime.ContinuousSentenceTest#nihaoCoexistsConvertsCorrectsAndCommitsOnce",
+        "cases": []
+      },
+      {
+        "identity": "com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#nativeEngineSurfacesVisibleDachenPhoneticPreedit",
+        "cases": []
+      },
+      {
+        "identity": "com.example.androidkeyboard.runtime.ImeRuntimeSmokeTest#imeBindsAndSurvivesEditorRecreate",
+        "cases": []
+      },
+      {
+        "identity": "com.example.androidkeyboard.runtime.NativeCase4Test#selectionCommitsSegmentAndNextKeyContinuesSameContext",
+        "cases": []
+      }
+    ]
+  },
+  "host": {
+    "expected_count": 32,
+    "allow_skips": true,
+    "tests": [
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh01NoToneWoIsSelectableAndCommitted",
+        "cases": [
+          {
+            "case_id": "P0-ZH01"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh02ThirdToneWoIsSelectableAndCommitted",
+        "cases": [
+          {
+            "case_id": "P0-ZH02"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh04ContinuousNoTonePhraseCommitsExactlyOnce",
+        "cases": [
+          {
+            "case_id": "P0-ZH04"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh05ContinuousTonedPhraseCommitsExactlyOnce",
+        "cases": [
+          {
+            "case_id": "P0-ZH05"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#zh06CandidateThenContinuedPhrasePreservesFirstCommit",
+        "cases": [
+          {
+            "case_id": "P0-ZH06"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.CoreTypingAcceptanceTest#en02EnglishDictionaryCompletionCommitsActualEditorWord",
+        "cases": [
+          {
+            "case_id": "P0-EN02"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b01CanonicalKeysAndShiRiHaveStrictPreeditEvidence",
+        "cases": [
+          {
+            "case_id": "B01"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b02RealCandidateSelectionThenContinuedComposition",
+        "cases": [
+          {
+            "case_id": "B02"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.DachenAcceptanceTest#b03RealContinuousSentenceCandidateAndSingleFinalCommit",
+        "cases": [
+          {
+            "case_id": "B03"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d01NoneInsertsOneNewline",
+        "cases": [
+          {
+            "case_id": "D01"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d02UnspecifiedInsertsOneNewline",
+        "cases": [
+          {
+            "case_id": "D02"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d03GoDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D03"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d04SearchDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D04"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d05SendDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D05"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d06NextDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D06"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d07DoneDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D07"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d08PreviousDispatchesOneAction",
+        "cases": [
+          {
+            "case_id": "D08"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d09SendWithNoEnterActionInsertsNewline",
+        "cases": [
+          {
+            "case_id": "D09"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d10GoWithNoEnterActionInsertsNewline",
+        "cases": [
+          {
+            "case_id": "D10"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d11CustomActionUsesCustomId",
+        "cases": [
+          {
+            "case_id": "D11"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d12NoEnterActionOverridesCustomAction",
+        "cases": [
+          {
+            "case_id": "D12"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d13CompositionCompletesBeforeSend",
+        "cases": [
+          {
+            "case_id": "D13"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d14CompositionCompletesBeforeNewline",
+        "cases": [
+          {
+            "case_id": "D14"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d15ExplicitMultilineInsertsNewline",
+        "cases": [
+          {
+            "case_id": "D15"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d16CustomNewlineLabelRemainsTextAction",
+        "cases": [
+          {
+            "case_id": "D16"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d17HostFalseHasObservableActionButIpcScopeRemainsOpen",
+        "cases": [
+          {
+            "case_id": "D17"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.EditorActionAcceptanceTest#d18AllThreeLayoutsWireRealSoftEnter",
+        "cases": [
+          {
+            "case_id": "D18"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c01NumberTemporarilyUsesEnglish",
+        "cases": [
+          {
+            "case_id": "C01"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c02PhoneTemporarilyUsesEnglish",
+        "cases": [
+          {
+            "case_id": "C02"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c03DatetimeTemporarilyUsesEnglish",
+        "cases": [
+          {
+            "case_id": "C03"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c04NullConnectionIsRealOrExplicitlyInconclusive",
+        "cases": [
+          {
+            "case_id": "C04"
+          }
+        ]
+      },
+      {
+        "identity": "io.github.juhjuhx.kuyin.acceptancehost.NonTextEditorAcceptanceTest#c05ReturningToTextRestoresBothPriorPreferredModes",
+        "cases": [
+          {
+            "case_id": "C05"
+          }
+        ]
+      }
+    ]
+  },
+  "source_files": {
+    "app/src/androidTest/java/com/example/ExampleInstrumentedTest.kt": "c6ef958cafb00dbec798a71f5be604e9cf56189676312bea40f63dd07ca0d674",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/ContinuousSentenceTest.kt": "7e4325abe522d818b65d9155465c7e1314db20d89c9b769ae68c9a4ba6e3aef1",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/NativeCase4Test.kt": "971aa6aa65cea72114d9a738190d955fd7ef3749f1dc9d9d846d0643af11d94e",
+    "app/src/androidTest/java/com/example/androidkeyboard/runtime/ImeRuntimeSmokeTest.kt": "cfe4daf9e27f638d5a5eea4ffdecc06593f6d0b743185f6fa491cf5eb795d14e",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/EditorActionAcceptanceTest.kt": "290275b9cc757cd59b7dae4f602ae64b885a9cbcc10f1153717bb2c0f91c473e",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/CoreTypingAcceptanceTest.kt": "b6d5820817aa73136e8587af1266f29287297620a6f307b1e62ad3e6e7a39961",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/NonTextEditorAcceptanceTest.kt": "8f0bb92c386c741c408d4f7577e253edf16fd8843d717425f22b246d348ef303",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/DachenAcceptanceTest.kt": "9b5528f76bee247a444d11da043d61b956ce98490bf20fe0287ea7a82308f2c0",
+    "acceptance-host/src/androidTest/java/io/github/juhjuhx/kuyin/acceptancehost/AcceptanceDriver.kt": "3e292eaabd6331394c7de3047d82a3173d58e9429263399f14a1704fd4b8c966",
+    "acceptance-host/src/sharedTest/java/io/github/juhjuhx/kuyin/acceptancehost/CoreTypingActions.kt": "db56b98a786da40f7299442fd9d81e39c3375d77cc50ea240564901bfeadde12",
+    "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/EditorSnapshot.kt": "c3d208c4d3ba141cc8fe282884a7f37e8d22ac922e07808e74b0760c8e659256",
+    "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/EditorRecorder.kt": "d48196cd3fdffd60596ea55ff8d2dbcf29075814d52c49891a81cb24440bee3f",
+    "acceptance-host/src/main/java/io/github/juhjuhx/kuyin/acceptancehost/RecordingEditText.kt": "a893ac94876b85fa03b766a1b74e5042c881684f43086e9f64be0c4c211a8767"
+  }
+}

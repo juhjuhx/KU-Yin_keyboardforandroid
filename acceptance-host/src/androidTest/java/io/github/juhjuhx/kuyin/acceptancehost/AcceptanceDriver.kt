@@ -305,7 +305,7 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     fun assertCompositionEnter(case: EnterCase, performSecondEnter: Boolean = true) {
-        awaitPreedit()
+        val preedit = awaitPreedit()
         val key = enterKey(case)
         val before = snapshot()
         observe("composition-enter-baseline", before)
@@ -315,7 +315,17 @@ internal class AcceptanceDriver(private val caseId: String) {
         assertEquals("第一次 Enter 不換行", before.newlineCount, after.newlineCount)
         assertEquals("完成組字只 commitText 一次", before.commitCount + 1, after.commitCount)
         assertTrue("完成組字必須送出非空文字", !after.lastCommitText.isNullOrEmpty())
-        assertEquals("實際文字應恰好附加當次 commit", before.currentText + after.lastCommitText, after.currentText)
+        assertTrue("完成組字須由真 IC 接受", after.lastCommitAccepted == true)
+        assertTrue("完成前必須存在可識別的真 composing range",
+            before.composingStart >= 0 && before.composingEnd > before.composingStart &&
+                before.composingEnd <= before.currentText.length)
+        assertEquals("可見 preedit 必須對應真 editor composing range", preedit.text,
+            before.currentText.substring(before.composingStart, before.composingEnd))
+        val expected = before.currentText.replaceRange(before.composingStart, before.composingEnd,
+            checkNotNull(after.lastCommitText))
+        assertEquals("只替換當次 composing range，前後文必須完整保留", expected, after.currentText)
+        assertEquals("commit 必須完成真 composing span", -1, after.composingStart)
+        assertEquals("commit 不得留下 composing span", -1, after.composingEnd)
         if (!poll { clickableDescriptions("清除").isEmpty() }) blocked("完成 Enter 後組字 marker 未消失")
         observe("composition-enter-after", after)
         if (performSecondEnter) assertEmptyEnter(case)
@@ -411,29 +421,41 @@ internal class AcceptanceDriver(private val caseId: String) {
     }
 
     fun tapFirstVisibleCandidate() {
-        val preedit = awaitPreedit()
-        val candidates = clickableCandidates(preedit)
-        if (candidates.isEmpty()) blocked("沒有與 preedit chip 同列、且位於 chip 外的可見 CJK candidate")
-        val first = candidates.minBy { it.visibleBounds.left }
-        val text = first.text ?: descendants(first).mapNotNull { it.text }.singleOrNull()
+        val target = candidateTarget()
+        val text = target.text ?: descendants(target).mapNotNull { it.text }.singleOrNull()
             ?: blocked("candidate 沒有可唯一辨識的文字")
-        val target = uniqueClickable("candidate:$text") {
-            clickableCandidates(preedit).filter { candidate ->
-                candidate.text == text || descendants(candidate).any { it.text == text }
-            }
-        }
         note("visible-candidate-tap", text)
-        target.click()
+        target.click() // One gesture; an invalidated target fails, never replay a click.
         settledSnapshot()
         awaitPreedit()
     }
 
-    private fun clickableCandidates(preedit: VisiblePreedit): List<UiObject2> =
-        distinctTargets(productObjects().filter { node ->
-            val text = node.text ?: return@filter false
-            CJK_WORD.matches(text) && verticalOverlap(node.visibleBounds, preedit.clearBounds) &&
-                node.visibleBounds.left >= preedit.clearBounds.right
-        }.mapNotNull { clickableAncestor(it) })
+    /** Read one complete current observation. Shipped candidates are below preedit, above keys. */
+    internal fun candidateTarget(label: String? = null): UiObject2 {
+        var selected: UiObject2? = null
+        var count = 0
+        if (!poll {
+            selected = null
+            val preedit = strictPreedit() ?: return@poll false
+            val firstKeys = clickableTexts("ㄅ", tokenMatch = true) + clickableTexts("q") + clickableTexts("Q")
+            val keyTop = firstKeys.minOfOrNull { it.visibleBounds.top } ?: return@poll false
+            val candidates = distinctTargets(productObjects().filter { node ->
+                val text = node.text ?: return@filter false
+                val bounds = node.visibleBounds
+                (label?.let { text == it } ?: CJK_WORD.matches(text)) &&
+                    bounds.top >= preedit.clearBounds.bottom && bounds.bottom <= keyTop
+            }.mapNotNull { clickableAncestor(it) }.filter { target ->
+                val bounds = target.visibleBounds
+                bounds.top >= preedit.clearBounds.bottom && bounds.bottom <= keyTop &&
+                    bounds.width() > 0 && bounds.height() > 0
+            })
+            count = candidates.size
+            if (label == null) selected = candidates.minByOrNull { it.visibleBounds.left }
+            else selected = candidates.singleOrNull()
+            selected != null
+        }) blocked("candidate:$label 在 preedit 下方、鍵面上方的匹配數=$count")
+        return checkNotNull(selected)
+    }
 
     private fun awaitEditorEffect(before: EditorSnapshot): EditorSnapshot {
         val changed = poll {
@@ -628,6 +650,7 @@ internal fun acceptanceCase(caseId: String, block: AcceptanceDriver.() -> Unit) 
 
 private fun EditorSnapshot.effectKey(): List<Any?> = listOf(
     editorActionCount, lastEditorActionId, lastActionReturnValue, currentText, newlineCount, commitCount, lastCommitText,
+    composingStart, composingEnd, lastCommitAccepted,
 )
 
 private fun EditorSnapshot.toEvidence(): JSONObject = JSONObject()
@@ -639,6 +662,8 @@ private fun EditorSnapshot.toEvidence(): JSONObject = JSONObject()
     .put("last_action_return_value", lastActionReturnValue ?: JSONObject.NULL)
     .put("current_text", currentText).put("newline_count", newlineCount)
     .put("commit_count", commitCount).put("last_commit_text", lastCommitText ?: JSONObject.NULL)
+    .put("composing_start", composingStart).put("composing_end", composingEnd)
+    .put("last_commit_accepted", lastCommitAccepted ?: JSONObject.NULL)
 
 private fun EditorInfoSnapshot.toEvidence(): JSONObject = JSONObject()
     .put("input_type", inputType).put("ime_options", imeOptions)

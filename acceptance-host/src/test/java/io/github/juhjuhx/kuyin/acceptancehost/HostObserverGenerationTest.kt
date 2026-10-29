@@ -259,4 +259,118 @@ class HostObserverGenerationTest {
         } finally { controller.pause().stop().destroy() }
     }
 
+    private fun candidateTree(staleCandidate: Boolean = false): AccessibilityNodeInfo {
+        val root = tree("你")
+        // Shipped CandidateBar is a Column: preedit then a separate CandidateStrip row.
+        val chip = node("你", clickable = true, bounds = Rect(12, 1510, 110, 1570))
+        if (staleCandidate) shadowOf(chip).setRefreshReturnValue(false)
+        shadowOf(root).addChild(chip)
+        shadowOf(root).addChild(node("ㄅ", clickable = true, bounds = Rect(0, 1600, 100, 1680)))
+        return root
+    }
+
+    @Test fun firstCandidateUsesShippedSeparateRowAndRequeriesBeforeOneTap() {
+        var reads = 0
+        NodeGenerationDevice.rootSupplier = java.util.function.Supplier {
+            reads++
+            arrayOf(candidateTree(staleCandidate = reads == 5))
+        }
+        NodeGenerationDevice.onGesture = Runnable {
+            NodeGenerationDevice.rootSupplier = null
+            NodeGenerationDevice.roots = arrayOf(candidateTree())
+        }
+        val driver = AcceptanceDriver("B02-CANDIDATE-ROW")
+        // This action also observes the real synthetic Editor; no fake InputConnection.
+        val intent = Intent(InstrumentationRegistry.getInstrumentation().targetContext, AcceptanceEditorActivity::class.java)
+            .putExtra("caseId", "B02-CANDIDATE-ROW")
+        val scenario = androidx.test.core.app.ActivityScenario.launch<AcceptanceEditorActivity>(intent)
+        ReflectionHelpers.setField(driver, "scenario", scenario)
+        try {
+            driver.tapFirstVisibleCandidate()
+            assertTrue("candidate scan must discard its stale iteration", reads > 5)
+            assertEquals("selection must never retry a gesture", 1, NodeGenerationDevice.gestures)
+        } finally { scenario.close() }
+    }
+
+    @Test fun completionSelectorDiscardsStaleQueryAndUsesExactLabelInSeparateRow() {
+        var reads = 0
+        NodeGenerationDevice.rootSupplier = java.util.function.Supplier {
+            reads++
+            arrayOf(candidateTree(staleCandidate = reads == 1))
+        }
+        val target = AcceptanceDriver("P0-ZH01").p0SoftTarget("你") { it.visibleBounds.top >= 1500 }
+        assertEquals("你", target.text)
+        assertTrue("stale generation must be discarded", reads >= 2)
+        assertEquals("observation must not tap", 0, NodeGenerationDevice.gestures)
+    }
+
+    @Test fun candidateTextInsideBandCannotAuthorizeAnAncestorHitboxOutsideBand() {
+        val root = tree("你")
+        shadowOf(root).addChild(node("ㄅ", clickable = true, bounds = Rect(0, 1600, 100, 1680)))
+        val target = node(clickable = true, bounds = Rect(0, 1500, 1080, 1700))
+        shadowOf(target).addChild(node("你", bounds = Rect(12, 1510, 110, 1570)))
+        shadowOf(root).addChild(target)
+        NodeGenerationDevice.roots = arrayOf(root)
+        assertThrows(CaseInconclusive::class.java) { AcceptanceDriver("OUTSIDE-HITBOX").candidateTarget("你") }
+        assertEquals(0, NodeGenerationDevice.gestures)
+    }
+
+    @Test fun persistentCandidateStaleFailsWithoutGesture() {
+        NodeGenerationDevice.roots = arrayOf(candidateTree(staleCandidate = true))
+        val error = assertThrows(AssertionError::class.java) { AcceptanceDriver("PERSISTENT").candidateTarget("你") }
+        assertTrue(error.cause is StaleObjectException)
+        assertEquals(0, NodeGenerationDevice.gestures)
+    }
+
+    @Test fun duplicateCandidateLabelDoesNotChooseAnArbitraryHitbox() {
+        val root = candidateTree()
+        shadowOf(root).addChild(node("你", clickable = true, bounds = Rect(130, 1510, 230, 1570)))
+        NodeGenerationDevice.roots = arrayOf(root)
+        assertThrows(CaseInconclusive::class.java) { AcceptanceDriver("AMBIGUOUS").candidateTarget("你") }
+        assertEquals(0, NodeGenerationDevice.gestures)
+    }
+
+    @Test fun compositionEnterReplacesRealComposingRangeAndKeepsSurroundingText() = compositionCommitFixture(1)
+
+    @Test fun compositionEnterRejectsDoubleCommit() = compositionCommitFixture(2)
+
+    private fun compositionCommitFixture(commits: Int) {
+        val intent = Intent(InstrumentationRegistry.getInstrumentation().targetContext, AcceptanceEditorActivity::class.java)
+            .putExtra("caseId", "D13-COMPOSING").putExtra("initialText", "前後").putExtra("imeOptions", 4)
+        val scenario = androidx.test.core.app.ActivityScenario.launch<AcceptanceEditorActivity>(intent)
+        lateinit var connection: android.view.inputmethod.InputConnection
+        scenario.onActivity {
+            val editor = it.findViewById<RecordingEditText>(R.id.editor)
+            editor.requestFocus()
+            editor.setSelection(1)
+            connection = checkNotNull(editor.onCreateInputConnection(EditorInfo()))
+            assertTrue(connection.setComposingText("你", 1))
+            assertEquals("前你後", it.editorSnapshot.currentText)
+        }
+        val root = tree("你")
+        shadowOf(root).addChild(node("傳送", clickable = true, bounds = Rect(900, 2200, 1050, 2300)))
+        NodeGenerationDevice.roots = arrayOf(root)
+        NodeGenerationDevice.onGesture = Runnable {
+            scenario.onActivity {
+                repeat(commits) { index ->
+                    if (index > 0) assertTrue(connection.setComposingRegion(1, 2))
+                    assertTrue(connection.commitText("你", 1))
+                }
+            }
+            NodeGenerationDevice.roots = arrayOf(node())
+        }
+        val driver = AcceptanceDriver("D13-COMPOSING")
+        ReflectionHelpers.setField(driver, "scenario", scenario)
+        try {
+            val verify = { driver.assertCompositionEnter(EnterCase(CaseConfig(caseId = "D13-COMPOSING", imeOptions = 4), "傳送", 4), false) }
+            if (commits == 1) verify() else assertThrows(AssertionError::class.java) { verify() }
+            scenario.onActivity {
+                assertEquals("前你後", it.editorSnapshot.currentText)
+                assertEquals(commits, it.editorSnapshot.commitCount)
+                assertEquals(0, it.editorSnapshot.editorActionCount)
+            }
+            assertEquals(1, NodeGenerationDevice.gestures)
+        } finally { scenario.close() }
+    }
+
 }

@@ -11,8 +11,8 @@ class EditorRecorder(
         it.copy(platformMetadata = platform, finalMetadata = final)
     }
     fun recordText(text: String) = update { it.copy(currentText = text) }
-    fun recordCommit(text: String) = update {
-        it.copy(commitCount = it.commitCount + 1, lastCommitText = text)
+    fun recordCommit(text: String, accepted: Boolean = true) = update {
+        it.copy(commitCount = it.commitCount + 1, lastCommitText = text, lastCommitAccepted = accepted)
     }
     fun recordAction(actionId: Int): Boolean {
         update {

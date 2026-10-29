@@ -14,7 +14,42 @@ class RecordingEditText(
     private val config: CaseConfig,
     private val recorder: EditorRecorder,
 ) : EditText(context) {
+    private var layoutTrace: FocusLayoutTrace? = null
+    fun layoutTraceSnapshot() = layoutTrace?.snapshot() ?: org.json.JSONObject()
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        layoutTrace?.attach()
+    }
+
+    override fun onDetachedFromWindow() {
+        layoutTrace?.detach()
+        super.onDetachedFromWindow()
+    }
+
+    data class FocusLoss(val elapsedNanos: Long, val frames: List<String>)
+    var firstFocusLoss: FocusLoss? = null
+        private set
+    var lastFocusLoss: FocusLoss? = null
+        private set
+    var focusLossCount: Int = 0
+        private set
+
+    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: android.graphics.Rect?) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect)
+        if (!focused) {
+            layoutTrace?.loss()
+            // TEST_ONLY synthetic editor. Stack symbols only: no Throwable message/editor text.
+            val loss = FocusLoss(android.os.SystemClock.elapsedRealtimeNanos(),
+                Throwable().stackTrace.take(24).map { "${it.className}#${it.methodName}:${it.lineNumber}" })
+            if (firstFocusLoss == null) firstFocusLoss = loss
+            lastFocusLoss = loss
+            focusLossCount += 1
+        }
+    }
+
     init {
+        layoutTrace = FocusLayoutTrace(this)
         id = R.id.editor
         inputType = config.inputType
         imeOptions = config.imeOptions
@@ -44,7 +79,7 @@ class RecordingEditText(
 
             override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {
                 val result = super.commitText(text, newCursorPosition)
-                recorder.recordCommit(text?.toString().orEmpty())
+                recorder.recordCommit(text?.toString().orEmpty(), result)
                 return result
             }
         }
