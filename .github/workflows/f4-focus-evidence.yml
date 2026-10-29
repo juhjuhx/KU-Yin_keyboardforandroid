@@ -1,7 +1,7 @@
 name: F4 single bounded focus observation
 on:
   push:
-    branches: [evidence/p0-layout-receiver]
+    branches: [fix/p0-host-transient-focus]
 permissions:
   contents: read
 jobs:
