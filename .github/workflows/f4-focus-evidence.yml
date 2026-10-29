@@ -1,13 +1,13 @@
 name: F4 single bounded focus observation
 on:
   push:
-    branches: [fix/p0-host-transient-focus]
+    branches: [evidence/p0-full-runtime]
 permissions:
   contents: read
 jobs:
   health:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with: {fetch-depth: 0, persist-credentials: false}
@@ -15,7 +15,9 @@ jobs:
         with: {java-version: '21', distribution: temurin}
       - uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6
       - name: Build real Host Editor only
-        run: ./gradlew :acceptance-host:testDebugUnitTest :acceptance-host:assembleDebug --no-build-cache --rerun-tasks --stacktrace
+        run: |
+          bash scripts/bootstrap_native_deps.sh
+          ./gradlew :acceptance-host:testDebugUnitTest :app:assembleDebug :app:assembleDebugAndroidTest :acceptance-host:assembleDebug :acceptance-host:assembleDebugAndroidTest --no-build-cache --stacktrace
       - name: Stage exact previously reviewed read-only collector
         run: |
           mkdir -p build/f4-health-tools
@@ -27,6 +29,7 @@ jobs:
           python3 -B .github/f4/test_focus_protocol.py -v
           python3 -B .github/f4/test_h1_stage.py -v
           python3 -B .github/f4/test_trace_protocol.py -v
+          python3 -B .github/f4/test_runtime_safety.py -v
       - name: KVM on disposable GitHub runner
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -45,7 +48,7 @@ jobs:
           disable-animations: true
           disable-spellchecker: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim
-          script: python3 .github/f4/run_focus_experiment.py
+          script: P0_FULL_RUNTIME=true python3 .github/f4/run_focus_experiment.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
@@ -53,5 +56,8 @@ jobs:
           path: |
             build/f4-health/
             acceptance-host/build/outputs/apk/debug/*.apk
+            acceptance-host/build/outputs/apk/androidTest/debug/*.apk
+            app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/androidTest/debug/*.apk
             acceptance-host/build/test-results/testDebugUnitTest/
           if-no-files-found: warn

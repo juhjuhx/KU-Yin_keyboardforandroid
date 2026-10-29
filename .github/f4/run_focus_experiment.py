@@ -188,4 +188,8 @@ save('H1_EFFECTIVE.json', dict(status=h1_status, original_result=h1,
     reasons=h1_reasons, timeline=timeline, atomic_snapshot=False))
 save('STAGE_DISPOSITION.json', dict(H0=status, H1=h1_status, H2='NOT_EXECUTED',
     product_installed=False, scope='H0/H1 only; no KU-Yin install/select/typing/update'))
-raise SystemExit(0 if h1_status == 'HEALTHY' else 3)
+if h1_status != 'HEALTHY': raise SystemExit(3)
+if os.environ.get('P0_FULL_RUNTIME') == 'true':
+    from p0_runtime import run
+    raise SystemExit(run(serial,out,command,save,initial['identity']['boot_id']))
+raise SystemExit(0)
