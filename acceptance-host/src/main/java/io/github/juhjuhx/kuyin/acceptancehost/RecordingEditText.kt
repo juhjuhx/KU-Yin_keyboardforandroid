@@ -14,6 +14,26 @@ class RecordingEditText(
     private val config: CaseConfig,
     private val recorder: EditorRecorder,
 ) : EditText(context) {
+    data class FocusLoss(val elapsedNanos: Long, val frames: List<String>)
+    var firstFocusLoss: FocusLoss? = null
+        private set
+    var lastFocusLoss: FocusLoss? = null
+        private set
+    var focusLossCount: Int = 0
+        private set
+
+    override fun onFocusChanged(focused: Boolean, direction: Int, previouslyFocusedRect: android.graphics.Rect?) {
+        super.onFocusChanged(focused, direction, previouslyFocusedRect)
+        if (!focused) {
+            // TEST_ONLY synthetic editor. Stack symbols only: no Throwable message/editor text.
+            val loss = FocusLoss(android.os.SystemClock.elapsedRealtimeNanos(),
+                Throwable().stackTrace.take(24).map { "${it.className}#${it.methodName}:${it.lineNumber}" })
+            if (firstFocusLoss == null) firstFocusLoss = loss
+            lastFocusLoss = loss
+            focusLossCount += 1
+        }
+    }
+
     init {
         id = R.id.editor
         inputType = config.inputType

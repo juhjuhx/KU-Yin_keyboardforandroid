@@ -64,6 +64,17 @@ class AcceptanceEditorActivity : Activity() {
     /** TEST_ONLY read-only booleans; never dump editor text or request/change focus. */
     override fun dump(prefix: String, fd: java.io.FileDescriptor?, writer: java.io.PrintWriter,
                       args: Array<out String>?) {
+        if (args?.contentEquals(arrayOf("--kuyin-focus-trace")) == true) {
+            writer.println(prefix + "KUYIN_FOCUS_TRACE_BEGIN")
+            writer.println(prefix + "event=FOCUS_LOSS_CALLBACK")
+            writer.println(prefix + "loss_count=${editor.focusLossCount}")
+            writer.println(prefix + "first_elapsed_ns=${editor.firstFocusLoss?.elapsedNanos}")
+            writer.println(prefix + "last_elapsed_ns=${editor.lastFocusLoss?.elapsedNanos}")
+            editor.firstFocusLoss?.frames?.forEach { writer.println(prefix + "first_frame=$it") }
+            editor.lastFocusLoss?.frames?.forEach { writer.println(prefix + "last_frame=$it") }
+            writer.println(prefix + "KUYIN_FOCUS_TRACE_END")
+            return
+        }
         if (args?.contentEquals(arrayOf("--kuyin-focus")) != true) {
             super.dump(prefix, fd, writer, args)
             return

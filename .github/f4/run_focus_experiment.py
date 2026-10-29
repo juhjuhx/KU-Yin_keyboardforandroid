@@ -131,6 +131,15 @@ else:
                        ('overlays-after',['shell','cmd','overlay','list','--user','0'])]:
         capture.run(name,args)
     capture.finish(observed['result'],editor=True)
+# Extra evidence only, outside the original H1 stage budget; never upgrades H1.
+trace = command(['adb','-s',serial,'shell','dumpsys','activity',h.HOST_COMPONENT,'--kuyin-focus-trace'], timeout=1)
+save('FOCUS_CALLBACK_TRACE_RAW.json', trace)
+from trace_protocol import parse_trace
+try:
+    if trace['exit'] != 0 or trace['timed_out']: raise ValueError('Trace command unverified')
+    save('FOCUS_CALLBACK_TRACE.json', dict(status='OBSERVED',data=parse_trace(trace['stdout'])))
+except ValueError as exc:
+    save('FOCUS_CALLBACK_TRACE.json',dict(status='INCONCLUSIVE',reason=str(exc)))
 h1_raw = (out/'H1/result.json').read_bytes()
 h1 = json.loads(h1_raw)
 h1_post = {key: adb(*args) for key, args in {
