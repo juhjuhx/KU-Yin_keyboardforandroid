@@ -81,6 +81,7 @@ class AcceptanceEditorActivity : Activity() {
             writer.println(prefix + "node_input_focused=${node.isFocused}")
             writer.println(prefix + "node_accessibility_focused=${node.isAccessibilityFocused}")
             writer.println(prefix + "last_recorded_connection_present=${recorder.snapshot.finalMetadata?.inputConnectionPresent}")
+            writer.println(prefix + "KUYIN_FOCUS_END")
         } finally {
             @Suppress("DEPRECATION")
             node.recycle()

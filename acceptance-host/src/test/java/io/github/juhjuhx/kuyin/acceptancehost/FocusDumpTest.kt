@@ -28,6 +28,7 @@ class FocusDumpTest {
             val node = editor.createAccessibilityNodeInfo()
             val output = dump(activity)
             assertTrue(output.contains("KUYIN_FOCUS_TEST_ONLY"))
+            assertTrue(output.endsWith("KUYIN_FOCUS_END\n"))
             assertTrue(output.contains("editor_is_focused=$before"))
             assertTrue(output.contains("node_input_focused=${node.isFocused}"))
             assertTrue(output.contains("window_has_focus=${activity.hasWindowFocus()}"))
@@ -44,6 +45,7 @@ class FocusDumpTest {
             val before = activity.editorSnapshot
             val output = dump(activity)
             assertTrue(output.contains("KUYIN_FOCUS_TEST_ONLY"))
+            assertTrue(output.endsWith("KUYIN_FOCUS_END\n"))
             assertFalse(output.contains("F4_SYNTHETIC_CONTENT_MUST_NOT_BE_DUMPED"))
             assertEquals(before, activity.editorSnapshot)
             assertEquals("F4_SYNTHETIC_CONTENT_MUST_NOT_BE_DUMPED", editor.text.toString())
