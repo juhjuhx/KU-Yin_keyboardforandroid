@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "source_bundle": "5a6d5ce96bc93f3385473c952912ca266958a51a9acb127a2ba6ab2363877ab8",
+  "files": [
+    {
+      "component": "r-efi",
+      "revision": "97b55bed1c2c91dcbf787674849f05337ff80b33",
+      "path": "third_party/notices/r-efi/AUTHORS",
+      "sha256": "ff92bed461f50338dd703a9ba9aee496a425957873df1d91192776e4bdf5dda7",
+      "source": "https://raw.githubusercontent.com/r-efi/r-efi/97b55bed1c2c91dcbf787674849f05337ff80b33/AUTHORS",
+      "scope": "existing source bundle notice; Android linkage not asserted"
+    },
+    {
+      "component": "wasip2",
+      "revision": "3da562c06214feafc14d37bf290671636caa6718",
+      "path": "third_party/notices/wasip2/LICENSE-MIT",
+      "sha256": "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3",
+      "size": 1023,
+      "git_blob_sha": "31aa79387f27e730e33d871925e152e35e428031",
+      "source": "https://github.com/bytecodealliance/wasi-rs/blob/3da562c06214feafc14d37bf290671636caa6718/LICENSE-MIT",
+      "scope": "source package notice supplement, not proof shipped Android component"
+    },
+    {
+      "component": "wasip2",
+      "revision": "3da562c06214feafc14d37bf290671636caa6718",
+      "path": "third_party/notices/wasip2/LICENSE-APACHE",
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2",
+      "size": 10847,
+      "git_blob_sha": "16fe87b06e802f094b3fbb0894b137bca2b16ef1",
+      "source": "https://github.com/bytecodealliance/wasi-rs/blob/3da562c06214feafc14d37bf290671636caa6718/LICENSE-APACHE",
+      "scope": "source package notice supplement, not proof shipped Android component"
+    },
+    {
+      "component": "wasip2",
+      "revision": "3da562c06214feafc14d37bf290671636caa6718",
+      "path": "third_party/notices/wasip2/LICENSE-Apache-2.0_WITH_LLVM-exception",
+      "sha256": "268872b9816f90fd8e85db5a28d33f8150ebb8dd016653fb39ef1f94f2686bc5",
+      "size": 12243,
+      "git_blob_sha": "f9d81955f4bcb8f96a025e2ecc46f39ec536d465",
+      "source": "https://github.com/bytecodealliance/wasi-rs/blob/3da562c06214feafc14d37bf290671636caa6718/LICENSE-Apache-2.0_WITH_LLVM-exception",
+      "scope": "source package notice supplement, not proof shipped Android component"
+    }
+  ]
+}

@@ -75,3 +75,9 @@ docs/release/QR_PROVENANCE.md and app/src/main/assets/foundation_qr_manifest.jso
 Offline tooling: OpenCV encoder (Apache-2.0), opencv-python wrapper (MIT),
 NumPy (BSD-3-Clause). None is bundled in the Android runtime. ZXing core 3.5.3
 (Apache-2.0) is an independent test-only decoder, not an APK runtime library.
+
+7. Alpha license errata and source-notice supplement
+   See docs/release/ALPHA_LICENSE_ERRATA.md and
+   third_party/notices/SOURCE_NOTICE_PROVENANCE.json.
+   This binds the original Alpha to its existing source/relink materials and
+   corrects inventory false negatives; it does not certify a later binary.
